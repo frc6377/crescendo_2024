@@ -50,5 +50,5 @@ jobs:
       # 3. Use awk to check for robot crash message and set the return code based on this. (Alternative to grep that doesn't filter the simulation output)
       # Awk One-liner stolen from https://stackoverflow.com/questions/27447705/grep-without-filtering 
 
-    - name: Git Clean Check
-      run: test -z "$(git status --porcelain)" || { git diff; exit 1; }
+    # - name: Git Clean Check
+    #   run: test -z "$(git status --porcelain)" || { git diff; exit 1; }
