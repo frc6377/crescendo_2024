@@ -1,6 +1,7 @@
 plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2024.1.1"
+    id 'com.diffplug.spotless' version '6.12.0'
 }
 
 java {
@@ -74,6 +75,56 @@ dependencies {
 test {
     useJUnitPlatform()
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
+
+    testLogging {
+        events "failed"
+        exceptionFormat "full"
+    }
+}
+
+spotless {
+    java {
+        target fileTree('.') {
+            include '**/*.java'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        toggleOffOn()
+        googleJavaFormat()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    groovyGradle {
+        target fileTree('.') {
+            include '**/*.gradle'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        greclipse()
+        indentWithSpaces(4)
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    format 'xml', {
+        target fileTree('.') {
+            include '**/*.xml'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        eclipseWtp('xml')
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
+    format 'misc', {
+        target fileTree('.') {
+            include '**/*.md', '**/.gitignore'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
+
+    lineEndings 'UNIX'
 }
 
 // Simulation configuration (e.g. environment variables).
@@ -99,3 +150,85 @@ wpi.java.configureTestTasks(test)
 tasks.withType(JavaCompile) {
     options.compilerArgs.add '-XDstringConcat=inline'
 }
+
+test {
+    useJUnitPlatform()
+    systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
+}
+
+tasks.register("writeBranchName") {
+    // Define an output stream to write to instead of terminal
+    def stdout = new ByteArrayOutputStream()
+
+    // Execute the git command
+    exec {
+        commandLine "git", "rev-parse", "--abbrev-ref", "HEAD"
+        // Write to the output stream instead of terminal
+        standardOutput = stdout
+    }
+
+    // Parse the output into a string
+    def outstream = stdout.toString().trim()
+
+    // Create a new file
+    new File(
+            // Join project directory and deploy directory
+            projectDir.toString() + "/src/main/deploy",
+            // File name to write to
+            "branch.txt"
+            ).text = outstream // Set the contents of the file to the variable branch
+}
+
+deploy.targets.roborio.artifacts.frcStaticFileDeploy.dependsOn(writeBranchName)
+
+tasks.register("writeCommitHash") {
+    def stdout = new ByteArrayOutputStream()
+
+    exec {
+        commandLine "git", "rev-parse", "--short", "HEAD"
+        standardOutput = stdout
+    }
+
+    def outstream = stdout.toString().trim()
+
+    new File(
+            projectDir.toString() + "/src/main/deploy",
+            "commit.txt"
+            ).text = outstream
+}
+
+deploy.targets.roborio.artifacts.frcStaticFileDeploy.dependsOn(writeCommitHash)
+
+tasks.register("writeComputerName") {
+    def stdout = new ByteArrayOutputStream()
+
+    exec {
+        commandLine "hostname"
+        standardOutput = stdout
+    }
+
+    def outstream = stdout.toString().trim()
+
+    new File(
+            projectDir.toString() + "/src/main/deploy",
+            "hostname.txt"
+            ).text = outstream
+}
+
+deploy.targets.roborio.artifacts.frcStaticFileDeploy.dependsOn(writeComputerName)
+
+// tasks.register("writeBuildDate") {
+//     def stdout = new ByteArrayOutputStream()
+
+//     exec {
+//         commandLine "date"
+//         standardOutput = stdout
+//     }
+
+//     def outstream = stdout.toString().trim()
+
+//     new File(
+//             projectDir.toString() + "/src/main/deploy",
+//             "date.txt"
+//             ).text = outstream
+// }
