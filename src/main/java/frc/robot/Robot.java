@@ -104,7 +104,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testExit() {}
-  
+
   /** This function is called once when the robot is first started up. */
   @Override
   public void simulationInit() {}
