@@ -18,6 +18,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private Spark TLmotor2;
   private Spark BRmotor1;
   private Spark BRmotor2;
+  private Spark otherMotor;
 
   public ShooterSubsystem() {
     pid = new PIDController(1, 1, 1);
@@ -28,8 +29,11 @@ public class ShooterSubsystem extends SubsystemBase {
     TLmotor2.addFollower(TLmotor1);
 
     BRmotor1 = new Spark(3);
+    BRmotor1.setInverted(true);
     BRmotor2 = new Spark(4);
     BRmotor2.addFollower(BRmotor1);
+
+    otherMotor = new Spark(5);
   }
 
   public Command RunMotors() {
@@ -39,16 +43,18 @@ public class ShooterSubsystem extends SubsystemBase {
           TLmotor2.set(pid.calculate(TLmotor1.get(), .5));
           BRmotor1.set(pid.calculate(TLmotor1.get(), .5));
           BRmotor2.set(pid.calculate(TLmotor1.get(), .5));
+          otherMotor.set(pid.calculate(otherMotor.get(), .5));
         });
   }
 
   public Command StopMotors() {
-    return run(
+    return runOnce(
         () -> {
           TLmotor1.stopMotor();
           TLmotor2.stopMotor();
           BRmotor1.stopMotor();
           BRmotor2.stopMotor();
+          otherMotor.stopMotor();
         });
   }
 
