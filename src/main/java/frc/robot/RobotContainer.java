@@ -38,7 +38,8 @@ public class RobotContainer {
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
-  private final LimelightSubsystem limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
+  private final LimelightSubsystem limelightSubsystem =
+      new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
 
   private final SwerveRequest.FieldCentric drive =
       new SwerveRequest.FieldCentric()
