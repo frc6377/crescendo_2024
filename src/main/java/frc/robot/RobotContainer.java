@@ -66,50 +66,11 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
-
+    // Start motors on left bumper press 
     m_driverController.leftBumper().whileTrue(m_shooterSubsystem.RunMotors());
+
+    // Stop motors on left bumper unpress
     m_driverController.leftBumper().whileFalse(m_shooterSubsystem.StopMotors());
-
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-
-    // Swerve config
-    drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-        drivetrain.applyRequest(
-            () ->
-                drive
-                    .withVelocityX(-m_driverController.getLeftY() * MaxSpeed) // Drive forward with
-                    // negative Y (forward)
-                    .withVelocityY(
-                        -m_driverController.getLeftX()
-                            * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(
-                        -m_driverController.getRightX()
-                            * MaxAngularRate) // Drive counterclockwise with negative X (left)
-            ));
-
-    m_driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
-    m_driverController
-        .b()
-        .whileTrue(
-            drivetrain.applyRequest(
-                () ->
-                    point.withModuleDirection(
-                        new Rotation2d(
-                            -m_driverController.getLeftY(), -m_driverController.getLeftX()))));
-
-    // reset the field-centric heading on left bumper press
-    m_driverController
-        .leftBumper()
-        .onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
-
-    if (Utils.isSimulation()) {
-      drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
-    }
-    drivetrain.registerTelemetry(logger::telemeterize);
   }
 
   /**

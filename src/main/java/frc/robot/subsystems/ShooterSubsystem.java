@@ -4,18 +4,25 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
   /** Creates a new ShooterSubsystem. */
+  private PIDController pid;
+
+
   private Spark TLmotor1;
   private Spark TLmotor2;
   private Spark BRmotor1;
   private Spark BRmotor2;
 
   public ShooterSubsystem() {
+    pid = new PIDController(1, 1, 1);
+    //pid.setIntegratorRange(-1, 1);
+
     TLmotor1 = new Spark(1);
     TLmotor2 = new Spark(2);
     TLmotor2.addFollower(TLmotor1);
@@ -28,10 +35,10 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command RunMotors() {
     return run(
         () -> {
-          TLmotor1.set(1);
-          TLmotor2.set(1);
-          BRmotor1.set(1);
-          BRmotor2.set(1);
+          TLmotor1.set(pid.calculate(TLmotor1.get(), .5));
+          TLmotor2.set(pid.calculate(TLmotor1.get(), .5));
+          BRmotor1.set(pid.calculate(TLmotor1.get(), .5));
+          BRmotor2.set(pid.calculate(TLmotor1.get(), .5));
         });
   }
 
