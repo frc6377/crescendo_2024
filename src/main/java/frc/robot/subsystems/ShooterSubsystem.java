@@ -45,10 +45,10 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command StopMotors() {
     return run(
         () -> {
-          TLmotor1.set(0);
-          TLmotor2.set(0);
-          BRmotor1.set(0);
-          BRmotor2.set(0);
+          TLmotor1.stopMotor();
+          TLmotor2.stopMotor();
+          BRmotor1.stopMotor();
+          BRmotor2.stopMotor();
         });
   }
 
