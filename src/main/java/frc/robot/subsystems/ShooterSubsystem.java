@@ -18,21 +18,30 @@ public class ShooterSubsystem extends SubsystemBase {
   public ShooterSubsystem() {
     TLmotor1 = new Spark(1);
     TLmotor2 = new Spark(2);
+    TLmotor2.addFollower(TLmotor1);
+
     BRmotor1 = new Spark(3);
     BRmotor2 = new Spark(4);
+    BRmotor2.addFollower(BRmotor1);
   }
 
-  /**
-   * Example command factory method.
-   *
-   * @return a command
-   */
-  public Command exampleMethodCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-    return runOnce(
+  public Command RunMotors() {
+    return run(
         () -> {
-          /* one-time action goes here */
+          TLmotor1.set(1);
+          TLmotor2.set(1);
+          BRmotor1.set(1);
+          BRmotor2.set(1);
+        });
+  }
+
+  public Command StopMotors() {
+    return run(
+        () -> {
+          TLmotor1.set(0);
+          TLmotor2.set(0);
+          BRmotor1.set(0);
+          BRmotor2.set(0);
         });
   }
 
