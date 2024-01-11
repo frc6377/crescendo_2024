@@ -76,6 +76,14 @@ public class ShooterSubsystem extends SubsystemBase {
         });
   }
 
+  public Command adjustSpeed(double testSpeedOffset) {
+    return run(
+      () -> {
+        setPoint+=testSpeedOffset;
+      }
+    );
+  }
+
   public Command RunFeeder() {
     return run(
         () -> {
