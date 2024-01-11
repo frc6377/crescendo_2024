@@ -4,19 +4,11 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
@@ -27,10 +19,6 @@ import frc.robot.subsystems.ShooterSubsystem;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private static final double MaxSpeed = 6; // 6 meters per second desired top speed
-  private static final double MaxAngularRate =
-      Math.PI; // Half a rotation per second max angular velocity
-
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
@@ -38,17 +26,6 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
-  private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
-
-  private final SwerveRequest.FieldCentric drive =
-      new SwerveRequest.FieldCentric()
-          .withDeadband(MaxSpeed * 0.1)
-          .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-          .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
-  // driving in open loop
-  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-  private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-  private final Telemetry logger = new Telemetry(MaxSpeed);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -66,11 +43,15 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // Start motors on left bumper press 
+    // Start motors on left bumper press
     m_driverController.leftBumper().whileTrue(m_shooterSubsystem.RunMotors());
-
     // Stop motors on left bumper unpress
-    m_driverController.leftBumper().whileFalse(m_shooterSubsystem.StopMotors());
+    m_driverController.leftBumper().onFalse(m_shooterSubsystem.StopMotors());
+
+    // Starts feeder motor on X button press
+    m_driverController.x().whileTrue(m_shooterSubsystem.RunFeeder());
+    // Stops feeder motor on X button unpress
+    m_driverController.x().whileTrue(m_shooterSubsystem.StopFeeder());
   }
 
   /**

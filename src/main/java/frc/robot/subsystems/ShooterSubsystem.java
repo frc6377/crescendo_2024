@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -11,39 +14,50 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
   /** Creates a new ShooterSubsystem. */
+  private double P;
+
+  private double I;
+  private double D;
+  private double setPoint;
+  private double feederSetPoint;
   private PIDController pid;
 
-
-  private Spark TLmotor1;
-  private Spark TLmotor2;
-  private Spark BRmotor1;
-  private Spark BRmotor2;
-  private Spark otherMotor;
+  private CANSparkMax TLmotor1;
+  private CANSparkMax TLmotor2;
+  private CANSparkMax BRmotor1;
+  private CANSparkMax BRmotor2;
+  private CANSparkMax feederMotor;
 
   public ShooterSubsystem() {
-    pid = new PIDController(1, 1, 1);
-    //pid.setIntegratorRange(-1, 1);
+    P = 1.0;
+    I = 1.0;
+    D = 1.0;
+    setPoint = 0.5;
+    feederSetPoint = 0.25;
 
-    TLmotor1 = new Spark(1);
-    TLmotor2 = new Spark(2);
-    TLmotor2.addFollower(TLmotor1);
+    TLmotor1 = new CANSparkMax(1, MotorType.kBrushless);
+    TLmotor1.getPIDController().setP(P);
+    TLmotor1.getPIDController().setI(I);
+    TLmotor1.getPIDController().setD(D);
+    TLmotor2 = new CANSparkMax(2, MotorType.kBrushless);
+    TLmotor2.follow(TLmotor1);
 
-    BRmotor1 = new Spark(3);
+    BRmotor1 = new CANSparkMax(3, MotorType.kBrushless);
     BRmotor1.setInverted(true);
-    BRmotor2 = new Spark(4);
-    BRmotor2.addFollower(BRmotor1);
+    BRmotor1.getPIDController().setP(P);
+    BRmotor1.getPIDController().setI(I);
+    BRmotor1.getPIDController().setD(D);
+    BRmotor2 = new CANSparkMax(4, MotorType.kBrushless);
+    BRmotor2.follow(BRmotor1);
 
-    otherMotor = new Spark(5);
+    feederMotor = new CANSparkMax(5, MotorType.kBrushless);
   }
 
   public Command RunMotors() {
     return run(
         () -> {
-          TLmotor1.set(pid.calculate(TLmotor1.get(), .5));
-          TLmotor2.set(pid.calculate(TLmotor1.get(), .5));
-          BRmotor1.set(pid.calculate(TLmotor1.get(), .5));
-          BRmotor2.set(pid.calculate(TLmotor1.get(), .5));
-          otherMotor.set(pid.calculate(otherMotor.get(), .5));
+          TLmotor1.set(pid.calculate(TLmotor1.get(), setPoint));
+          BRmotor1.set(pid.calculate(TLmotor1.get(), setPoint));
         });
   }
 
@@ -51,10 +65,21 @@ public class ShooterSubsystem extends SubsystemBase {
     return runOnce(
         () -> {
           TLmotor1.stopMotor();
-          TLmotor2.stopMotor();
           BRmotor1.stopMotor();
-          BRmotor2.stopMotor();
-          otherMotor.stopMotor();
+        });
+  }
+
+  public Command RunFeeder() {
+    return run(
+        () -> {
+          feederMotor.set(feederSetPoint);
+        });
+  }
+
+  public Command StopFeeder() {
+    return runOnce(
+        () -> {
+          feederMotor.stopMotor();
         });
   }
 
