@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import java.util.HashMap;
@@ -27,30 +26,11 @@ public class DeltaDebugBoard<T> {
   private Integer localEntry;
   private Consumer<T> localConsumer;
   private final String name;
-
-  public static void putNumber(String key, Double val) {
-    if (!doubleTable.containsKey(key) || !doubleTable.get(key).equals(val)) {
-      SmartDashboard.putNumber(key, val);
-      doubleTable.put(key, val);
-    }
-  }
-
-  public static void putString(String key, String val) {
-    if (!stringTable.containsKey(key) || !stringTable.get(key).equals(val)) {
-      SmartDashboard.putString(key, val);
-      stringTable.put(key, val);
-    }
-  }
-
-  public static void putBoolean(String key, boolean val) {
-    if (!stringTable.containsKey(key) || !stringTable.get(key).equals(val)) {
-      SmartDashboard.putBoolean(key, val);
-      booleanTable.put(key, val);
-    }
-  }
+  private T lastValue;
 
   public DeltaDebugBoard(T defaultValue, String name, SubsystemBase subsystem) {
     this.name = name;
+    this.lastValue = defaultValue;
     if (defaultValue instanceof Double) {
       localEntry = datalog.start("/" + subsystem.getName() + "/" + name, "double");
       localConsumer = (a) -> datalog.appendDouble(localEntry, (Double) a, 0);
@@ -83,7 +63,10 @@ public class DeltaDebugBoard<T> {
   public void log(T newValue) {
     try {
       if (!Robot.isCompetition) {
-        networkEntry.setValue(newValue);
+        if (lastValue != newValue) {
+          networkEntry.setValue(newValue);
+        }
+        lastValue = newValue;
       }
       localConsumer.accept(newValue);
     } catch (NullPointerException e) {
