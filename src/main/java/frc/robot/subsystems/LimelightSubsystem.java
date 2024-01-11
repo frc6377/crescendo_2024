@@ -6,44 +6,47 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.LimelightHelpers;
+
 import java.util.function.BiConsumer;
 
 public class LimelightSubsystem extends SubsystemBase {
+  private LimelightHelpers.LimelightResults results;
+
   private final BiConsumer<Pose2d, Double> measurementConsumer;
 
   public LimelightSubsystem(BiConsumer<Pose2d, Double> measurementConsumer) {
-    this.measurementConsumer = measurementConsumer;
+    results = LimelightHelpers.getLatestResults("");
 
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("stream").setNumber(1);
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(0);
+    this.measurementConsumer = measurementConsumer;
+    LimelightHelpers.setLEDMode_ForceOff("");
+    LimelightHelpers.setStreamMode_PiPMain("");
   }
 
   public double getTagCount() {
-    return 2; // TODO: find how to pull tag count from network tables
+    return results.targetingResults.targets_Fiducials.length;
   }
 
-  private Pose2d getPose2dFromArray(double[] botpose) {
+  private Pose2d getPose2d() {
+    double[] botpose = results.targetingResults.botpose_wpiblue;
     return new Pose2d(botpose[0], botpose[1], new Rotation2d(botpose[5]));
   }
 
-  private double getTimeFromArray(double[] botpose) {
+  private double getTime() {
     // Accounts for latency
     // (https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization)
+    double[] botpose = results.targetingResults.botpose_wpiblue;
     return Timer.getFPGATimestamp() - (botpose[6] / 1000.0);
   }
 
   @Override
   public void periodic() {
+    results = LimelightHelpers.getLatestResults("");
+
     if (getTagCount() > 1) {
-      double[] botpose =
-          NetworkTableInstance.getDefault()
-              .getTable("limelight")
-              .getEntry("botpose_wpiblue")
-              .getDoubleArray(new double[7]);
-      measurementConsumer.accept(getPose2dFromArray(botpose), getTimeFromArray(botpose));
+      measurementConsumer.accept(getPose2d(), getTime());
     }
   }
 
