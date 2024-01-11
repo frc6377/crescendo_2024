@@ -7,12 +7,14 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
-  /** Creates a new ShooterSubsystem. */
-  private double setPoint;
+  /** Creates a new TRShooterSubsystem. */
+  private double shooterVelo;
 
   private double TLP;
   private double TLI;
@@ -22,7 +24,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private double BRI;
   private double BRD;
 
-  private double feederSetPoint;
+  private double feederVelo;
 
   private CANSparkMax TLmotor1;
   private CANSparkMax TLmotor2;
@@ -39,8 +41,8 @@ public class ShooterSubsystem extends SubsystemBase {
     BRI = 0;
     BRD = 0;
 
-    setPoint = 0.5;
-    feederSetPoint = 0.25;
+    shooterVelo = 0.5;
+    feederVelo = 0.25;
 
     TLmotor1 = new CANSparkMax(1, MotorType.kBrushless);
     TLmotor1.getPIDController().setP(TLP);
@@ -58,13 +60,24 @@ public class ShooterSubsystem extends SubsystemBase {
     BRmotor2.follow(BRmotor1);
 
     feederMotor = new CANSparkMax(5, MotorType.kBrushless);
+
+    SmartDashboard.putNumber("shooterVelo", shooterVelo);
+    SmartDashboard.putNumber("feederVelo", feederVelo);
+
+    SmartDashboard.putNumber("TRShooterP", TLP);
+    SmartDashboard.putNumber("TRShooterI", TLI);
+    SmartDashboard.putNumber("TRShooterD", TLD);
+
+    SmartDashboard.putNumber("BRShooterP", BRP);
+    SmartDashboard.putNumber("BRShooterI", BRI);
+    SmartDashboard.putNumber("BRShooterD", BRD);
   }
 
   public Command RunMotors() {
     return run(
         () -> {
-          TLmotor1.getPIDController().setReference(setPoint, ControlType.kVelocity);
-          BRmotor1.getPIDController().setReference(setPoint, ControlType.kVelocity);
+          TLmotor1.getPIDController().setReference(shooterVelo, ControlType.kVelocity);
+          BRmotor1.getPIDController().setReference(shooterVelo, ControlType.kVelocity);
         });
   }
 
@@ -79,7 +92,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command adjustSpeed(double testSpeedOffset) {
     return run(
       () -> {
-        setPoint+=testSpeedOffset;
+        shooterVelo+=testSpeedOffset;
       }
     );
   }
@@ -87,7 +100,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command RunFeeder() {
     return run(
         () -> {
-          feederMotor.set(feederSetPoint);
+          feederMotor.set(feederVelo);
         });
   }
 
@@ -110,7 +123,65 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    shooterVelo = SmartDashboard.getNumber("shooterVelo", shooterVelo);
+    feederVelo = SmartDashboard.getNumber("feederVelo", feederVelo);
+    if(TLP != SmartDashboard.getNumber("TRShooterP", TLP)){
+      adjustTLP();
+    }
+    if(TLI != SmartDashboard.getNumber("TRShooterI", TLI)){
+      adjustTLI();
+    }
+    if(TLD != SmartDashboard.getNumber("TRShooterD", TLD)){
+      adjustTLD();
+    }
+
+    if(BRP != SmartDashboard.getNumber("BRShooterP", BRP)){
+        adjustBRP();
+    }
+    if(BRI != SmartDashboard.getNumber("BRShooterI", BRI)){
+        adjustBRI();
+    }
+    if(BRD != SmartDashboard.getNumber("BRShooterD", BRD)){
+        adjustBRD();
+    }
+
+    SmartDashboard.putNumber("shooterVelo", shooterVelo);
+  }
+
+  public void adjustTLP(){
+    TLP = SmartDashboard.getNumber("TRShooterP", TLP);
+    TLmotor1.getPIDController().setP(TLP);
+    SmartDashboard.putNumber("TRPShooterP", TLP);
+  }
+
+  public void adjustTLI(){
+    TLI = SmartDashboard.getNumber("TRShooterI", TLI);
+    TLmotor1.getPIDController().setI(TLI);
+    SmartDashboard.putNumber("TRShooterI", TLI);
+  }
+
+  public void adjustTLD(){
+    TLD = SmartDashboard.getNumber("TRShooterD", TLD);
+    TLmotor1.getPIDController().setD(TLD);
+    SmartDashboard.putNumber("TRShooterD", TLD);
+  }
+
+  public void adjustBRP(){
+    BRP = SmartDashboard.getNumber("BRShooterP", BRP);
+    BRmotor1.getPIDController().setP(BRP);
+    SmartDashboard.putNumber("BRPShooterP", BRP);
+  }
+
+  public void adjustBRI(){
+      BRI = SmartDashboard.getNumber("BRShooterI", BRI);
+      BRmotor1.getPIDController().setI(BRI);
+      SmartDashboard.putNumber("BRShooterI", BRI);
+  }
+
+  public void adjustBRD(){
+      BRD = SmartDashboard.getNumber("BRShooterD", BRD);
+      BRmotor1.getPIDController().setD(BRD);
+      SmartDashboard.putNumber("BRShooterD", BRD);
   }
 
   @Override
