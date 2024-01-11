@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -14,13 +15,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
   /** Creates a new ShooterSubsystem. */
-  private double P;
-
-  private double I;
-  private double D;
   private double setPoint;
+
+  private double TLP;
+  private double TLI;
+  private double TLD;
+
+  private double BRP;
+  private double BRI;
+  private double BRD;
+
   private double feederSetPoint;
-  private PIDController pid;
 
   private CANSparkMax TLmotor1;
   private CANSparkMax TLmotor2;
@@ -29,24 +34,29 @@ public class ShooterSubsystem extends SubsystemBase {
   private CANSparkMax feederMotor;
 
   public ShooterSubsystem() {
-    P = 1.0;
-    I = 1.0;
-    D = 1.0;
+    TLP = 1.0;
+    TLI = 0;
+    TLD = 0;
+
+    BRP = 1.0;
+    BRI = 0;
+    BRD = 0;
+
     setPoint = 0.5;
     feederSetPoint = 0.25;
 
     TLmotor1 = new CANSparkMax(1, MotorType.kBrushless);
-    TLmotor1.getPIDController().setP(P);
-    TLmotor1.getPIDController().setI(I);
-    TLmotor1.getPIDController().setD(D);
+    TLmotor1.getPIDController().setP(TLP);
+    TLmotor1.getPIDController().setI(TLI);
+    TLmotor1.getPIDController().setD(TLD);
     TLmotor2 = new CANSparkMax(2, MotorType.kBrushless);
     TLmotor2.follow(TLmotor1);
 
     BRmotor1 = new CANSparkMax(3, MotorType.kBrushless);
     BRmotor1.setInverted(true);
-    BRmotor1.getPIDController().setP(P);
-    BRmotor1.getPIDController().setI(I);
-    BRmotor1.getPIDController().setD(D);
+    BRmotor1.getPIDController().setP(BRP);
+    BRmotor1.getPIDController().setI(BRI);
+    BRmotor1.getPIDController().setD(BRD);
     BRmotor2 = new CANSparkMax(4, MotorType.kBrushless);
     BRmotor2.follow(BRmotor1);
 
@@ -56,8 +66,8 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command RunMotors() {
     return run(
         () -> {
-          TLmotor1.set(pid.calculate(TLmotor1.get(), setPoint));
-          BRmotor1.set(pid.calculate(TLmotor1.get(), setPoint));
+          TLmotor1.getPIDController().setReference(setPoint, ControlType.kVelocity);
+          BRmotor1.getPIDController().setReference(setPoint, ControlType.kVelocity);
         });
   }
 
