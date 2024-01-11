@@ -16,6 +16,12 @@ public class DynamicRobotConfig {
   private static final String backRightOffset_key = "back Right Offset";
   private static final String backLeftOffset_key = "back Left Offset";
 
+  // Contains every key that is used 
+  // if one is missing it won't be correctly saved, or init
+  private static final String[] allKeys = {
+    frontLeftOffset_key, frontRightOffset_key, backRightOffset_key, backLeftOffset_key
+  };
+
   public final double frontLeftOffset;
   public final double frontRightOffset;
   public final double backRightOffset;
@@ -49,6 +55,34 @@ public class DynamicRobotConfig {
       raiseWarning("Back Left Pod Offset NOT FOUND!! using default");
       backLeftOffset = 0;
     }
+  }
+
+  public static void save() {
+
+    // If any NT is missing stop saving
+    String missing;
+    if ((missing = verifyPrefenceExistent(allKeys)).isEmpty()) {
+      raiseWarning("Missing Entry:"+missing);
+      return;
+    }
+  }
+
+  /** Creates network table entries even if not pre-existing */
+  public static void initNT() {}
+
+  /**
+   * Verifies that prefences all the given prefences exist
+   *
+   * @param keys - The keys to verify that they exist
+   * @return the missing key, empty if all are present
+   */
+  private static String verifyPrefenceExistent(String[] keys) {
+    for (String key : keys) {
+      if (!Preferences.containsKey(key)) {
+        return key;
+      }
+    }
+    return "";
   }
 
   public static DynamicRobotConfig loadDynamicRobotConfig() {
