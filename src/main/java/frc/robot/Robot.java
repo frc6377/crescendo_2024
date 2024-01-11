@@ -33,7 +33,9 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotInit() {
     Logger.recordMetadata("ProjectName", "6377_crescendo_2024");
-    Logger.recordMetadata("Github Commit ID", BuildConstants.);
+    Logger.recordMetadata("Repository", BuildConstants.MAVEN_NAME);
+    Logger.recordMetadata("Commit ID (GIT_SHA)", BuildConstants.GIT_SHA);
+    Logger.recordMetadata("Branch Name", BuildConstants.GIT_BRANCH);
 
     if (isReal()) {
       Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
