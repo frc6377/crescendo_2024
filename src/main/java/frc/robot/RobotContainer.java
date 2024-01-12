@@ -44,7 +44,10 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Start motors on left bumper press
-    m_driverController.leftBumper().whileTrue(m_shooterSubsystem.RunMotors()).onFalse(m_shooterSubsystem.StopMotors());
+    m_driverController
+        .leftBumper()
+        .whileTrue(m_shooterSubsystem.RunMotors())
+        .onFalse(m_shooterSubsystem.StopMotors());
 
     // Stops feeder motor on X button unpress
     m_driverController.x().whileTrue(m_shooterSubsystem.StopFeeder());
