@@ -10,13 +10,9 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.function.Consumer;
 
-public class DeltaDebugBoard<T> {
-  private static Hashtable<String, String> stringTable = new Hashtable<>();
-  private static Hashtable<String, Double> doubleTable = new Hashtable<>();
-  private static Hashtable<String, Boolean> booleanTable = new Hashtable<>();
+public class DebugEntry<T> {
 
   private static final DataLog datalog = DataLogManager.getLog();
   private static final HashMap<String, GenericEntry> entries = new HashMap<String, GenericEntry>();
@@ -28,20 +24,24 @@ public class DeltaDebugBoard<T> {
   private final String name;
   private T lastValue;
 
-  public DeltaDebugBoard(T defaultValue, String name, SubsystemBase subsystem) {
+  public DebugEntry(T defaultValue, String name, SubsystemBase subsystem) {
     this.name = name;
     this.lastValue = defaultValue;
     if (defaultValue instanceof Double) {
       localEntry = datalog.start("/" + subsystem.getName() + "/" + name, "double");
       localConsumer = (a) -> datalog.appendDouble(localEntry, (Double) a, 0);
     }
-    if (defaultValue instanceof String) {
+    else if (defaultValue instanceof String) {
       localEntry = datalog.start("/" + subsystem.getName() + "/" + name, "string");
       localConsumer = (a) -> datalog.appendString(localEntry, (String) a, 0);
     }
-    if (defaultValue instanceof Boolean) {
+    else if (defaultValue instanceof Boolean) {
       localEntry = datalog.start("/" + subsystem.getName() + "/" + name, "boolean");
       localConsumer = (a) -> datalog.appendBoolean(localEntry, (Boolean) a, 0);
+    }
+    else {
+      DriverStation.reportWarning(
+        "Unsupported data type.", false);
     }
     if (localEntry != null) {
       if (!Robot.isCompetition) {
@@ -62,10 +62,8 @@ public class DeltaDebugBoard<T> {
 
   public void log(T newValue) {
     try {
-      if (!Robot.isCompetition) {
-        if (lastValue != newValue) {
-          networkEntry.setValue(newValue);
-        }
+      if (!Robot.isCompetition && lastValue != newValue) {
+        networkEntry.setValue(newValue);
         lastValue = newValue;
       }
       localConsumer.accept(newValue);
