@@ -62,16 +62,16 @@ public class ShooterSubsystem extends SubsystemBase {
 
     feederMotor = new CANSparkMax(5, MotorType.kBrushless);
 
-    SmartDashboard.putNumber("shooterVelo", shooterVelo);
-    SmartDashboard.putNumber("feederVelo", feederVelo);
+    SmartDashboard.putNumber("Shooter Velocity", shooterVelo);
+    SmartDashboard.putNumber("Feeder Velocity", feederVelo);
 
-    SmartDashboard.putNumber("TLShooterP", TLP);
-    SmartDashboard.putNumber("TLShooterI", TLI);
-    SmartDashboard.putNumber("TLShooterD", TLD);
+    SmartDashboard.putNumber("Top/Left P", TLP);
+    SmartDashboard.putNumber("Top/Left I", TLI);
+    SmartDashboard.putNumber("Top/Left D", TLD);
 
-    SmartDashboard.putNumber("BRShooterP", BRP);
-    SmartDashboard.putNumber("BRShooterI", BRI);
-    SmartDashboard.putNumber("BRShooterD", BRD);
+    SmartDashboard.putNumber("Bottom/Right P", BRP);
+    SmartDashboard.putNumber("Bottom/Right I", BRI);
+    SmartDashboard.putNumber("Bottom/Right D", BRD);
   }
 
   public Command RunMotors() {
@@ -123,8 +123,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    shooterVelo = SmartDashboard.getNumber("shooterVelo", shooterVelo);
-    feederVelo = SmartDashboard.getNumber("feederVelo", feederVelo);
+    shooterVelo = SmartDashboard.getNumber("Shooter Velocity", shooterVelo);
+    feederVelo = SmartDashboard.getNumber("Feeder Velocity", feederVelo);
     adjustTLP();
     adjustTLI();
     adjustTLD();
@@ -135,7 +135,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void adjustTLP() {
-    double get_TLP_num = SmartDashboard.getNumber("TLShooterP", TLP);
+    double get_TLP_num = SmartDashboard.getNumber("Top/Left P", TLP);
     if (TLP != get_TLP_num) {
       TLP = get_TLP_num;
       TLmotor1.getPIDController().setP(TLP);
@@ -143,7 +143,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void adjustTLI() {
-    double get_TLI_num = SmartDashboard.getNumber("TLShooterI", TLI);
+    double get_TLI_num = SmartDashboard.getNumber("Top/Left I", TLI);
     if (TLI != get_TLI_num) {
       TLI = get_TLI_num;
       TLmotor1.getPIDController().setI(TLI);
@@ -151,7 +151,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void adjustTLD() {
-    double get_TLD_num = SmartDashboard.getNumber("TLShooterD", TLD);
+    double get_TLD_num = SmartDashboard.getNumber("Top/Left D", TLD);
     if (TLD != get_TLD_num) {
       TLD = get_TLD_num;
       TLmotor1.getPIDController().setD(TLD);
@@ -159,7 +159,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void adjustBRP() {
-    double get_BRP_num = SmartDashboard.getNumber("BRShooterP", BRP);
+    double get_BRP_num = SmartDashboard.getNumber("Bottom/Right P", BRP);
     if (BRP != get_BRP_num) {
       BRP = get_BRP_num;
       BRmotor1.getPIDController().setP(BRP);
@@ -167,7 +167,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void adjustBRI() {
-    double get_BRI_num = SmartDashboard.getNumber("BRShooterI", BRI);
+    double get_BRI_num = SmartDashboard.getNumber("Bottom/Right I", BRI);
     if (BRI != get_BRI_num) {
       BRI = get_BRI_num;
       BRmotor1.getPIDController().setI(BRI);
@@ -175,7 +175,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void adjustBRD() {
-    double get_BRD_num = SmartDashboard.getNumber("BRShooterD", BRD);
+    double get_BRD_num = SmartDashboard.getNumber("Bottom/Right D", BRD);
     if (BRD != get_BRD_num) {
       BRD = get_BRD_num;
       BRmotor1.getPIDController().setD(BRD);
