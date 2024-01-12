@@ -189,3 +189,4 @@ local.properties
 .vscode/settings.json
 *.wpilog
 
+BuildConsants.java

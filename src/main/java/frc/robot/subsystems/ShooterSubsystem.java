@@ -40,8 +40,8 @@ public class ShooterSubsystem extends SubsystemBase {
     BRI = 0;
     BRD = 0;
 
-    shooterVelo = 0.5;
-    feederVelo = 0.25;
+    shooterVelo = 2000;
+    feederVelo = 100;
 
     // TL = Top / Left
     TLmotor1 = new CANSparkMax(1, MotorType.kBrushless);
