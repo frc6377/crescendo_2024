@@ -56,27 +56,19 @@ public class SignalingSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if(isRedAlliance?isAllianceAmplified:isOpponentAmplified){
-      displayAmplificationTimer(10-(int)amplifierTimer.get(), RGB.RED);
+    //Alliance Amplification Timer
+    if(isAllianceAmplified){
+      displayAmplificationTimer(10-(int)amplifierTimer.get(), isRedAlliance?RGB.RED:RGB.BLUE);
       if(amplifierTimer.get()>10){
-        if(isRedAlliance){
-          isAllianceAmplified = false;
-        }
-        else{
-          isOpponentAmplified = false;
-        }
+        isAllianceAmplified = false;
         amplifierTimer.reset();
       }
     }
-    else if(isRedAlliance?isOpponentAmplified:isAllianceAmplified){
-      displayAmplificationTimer(10-(int)amplifierTimer.get(), RGB.BLUE);
+    //Opponent Amplification Timer
+    if(isOpponentAmplified){
+      displayAmplificationTimer(10-(int)amplifierTimer.get(), isRedAlliance?RGB.BLUE:RGB.RED);
       if(amplifierTimer.get()>10){
-        if(isRedAlliance){
-          isOpponentAmplified = false;
-        }
-        else{
-          isAllianceAmplified = false;
-        }
+        isOpponentAmplified = false;
         amplifierTimer.reset();
       }
     }
