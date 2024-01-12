@@ -30,18 +30,14 @@ public class DebugEntry<T> {
     if (defaultValue instanceof Double) {
       localEntry = datalog.start("/" + subsystem.getName() + "/" + name, "double");
       localConsumer = (a) -> datalog.appendDouble(localEntry, (Double) a, 0);
-    }
-    else if (defaultValue instanceof String) {
+    } else if (defaultValue instanceof String) {
       localEntry = datalog.start("/" + subsystem.getName() + "/" + name, "string");
       localConsumer = (a) -> datalog.appendString(localEntry, (String) a, 0);
-    }
-    else if (defaultValue instanceof Boolean) {
+    } else if (defaultValue instanceof Boolean) {
       localEntry = datalog.start("/" + subsystem.getName() + "/" + name, "boolean");
       localConsumer = (a) -> datalog.appendBoolean(localEntry, (Boolean) a, 0);
-    }
-    else {
-      DriverStation.reportWarning(
-        "Unsupported data type.", false);
+    } else {
+      DriverStation.reportWarning("Unsupported data type.", false);
     }
     if (localEntry != null) {
       if (!Robot.isCompetition) {
