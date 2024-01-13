@@ -118,7 +118,11 @@ public class TunerConstants {
   private final SwerveModuleConstants BackRight;
   public final CommandSwerveDrivetrain drivetrain;
 
-  protected TunerConstants(double frontLeftOffset, double frontRightOffset, double backLeftOffset, double backRightOffset) {
+  protected TunerConstants(
+      double frontLeftOffset,
+      double frontRightOffset,
+      double backLeftOffset,
+      double backRightOffset) {
     FrontLeft =
         ConstantCreator.createModuleConstants(
             kFrontLeftSteerMotorId,
