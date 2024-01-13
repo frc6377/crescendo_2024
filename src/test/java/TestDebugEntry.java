@@ -1,3 +1,4 @@
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -65,11 +66,11 @@ public class TestDebugEntry {
               DebugEntry.class,
               (mock, context) -> {
                 try {
+                  
                   mock.log(any());
-                  // Add this line to ensure reportError is called
                   DriverStation.reportError(anyString(), anyBoolean());
                 } catch (Exception e) {
-                  // Handle exception
+                  fail("Unexpected exception: " + e.getMessage());
                 }
               })) {
         new DebugEntry<String>("nonDouble", "test", subsystem);
