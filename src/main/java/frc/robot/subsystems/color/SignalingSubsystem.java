@@ -19,7 +19,7 @@ public class SignalingSubsystem extends SubsystemBase {
 
   private final AddressableLED ledStrip;
   private final AddressableLEDBuffer ledBuffer;
-  
+
   private static final int numberOfLEDS = Constants.LED_COUNT;
 
   private int tick;
