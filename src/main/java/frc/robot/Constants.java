@@ -15,6 +15,7 @@ package frc.robot;
 public final class Constants {
   public static class IntakeConstants {
     public static final int INTAKE_MOTOR_ID = 6;
+    public static final double INTAKE_PERCENTAGE = -0.75;
   }
 
   public static class OperatorConstants {
