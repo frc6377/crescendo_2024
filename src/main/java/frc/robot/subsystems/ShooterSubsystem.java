@@ -17,30 +17,39 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class ShooterSubsystem extends SubsystemBase {
   /** Creates a new TRShooterSubsystem. */
   private static final int deviceID = 3;
-  private CANSparkMax m_motor;
-  private SparkPIDController m_pidController;
-  private RelativeEncoder m_encoder;
-  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
+  private Boolean TLMotorBool1, TLMotorBool2, BRMotorBool1, BRMotorBool2;
+  private CANSparkMax TLMotor1, TLMotor2, BRMotor1, BRMotor2;
+  private double TLP, TLI, TLD, TLFF, TLIz, BRP, BRI, BRD, BRFF, BRIz;
 
   public double motorSpeed;
 
   public ShooterSubsystem() {
     // initialize motor
+    if (TLMotorBool1) {
+      TLMotor1 = new CANSparkMax(1, MotorType.kBrushless);
+      TLMotor1.restoreFactoryDefaults();
+    }
+    if (TLMotorBool2) {
+      TLMotor2 = new CANSparkMax(2, MotorType.kBrushless);
+      TLMotor2.restoreFactoryDefaults();
+      if 
+      TLMotor2.follow(TLMotor1);
+    }
     m_motor = new CANSparkMax(deviceID, MotorType.kBrushless);
     m_motor.restoreFactoryDefaults();
     m_pidController = m_motor.getPIDController();
     m_encoder = m_motor.getEncoder();
 
     // PID coefficients
-    kP = 6e-5; 
-    kI = 0;
+    kP = 0.00012; 
+    kI = 0.000001;
     kD = 0; 
     kIz = 0; 
     kFF = 0.000015; 
     kMaxOutput = 1; 
     kMinOutput = -1;
     maxRPM = 5500;
-    motorSpeed = 1000;
+    motorSpeed = 2000;
 
     // set PID coefficients
     m_pidController.setP(kP);
@@ -64,7 +73,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command RunMotors() {
     return run(
         () -> {
-          m_pidController.setReference(motorSpeed, CANSparkMax.ControlType.kVelocity);
+          m_pidController.setReference(SmartDashboard.getNumber("Set Speed", 0), ControlType.kVelocity);
         });
   }
 
@@ -110,8 +119,7 @@ public class ShooterSubsystem extends SubsystemBase {
     double ff = SmartDashboard.getNumber("Feed Forward", 0);
     double max = SmartDashboard.getNumber("Max Output", 0);
     double min = SmartDashboard.getNumber("Min Output", 0);
-    double motorSpeed = SmartDashboard.getNumber("Set Speed", 1000);
-
+    motorSpeed = SmartDashboard.getNumber("SetPoint", 0);
     // if PID coefficients on SmartDashboard have changed, write new values to controller
     if((p != kP)) { m_pidController.setP(p); kP = p; }
     if((i != kI)) { m_pidController.setI(i); kI = i; }
@@ -123,7 +131,6 @@ public class ShooterSubsystem extends SubsystemBase {
       kMinOutput = min; kMaxOutput = max; 
     }
 
-    SmartDashboard.putNumber("SetPoint", motorSpeed);
     SmartDashboard.putNumber("ProcessVariable", m_encoder.getVelocity());
     SmartDashboard.putNumber("RPM", m_motor.getEncoder().getVelocity());
   }
