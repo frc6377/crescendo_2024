@@ -41,7 +41,7 @@ public class ShooterSubsystem extends SubsystemBase {
     BRD = 0;
 
     shooterVelo = .55;
-    // feederVelo = .8;
+    feederVelo = .25;
 
     // TL = Top / Left
     TLmotor1 = new CANSparkMax(4, MotorType.kBrushless);
@@ -50,6 +50,7 @@ public class ShooterSubsystem extends SubsystemBase {
     TLmotor1.getPIDController().setD(TLD);
     TLmotor2 = new CANSparkMax(5, MotorType.kBrushless);
     TLmotor2.setInverted(true);
+    TLmotor2.follow(TLmotor1);
 
     // BR = Bottom / Right
     // BRmotor1 = new CANSparkMax(4, MotorType.kBrushless);
@@ -60,7 +61,7 @@ public class ShooterSubsystem extends SubsystemBase {
     // BRmotor2 = new CANSparkMax(1, MotorType.kBrushless);
     // BRmotor2.follow(BRmotor1);
 
-    // feederMotor = new CANSparkMax(5, MotorType.kBrushless);
+    feederMotor = new CANSparkMax(1, MotorType.kBrushless);
 
     SmartDashboard.putNumber("Shooter Velocity", shooterVelo);
     SmartDashboard.putNumber("Feeder Velocity", feederVelo);
@@ -78,7 +79,6 @@ public class ShooterSubsystem extends SubsystemBase {
     return run(
         () -> {
           TLmotor1.getPIDController().setReference(shooterVelo, ControlType.kDutyCycle);
-          TLmotor2.getPIDController().setReference(shooterVelo, ControlType.kDutyCycle);
           // BRmotor1.getPIDController().setReference(shooterVelo, ControlType.kDutyCycle);
         });
   }
@@ -94,14 +94,14 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command RunFeeder() {
     return run(
         () -> {
-          // feederMotor.set(feederVelo);
+          feederMotor.set(feederVelo);
         });
   }
 
   public Command StopFeeder() {
     return runOnce(
         () -> {
-          // feederMotor.stopMotor();
+          feederMotor.stopMotor();
         });
   }
 
@@ -118,7 +118,7 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     shooterVelo = SmartDashboard.getNumber("Shooter Velocity", shooterVelo);
-    // feederVelo = SmartDashboard.getNumber("Feeder Velocity", feederVelo);
+    feederVelo = SmartDashboard.getNumber("Feeder Velocity", feederVelo);
     adjustTLP();
     adjustTLI();
     adjustTLD();
