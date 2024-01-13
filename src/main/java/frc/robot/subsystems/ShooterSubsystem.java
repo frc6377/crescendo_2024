@@ -40,7 +40,7 @@ public class ShooterSubsystem extends SubsystemBase {
     BRI = 0;
     BRD = 0;
 
-    shooterVelo = .5;
+    shooterVelo = .55;
     // feederVelo = .8;
 
     // TL = Top / Left
@@ -49,8 +49,7 @@ public class ShooterSubsystem extends SubsystemBase {
     TLmotor1.getPIDController().setI(TLI);
     TLmotor1.getPIDController().setD(TLD);
     TLmotor2 = new CANSparkMax(5, MotorType.kBrushless);
-    // TLmotor2.setInverted(true);
-    TLmotor2.follow(TLmotor1);
+    TLmotor2.setInverted(true);
 
     // BR = Bottom / Right
     // BRmotor1 = new CANSparkMax(4, MotorType.kBrushless);
@@ -79,6 +78,7 @@ public class ShooterSubsystem extends SubsystemBase {
     return run(
         () -> {
           TLmotor1.getPIDController().setReference(shooterVelo, ControlType.kDutyCycle);
+          TLmotor2.getPIDController().setReference(shooterVelo, ControlType.kDutyCycle);
           // BRmotor1.getPIDController().setReference(shooterVelo, ControlType.kDutyCycle);
         });
   }
@@ -129,6 +129,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("Percent Output", TLmotor1.getAppliedOutput());
     SmartDashboard.putNumber("RPM", TLmotor1.getEncoder().getVelocity());
+    SmartDashboard.putNumber("RPM2", TLmotor2.getEncoder().getVelocity());
   }
 
   public void adjustTLP() {
