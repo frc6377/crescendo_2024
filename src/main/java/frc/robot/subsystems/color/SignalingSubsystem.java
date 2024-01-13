@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.AllianceColor;
 import frc.robot.Constants;
-import frc.robot.subsystems.color.patterns.BIFlag;
 import frc.robot.subsystems.color.patterns.FireFlyPattern;
 import frc.robot.subsystems.color.patterns.PatternNode;
 import frc.robot.subsystems.color.patterns.RainbowPattern;
@@ -58,12 +57,6 @@ public class SignalingSubsystem extends SubsystemBase {
     ledStrip.setLength(numberOfLEDS);
     ledStrip.setData(ledBuffer);
     ledStrip.start();
-
-    // Setup Disable Patterns
-    TransFlag.numberOfLEDS = numberOfLEDS;
-    FireFlyPattern.numberOfLEDS = numberOfLEDS;
-    BIFlag.numberOfLEDS = numberOfLEDS;
-    RainbowPattern.numberOfLEDS = numberOfLEDS;
   }
 
   @Override
