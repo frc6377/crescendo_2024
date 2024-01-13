@@ -1,10 +1,14 @@
 package frc.robot.subsystems.color;
 
+import edu.wpi.first.networktables.IntegerSubscriber;
+import edu.wpi.first.networktables.IntegerTopic;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.AllianceColor;
 import frc.robot.Constants;
 import frc.robot.subsystems.color.patterns.BIFlag;
 import frc.robot.subsystems.color.patterns.FireFlyPattern;
@@ -20,6 +24,10 @@ public class SignalingSubsystem extends SubsystemBase {
   private final AddressableLED ledStrip;
   private final AddressableLEDBuffer ledBuffer;
 
+  private final IntegerTopic allianceTopic =
+      NetworkTableInstance.getDefault().getIntegerTopic("ALLIANCE");
+  private final IntegerSubscriber allianceSubscriber = allianceTopic.subscribe(0);
+
   private static final int numberOfLEDS = Constants.LED_COUNT;
 
   private int tick;
@@ -29,8 +37,6 @@ public class SignalingSubsystem extends SubsystemBase {
   private double rumbleEndTime = 0;
   private boolean isAllianceAmplified;
   private boolean isOpponentAmplified;
-
-  private final boolean isRedAlliance;
 
   private DisablePattern disablePattern = DisablePattern.getRandom();
 
@@ -45,8 +51,6 @@ public class SignalingSubsystem extends SubsystemBase {
     rumbleTimer = new Timer();
     isAllianceAmplified = false;
     isOpponentAmplified = false;
-
-    this.isRedAlliance = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red);
 
     // Initialize LED Strip
     ledStrip = new AddressableLED(ID);
@@ -76,7 +80,8 @@ public class SignalingSubsystem extends SubsystemBase {
     // Alliance Amplification Timer
     if (isAllianceAmplified) {
       displayAmplificationTimer(
-          10 - (int) amplifierTimer.get(), isRedAlliance ? RGB.RED : RGB.BLUE);
+          10 - (int) amplifierTimer.get(),
+          getColorFromAlliance(AllianceColor.getFromInt((int) allianceSubscriber.get())));
       if (amplifierTimer.get() > 10) {
         isAllianceAmplified = false;
         amplifierTimer.reset();
@@ -86,13 +91,23 @@ public class SignalingSubsystem extends SubsystemBase {
     // Opponent Amplification Timer
     else if (isOpponentAmplified) {
       displayAmplificationTimer(
-          10 - (int) amplifierTimer.get(), isRedAlliance ? RGB.BLUE : RGB.RED);
+          10 - (int) amplifierTimer.get(),
+          getColorFromAlliance(AllianceColor.getFromInt((int) allianceSubscriber.get())));
       if (amplifierTimer.get() > 10) {
         isOpponentAmplified = false;
         amplifierTimer.reset();
         startSignal(Constants.AMPLIFICATION_RUMBLE_TIME, Constants.AMPLIFICATION_RUMBLE_INTENSITY);
       }
     }
+  }
+
+  private RGB getColorFromAlliance(AllianceColor alliance) {
+    if (alliance == AllianceColor.RED) {
+      return RGB.RED;
+    } else if (alliance == AllianceColor.BLUE) {
+      return RGB.BLUE;
+    }
+    return RGB.YELLOW;
   }
 
   public void startAmplification(final boolean isOpposingTeam) {
