@@ -20,6 +20,7 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.color.SignalingSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -41,6 +42,9 @@ public class RobotContainer {
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final CommandSwerveDrivetrain drivetrain;
 
+  private final SignalingSubsystem signalingSubsystem =
+      new SignalingSubsystem(1, m_driverController::setRumble);
+
   private final SwerveRequest.FieldCentric drive =
       new SwerveRequest.FieldCentric()
           .withDeadband(MaxSpeed * 0.1)
@@ -52,6 +56,8 @@ public class RobotContainer {
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   private final DynamicRobotConfig dyanmicRobotConfig = DynamicRobotConfig.loadDynamicRobotConfig();
+  
+  private final RobotStateManager robotStateManager = new RobotStateManager();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -81,6 +87,10 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+
+    m_driverController
+        .y()
+        .onTrue(signalingSubsystem.run(() -> signalingSubsystem.startAmplification(false)));
 
     // Swerve config
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
@@ -116,6 +126,14 @@ public class RobotContainer {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     }
     drivetrain.registerTelemetry(logger::telemeterize);
+  }
+
+  public void onDisabled() {
+    signalingSubsystem.randomizePattern();
+  }
+
+  public void onExitDisabled() {
+    signalingSubsystem.clearLEDs();
   }
 
   /**
