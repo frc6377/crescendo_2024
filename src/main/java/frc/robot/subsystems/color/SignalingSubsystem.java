@@ -18,15 +18,14 @@ public class SignalingSubsystem extends SubsystemBase {
   private static final int patternUpdateFrequency = 10;
 
   private final AddressableLED ledStrip;
-  private AddressableLEDBuffer ledBuffer;
-  // private final CANdle gridPositionCandle;
-
+  private final AddressableLEDBuffer ledBuffer;
+  
   private static final int numberOfLEDS = Constants.LED_COUNT;
 
   private int tick;
   private int patternTick;
-  private Timer amplifierTimer;
-  private Timer rumbleTimer;
+  private final Timer amplifierTimer;
+  private final Timer rumbleTimer;
   private double rumbleEndTime = 0;
   private boolean isAllianceAmplified;
   private boolean isOpponentAmplified;
