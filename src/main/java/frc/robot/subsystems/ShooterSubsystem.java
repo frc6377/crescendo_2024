@@ -58,6 +58,11 @@ public class ShooterSubsystem extends SubsystemBase {
     BRIz = 0;
     BRFF = 15e-4;
 
+    // Motor Speeds
+    TLMotorSpeed = 3000;
+    BRMotorSpeed = 3000;
+    feederSpeed = .5;
+
     // initialize motor
     if (TLMotorBool1) {
       TLMotor1 = new CANSparkMax(TLID1, MotorType.kBrushless);
@@ -86,11 +91,11 @@ public class ShooterSubsystem extends SubsystemBase {
     if (BRMotorBool1) {
       BRMotor1 = new CANSparkMax(BRID1, MotorType.kBrushless);
       BRMotor1.restoreFactoryDefaults();
-      BRMotor1.getPIDController().setP(TLP);
-      BRMotor1.getPIDController().setI(TLI);
-      BRMotor1.getPIDController().setD(TLD);
-      BRMotor1.getPIDController().setIZone(TLIz);
-      BRMotor1.getPIDController().setFF(TLFF);
+      BRMotor1.getPIDController().setP(BRP);
+      BRMotor1.getPIDController().setI(BRI);
+      BRMotor1.getPIDController().setD(BRD);
+      BRMotor1.getPIDController().setIZone(BRIz);
+      BRMotor1.getPIDController().setFF(BRFF);
     }
     if (BRMotorBool2) {
       BRMotor2 = new CANSparkMax(BRID2, MotorType.kBrushless);
@@ -99,11 +104,11 @@ public class ShooterSubsystem extends SubsystemBase {
       if (BRMotorBool1) {
         BRMotor2.follow(BRMotor1);
       } else {
-        BRMotor2.getPIDController().setP(TLP);
-        BRMotor2.getPIDController().setI(TLI);
-        BRMotor2.getPIDController().setD(TLD);
-        BRMotor2.getPIDController().setIZone(TLIz);
-        BRMotor2.getPIDController().setFF(TLFF);
+        BRMotor2.getPIDController().setP(BRP);
+        BRMotor2.getPIDController().setI(BRI);
+        BRMotor2.getPIDController().setD(BRD);
+        BRMotor2.getPIDController().setIZone(BRIz);
+        BRMotor2.getPIDController().setFF(BRFF);
       }
     }
 
@@ -111,6 +116,9 @@ public class ShooterSubsystem extends SubsystemBase {
       feederMotor = new CANSparkMax(feederID, MotorType.kBrushless);
       feederMotor.restoreFactoryDefaults();
     }
+
+    // Shuffle Board
+    Shooter_SBTab = new ShuffleBoard
   }
 
   public Command RunMotors() {
@@ -136,14 +144,14 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command RunFeeder() {
     return run(
         () -> {
-          // feederMotor.set(feederVelo);
+          feederMotor.set(feederSpeed);
         });
   }
 
   public Command StopFeeder() {
     return runOnce(
         () -> {
-          // feederMotor.stopMotor();
+          feederMotor.stopMotor();
         });
   }
 
@@ -167,16 +175,16 @@ public class ShooterSubsystem extends SubsystemBase {
     double ff = SmartDashboard.getNumber("Feed Forward", 0);
     double max = SmartDashboard.getNumber("Max Output", 0);
     double min = SmartDashboard.getNumber("Min Output", 0);
-    motorSpeed = SmartDashboard.getNumber("SetPoint", 0);
-    // if PID coefficients on SmartDashboard have changed, write new values to controller
-    if((p != kP)) { m_pidController.setP(p); kP = p; }
-    if((i != kI)) { m_pidController.setI(i); kI = i; }
-    if((d != kD)) { m_pidController.setD(d); kD = d; }
-    if((iz != kIz)) { m_pidController.setIZone(iz); kIz = iz; }
-    if((ff != kFF)) { m_pidController.setFF(ff); kFF = ff; }
-    if((max != kMaxOutput) || (min != kMinOutput)) { 
-      m_pidController.setOutputRange(min, max); 
-      kMinOutput = min; kMaxOutput = max; 
+    // motorSpeed = SmartDashboard.getNumber("SetPoint", 0);
+    // // if PID coefficients on SmartDashboard have changed, write new values to controller
+    // if((p != kP)) { m_pidController.setP(p); kP = p; }
+    // if((i != kI)) { m_pidController.setI(i); kI = i; }
+    // if((d != kD)) { m_pidController.setD(d); kD = d; }
+    // if((iz != kIz)) { m_pidController.setIZone(iz); kIz = iz; }
+    // if((ff != kFF)) { m_pidController.setFF(ff); kFF = ff; }
+    // if((max != kMaxOutput) || (min != kMinOutput)) { 
+    //   m_pidController.setOutputRange(min, max); 
+    //   kMinOutput = min; kMaxOutput = max; 
     }
 
     SmartDashboard.putNumber("ProcessVariable", m_encoder.getVelocity());
