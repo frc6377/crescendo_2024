@@ -24,31 +24,36 @@ public class SignalingSubsystem extends SubsystemBase {
 
   private int tick;
   private Timer amplifierTimer;
+  private Timer rumbleTimer;
+  private double rumbleEndTime = 0;
   private boolean isAllianceAmplified;
   private boolean isOpponentAmplified;
 
   private final boolean isRedAlliance;
-  
+
   private DisablePattern disablePattern = DisablePattern.getRandom();
 
-  //private final Consumer<Double> driverRumbleConsumer;
+  private final Consumer<Double> driverRumbleConsumer;
 
-  public SignalingSubsystem(int ID, boolean isRedAlliance) {
-    //this.driverRumbleConsumer = driverRumbleConsumer;
+  public SignalingSubsystem(int ID, Consumer<Double> driverRumbleConsumer) {
+    this.driverRumbleConsumer = driverRumbleConsumer;
 
     tick = 0;
     amplifierTimer = new Timer();
+    rumbleTimer = new Timer();
     isAllianceAmplified = false;
     isOpponentAmplified = false;
 
-    this.isRedAlliance = isRedAlliance;
+    this.isRedAlliance = DriverStation.getAlliance().equals(DriverStation.Alliance.Red);
 
+    // Initialize LED Strip
     ledStrip = new AddressableLED(ID);
     ledBuffer = new AddressableLEDBuffer(numberOfLEDS);
     ledStrip.setLength(numberOfLEDS);
     ledStrip.setData(ledBuffer);
     ledStrip.start();
 
+    // Setup Disable Patterns
     TransFlag.numberOfLEDS = numberOfLEDS;
     FireFlyPattern.numberOfLEDS = numberOfLEDS;
     BIFlag.numberOfLEDS = numberOfLEDS;
@@ -56,33 +61,77 @@ public class SignalingSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    //Alliance Amplification Timer
-    if(isAllianceAmplified){
-      displayAmplificationTimer(10-(int)amplifierTimer.get(), isRedAlliance?RGB.RED:RGB.BLUE);
-      if(amplifierTimer.get()>10){
+    if (DriverStation.isDisabled()) updatePattern();
+
+    // End Signaling
+    if (rumbleTimer.get() > rumbleEndTime) {
+      rumbleTimer.reset();
+      driverRumbleConsumer.accept(0.0);
+      setFullStrip(RGB.BLACK);
+    }
+    // Alliance Amplification Timer
+    if (isAllianceAmplified) {
+      displayAmplificationTimer(
+          10 - (int) amplifierTimer.get(), isRedAlliance ? RGB.RED : RGB.BLUE);
+      if (amplifierTimer.get() > 10) {
         isAllianceAmplified = false;
         amplifierTimer.reset();
+        startSignal(Constants.AMPLIFICATION_RUMBLE_TIME, Constants.AMPLIFICATION_RUMBLE_INTENSITY);
       }
     }
-    //Opponent Amplification Timer
-    if(isOpponentAmplified){
-      displayAmplificationTimer(10-(int)amplifierTimer.get(), isRedAlliance?RGB.BLUE:RGB.RED);
-      if(amplifierTimer.get()>10){
+    // Opponent Amplification Timer
+    else if (isOpponentAmplified) {
+      displayAmplificationTimer(
+          10 - (int) amplifierTimer.get(), isRedAlliance ? RGB.BLUE : RGB.RED);
+      if (amplifierTimer.get() > 10) {
         isOpponentAmplified = false;
         amplifierTimer.reset();
+        startSignal(Constants.AMPLIFICATION_RUMBLE_TIME, Constants.AMPLIFICATION_RUMBLE_INTENSITY);
       }
     }
   }
 
-  public void startAmplification(boolean isOpposingTeam){
+  public void startAmplification(boolean isOpposingTeam) {
     amplifierTimer.reset();
     amplifierTimer.start();
-    if(isOpposingTeam){
+    startSignal(Constants.AMPLIFICATION_RUMBLE_TIME, Constants.AMPLIFICATION_RUMBLE_INTENSITY);
+    if (isOpposingTeam) {
       isOpponentAmplified = true;
-    }
-    else{
+    } else {
       isAllianceAmplified = true;
     }
+  }
+
+  public void endAmplification(boolean isOpposingTeam) {
+    if (isOpposingTeam) {
+      isOpponentAmplified = false;
+    } else {
+      isAllianceAmplified = false;
+    }
+    amplifierTimer.reset();
+    startSignal(Constants.AMPLIFICATION_RUMBLE_TIME, Constants.AMPLIFICATION_RUMBLE_INTENSITY);
+  }
+
+  private void startSignal(double time, double intensity) {
+    driverRumbleConsumer.accept(intensity);
+    rumbleEndTime = time;
+    rumbleTimer.reset();
+    rumbleTimer.start();
+  }
+
+  private void startSignal(double time, RGB rgb) {
+    rumbleEndTime = time;
+    setFullStrip(rgb);
+    rumbleTimer.reset();
+    rumbleTimer.start();
+  }
+
+  private void startSignal(double time, double intensity, RGB rgb) {
+    driverRumbleConsumer.accept(intensity);
+    rumbleEndTime = time;
+    setFullStrip(rgb);
+    rumbleTimer.reset();
+    rumbleTimer.start();
   }
 
   private void setFullStrip(RGB rgb) {
@@ -90,14 +139,14 @@ public class SignalingSubsystem extends SubsystemBase {
   }
 
   private void setSection(RGB rgb, int startID, int count) {
-    for(var i = startID; i<Math.min(startID+count, numberOfLEDS); i++){
+    for (var i = startID; i < Math.min(startID + count, numberOfLEDS); i++) {
       ledBuffer.setRGB(i, rgb.red, rgb.green, rgb.blue);
     }
     ledStrip.setData(ledBuffer);
   }
 
-  private void displayAmplificationTimer(int timeRemaining, RGB rgb){
-    for(var i = 0; i <= numberOfLEDS/10; i++){
+  private void displayAmplificationTimer(int timeRemaining, RGB rgb) {
+    for (var i = 0; i <= numberOfLEDS / 10; i++) {
       setSection(rgb, i * 10, timeRemaining);
       setSection(RGB.BLACK, i * 10 + timeRemaining, 10 - timeRemaining);
     }
@@ -127,17 +176,17 @@ public class SignalingSubsystem extends SubsystemBase {
         patternLength = FireFlyPattern.getPatternLength();
         break;
       case RAINBOW:
-        //startRainbowAnimation();
+        // startRainbowAnimation();
         return;
       case TRANS_FLAG:
         pattern = TransFlag.getPattern();
         patternLength = TransFlag.getPatternLength();
         break;
       default:
-        //startRainbowAnimation();
+        // startRainbowAnimation();
         return;
     }
-    //stopRainbowAnimation();
+    // stopRainbowAnimation();
     int patternIndex = 0;
     tick %= patternLength;
     int LEDIndex = -tick;
@@ -180,7 +229,11 @@ public class SignalingSubsystem extends SubsystemBase {
     }
   }
 
+  public void clearLEDs() {
+    setFullStrip(RGB.BLACK);
+  }
+
   public void displayCriticalError() {
-    //gamePieceCandle.setLEDs(255, 0, 0);
+    // gamePieceCandle.setLEDs(255, 0, 0);
   }
 }

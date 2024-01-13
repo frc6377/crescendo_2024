@@ -35,11 +35,12 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final HowdyXboxController m_driverController =
+      new HowdyXboxController(OperatorConstants.kDriverControllerPort);
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
 
-  private final SignalingSubsystem signalingSubsystem = new SignalingSubsystem(1, false);
+  private final SignalingSubsystem signalingSubsystem =
+      new SignalingSubsystem(1, m_driverController::setRumble);
 
   private final SwerveRequest.FieldCentric drive =
       new SwerveRequest.FieldCentric()
@@ -51,6 +52,7 @@ public class RobotContainer {
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
+  private final RobotStateManager robotStateManager = new RobotStateManager();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
@@ -75,7 +77,9 @@ public class RobotContainer {
     // cancelling on release.
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
-    m_driverController.y().onTrue(signalingSubsystem.run(() -> signalingSubsystem.startAmplification(false)));
+    m_driverController
+        .y()
+        .onTrue(signalingSubsystem.run(() -> signalingSubsystem.startAmplification(false)));
 
     // Swerve config
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
@@ -111,6 +115,14 @@ public class RobotContainer {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     }
     drivetrain.registerTelemetry(logger::telemeterize);
+  }
+
+  public void onDisabled() {
+    signalingSubsystem.randomizePattern();
+  }
+
+  public void onExitDisabled() {
+    signalingSubsystem.clearLEDs();
   }
 
   /**
