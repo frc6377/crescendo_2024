@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.None;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -16,14 +17,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
-  /** Creates a new TRShooterSubsystem. */
-  private static final int deviceID = 3;
+  // Motors
   private Boolean TLMotorBool1, TLMotorBool2, BRMotorBool1, BRMotorBool2, feederBool;
   private CANSparkMax TLMotor1, TLMotor2, BRMotor1, BRMotor2, feederMotor;
+
+  // PID Values
   private double TLP, TLI, TLD, TLFF, TLIz, BRP, BRI, BRD, BRFF, BRIz;
+
+  // Motor IDs
   private int TLID1, TLID2, BRID1, BRID2, feederID;
 
-  public double motorSpeed;
+  // Set Speeds
+  public double TLMotorSpeed, BRMotorSpeed, feederSpeed;
 
   public ShooterSubsystem() {
     // Bools for if motor on bot
@@ -40,10 +45,28 @@ public class ShooterSubsystem extends SubsystemBase {
     BRID2 = 4;
     feederID = 5;
 
+    // PID values
+    TLP = 12e-3;
+    TLI = 1e-5;
+    TLD = 0;
+    TLIz = 0;
+    TLFF = 15e-4;
+
+    BRP = 12e-3;
+    BRI = 1e-5;
+    BRD = 0;
+    BRIz = 0;
+    BRFF = 15e-4;
+
     // initialize motor
     if (TLMotorBool1) {
       TLMotor1 = new CANSparkMax(TLID1, MotorType.kBrushless);
       TLMotor1.restoreFactoryDefaults();
+      TLMotor1.getPIDController().setP(TLP);
+      TLMotor1.getPIDController().setI(TLI);
+      TLMotor1.getPIDController().setD(TLD);
+      TLMotor1.getPIDController().setIZone(TLIz);
+      TLMotor1.getPIDController().setFF(TLFF);
     }
     if (TLMotorBool2) {
       TLMotor2 = new CANSparkMax(TLID2, MotorType.kBrushless);
@@ -51,12 +74,23 @@ public class ShooterSubsystem extends SubsystemBase {
       TLMotor2.setInverted(true);
       if (TLMotorBool1) {
         TLMotor2.follow(TLMotor1);
+      } else {
+        TLMotor2.getPIDController().setP(TLP);
+        TLMotor2.getPIDController().setI(TLI);
+        TLMotor2.getPIDController().setD(TLD);
+        TLMotor2.getPIDController().setIZone(TLIz);
+        TLMotor2.getPIDController().setFF(TLFF);
       }
     }
 
     if (BRMotorBool1) {
       BRMotor1 = new CANSparkMax(BRID1, MotorType.kBrushless);
       BRMotor1.restoreFactoryDefaults();
+      BRMotor1.getPIDController().setP(TLP);
+      BRMotor1.getPIDController().setI(TLI);
+      BRMotor1.getPIDController().setD(TLD);
+      BRMotor1.getPIDController().setIZone(TLIz);
+      BRMotor1.getPIDController().setFF(TLFF);
     }
     if (BRMotorBool2) {
       BRMotor2 = new CANSparkMax(BRID2, MotorType.kBrushless);
@@ -64,60 +98,38 @@ public class ShooterSubsystem extends SubsystemBase {
       BRMotor2.setInverted(true);
       if (BRMotorBool1) {
         BRMotor2.follow(BRMotor1);
+      } else {
+        BRMotor2.getPIDController().setP(TLP);
+        BRMotor2.getPIDController().setI(TLI);
+        BRMotor2.getPIDController().setD(TLD);
+        BRMotor2.getPIDController().setIZone(TLIz);
+        BRMotor2.getPIDController().setFF(TLFF);
       }
     }
 
     if (feederBool) {
       feederMotor = new CANSparkMax(feederID, MotorType.kBrushless);
+      feederMotor.restoreFactoryDefaults();
     }
-
-    m_motor = new CANSparkMax(deviceID, MotorType.kBrushless);
-    m_motor.restoreFactoryDefaults();
-    m_pidController = m_motor.getPIDController();
-    m_encoder = m_motor.getEncoder();
-
-    // PID coefficients
-    kP = 0.00012; 
-    kI = 0.000001;
-    kD = 0; 
-    kIz = 0; 
-    kFF = 0.000015; 
-    kMaxOutput = 1; 
-    kMinOutput = -1;
-    maxRPM = 5500;
-    motorSpeed = 2000;
-
-    // set PID coefficients
-    m_pidController.setP(kP);
-    m_pidController.setI(kI);
-    m_pidController.setD(kD);
-    m_pidController.setIZone(kIz);
-    m_pidController.setFF(kFF);
-    m_pidController.setOutputRange(kMinOutput, kMaxOutput);
-
-    // display PID coefficients on SmartDashboard
-    SmartDashboard.putNumber("P Gain", kP);
-    SmartDashboard.putNumber("I Gain", kI);
-    SmartDashboard.putNumber("D Gain", kD);
-    SmartDashboard.putNumber("I Zone", kIz);
-    SmartDashboard.putNumber("Feed Forward", kFF);
-    SmartDashboard.putNumber("Max Output", kMaxOutput);
-    SmartDashboard.putNumber("Min Output", kMinOutput);
-    SmartDashboard.putNumber("Set Speed", motorSpeed);
   }
 
   public Command RunMotors() {
     return run(
         () -> {
-          m_pidController.setReference(SmartDashboard.getNumber("Set Speed", 0), ControlType.kVelocity);
+          if (TLMotorBool1) { TLMotor1.getPIDController().setReference(TLMotorSpeed, ControlType.kVelocity); }
+          else if (TLMotorBool2) { TLMotor2.getPIDController().setReference(TLMotorSpeed, ControlType.kVelocity); }
+          if (BRMotorBool1) { BRMotor1.getPIDController().setReference(BRMotorSpeed, ControlType.kVelocity); }
+          else if (BRMotorBool2) { BRMotor2.getPIDController().setReference(BRMotorSpeed, ControlType.kVelocity); }
         });
   }
 
   public Command StopMotors() {
     return runOnce(
         () -> {
-          m_motor.stopMotor();
-          // BRmotor1.stopMotor();
+          TLMotor1.stopMotor();
+          TLMotor2.stopMotor();
+          BRMotor1.stopMotor();
+          BRMotor2.stopMotor();
         });
   }
 
