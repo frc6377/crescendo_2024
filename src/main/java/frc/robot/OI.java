@@ -1,14 +1,12 @@
 package frc.robot;
 
-import java.util.Map;
-import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import java.util.Map;
 
 public class OI {
     //Operator Interface (OI) class containing all control information
@@ -58,14 +56,10 @@ public class OI {
 
         private static final Button kOrientationButton = Button.Start; //Toggle swerve orientation
         private static final Button kZeroButton = Button.Back; //Zero the gyroscope
-        private static final Button kOuttakeButton = Button.LT; //Run outtake
+        private static final Button kOuttakeButton = Button.RB; //Run outtake
         private static final Button kIntakeButton = Button.LB; //Run intake
-        private static final Button kAlignForwardButton = Button.B4; //Align forwards
-        private static final Button kAlignBackwardButton = Button.B2; //Align backwards
-        private static final Button kArmHighButton = Button.RB; //Arm to high scoring position
-        private static final Button kArmMidButton = Button.RT; //Arm to mid scoring position
-        private static final Button kArmConeIntakeButton = Button.B3; //Arm to cone intake position
-        private static final Button kArmCubeIntakeButton = Button.B1; //Arm to cube intake position
+        private static final Button kAlignForwardButton = Button.Y; //Align forwards
+        private static final Button kAlignBackwardButton = Button.X; //Align backwards
         
         private static final int kXTranslationAxis = 0;
         private static final int kYTranslationAxis = 1;
@@ -76,19 +70,19 @@ public class OI {
         private static final ControlCurve kYTranslationCurve = new ControlCurve(0.85,0.05,0.85,0.1);
         private static final ControlCurve kRotationCurve = new ControlCurve(0.8,0,1,0.1);
 
-        public static Supplier<Double> getXTranslationSupplier(){
+        public static Double getXTranslationSupplier(){
             //This axis is inverted
-            return () -> kXTranslationCurve.calculate(-kJoystick.getRawAxis(kXTranslationAxis));
+            return kXTranslationCurve.calculate(-kJoystick.getRawAxis(kXTranslationAxis));
         }
 
-        public static Supplier<Double> getYTranslationSupplier(){
+        public static Double getYTranslationSupplier(){
             //This axis is inverted
-            return () -> kYTranslationCurve.calculate(-kJoystick.getRawAxis(kYTranslationAxis));
+            return kYTranslationCurve.calculate(-kJoystick.getRawAxis(kYTranslationAxis));
         }
 
-        public static Supplier<Double> getRotationSupplier(){
+        public static Double getRotationSupplier(){
             //This axis is inverted
-            return () -> kRotationCurve.calculate(-kJoystick.getRawAxis(kRotationAxis));
+            return kRotationCurve.calculate(-kJoystick.getRawAxis(kRotationAxis));
         }
         
         public static JoystickButton getOrientationButton(){

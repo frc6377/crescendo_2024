@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
@@ -84,13 +85,13 @@ public class RobotContainer {
         drivetrain.applyRequest(
             () ->
                 drive
-                    .withVelocityX(-Driver.getYTranslationSupplier() * MaxSpeed) // Drive forward with
+                    .withVelocityX(-OI.Driver.getYTranslationSupplier() * MaxSpeed) // Drive forward with
                     // negative Y (forward)
                     .withVelocityY(
-                        -Driver.getXTranslationSupplier()
+                        -OI.Driver.getXTranslationSupplier()
                             * MaxSpeed) // Drive left with negative X (left)
                     .withRotationalRate(
-                        -Driver.getRotationSupplier()
+                        -OI.Driver.getRotationSupplier()
                             * MaxAngularRate) // Drive counterclockwise with negative X (left)
             ));
 
@@ -104,7 +105,7 @@ public class RobotContainer {
                         new Rotation2d(
                             -m_driverController.getLeftY(), -m_driverController.getLeftX()))));
 
-    OI.Driver.getZeroButton().onTrue(new InstantCommand(drivetrain.getPigeon2().reset()));
+    OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
     // reset the field-centric heading on left bumper press
     m_driverController
         .leftBumper()
