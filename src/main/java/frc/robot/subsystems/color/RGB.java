@@ -24,32 +24,32 @@ public class RGB {
   public static final RGB HOWDY_BROWN_3 = new RGB(148, 88, 5);
 
   public static RGB randomColor() {
-    IntSupplier rndValue = () -> (int) Math.round(Math.random() * (MAX_RGB_VALUE + 1));
+    final IntSupplier rndValue = () -> (int) Math.round(Math.random() * (MAX_RGB_VALUE + 1));
 
     return new RGB(rndValue.getAsInt(), rndValue.getAsInt(), rndValue.getAsInt());
   }
 
-  public RGB(int red, int green, int blue) {
+  public RGB(final int red, final int green, final int blue) {
     this(red, green, blue, 0);
   }
 
-  public RGB(int red, int green, int blue, int white) {
+  public RGB(final int red, final int green, final int blue, final int white) {
     this.red = red;
     this.green = green;
     this.blue = blue;
     this.white = white;
   }
 
-  public int red;
-  public int green;
-  public int blue;
-  public int white;
+  public final int red;
+  public final int green;
+  public final int blue;
+  public final int white;
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(final Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    RGB that = (RGB) o;
+    final RGB that = (RGB) o;
     return red == that.red && green == that.green && blue == that.blue && white == that.white;
   }
 }

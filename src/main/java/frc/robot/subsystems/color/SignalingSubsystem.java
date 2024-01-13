@@ -36,7 +36,7 @@ public class SignalingSubsystem extends SubsystemBase {
 
   private final Consumer<Double> driverRumbleConsumer;
 
-  public SignalingSubsystem(int ID, Consumer<Double> driverRumbleConsumer) {
+  public SignalingSubsystem(final int ID, final Consumer<Double> driverRumbleConsumer) {
     this.driverRumbleConsumer = driverRumbleConsumer;
 
     tick = 0;
@@ -46,7 +46,7 @@ public class SignalingSubsystem extends SubsystemBase {
     isAllianceAmplified = false;
     isOpponentAmplified = false;
 
-    this.isRedAlliance = DriverStation.getAlliance().equals(DriverStation.Alliance.Red);
+    this.isRedAlliance = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red);
 
     // Initialize LED Strip
     ledStrip = new AddressableLED(ID);
@@ -95,7 +95,7 @@ public class SignalingSubsystem extends SubsystemBase {
     }
   }
 
-  public void startAmplification(boolean isOpposingTeam) {
+  public void startAmplification(final boolean isOpposingTeam) {
     amplifierTimer.reset();
     amplifierTimer.start();
     startSignal(Constants.AMPLIFICATION_RUMBLE_TIME, Constants.AMPLIFICATION_RUMBLE_INTENSITY);
@@ -106,7 +106,7 @@ public class SignalingSubsystem extends SubsystemBase {
     }
   }
 
-  public void endAmplification(boolean isOpposingTeam) {
+  public void endAmplification(final boolean isOpposingTeam) {
     if (isOpposingTeam) {
       isOpponentAmplified = false;
     } else {
@@ -116,21 +116,21 @@ public class SignalingSubsystem extends SubsystemBase {
     startSignal(Constants.AMPLIFICATION_RUMBLE_TIME, Constants.AMPLIFICATION_RUMBLE_INTENSITY);
   }
 
-  private void startSignal(double time, double intensity) {
+  private void startSignal(final double time, final double intensity) {
     driverRumbleConsumer.accept(intensity);
     rumbleEndTime = time;
     rumbleTimer.reset();
     rumbleTimer.start();
   }
 
-  private void startSignal(double time, RGB rgb) {
+  private void startSignal(final double time, final RGB rgb) {
     rumbleEndTime = time;
     setFullStrip(rgb);
     rumbleTimer.reset();
     rumbleTimer.start();
   }
 
-  private void startSignal(double time, double intensity, RGB rgb) {
+  private void startSignal(final double time, final double intensity, final RGB rgb) {
     driverRumbleConsumer.accept(intensity);
     rumbleEndTime = time;
     setFullStrip(rgb);
@@ -138,18 +138,18 @@ public class SignalingSubsystem extends SubsystemBase {
     rumbleTimer.start();
   }
 
-  private void setFullStrip(RGB rgb) {
+  private void setFullStrip(final RGB rgb) {
     setSection(rgb, 0, numberOfLEDS);
   }
 
-  private void setSection(RGB rgb, int startID, int count) {
+  private void setSection(final RGB rgb, final int startID, final int count) {
     for (var i = Math.max(startID, 0); i < Math.min(startID + count, numberOfLEDS); i++) {
       ledBuffer.setRGB(i, rgb.red, rgb.green, rgb.blue);
     }
     ledStrip.setData(ledBuffer);
   }
 
-  private void displayAmplificationTimer(int timeRemaining, RGB rgb) {
+  private void displayAmplificationTimer(final int timeRemaining, final RGB rgb) {
     for (var i = 0; i <= numberOfLEDS / 10; i++) {
       setSection(rgb, i * 10, timeRemaining);
       setSection(RGB.BLACK, i * 10 + timeRemaining, 10 - timeRemaining);
