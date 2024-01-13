@@ -3,6 +3,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.networktables.DebugEntry;
@@ -66,7 +67,7 @@ public class TestDebugEntry {
               DebugEntry.class,
               (mock, context) -> {
                 try {
-                  
+
                   mock.log(any());
                   DriverStation.reportError(anyString(), anyBoolean());
                 } catch (Exception e) {
