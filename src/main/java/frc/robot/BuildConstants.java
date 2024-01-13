@@ -1,8 +1,6 @@
 package frc.robot;
 
-/**
- * Automatically generated file containing build version information.
- */
+/** Automatically generated file containing build version information. */
 public final class BuildConstants {
   public static final String MAVEN_GROUP = "";
   public static final String MAVEN_NAME = "crescendo_2024";
@@ -15,5 +13,5 @@ public final class BuildConstants {
   public static final long BUILD_UNIX_TIME = 1705030039220L;
   public static final int DIRTY = 0;
 
-  private BuildConstants(){}
+  private BuildConstants() {}
 }
