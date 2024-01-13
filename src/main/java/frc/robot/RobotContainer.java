@@ -94,7 +94,8 @@ public class RobotContainer {
         drivetrain.applyRequest(
             () ->
                 drive
-                    .withVelocityX(-OI.Driver.getYTranslationSupplier() * MaxSpeed) // Drive forward with
+                    .withVelocityX(
+                        -OI.Driver.getYTranslationSupplier() * MaxSpeed) // Drive forward with
                     // negative Y (forward)
                     .withVelocityY(
                         -OI.Driver.getXTranslationSupplier()
