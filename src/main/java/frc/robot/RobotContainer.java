@@ -84,13 +84,13 @@ public class RobotContainer {
         drivetrain.applyRequest(
             () ->
                 drive
-                    .withVelocityX(-m_driverController.getLeftY() * MaxSpeed) // Drive forward with
+                    .withVelocityX(-Driver.getYTranslationSupplier() * MaxSpeed) // Drive forward with
                     // negative Y (forward)
                     .withVelocityY(
-                        -m_driverController.getLeftX()
+                        -Driver.getXTranslationSupplier()
                             * MaxSpeed) // Drive left with negative X (left)
                     .withRotationalRate(
-                        -m_driverController.getRightX()
+                        -Driver.getRotationSupplier()
                             * MaxAngularRate) // Drive counterclockwise with negative X (left)
             ));
 
@@ -104,6 +104,7 @@ public class RobotContainer {
                         new Rotation2d(
                             -m_driverController.getLeftY(), -m_driverController.getLeftX()))));
 
+    OI.Driver.getZeroButton().onTrue(new InstantCommand(drivetrain.getPigeon2().reset()));
     // reset the field-centric heading on left bumper press
     m_driverController
         .leftBumper()
