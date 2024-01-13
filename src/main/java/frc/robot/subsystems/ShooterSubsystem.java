@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
@@ -17,24 +18,59 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class ShooterSubsystem extends SubsystemBase {
   /** Creates a new TRShooterSubsystem. */
   private static final int deviceID = 3;
-  private Boolean TLMotorBool1, TLMotorBool2, BRMotorBool1, BRMotorBool2;
-  private CANSparkMax TLMotor1, TLMotor2, BRMotor1, BRMotor2;
+  private Boolean TLMotorBool1, TLMotorBool2, BRMotorBool1, BRMotorBool2, feederBool;
+  private CANSparkMax TLMotor1, TLMotor2, BRMotor1, BRMotor2, feederMotor;
   private double TLP, TLI, TLD, TLFF, TLIz, BRP, BRI, BRD, BRFF, BRIz;
+  private int TLID1, TLID2, BRID1, BRID2, feederID;
 
   public double motorSpeed;
 
   public ShooterSubsystem() {
+    // Bools for if motor on bot
+    TLMotorBool1 = true;
+    TLMotorBool2 = true;
+    BRMotorBool1 = true;
+    BRMotorBool2 = true;
+    feederBool = true;
+
+    // IDs
+    TLID1 = 1;
+    TLID2 = 2;
+    BRID1 = 3;
+    BRID2 = 4;
+    feederID = 5;
+
     // initialize motor
     if (TLMotorBool1) {
-      TLMotor1 = new CANSparkMax(1, MotorType.kBrushless);
+      TLMotor1 = new CANSparkMax(TLID1, MotorType.kBrushless);
       TLMotor1.restoreFactoryDefaults();
     }
     if (TLMotorBool2) {
-      TLMotor2 = new CANSparkMax(2, MotorType.kBrushless);
+      TLMotor2 = new CANSparkMax(TLID2, MotorType.kBrushless);
       TLMotor2.restoreFactoryDefaults();
-      if 
-      TLMotor2.follow(TLMotor1);
+      TLMotor2.setInverted(true);
+      if (TLMotorBool1) {
+        TLMotor2.follow(TLMotor1);
+      }
     }
+
+    if (BRMotorBool1) {
+      BRMotor1 = new CANSparkMax(BRID1, MotorType.kBrushless);
+      BRMotor1.restoreFactoryDefaults();
+    }
+    if (BRMotorBool2) {
+      BRMotor2 = new CANSparkMax(BRID2, MotorType.kBrushless);
+      BRMotor2.restoreFactoryDefaults();
+      BRMotor2.setInverted(true);
+      if (BRMotorBool1) {
+        BRMotor2.follow(BRMotor1);
+      }
+    }
+
+    if (feederBool) {
+      feederMotor = new CANSparkMax(feederID, MotorType.kBrushless);
+    }
+
     m_motor = new CANSparkMax(deviceID, MotorType.kBrushless);
     m_motor.restoreFactoryDefaults();
     m_pidController = m_motor.getPIDController();
