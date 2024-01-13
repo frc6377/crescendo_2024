@@ -8,6 +8,10 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.function.BiConsumer;
@@ -22,6 +26,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
 
+  private final Field2d field = new Field2d();
+
   public CommandSwerveDrivetrain(
       SwerveDrivetrainConstants driveTrainConstants,
       double OdometryUpdateFrequency,
@@ -30,6 +36,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     if (Utils.isSimulation()) {
       startSimThread();
     }
+
+    SmartDashboard.putData("Field", field);
   }
 
   public CommandSwerveDrivetrain(
@@ -38,10 +46,16 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     if (Utils.isSimulation()) {
       startSimThread();
     }
+
+    SmartDashboard.putData("Field", field);
   }
 
   public BiConsumer<Pose2d, Double> getVisionMeasurementConsumer() {
     return (t, u) -> addVisionMeasurement(t, u);
+  }
+
+  public void periodic(){
+    field.setRobotPose(super.m_odometry.getEstimatedPosition());
   }
 
   private void startSimThread() {
