@@ -11,6 +11,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.color.patterns.BIFlag;
 import frc.robot.subsystems.color.patterns.FireFlyPattern;
 import frc.robot.subsystems.color.patterns.PatternNode;
+import frc.robot.subsystems.color.patterns.RainbowPattern;
 import frc.robot.subsystems.color.patterns.TransFlag;
 import java.util.ArrayList;
 import java.util.function.Consumer;
@@ -25,6 +26,7 @@ public class SignalingSubsystem extends SubsystemBase {
   private static final int numberOfLEDS = Constants.LED_COUNT;
 
   private int tick;
+  private int patternTick;
   private Timer amplifierTimer;
   private Timer rumbleTimer;
   private double rumbleEndTime = 0;
@@ -41,6 +43,7 @@ public class SignalingSubsystem extends SubsystemBase {
     this.driverRumbleConsumer = driverRumbleConsumer;
 
     tick = 0;
+    patternTick = 0;
     amplifierTimer = new Timer();
     rumbleTimer = new Timer();
     isAllianceAmplified = false;
@@ -59,6 +62,7 @@ public class SignalingSubsystem extends SubsystemBase {
     TransFlag.numberOfLEDS = numberOfLEDS;
     FireFlyPattern.numberOfLEDS = numberOfLEDS;
     BIFlag.numberOfLEDS = numberOfLEDS;
+    RainbowPattern.numberOfLEDS = numberOfLEDS;
   }
 
   @Override
@@ -142,7 +146,7 @@ public class SignalingSubsystem extends SubsystemBase {
   }
 
   private void setSection(RGB rgb, int startID, int count) {
-    for (var i = startID; i < Math.min(startID + count, numberOfLEDS); i++) {
+    for (var i = Math.max(startID, 0); i < Math.min(startID + count, numberOfLEDS); i++) {
       ledBuffer.setRGB(i, rgb.red, rgb.green, rgb.blue);
     }
     ledStrip.setData(ledBuffer);
@@ -163,7 +167,7 @@ public class SignalingSubsystem extends SubsystemBase {
     tick++;
     if (tick > patternUpdateFrequency) {
       tick = 0;
-      tick++;
+      patternTick++;
     } else {
       return;
     }
@@ -179,20 +183,21 @@ public class SignalingSubsystem extends SubsystemBase {
         patternLength = FireFlyPattern.getPatternLength();
         break;
       case RAINBOW:
-        // startRainbowAnimation();
-        return;
+        pattern = RainbowPattern.getPattern();
+        patternLength = RainbowPattern.getPatternLength();
+        break;
       case TRANS_FLAG:
         pattern = TransFlag.getPattern();
         patternLength = TransFlag.getPatternLength();
         break;
       default:
-        // startRainbowAnimation();
-        return;
+        pattern = RainbowPattern.getPattern();
+        patternLength = RainbowPattern.getPatternLength();
+        break;
     }
-    // stopRainbowAnimation();
     int patternIndex = 0;
-    tick %= patternLength;
-    int LEDIndex = -tick;
+    patternTick %= patternLength;
+    int LEDIndex = -patternTick;
     while (LEDIndex < numberOfLEDS) {
       patternIndex %= pattern.length;
 
