@@ -32,23 +32,24 @@ public class ShooterSubsystem extends SubsystemBase {
   private CANSparkMax feederMotor;
 
   public ShooterSubsystem() {
-    TLP = 1e-6;
+    TLP = 1e-4;
     TLI = 0;
     TLD = 0;
 
-    BRP = 1e-6;
+    BRP = 1e-4;
     BRI = 0;
     BRD = 0;
 
-    shooterVelo = 2000;
-    feederVelo = 100;
+    shooterVelo = .8;
+    feederVelo = .8;
 
     // TL = Top / Left
-    TLmotor1 = new CANSparkMax(1, MotorType.kBrushless);
+    TLmotor1 = new CANSparkMax(3, MotorType.kBrushless);
     TLmotor1.getPIDController().setP(TLP);
     TLmotor1.getPIDController().setI(TLI);
     TLmotor1.getPIDController().setD(TLD);
     TLmotor2 = new CANSparkMax(2, MotorType.kBrushless);
+    TLmotor2.setInverted(true);
     TLmotor2.follow(TLmotor1);
 
     // BR = Bottom / Right
@@ -77,8 +78,8 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command RunMotors() {
     return run(
         () -> {
-          TLmotor1.getPIDController().setReference(shooterVelo, ControlType.kVelocity);
-          BRmotor1.getPIDController().setReference(shooterVelo, ControlType.kVelocity);
+          TLmotor1.getPIDController().setReference(shooterVelo, ControlType.kDutyCycle);
+          BRmotor1.getPIDController().setReference(shooterVelo, ControlType.kDutyCycle);
         });
   }
 
@@ -87,13 +88,6 @@ public class ShooterSubsystem extends SubsystemBase {
         () -> {
           TLmotor1.stopMotor();
           BRmotor1.stopMotor();
-        });
-  }
-
-  public Command adjustSpeed(double testSpeedOffset) {
-    return run(
-        () -> {
-          shooterVelo += testSpeedOffset;
         });
   }
 
@@ -132,6 +126,9 @@ public class ShooterSubsystem extends SubsystemBase {
     adjustBRP();
     adjustBRI();
     adjustBRD();
+
+    SmartDashboard.putNumber("Percent Output", TLmotor1.getAppliedOutput());
+    SmartDashboard.putNumber("RMP", TLmotor1.getEncoder().getVelocity());
   }
 
   public void adjustTLP() {
