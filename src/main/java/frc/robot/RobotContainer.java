@@ -16,7 +16,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
-import frc.robot.generated.TunerConstants;
+import frc.robot.config.DynamicRobotConfig;
+import frc.robot.config.TunerConstants;
 import frc.robot.subsystems.ExampleSubsystem;
 
 /**
@@ -36,7 +37,7 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
-  private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
+  private final CommandSwerveDrivetrain drivetrain;
 
   private final SwerveRequest.FieldCentric drive =
       new SwerveRequest.FieldCentric()
@@ -48,8 +49,11 @@ public class RobotContainer {
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
+  private final DynamicRobotConfig dyanmicRobotConfig = DynamicRobotConfig.loadDynamicRobotConfig();
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    drivetrain = dyanmicRobotConfig.getTunerConstants().drivetrain;
     // Configure the trigger bindings
     configureBindings();
   }
