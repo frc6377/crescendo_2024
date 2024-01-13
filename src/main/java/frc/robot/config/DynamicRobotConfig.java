@@ -10,13 +10,15 @@ import java.util.logging.Logger;
  * IDs, Conversions, or setpoint information in this config.
  */
 public class DynamicRobotConfig {
+  private static DynamicRobotConfig dynRobotConfig;
+
   // Keys to load values from, shall not be modified under any circumstance
   private static final String frontLeftOffset_key = "front Left Offset";
   private static final String frontRightOffset_key = "front Right Offset";
   private static final String backRightOffset_key = "back Right Offset";
   private static final String backLeftOffset_key = "back Left Offset";
 
-  // Contains every key that is used 
+  // Contains every key that is used
   // if one is missing it won't be correctly saved, or init
   private static final String[] allKeys = {
     frontLeftOffset_key, frontRightOffset_key, backRightOffset_key, backLeftOffset_key
@@ -27,12 +29,19 @@ public class DynamicRobotConfig {
   public final double backRightOffset;
   public final double backLeftOffset;
 
+  public TunerConstants getTunerConstants() {
+    return new TunerConstants(frontLeftOffset,frontRightOffset,backLeftOffset,backRightOffset);
+  }
+
   private DynamicRobotConfig() {
+    boolean initNT = false;
+
     if (Preferences.containsKey(frontLeftOffset_key)) {
       frontLeftOffset = Preferences.getDouble(frontLeftOffset_key, 0d);
     } else {
       raiseWarning("Front Left Pod Offset NOT FOUND!! using default");
       frontLeftOffset = 0;
+      initNT = true;
     }
 
     if (Preferences.containsKey(frontRightOffset_key)) {
@@ -40,6 +49,7 @@ public class DynamicRobotConfig {
     } else {
       raiseWarning("Front Right Pod Offset NOT FOUND!! using default");
       frontRightOffset = 0;
+      initNT = true;
     }
 
     if (Preferences.containsKey(backRightOffset_key)) {
@@ -47,6 +57,7 @@ public class DynamicRobotConfig {
     } else {
       raiseWarning("Back Right Pod Offset NOT FOUND!! using default");
       backRightOffset = 0;
+      initNT = true;
     }
 
     if (Preferences.containsKey(backLeftOffset_key)) {
@@ -54,38 +65,26 @@ public class DynamicRobotConfig {
     } else {
       raiseWarning("Back Left Pod Offset NOT FOUND!! using default");
       backLeftOffset = 0;
+      initNT = true;
     }
-  }
 
-  public static void save() {
-
-    // If any NT is missing stop saving
-    String missing;
-    if ((missing = verifyPrefenceExistent(allKeys)).isEmpty()) {
-      raiseWarning("Missing Entry:"+missing);
-      return;
+    if(initNT){
+      initNT(); 
     }
   }
 
   /** Creates network table entries even if not pre-existing */
-  public static void initNT() {}
-
-  /**
-   * Verifies that prefences all the given prefences exist
-   *
-   * @param keys - The keys to verify that they exist
-   * @return the missing key, empty if all are present
-   */
-  private static String verifyPrefenceExistent(String[] keys) {
-    for (String key : keys) {
-      if (!Preferences.containsKey(key)) {
-        return key;
-      }
+  public static void initNT() {
+    logInfo("Initlizing Dynamic Logs");
+    for(String key : allKeys){
+      Preferences.initDouble(key, 0);
     }
-    return "";
   }
 
   public static DynamicRobotConfig loadDynamicRobotConfig() {
+    if(dynRobotConfig == null){
+      return dynRobotConfig;
+    }
     return new DynamicRobotConfig();
   }
 
@@ -93,5 +92,9 @@ public class DynamicRobotConfig {
 
   private static void raiseWarning(String warning) {
     DRC_logger.warning(warning);
+  }
+
+  private static void logInfo(String info){
+    DRC_logger.info(info);
   }
 }
