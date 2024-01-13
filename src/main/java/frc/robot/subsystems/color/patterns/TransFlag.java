@@ -1,9 +1,10 @@
 package frc.robot.subsystems.color.patterns;
 
+import frc.robot.Constants;
 import frc.robot.subsystems.color.RGB;
 
 public class TransFlag {
-  public static int numberOfLEDS;
+  public static int numberOfLEDS = Constants.LED_COUNT;
   private static final PatternNode[] pattern = {
     new PatternNode(RGB.BLACK, 1),
     new PatternNode(RGB.HOWDY_BLUE, 4),

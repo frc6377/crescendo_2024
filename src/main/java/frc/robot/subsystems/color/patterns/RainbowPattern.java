@@ -1,9 +1,10 @@
 package frc.robot.subsystems.color.patterns;
 
+import frc.robot.Constants;
 import frc.robot.subsystems.color.RGB;
 
 public class RainbowPattern {
-  public static int numberOfLEDS;
+  public static int numberOfLEDS = Constants.LED_COUNT;
   private static final PatternNode[] pattern = {
     new PatternNode(RGB.RED, 1),
     new PatternNode(RGB.ORANGE, 1),
