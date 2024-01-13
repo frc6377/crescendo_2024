@@ -30,7 +30,7 @@ public class DynamicRobotConfig {
   public final double backLeftOffset;
 
   public TunerConstants getTunerConstants() {
-    return new TunerConstants(frontLeftOffset,frontRightOffset,backLeftOffset,backRightOffset);
+    return new TunerConstants(frontLeftOffset, frontRightOffset, backLeftOffset, backRightOffset);
   }
 
   private DynamicRobotConfig() {
@@ -68,21 +68,21 @@ public class DynamicRobotConfig {
       initNT = true;
     }
 
-    if(initNT){
-      initNT(); 
+    if (initNT) {
+      initNT();
     }
   }
 
   /** Creates network table entries even if not pre-existing */
   public static void initNT() {
     logInfo("Initlizing Dynamic Logs");
-    for(String key : allKeys){
+    for (String key : allKeys) {
       Preferences.initDouble(key, 0);
     }
   }
 
   public static DynamicRobotConfig loadDynamicRobotConfig() {
-    if(dynRobotConfig == null){
+    if (dynRobotConfig == null) {
       return dynRobotConfig;
     }
     return new DynamicRobotConfig();
@@ -94,7 +94,7 @@ public class DynamicRobotConfig {
     DRC_logger.warning(warning);
   }
 
-  private static void logInfo(String info){
+  private static void logInfo(String info) {
     DRC_logger.info(info);
   }
 }
