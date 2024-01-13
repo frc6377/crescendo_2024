@@ -7,96 +7,71 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
   /** Creates a new TRShooterSubsystem. */
-  private double shooterVelo;
+  private static final int deviceID = 3;
+  private CANSparkMax m_motor;
+  private SparkPIDController m_pidController;
+  private RelativeEncoder m_encoder;
+  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
 
-  private double TLP, TLI, TLD, TLIz, kFF, kMaxOutput, kMinOutput, maxRPM;
-
-  private double BRP;
-  private double BRI;
-  private double BRD;
-
-  private double feederVelo;
-
-  private CANSparkMax TLmotor1, TLmotor2, BRmotor1, BRmotor2, feederMotor;
+  public double motorSpeed;
 
   public ShooterSubsystem() {
-    // PID coefficients
-    TLP = 6e-5;
-    TLI = 0;
-    TLD = 0;
-    TLIz = 0;
-    kFF = 0.000015;
-    kMaxOutput = 1;
-    kMinOutput = -1;
-    maxRPM = 5700;
+    // initialize motor
+    m_motor = new CANSparkMax(deviceID, MotorType.kBrushless);
+    m_motor.restoreFactoryDefaults();
+    m_pidController = m_motor.getPIDController();
+    m_encoder = m_motor.getEncoder();
 
-    // TL = Top / Left
+    // PID coefficients
+    kP = 6e-5; 
+    kI = 0;
+    kD = 0; 
+    kIz = 0; 
+    kFF = 0.000015; 
+    kMaxOutput = 1; 
+    kMinOutput = -1;
+    maxRPM = 5500;
+    motorSpeed = 1000;
+
     // set PID coefficients
-    TLmotor1 = new CANSparkMax(3, MotorType.kBrushless);
-    TLmotor1.getPIDController().setP(TLP);
-    TLmotor1.getPIDController().setI(TLI);
-    TLmotor1.getPIDController().setD(TLD);
-    TLmotor1.getPIDController().setIZone(TLIz);
-    TLmotor1.getPIDController().setFF(kFF);
-    TLmotor1.getPIDController().setOutputRange(kMinOutput, kMaxOutput);
+    m_pidController.setP(kP);
+    m_pidController.setI(kI);
+    m_pidController.setD(kD);
+    m_pidController.setIZone(kIz);
+    m_pidController.setFF(kFF);
+    m_pidController.setOutputRange(kMinOutput, kMaxOutput);
 
     // display PID coefficients on SmartDashboard
-    SmartDashboard.putNumber("Top/Left P", TLP);
-    SmartDashboard.putNumber("Top/Left I", TLI);
-    SmartDashboard.putNumber("Top/Left D", TLD);
-    SmartDashboard.putNumber("I Zone", TLIz);
+    SmartDashboard.putNumber("P Gain", kP);
+    SmartDashboard.putNumber("I Gain", kI);
+    SmartDashboard.putNumber("D Gain", kD);
+    SmartDashboard.putNumber("I Zone", kIz);
     SmartDashboard.putNumber("Feed Forward", kFF);
     SmartDashboard.putNumber("Max Output", kMaxOutput);
     SmartDashboard.putNumber("Min Output", kMinOutput);
-    SmartDashboard.putNumber("Shooter Velocity", shooterVelo);
-
-
-    // BRP = 1e-4;
-    // BRI = 0;
-    // BRD = 0;
-
-    // feederVelo = 1000;
-
-    // TLmotor2 = new CANSparkMax(2, MotorType.kBrushless);
-    // TLmotor2.setInverted(true);
-    // TLmotor2.follow(TLmotor1);
-
-    // BR = Bottom / Right
-    // BRmotor1 = new CANSparkMax(4, MotorType.kBrushless);
-    // BRmotor1.setInverted(true);
-    // BRmotor1.getPIDController().setP(BRP);
-    // BRmotor1.getPIDController().setI(BRI);
-    // BRmotor1.getPIDController().setD(BRD);
-    // BRmotor2 = new CANSparkMax(1, MotorType.kBrushless);
-    // BRmotor2.follow(BRmotor1);
-
-    // feederMotor = new CANSparkMax(5, MotorType.kBrushless);
-
-    // SmartDashboard.putNumber("Feeder Velocity", feederVelo);
-
-    // SmartDashboard.putNumber("Bottom/Right P", BRP);
-    // SmartDashboard.putNumber("Bottom/Right I", BRI);
-    // SmartDashboard.putNumber("Bottom/Right D", BRD);
+    SmartDashboard.putNumber("Set Speed", motorSpeed);
   }
 
   public Command RunMotors() {
     return run(
         () -> {
-          TLmotor1.getPIDController().setReference(shooterVelo, ControlType.kVelocity);
-          // BRmotor1.getPIDController().setReference(shooterVelo, ControlType.kVelocity);
+          m_pidController.setReference(motorSpeed, CANSparkMax.ControlType.kVelocity);
         });
   }
 
   public Command StopMotors() {
     return runOnce(
         () -> {
-          TLmotor1.stopMotor();
+          m_motor.stopMotor();
           // BRmotor1.stopMotor();
         });
   }
@@ -127,68 +102,31 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // read PID coefficients from SmartDashboard
+    double p = SmartDashboard.getNumber("P Gain", 0);
+    double i = SmartDashboard.getNumber("I Gain", 0);
+    double d = SmartDashboard.getNumber("D Gain", 0);
+    double iz = SmartDashboard.getNumber("I Zone", 0);
+    double ff = SmartDashboard.getNumber("Feed Forward", 0);
+    double max = SmartDashboard.getNumber("Max Output", 0);
+    double min = SmartDashboard.getNumber("Min Output", 0);
+    double motorSpeed = SmartDashboard.getNumber("Set Speed", 1000);
 
-    shooterVelo = SmartDashboard.getNumber("Shooter Velocity", shooterVelo);
-    // feederVelo = SmartDashboard.getNumber("Feeder Velocity", feederVelo);
-    adjustTLP();
-    adjustTLI();
-    adjustTLD();
-
-    // adjustBRP();
-    // adjustBRI();
-    // adjustBRD();
-
-    SmartDashboard.putNumber("Percent Output", TLmotor1.getAppliedOutput());
-    SmartDashboard.putNumber("RMP (TLmotor1)", TLmotor1.getEncoder().getVelocity());
-  }
-
-  public void adjustTLP() {
-    double get_TLP_num = SmartDashboard.getNumber("Top/Left P", TLP);
-    if (TLP != get_TLP_num) {
-      TLP = get_TLP_num;
-      TLmotor1.getPIDController().setP(TLP);
+    // if PID coefficients on SmartDashboard have changed, write new values to controller
+    if((p != kP)) { m_pidController.setP(p); kP = p; }
+    if((i != kI)) { m_pidController.setI(i); kI = i; }
+    if((d != kD)) { m_pidController.setD(d); kD = d; }
+    if((iz != kIz)) { m_pidController.setIZone(iz); kIz = iz; }
+    if((ff != kFF)) { m_pidController.setFF(ff); kFF = ff; }
+    if((max != kMaxOutput) || (min != kMinOutput)) { 
+      m_pidController.setOutputRange(min, max); 
+      kMinOutput = min; kMaxOutput = max; 
     }
+
+    SmartDashboard.putNumber("SetPoint", motorSpeed);
+    SmartDashboard.putNumber("ProcessVariable", m_encoder.getVelocity());
+    SmartDashboard.putNumber("RPM", m_motor.getEncoder().getVelocity());
   }
-
-  public void adjustTLI() {
-    double get_TLI_num = SmartDashboard.getNumber("Top/Left I", TLI);
-    if (TLI != get_TLI_num) {
-      TLI = get_TLI_num;
-      TLmotor1.getPIDController().setI(TLI);
-    }
-  }
-
-  public void adjustTLD() {
-    double get_TLD_num = SmartDashboard.getNumber("Top/Left D", TLD);
-    if (TLD != get_TLD_num) {
-      TLD = get_TLD_num;
-      TLmotor1.getPIDController().setD(TLD);
-    }
-  }
-
-  // public void adjustBRP() {
-  //   double get_BRP_num = SmartDashboard.getNumber("Bottom/Right P", BRP);
-  //   if (BRP != get_BRP_num) {
-  //     BRP = get_BRP_num;
-  //     BRmotor1.getPIDController().setP(BRP);
-  //   }
-  // }
-
-  // public void adjustBRI() {
-  //   double get_BRI_num = SmartDashboard.getNumber("Bottom/Right I", BRI);
-  //   if (BRI != get_BRI_num) {
-  //     BRI = get_BRI_num;
-  //     BRmotor1.getPIDController().setI(BRI);
-  //   }
-  // }
-
-  // public void adjustBRD() {
-  //   double get_BRD_num = SmartDashboard.getNumber("Bottom/Right D", BRD);
-  //   if (BRD != get_BRD_num) {
-  //     BRD = get_BRD_num;
-  //     BRmotor1.getPIDController().setD(BRD);
-  //   }
-  // }
 
   @Override
   public void simulationPeriodic() {
