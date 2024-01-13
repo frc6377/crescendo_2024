@@ -1,7 +1,5 @@
 package frc.robot.subsystems.color;
 
-import edu.wpi.first.networktables.IntegerSubscriber;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -67,9 +65,9 @@ public class SignalingSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    //Update Light Pattern
+    // Update Light Pattern
     if (DriverStation.isDisabled()) updatePattern();
-    
+
     // End Signaling
     if (rumbleTimer.get() > rumbleEndTime) {
       rumbleTimer.reset();

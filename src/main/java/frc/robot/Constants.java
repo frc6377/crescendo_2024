@@ -17,10 +17,10 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
   }
 
-  //Rumble
+  // Rumble
   public static final double AMPLIFICATION_RUMBLE_TIME = 0.5;
   public static final double AMPLIFICATION_RUMBLE_INTENSITY = 0.5;
-  
-  //Lights
+
+  // Lights
   public static final int LED_COUNT = 20;
 }
