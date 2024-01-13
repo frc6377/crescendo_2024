@@ -53,12 +53,12 @@ public class ShooterSubsystem extends SubsystemBase {
     TLmotor2.follow(TLmotor1);
 
     // BR = Bottom / Right
-    BRmotor1 = new CANSparkMax(3, MotorType.kBrushless);
+    BRmotor1 = new CANSparkMax(4, MotorType.kBrushless);
     BRmotor1.setInverted(true);
     BRmotor1.getPIDController().setP(BRP);
     BRmotor1.getPIDController().setI(BRI);
     BRmotor1.getPIDController().setD(BRD);
-    BRmotor2 = new CANSparkMax(4, MotorType.kBrushless);
+    BRmotor2 = new CANSparkMax(1, MotorType.kBrushless);
     BRmotor2.follow(BRmotor1);
 
     feederMotor = new CANSparkMax(5, MotorType.kBrushless);
