@@ -29,17 +29,17 @@ public class ShooterSubsystem extends SubsystemBase {
   public ShooterSubsystem() {
     // Bools for if motor on bot
     TLMotorBool1 = true;
-    TLMotorBool2 = false;
+    TLMotorBool2 = true;
     BRMotorBool1 = false;
     BRMotorBool2 = false;
-    feederBool = false;
+    feederBool = true;
 
     // IDs
-    TLID1 = 3;
-    TLID2 = 2;
+    TLID1 = 5;
+    TLID2 = 4;
     BRID1 = 3;
     BRID2 = 4;
-    feederID = 5;
+    feederID = 1;
 
     // PID values
     TLP = 12e-5;
@@ -55,9 +55,9 @@ public class ShooterSubsystem extends SubsystemBase {
     BRFF = 15e-6;
 
     // Motor Speeds
-    TLMotorSpeed = 3000;
-    BRMotorSpeed = 3000;
-    feederSpeed = .5;
+    TLMotorSpeed = 1000;
+    BRMotorSpeed = 1000;
+    feederSpeed = .25;
 
     // initialize motor
     if (TLMotorBool1) {
@@ -197,8 +197,6 @@ public class ShooterSubsystem extends SubsystemBase {
       BRFF = SmartDashboard.getNumber("Bottom/Right FF", BRFF);
       BRMotorSpeed = SmartDashboard.getNumber("BR Set Speed", BRMotorSpeed);
     }
-
-    SmartDashboard.putNumber("Set Pose", TL);
   }
 
   @Override
