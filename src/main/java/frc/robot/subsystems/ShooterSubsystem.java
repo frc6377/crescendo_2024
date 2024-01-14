@@ -14,33 +14,35 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
   // Motors
-  private Boolean TLMotorBool1, TLMotorBool2, BRMotorBool1, BRMotorBool2, feederBool;
-  private CANSparkMax TLMotor1, TLMotor2, BRMotor1, BRMotor2, feederMotor;
+  private Boolean TLMotorBool1, TLMotorBool2, BRMotorBool1, BRMotorBool2, feederBool1, feederBool2;
+  private CANSparkMax TLMotor1, TLMotor2, BRMotor1, BRMotor2, feederMotor1, feederMotor2;
 
   // PID Values
   private double TLP1, TLI1, TLD1, TLFF1, TLIz1, TLP2, TLI2, TLD2, TLFF2, TLIz2;
   private double BRP, BRI, BRD, BRFF, BRIz;
 
   // Motor IDs
-  private int TLID1, TLID2, BRID1, BRID2, feederID;
+  private int TLID1, TLID2, BRID1, BRID2, feederID1, feederID2;
 
   // Set Speeds
   public double TLMotorSpeed, BRMotorSpeed, feederSpeed;
 
   public ShooterSubsystem() {
     // Bools for if motor on bot
-    TLMotorBool1 = true;
-    TLMotorBool2 = true;
+    TLMotorBool1 = false;
+    TLMotorBool2 = false;
     BRMotorBool1 = false;
     BRMotorBool2 = false;
-    feederBool = true;
+    feederBool1 = true;
+    feederBool2 = true;
 
     // IDs
     TLID1 = 2;
     TLID2 = 3;
     BRID1 = 3;
     BRID2 = 2;
-    feederID = 1;
+    feederID1 = 2;
+    feederID2 = 1;
 
     // PID values
     TLP1 = 36e-5;
@@ -114,9 +116,14 @@ public class ShooterSubsystem extends SubsystemBase {
       }
     }
 
-    if (feederBool) {
-      feederMotor = new CANSparkMax(feederID, MotorType.kBrushless);
-      feederMotor.restoreFactoryDefaults();
+    if (feederBool1) {
+      feederMotor1 = new CANSparkMax(feederID1, MotorType.kBrushless);
+      feederMotor1.restoreFactoryDefaults();
+    }
+    if (feederBool2) {
+      feederMotor2 = new CANSparkMax(feederID2, MotorType.kBrushless);
+      feederMotor2.restoreFactoryDefaults();
+      feederMotor2.setInverted(true);
     }
 
     // SmartDashboard
@@ -141,6 +148,10 @@ public class ShooterSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("Bottom/Right D", BRD);
       SmartDashboard.putNumber("Bottom/Right FF", BRFF);
       SmartDashboard.putNumber("BR Set Speed", BRMotorSpeed);
+    }
+
+    if (feederBool1 || feederBool2) {
+      SmartDashboard.putNumber("Feeder Speed", feederSpeed);
     }
 
   }
@@ -168,14 +179,16 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command RunFeeder() {
     return run(
         () -> {
-          if (feederBool) { feederMotor.set(feederSpeed); }
+          if (feederBool1) { feederMotor1.set(feederSpeed); }
+          if (feederBool2) { feederMotor2.set(feederSpeed); }
         });
   }
 
   public Command StopFeeder() {
     return runOnce(
         () -> {
-          if (feederBool) { feederMotor.stopMotor(); }
+          if (feederBool1) { feederMotor1.stopMotor(); }
+          if (feederBool2) { feederMotor2.stopMotor(); }
         });
   }
 
@@ -193,9 +206,9 @@ public class ShooterSubsystem extends SubsystemBase {
   public void periodic() {
     if (TLMotorBool1) { SmartDashboard.putNumber("TL RPM1", TLMotor1.getEncoder().getVelocity()); }
     if (TLMotorBool2) { SmartDashboard.putNumber("TL RPM2", TLMotor2.getEncoder().getVelocity()); }
-    // if (BRMotorBool1) { SmartDashboard.putNumber("BR RPM1", BRMotor1.getEncoder().getVelocity()); }
-    // if (BRMotorBool2) { SmartDashboard.putNumber("BR RPM2", BRMotor2.getEncoder().getVelocity()); }
-    if (feederBool) { feederSpeed = SmartDashboard.getNumber("Feeder Speed", feederSpeed); }
+    if (BRMotorBool1) { SmartDashboard.putNumber("BR RPM1", BRMotor1.getEncoder().getVelocity()); }
+    if (BRMotorBool2) { SmartDashboard.putNumber("BR RPM2", BRMotor2.getEncoder().getVelocity()); }
+    if (feederBool1 || feederBool2) { feederSpeed = SmartDashboard.getNumber("Feeder Speed", feederSpeed); }
 
     if (TLMotorBool1 || TLMotorBool2) {
       TLP1 = SmartDashboard.getNumber("Top/Left P", TLP1);
@@ -209,17 +222,17 @@ public class ShooterSubsystem extends SubsystemBase {
       TLMotorSpeed = SmartDashboard.getNumber("TL Set Speed", TLMotorSpeed);
     }
 
-    // if (BRMotorBool1 || BRMotorBool2) {
-    //   BRP = SmartDashboard.getNumber("Bottom/Right P", BRP);
-    //   BRI = SmartDashboard.getNumber("Bottom/Right I", BRI);
-    //   BRD = SmartDashboard.getNumber("Bottom/Right D", BRD);
-    //   BRFF = SmartDashboard.getNumber("Bottom/Right FF", BRFF);
-    //   BRMotor1.getPIDController().setP(BRP);
-    //   BRMotor1.getPIDController().setI(BRI);
-    //   BRMotor1.getPIDController().setD(BRD);
-    //   BRMotor1.getPIDController().setFF(BRFF);
-    //   BRMotorSpeed = SmartDashboard.getNumber("BR Set Speed", BRMotorSpeed);
-    // }
+    if (BRMotorBool1 || BRMotorBool2) {
+      BRP = SmartDashboard.getNumber("Bottom/Right P", BRP);
+      BRI = SmartDashboard.getNumber("Bottom/Right I", BRI);
+      BRD = SmartDashboard.getNumber("Bottom/Right D", BRD);
+      BRFF = SmartDashboard.getNumber("Bottom/Right FF", BRFF);
+      BRMotor1.getPIDController().setP(BRP);
+      BRMotor1.getPIDController().setI(BRI);
+      BRMotor1.getPIDController().setD(BRD);
+      BRMotor1.getPIDController().setFF(BRFF);
+      BRMotorSpeed = SmartDashboard.getNumber("BR Set Speed", BRMotorSpeed);
+    }
   }
 
   @Override
