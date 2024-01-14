@@ -42,12 +42,10 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final HowdyXboxController m_driverController =
-      new HowdyXboxController(OperatorConstants.kDriverControllerPort);
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
 
   private final SignalingSubsystem signalingSubsystem =
-      new SignalingSubsystem(1, m_driverController::setRumble);
+      new SignalingSubsystem(1, OperatorInterface.Driver::setRumble);
 
   private final SwerveRequest.FieldCentric drive =
       new SwerveRequest.FieldCentric()
@@ -77,49 +75,36 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
-    Trigger intakeButton = m_driverController.leftTrigger(0.3);
+    Trigger intakeButton = OperatorInterface.Driver.getIntakeButton();
     intakeButton.whileTrue(new IntakeCommand(intakeSubsystem));
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
-
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-
-    m_driverController
-        .y()
-        .onTrue(signalingSubsystem.run(() -> signalingSubsystem.startAmplification(false)));
 
     // Swerve config
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(
             () ->
                 drive
-                    .withVelocityX(-m_driverController.getLeftY() * MaxSpeed) // Drive forward with
+                    .withVelocityX(OperatorInterface.Driver.getYTranslationSupplier() * MaxSpeed) // Drive forward with
                     // negative Y (forward)
                     .withVelocityY(
-                        -OI.Driver.getXTranslationSupplier()
+                        OperatorInterface.Driver.getXTranslationSupplier()
                             * MaxSpeed) // Drive left with negative X (left)
                     .withRotationalRate(
-                        -OI.Driver.getRotationSupplier()
+                        OperatorInterface.Driver.getRotationSupplier()
                             * MaxAngularRate) // Drive counterclockwise with negative X (left)
             ));
 
-    m_driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
-    m_driverController
-        .b()
+    OperatorInterface.Driver.getBrakeButton().whileTrue(drivetrain.applyRequest(() -> brake));
+    OperatorInterface.Driver.getPointButton()
         .whileTrue(
             drivetrain.applyRequest(
                 () ->
                     point.withModuleDirection(
                         new Rotation2d(
-                            -m_driverController.getLeftY(), -m_driverController.getLeftX()))));
+                            OperatorInterface.Driver.getYTranslationSupplier(), OperatorInterface.Driver.getXTranslationSupplier()))));
 
-    OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
+    OperatorInterface.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
     // reset the field-centric heading on left bumper press
-    m_driverController
-        .leftBumper()
+    OperatorInterface.Driver.getResetRotationButton()
         .onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 
     if (Utils.isSimulation()) {

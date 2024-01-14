@@ -1,19 +1,23 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import java.util.Map;
 
-public class OI {
+public class OperatorInterface {
   // Operator Interface (OI) class containing all control information
 
   private static final int kDriverJoystickPort = 0;
   private static final int kOperatorJoystickPort = 1;
 
   public static final class Driver {
+    private static final XboxController driverRumbleController = new XboxController(kDriverJoystickPort);
     private static enum Button {
       A(1),
       B(2),
@@ -51,15 +55,18 @@ public class OI {
         this.buttonAction = name;
       }
     };
-
-    private static final Joystick kJoystick = new Joystick(OI.kDriverJoystickPort);
+    
+    private static final Joystick kJoystick = new Joystick(OperatorInterface.kDriverJoystickPort);
 
     private static final Button kOrientationButton = Button.Start; // Toggle swerve orientation
     private static final Button kZeroButton = Button.Back; // Zero the gyroscope
     private static final Button kOuttakeButton = Button.RB; // Run outtake
-    private static final Button kIntakeButton = Button.LB; // Run intake
+    private static final Button kIntakeButton = Button.LB; // Run intake   //LB is double mapped with Intake and Reset Field Rotation. This should be fixed.
     private static final Button kAlignForwardButton = Button.Y; // Align forwards
     private static final Button kAlignBackwardButton = Button.X; // Align backwards
+    private static final Button kBrakeButton = Button.A; // Brake
+    private static final Button kPointButton = Button.B; // Point
+    private static final Button kResetRotationButton = Button.LB; // Reset Field Rotation
 
     private static final int kXTranslationAxis = 0;
     private static final int kYTranslationAxis = 1;
@@ -114,6 +121,24 @@ public class OI {
       kOuttakeButton.setButtonAction("Outtake");
       return new JoystickButton(kJoystick, kOuttakeButton.getButtonID());
     }
+
+    public static JoystickButton getBrakeButton() {
+      kOuttakeButton.setButtonAction("Brake");
+      return new JoystickButton(kJoystick, kBrakeButton.getButtonID());
+    }
+
+    public static JoystickButton getPointButton() {
+      kOuttakeButton.setButtonAction("Point");
+      return new JoystickButton(kJoystick, kPointButton.getButtonID());
+    }
+
+    public static JoystickButton getResetRotationButton() {
+      kOuttakeButton.setButtonAction("Reset Rotation");
+      return new JoystickButton(kJoystick, kResetRotationButton.getButtonID());
+    }
+    public static void setRumble(double rumbleIntensity){
+      driverRumbleController.setRumble(RumbleType.kBothRumble, rumbleIntensity);
+    }
   }
 
   public static final class Operator {
@@ -155,7 +180,7 @@ public class OI {
       }
     };
 
-    private static final Joystick kJoystick = new Joystick(OI.kOperatorJoystickPort);
+    private static final Joystick kJoystick = new Joystick(OperatorInterface.kOperatorJoystickPort);
     private static final Button kExampleButton =
         Button.LB; // Toggles intake mode between cone and cube
 
