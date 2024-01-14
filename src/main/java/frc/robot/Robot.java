@@ -37,7 +37,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotInit() {
 
-    // TODO : back log card to auto detecting 
+    // TODO : back log card to auto detecting
     is_replay = false;
 
     Logger.recordMetadata("ProjectName", "6377_crescendo_2024");
