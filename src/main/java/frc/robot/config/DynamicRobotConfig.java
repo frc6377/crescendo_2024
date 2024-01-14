@@ -82,7 +82,7 @@ public class DynamicRobotConfig {
   }
 
   public static DynamicRobotConfig loadDynamicRobotConfig() {
-    if (dynRobotConfig == null) {
+    if (dynRobotConfig != null) {
       return dynRobotConfig;
     }
     return new DynamicRobotConfig();

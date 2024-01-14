@@ -53,7 +53,7 @@ public class RobotContainer {
   // driving in open loop
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-  private final Telemetry logger = new Telemetry(MaxSpeed);
+  private final Telemetry logger;
 
   private final DynamicRobotConfig dyanmicRobotConfig = DynamicRobotConfig.loadDynamicRobotConfig();
 
@@ -62,6 +62,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     drivetrain = dyanmicRobotConfig.getTunerConstants().drivetrain;
+    logger = new Telemetry(MaxSpeed);
     // Configure the trigger bindings
     configureBindings();
   }
