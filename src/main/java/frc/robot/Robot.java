@@ -28,7 +28,8 @@ public class Robot extends LoggedRobot {
 
   private RobotContainer m_robotContainer;
 
-  private boolean is_replay;
+  // TODO : back log card to auto detecting
+  private final boolean IS_REPLAY = false;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -36,10 +37,6 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotInit() {
-
-    // TODO : back log card to auto detecting
-    is_replay = false;
-
     Logger.recordMetadata("ProjectName", "6377_crescendo_2024");
     Logger.recordMetadata("Repository", BuildConstants.MAVEN_NAME);
     Logger.recordMetadata("Commit ID (GIT_SHA)", BuildConstants.GIT_SHA);
@@ -49,7 +46,7 @@ public class Robot extends LoggedRobot {
       Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
       Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
       new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
-    } else if (is_replay) {
+    } else if (IS_REPLAY) {
       setUseTiming(false); // Run as fast as possible
 
       String logPath =
