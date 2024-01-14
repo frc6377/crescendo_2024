@@ -12,6 +12,8 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -29,6 +31,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // Set Speeds
   public double TLMotorSpeed, BRMotorSpeed, feederSpeed;
+
+  // SuffleBoard
+  public ShuffleboardTab ShooterTab = Shuffleboard.getTab("Shooter Tab");
+
 
   public ShooterSubsystem() {
     // Bools for if motor on bot
@@ -118,7 +124,9 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     // Shuffle Board
-    Shooter_SBTab = new ShuffleBoard
+    ShooterTab.add("Top/Left P", TLP).withPosition(7, 0);
+    ShooterTab.add("Top/Left I", TLI);
+    ShooterTab.add("TL Set Speed 1", TLMotorSpeed).withPosition(7, 3);
   }
 
   public Command RunMotors() {
