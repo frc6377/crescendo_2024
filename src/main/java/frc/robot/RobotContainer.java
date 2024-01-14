@@ -5,26 +5,20 @@
 package frc.robot;
 
 import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.color.SignalingSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -33,29 +27,18 @@ import frc.robot.subsystems.IntakeSubsystem;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private static final double MaxSpeed = 6; // 6 meters per second desired top speed
-  private static final double MaxAngularRate =
-      Math.PI; // Half a rotation per second max angular velocity
 
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
+  private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain;
 
   private final SignalingSubsystem signalingSubsystem =
-      new SignalingSubsystem(1, OperatorInterface.Driver::setRumble);
+      new SignalingSubsystem(1, OI.Driver::setRumble);
 
-  private final SwerveRequest.FieldCentric drive =
-      new SwerveRequest.FieldCentric()
-          .withDeadband(MaxSpeed * 0.1)
-          .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-          .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
-  // driving in open loop
-  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-  private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-  private final Telemetry logger = new Telemetry(MaxSpeed);
+
 
   private final RobotStateManager robotStateManager = new RobotStateManager();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -75,42 +58,25 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
-    Trigger intakeButton = OperatorInterface.Driver.getIntakeButton();
+    Trigger intakeButton = OI.Driver.getIntakeButton();
     intakeButton.whileTrue(new IntakeCommand(intakeSubsystem));
 
     // Swerve config
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-        drivetrain.applyRequest(
-            () ->
-                drive
-                    .withVelocityX(OperatorInterface.Driver.getYTranslationSupplier() * MaxSpeed) // Drive forward with
-                    // negative Y (forward)
-                    .withVelocityY(
-                        OperatorInterface.Driver.getXTranslationSupplier()
-                            * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(
-                        OperatorInterface.Driver.getRotationSupplier()
-                            * MaxAngularRate) // Drive counterclockwise with negative X (left)
+        drivetrain.applyRequest(() ->
+                drivetrain.drive(OI.Driver.getXTranslationSupplier().get(), OI.Driver.getYTranslationSupplier().get(), OI.Driver.getRotationSupplier().get())
             ));
-
-    OperatorInterface.Driver.getBrakeButton().whileTrue(drivetrain.applyRequest(() -> brake));
-    OperatorInterface.Driver.getPointButton()
-        .whileTrue(
-            drivetrain.applyRequest(
-                () ->
-                    point.withModuleDirection(
-                        new Rotation2d(
-                            OperatorInterface.Driver.getYTranslationSupplier(), OperatorInterface.Driver.getXTranslationSupplier()))));
-
-    OperatorInterface.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
-    // reset the field-centric heading on left bumper press
-    OperatorInterface.Driver.getResetRotationButton()
+    OI.Driver.getBrakeButton().whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
+    OI.Driver.getResetRotationButton()
         .onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
+    OI.Driver.getOrientationButton()
+        .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
+    //OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     }
-    drivetrain.registerTelemetry(logger::telemeterize);
+
   }
 
   public void onDisabled() {
