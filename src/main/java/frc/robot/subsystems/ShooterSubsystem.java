@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -42,9 +43,9 @@ public class ShooterSubsystem extends SubsystemBase {
     BRI = 0;
     BRD = 0;
 
-    shooterVelo = .65;
-    shooterVelo2 = .60;
-    feederVelo = .7;
+    shooterVelo = .2;
+    // shooterVelo2 = .60;
+    feederVelo = -.5;
 
     // TL = Top / Left
     TLmotor1 = new CANSparkMax(5, MotorType.kBrushless);
@@ -54,10 +55,8 @@ public class ShooterSubsystem extends SubsystemBase {
     TLmotor1.getPIDController().setD(TLD);
     TLmotor2 = new CANSparkMax(4, MotorType.kBrushless);
     TLmotor2.restoreFactoryDefaults();
-    TLmotor2.setInverted(true);
-    TLmotor2.getPIDController().setP(TLP);
-    TLmotor2.getPIDController().setI(TLI);
-    TLmotor2.getPIDController().setD(TLD);
+    // TLmotor2.setInverted(true);
+    TLmotor2.follow(TLmotor1);
 
     // BR = Bottom / Right
     // BRmotor1 = new CANSparkMax(4, MotorType.kBrushless);
@@ -70,12 +69,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
     feederMotor = new CANSparkMax(1, MotorType.kBrushless);
     feederMotor.restoreFactoryDefaults();
-    feederMotor2 = new CANSparkMax(2, MotorType.kBrushless);
-    feederMotor2.restoreFactoryDefaults();
-    feederMotor2.setInverted(true);
+    // feederMotor2 = new CANSparkMax(2, MotorType.kBrushless);
+    // feederMotor2.restoreFactoryDefaults();
+    // feederMotor2.setInverted(true);
 
     SmartDashboard.putNumber("Shooter Velocity", shooterVelo);
-    SmartDashboard.putNumber("Shooter Velocity 2", shooterVelo2);
+    // SmartDashboard.putNumber("Shooter Velocity 2", shooterVelo2);
     SmartDashboard.putNumber("Feeder Velocity", feederVelo);
 
     SmartDashboard.putNumber("Top/Left P", TLP);
@@ -88,10 +87,9 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public Command RunMotors() {
-    return run(
+    return new InstantCommand(
         () -> {
           TLmotor1.getPIDController().setReference(shooterVelo, ControlType.kDutyCycle);
-          TLmotor2.getPIDController().setReference(shooterVelo2, ControlType.kDutyCycle);
           // BRmotor1.getPIDController().setReference(shooterVelo, ControlType.kDutyCycle);
         });
   }
@@ -100,7 +98,7 @@ public class ShooterSubsystem extends SubsystemBase {
     return runOnce(
         () -> {
           TLmotor1.stopMotor();
-          TLmotor2.stopMotor();
+          // TLmotor2.stopMotor();
           // BRmotor1.stopMotor();
         });
   }
@@ -109,7 +107,7 @@ public class ShooterSubsystem extends SubsystemBase {
     return run(
         () -> {
           feederMotor.set(feederVelo);
-          feederMotor2.set(feederVelo);
+          // feederMotor2.set(feederVelo);
         });
   }
 
@@ -117,7 +115,7 @@ public class ShooterSubsystem extends SubsystemBase {
     return runOnce(
         () -> {
           feederMotor.stopMotor();
-          feederMotor2.stopMotor();
+          // feederMotor2.stopMotor();
         });
   }
 
@@ -134,12 +132,12 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     shooterVelo = SmartDashboard.getNumber("Shooter Velocity", shooterVelo);
-    shooterVelo = SmartDashboard.getNumber("Shooter Velocity 2", shooterVelo2);
+    // shooterVelo2 = SmartDashboard.getNumber("Shooter Velocity 2", shooterVelo2);
     feederVelo = SmartDashboard.getNumber("Feeder Velocity", feederVelo);
     adjustTLP();
     adjustTLI();
     adjustTLD();
-
+    SmartDashboard.putData(this);
     // adjustBRP();
     // adjustBRI();
     // adjustBRD();
