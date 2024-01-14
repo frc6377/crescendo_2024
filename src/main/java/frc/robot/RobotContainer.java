@@ -19,8 +19,8 @@ import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.color.SignalingSubsystem;
 
 /**
@@ -41,7 +41,7 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final HowdyXboxController m_driverController =
       new HowdyXboxController(OperatorConstants.kDriverControllerPort);
-  private final  = Constants.LED_COUNT drivetrain = TunerConstants.DriveTrain; // My drivetrain
+  private SwerveSubsystem drivetrain = TunerConstants.DriveTrain; // My drivetrain
 
   private final SignalingSubsystem signalingSubsystem =
       new SignalingSubsystem(1, m_driverController::setRumble);
