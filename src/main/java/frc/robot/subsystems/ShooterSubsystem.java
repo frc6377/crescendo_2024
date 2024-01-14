@@ -6,14 +6,8 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators.None;
-import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
 
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -32,37 +26,33 @@ public class ShooterSubsystem extends SubsystemBase {
   // Set Speeds
   public double TLMotorSpeed, BRMotorSpeed, feederSpeed;
 
-  // SuffleBoard
-  public ShuffleboardTab ShooterTab = Shuffleboard.getTab("Shooter Tab");
-
-
   public ShooterSubsystem() {
     // Bools for if motor on bot
     TLMotorBool1 = true;
-    TLMotorBool2 = true;
-    BRMotorBool1 = true;
-    BRMotorBool2 = true;
-    feederBool = true;
+    TLMotorBool2 = false;
+    BRMotorBool1 = false;
+    BRMotorBool2 = false;
+    feederBool = false;
 
     // IDs
-    TLID1 = 1;
+    TLID1 = 3;
     TLID2 = 2;
     BRID1 = 3;
     BRID2 = 4;
     feederID = 5;
 
     // PID values
-    TLP = 12e-3;
-    TLI = 1e-5;
+    TLP = 12e-5;
+    TLI = 1e-6;
     TLD = 0;
     TLIz = 0;
-    TLFF = 15e-4;
+    TLFF = 15e-6;
 
-    BRP = 12e-3;
-    BRI = 1e-5;
+    BRP = 12e-5;
+    BRI = 1e-6;
     BRD = 0;
     BRIz = 0;
-    BRFF = 15e-4;
+    BRFF = 15e-6;
 
     // Motor Speeds
     TLMotorSpeed = 3000;
@@ -123,10 +113,21 @@ public class ShooterSubsystem extends SubsystemBase {
       feederMotor.restoreFactoryDefaults();
     }
 
-    // Shuffle Board
-    ShooterTab.add("Top/Left P", TLP).withPosition(7, 0);
-    ShooterTab.add("Top/Left I", TLI);
-    ShooterTab.add("TL Set Speed 1", TLMotorSpeed).withPosition(7, 3);
+    // SmartDashboard
+    if (TLMotorBool1 || TLMotorBool2) {
+      SmartDashboard.putNumber("Top/Left P", TLP);
+      SmartDashboard.putNumber("Top/Left I", TLI);
+      SmartDashboard.putNumber("Top/Left D", TLD);
+      SmartDashboard.putNumber("Top/Left FF", TLFF);
+    }
+    if (BRMotorBool1 || BRMotorBool2) {
+      SmartDashboard.putNumber("Bottom/Right P", BRP);
+      SmartDashboard.putNumber("Bottom/Right I", BRI);
+      SmartDashboard.putNumber("Bottom/Right D", BRD);
+      SmartDashboard.putNumber("Bottom/Right FF", BRFF);
+    }
+    SmartDashboard.putNumber("TL Set Speed 1", TLMotorSpeed);
+
   }
 
   public Command RunMotors() {
@@ -142,24 +143,24 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command StopMotors() {
     return runOnce(
         () -> {
-          TLMotor1.stopMotor();
-          TLMotor2.stopMotor();
-          BRMotor1.stopMotor();
-          BRMotor2.stopMotor();
+          if (TLMotorBool1) { TLMotor1.stopMotor(); }
+          if (TLMotorBool2) { TLMotor2.stopMotor(); }
+          if (BRMotorBool1) { BRMotor1.stopMotor(); }
+          if (BRMotorBool2) { BRMotor2.stopMotor(); }
         });
   }
 
   public Command RunFeeder() {
     return run(
         () -> {
-          feederMotor.set(feederSpeed);
+          if (feederBool) { feederMotor.set(feederSpeed); }
         });
   }
 
   public Command StopFeeder() {
     return runOnce(
         () -> {
-          feederMotor.stopMotor();
+          if (feederBool) { feederMotor.stopMotor(); }
         });
   }
 
@@ -175,32 +176,33 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // read PID coefficients from SmartDashboard
-    double p = SmartDashboard.getNumber("P Gain", 0);
-    double i = SmartDashboard.getNumber("I Gain", 0);
-    double d = SmartDashboard.getNumber("D Gain", 0);
-    double iz = SmartDashboard.getNumber("I Zone", 0);
-    double ff = SmartDashboard.getNumber("Feed Forward", 0);
-    double max = SmartDashboard.getNumber("Max Output", 0);
-    double min = SmartDashboard.getNumber("Min Output", 0);
-    // motorSpeed = SmartDashboard.getNumber("SetPoint", 0);
-    // // if PID coefficients on SmartDashboard have changed, write new values to controller
-    // if((p != kP)) { m_pidController.setP(p); kP = p; }
-    // if((i != kI)) { m_pidController.setI(i); kI = i; }
-    // if((d != kD)) { m_pidController.setD(d); kD = d; }
-    // if((iz != kIz)) { m_pidController.setIZone(iz); kIz = iz; }
-    // if((ff != kFF)) { m_pidController.setFF(ff); kFF = ff; }
-    // if((max != kMaxOutput) || (min != kMinOutput)) { 
-    //   m_pidController.setOutputRange(min, max); 
-    //   kMinOutput = min; kMaxOutput = max; 
+    if (TLMotorBool1) { SmartDashboard.putNumber("TL RPM1", TLMotor1.getEncoder().getVelocity()); }
+    if (TLMotorBool2) { SmartDashboard.putNumber("TL RPM2", TLMotor2.getEncoder().getVelocity()); }
+    if (BRMotorBool1) { SmartDashboard.putNumber("BR RPM1", BRMotor1.getEncoder().getVelocity()); }
+    if (BRMotorBool2) { SmartDashboard.putNumber("BR RPM2", BRMotor2.getEncoder().getVelocity()); }
+    if (feederBool) { feederSpeed = SmartDashboard.getNumber("Feeder Speed", feederSpeed); }
+
+    if (TLMotorBool1 == true || TLMotorBool2 == true) {
+      TLP = SmartDashboard.getNumber("Top/Left P", TLP);
+      TLI = SmartDashboard.getNumber("Top/Left I", TLI);
+      TLD = SmartDashboard.getNumber("Top/Left D", TLD);
+      TLFF = SmartDashboard.getNumber("Top/Left FF", TLFF);
+      TLMotorSpeed = SmartDashboard.getNumber("TL Set Speed", TLMotorSpeed);
     }
 
-    SmartDashboard.putNumber("ProcessVariable", m_encoder.getVelocity());
-    SmartDashboard.putNumber("RPM", m_motor.getEncoder().getVelocity());
+    if (BRMotorBool1 || BRMotorBool2) {
+      BRP = SmartDashboard.getNumber("Bottom/Right P", BRP);
+      BRI = SmartDashboard.getNumber("Bottom/Right I", BRI);
+      BRD = SmartDashboard.getNumber("Bottom/Right D", BRD);
+      BRFF = SmartDashboard.getNumber("Bottom/Right FF", BRFF);
+      BRMotorSpeed = SmartDashboard.getNumber("BR Set Speed", BRMotorSpeed);
+    }
+
+    SmartDashboard.putNumber("Set Pose", TL);
   }
 
   @Override
   public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
+    
   }
 }
