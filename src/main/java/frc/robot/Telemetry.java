@@ -3,12 +3,18 @@ package frc.robot;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain.SwerveDriveState;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,10 +31,13 @@ public class Telemetry {
    */
   public Telemetry(double maxSpeed) {
     MaxSpeed = maxSpeed;
+    SmartDashboard.putData(field);
   }
 
   /* What to publish over networktables for telemetry */
   NetworkTableInstance inst = NetworkTableInstance.getDefault();
+  
+  Field2d field = new Field2d();
 
   /* Robot pose for field positioning */
   NetworkTable table = inst.getTable("Pose");
@@ -97,6 +106,8 @@ public class Telemetry {
     lastTime = currentTime;
     Translation2d distanceDiff = pose.minus(m_lastPose).getTranslation();
     m_lastPose = pose;
+
+    field.setRobotPose(m_lastPose);
 
     Translation2d velocities = distanceDiff.div(diffTime);
 

@@ -41,7 +41,6 @@ public class RobotContainer {
   private final HowdyXboxController m_driverController =
       new HowdyXboxController(OperatorConstants.kDriverControllerPort);
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
-
   private final SignalingSubsystem signalingSubsystem =
       new SignalingSubsystem(1, m_driverController::setRumble);
 
