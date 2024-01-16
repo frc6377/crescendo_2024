@@ -30,7 +30,7 @@ import frc.robot.subsystems.color.SignalingSubsystem;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-                                                private static final double MaxSpeed = 6; // 6 meters per second desired top speed
+  private static final double MaxSpeed = 6; // 6 meters per second desired top speed
   private static final double MaxAngularRate =
       Math.PI; // Half a rotation per second max angular velocity
 
