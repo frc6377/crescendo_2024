@@ -1,6 +1,9 @@
 package frc.robot.config;
 
+import static java.util.Map.entry;
+
 import edu.wpi.first.wpilibj.Preferences;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -9,8 +12,9 @@ import java.util.logging.Logger;
  * <p>This should only have offsets that would change with a mechanical change. There should be no
  * IDs, Conversions, or setpoint information in this config.
  */
-public class DynamicRobotConfig {
-  private static DynamicRobotConfig dynRobotConfig;
+public final class DynamicRobotConfig {
+
+  private static boolean initialized = false;
 
   // Keys to load values from, shall not be modified under any circumstance
   private static final String frontLeftOffset_key = "front Left Offset";
@@ -24,68 +28,103 @@ public class DynamicRobotConfig {
     frontLeftOffset_key, frontRightOffset_key, backRightOffset_key, backLeftOffset_key
   };
 
-  public final double frontLeftOffset;
-  public final double frontRightOffset;
-  public final double backRightOffset;
-  public final double backLeftOffset;
+  private static Map<String, Double> dblMap =
+      Map.ofEntries(
+          entry(frontLeftOffset_key, 0.0),
+          entry(frontRightOffset_key, 0.0),
+          entry(backLeftOffset_key, 0.0),
+          entry(backRightOffset_key, 0.0));
 
-  public TunerConstants getTunerConstants() {
-    return new TunerConstants(frontLeftOffset, frontRightOffset, backLeftOffset, backRightOffset);
+  private static Map<String, Integer> intMap = Map.ofEntries();
+  private static Map<String, String> strMap = Map.ofEntries();
+  private static Map<String, Boolean> boolMap = Map.ofEntries();
+
+  public static final double frontLeftOffset() {
+    return lookupDbl(frontLeftOffset_key);
   }
 
-  private DynamicRobotConfig() {
+  public static final double frontRightOffset() {
+    return lookupDbl(frontRightOffset_key);
+  }
+
+  public static final double backRightOffset() {
+    return lookupDbl(backRightOffset_key);
+  }
+
+  public static final double backLeftOffset() {
+    return lookupDbl(backLeftOffset_key);
+  }
+
+  private static double lookupDbl(String key) {
+    if (!initialized) {
+      init();
+    }
+    return dblMap.get(key);
+  }
+
+  public static TunerConstants getTunerConstants() {
+    return new TunerConstants(
+        frontLeftOffset(), frontRightOffset(), backLeftOffset(), backRightOffset());
+  }
+
+  private static void init() {
+
     boolean initNT = false;
 
-    if (Preferences.containsKey(frontLeftOffset_key)) {
-      frontLeftOffset = Preferences.getDouble(frontLeftOffset_key, 0d);
-    } else {
-      raiseWarning("Front Left Pod Offset NOT FOUND!! using default");
-      frontLeftOffset = 0;
-      initNT = true;
+    for (String key : dblMap.keySet()) {
+      if (Preferences.containsKey(key)) {
+        dblMap.put(key, Preferences.getDouble(key, 0d));
+      } else {
+        raiseWarning(key + " NOT FOUND!! using default");
+        initNT = true;
+      }
     }
 
-    if (Preferences.containsKey(frontRightOffset_key)) {
-      frontRightOffset = Preferences.getDouble(frontRightOffset_key, 0d);
-    } else {
-      raiseWarning("Front Right Pod Offset NOT FOUND!! using default");
-      frontRightOffset = 0;
-      initNT = true;
+    for (String key : intMap.keySet()) {
+      if (Preferences.containsKey(key)) {
+        intMap.put(key, Preferences.getInt(key, 0));
+      } else {
+        raiseWarning(key + " NOT FOUND!! using default");
+        initNT = true;
+      }
     }
 
-    if (Preferences.containsKey(backRightOffset_key)) {
-      backRightOffset = Preferences.getDouble(backRightOffset_key, 0d);
-    } else {
-      raiseWarning("Back Right Pod Offset NOT FOUND!! using default");
-      backRightOffset = 0;
-      initNT = true;
+    for (String key : strMap.keySet()) {
+      if (Preferences.containsKey(key)) {
+        strMap.put(key, Preferences.getString(key, ""));
+      } else {
+        raiseWarning(key + " NOT FOUND!! using default");
+        initNT = true;
+      }
     }
 
-    if (Preferences.containsKey(backLeftOffset_key)) {
-      backLeftOffset = Preferences.getDouble(backLeftOffset_key, 0d);
-    } else {
-      raiseWarning("Back Left Pod Offset NOT FOUND!! using default");
-      backLeftOffset = 0;
-      initNT = true;
+    for (String key : boolMap.keySet()) {
+      if (Preferences.containsKey(key)) {
+        boolMap.put(key, Preferences.getBoolean(key, false));
+      } else {
+        raiseWarning(key + " NOT FOUND!! using default");
+        initNT = true;
+      }
     }
 
     if (initNT) {
       initNT();
     }
+    initialized = true;
   }
 
   /** Creates network table entries even if not pre-existing */
-  public static void initNT() {
+  private static void initNT() {
     logInfo("Initlizing Dynamic Logs");
     for (String key : allKeys) {
       Preferences.initDouble(key, 0);
     }
   }
 
-  public static DynamicRobotConfig loadDynamicRobotConfig() {
-    if (dynRobotConfig != null) {
-      return dynRobotConfig;
+  public static void loadDynamicRobotConfig() {
+    if (!initialized) {
+      init();
     }
-    return new DynamicRobotConfig();
   }
 
   private static Logger DRC_logger = Logger.getLogger(DynamicRobotConfig.class.getName());

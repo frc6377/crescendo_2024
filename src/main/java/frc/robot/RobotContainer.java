@@ -56,13 +56,12 @@ public class RobotContainer {
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
   private final Telemetry logger;
 
-  private final DynamicRobotConfig dyanmicRobotConfig = DynamicRobotConfig.loadDynamicRobotConfig();
-
   private final RobotStateManager robotStateManager = new RobotStateManager();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    drivetrain = dyanmicRobotConfig.getTunerConstants().drivetrain;
+    DynamicRobotConfig.loadDynamicRobotConfig();
+    drivetrain = DynamicRobotConfig.getTunerConstants().drivetrain;
     logger = new Telemetry(MaxSpeed);
     // Configure the trigger bindings
     configureBindings();
