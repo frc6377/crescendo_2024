@@ -270,15 +270,4 @@ deploy.targets.roborio.artifacts.frcStaticFileDeploy.dependsOn(writeComputerName
 //             ).text = outstream
 // }
 
-tasks.register("addPreCommitGitHookOnBuild") {
-    exec {
-        workingDir projectDir
-        if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-            commandLine 'cmd', '/c', 'copy', 'scripts\\pre-commit', '.git\\hooks\\pre-commit'
-        } else {
-            commandLine 'sh', '-c', 'cp scripts/pre-commit .git/hooks/pre-commit'
-        }
-    }
-}
-
-deploy.targets.roborio.artifacts.frcStaticFileDeploy.dependsOn(addPreCommitGitHookOnBuild)
+compileJava.dependsOn("spotlessApply")
