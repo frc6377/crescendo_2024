@@ -4,6 +4,8 @@ import static java.util.Map.entry;
 
 import edu.wpi.first.wpilibj.Preferences;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.logging.Logger;
 
 /**
@@ -22,44 +24,64 @@ public final class DynamicRobotConfig {
   private static final String backRightOffset_key = "back Right Offset";
   private static final String backLeftOffset_key = "back Left Offset";
 
+  private static Map<String, PreferenceObject> prefMap =
+      Map.ofEntries(
+          entry(frontLeftOffset_key, new PreferenceObject(Double.class)),
+          entry(frontRightOffset_key, new PreferenceObject(Double.class)),
+          entry(backLeftOffset_key, new PreferenceObject(Double.class)),
+          entry(backRightOffset_key, new PreferenceObject(Double.class)));
+
   // Contains every key that is used
   // if one is missing it won't be correctly saved, or init
   private static final String[] allKeys = {
     frontLeftOffset_key, frontRightOffset_key, backRightOffset_key, backLeftOffset_key
   };
 
-  private static Map<String, Double> dblMap =
-      Map.ofEntries(
-          entry(frontLeftOffset_key, 0.0),
-          entry(frontRightOffset_key, 0.0),
-          entry(backLeftOffset_key, 0.0),
-          entry(backRightOffset_key, 0.0));
-
-  private static Map<String, Integer> intMap = Map.ofEntries();
-  private static Map<String, String> strMap = Map.ofEntries();
-  private static Map<String, Boolean> boolMap = Map.ofEntries();
-
   public static final double frontLeftOffset() {
-    return lookupDbl(frontLeftOffset_key);
+    return (double) lookup(frontLeftOffset_key);
   }
 
   public static final double frontRightOffset() {
-    return lookupDbl(frontRightOffset_key);
+    return (double) lookup(frontRightOffset_key);
   }
 
   public static final double backRightOffset() {
-    return lookupDbl(backRightOffset_key);
+    return (double) lookup(backRightOffset_key);
   }
 
   public static final double backLeftOffset() {
-    return lookupDbl(backLeftOffset_key);
+    return (double) lookup(backLeftOffset_key);
   }
 
-  private static double lookupDbl(String key) {
+  private static class PreferenceObject {
+    public Object data;
+    public Function<String, Object> loadPreference;
+    public Consumer<String> initPreference;
+
+    public PreferenceObject(Class<?> c) {
+      // spotless:off
+      if (c == Double.class) {
+        loadPreference = (a) -> { return Preferences.getDouble(a, 0d); };
+        initPreference = (a) -> {Preferences.initDouble(a, 0d);};
+      } else if (c == Integer.class) {
+        loadPreference = (a) -> { return Preferences.getInt(a, 0); };
+        initPreference = (a) -> {Preferences.initInt(a, 0);};
+      } else if (c == String.class) {
+        loadPreference = (a) -> { return Preferences.getString(a, ""); };
+        initPreference = (a) -> {Preferences.initString(a, "");};
+      } else if (c == Boolean.class) {
+        loadPreference = (a) -> { return Preferences.getBoolean(a, false); };
+        initPreference = (a) -> {Preferences.initBoolean(a, false);};
+      }
+      // spotless:on
+    }
+  }
+
+  private static Object lookup(String key) {
     if (!initialized) {
       init();
     }
-    return dblMap.get(key);
+    return prefMap.get(key).data;
   }
 
   public static TunerConstants getTunerConstants() {
@@ -71,36 +93,10 @@ public final class DynamicRobotConfig {
 
     boolean initNT = false;
 
-    for (String key : dblMap.keySet()) {
+    for (String key : prefMap.keySet()) {
       if (Preferences.containsKey(key)) {
-        dblMap.put(key, Preferences.getDouble(key, 0d));
-      } else {
-        raiseWarning(key + " NOT FOUND!! using default");
-        initNT = true;
-      }
-    }
-
-    for (String key : intMap.keySet()) {
-      if (Preferences.containsKey(key)) {
-        intMap.put(key, Preferences.getInt(key, 0));
-      } else {
-        raiseWarning(key + " NOT FOUND!! using default");
-        initNT = true;
-      }
-    }
-
-    for (String key : strMap.keySet()) {
-      if (Preferences.containsKey(key)) {
-        strMap.put(key, Preferences.getString(key, ""));
-      } else {
-        raiseWarning(key + " NOT FOUND!! using default");
-        initNT = true;
-      }
-    }
-
-    for (String key : boolMap.keySet()) {
-      if (Preferences.containsKey(key)) {
-        boolMap.put(key, Preferences.getBoolean(key, false));
+        PreferenceObject pref = prefMap.get(key);
+        pref.data = pref.loadPreference.apply(key);
       } else {
         raiseWarning(key + " NOT FOUND!! using default");
         initNT = true;
@@ -117,7 +113,9 @@ public final class DynamicRobotConfig {
   private static void initNT() {
     logInfo("Initlizing Dynamic Logs");
     for (String key : allKeys) {
-      Preferences.initDouble(key, 0);
+      PreferenceObject pref = prefMap.get(key);
+      pref.initPreference.accept(key);
+      pref.data = pref.loadPreference.apply(key);
     }
   }
 
