@@ -75,7 +75,7 @@ public class DynamicRobotConfig {
 
   /** Creates network table entries even if not pre-existing */
   public static void initNT() {
-    logInfo("Initlizing Dynamic Logs");
+    logInfo("Initializing Dynamic Logs");
     for (String key : allKeys) {
       Preferences.initDouble(key, 0);
     }
