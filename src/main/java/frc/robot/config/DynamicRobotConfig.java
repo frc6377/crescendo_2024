@@ -72,7 +72,9 @@ public final class DynamicRobotConfig {
       } else if (c == Boolean.class) {
         loadPreference = (a) -> { return Preferences.getBoolean(a, false); };
         initPreference = (a) -> {Preferences.initBoolean(a, false);};
-      }
+      } else {
+        throw new IllegalStateException("Unknown Preference Type " + c.getName());
+      } 
       // spotless:on
     }
   }
