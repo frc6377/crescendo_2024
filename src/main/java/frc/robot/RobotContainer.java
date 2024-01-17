@@ -4,13 +4,9 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
@@ -45,16 +41,6 @@ public class RobotContainer {
 
   private final SignalingSubsystem signalingSubsystem =
       new SignalingSubsystem(1, m_driverController::setRumble);
-
-  private final SwerveRequest.FieldCentric drive =
-      new SwerveRequest.FieldCentric()
-          .withDeadband(MaxSpeed * 0.1)
-          .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-          .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
-  // driving in open loop
-  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-  private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-  private final Telemetry logger = new Telemetry(MaxSpeed);
 
   private final RobotStateManager robotStateManager = new RobotStateManager();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -91,38 +77,23 @@ public class RobotContainer {
 
     // Swerve config
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-        drivetrain.applyRequest(
+        Commands.run(
             () ->
-                drive
-                    .withVelocityX(-m_driverController.getLeftY() * MaxSpeed) // Drive forward with
-                    // negative Y (forward)
-                    .withVelocityY(
-                        -m_driverController.getLeftX()
-                            * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(
-                        -m_driverController.getRightX()
-                            * MaxAngularRate) // Drive counterclockwise with negative X (left)
-            ));
-
-    m_driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
-    m_driverController
-        .b()
-        .whileTrue(
-            drivetrain.applyRequest(
-                () ->
-                    point.withModuleDirection(
-                        new Rotation2d(
-                            -m_driverController.getLeftY(), -m_driverController.getLeftX()))));
-
+                drivetrain.drive(
+                    -m_driverController.getLeftY(),
+                    -m_driverController.getLeftX(),
+                    -m_driverController.getRightX(),
+                    true,
+                    true),
+            drivetrain));
     // reset the field-centric heading on left bumper press
     m_driverController
         .leftBumper()
-        .onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
-
-    if (Utils.isSimulation()) {
-      drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
-    }
-    drivetrain.registerTelemetry(logger::telemeterize);
+        .onTrue(
+            drivetrain.runOnce(
+                () -> {
+                  drivetrain.setHeading(Rotation2d.fromDegrees(drivetrain.getHeading()));
+                }));
   }
 
   public void onDisabled() {
