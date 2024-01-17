@@ -47,12 +47,18 @@ public class TestDebugEntry {
           .when(() -> DriverStation.reportWarning(anyString(), anyBoolean()))
           .thenCallRealMethod();
 
+      mockedFactory
+          .when(() -> DriverStation.reportError(anyString(), anyBoolean()))
+          .thenCallRealMethod();
+
       DebugEntry<Float> dut =
           new DebugEntry<Float>(Float.valueOf((float) 10.0), "test2", subsystem);
       mockedFactory.verify(() -> DriverStation.reportWarning(anyString(), anyBoolean()), times(1));
 
       dut.log((float) 10.0);
-      mockedFactory.verify(() -> DriverStation.reportWarning(anyString(), anyBoolean()), times(1));
+      mockedFactory.verify(
+          () -> DriverStation.reportError(eq("Invalid type for log " + "test2"), anyBoolean()),
+          times(1));
     }
   }
 
