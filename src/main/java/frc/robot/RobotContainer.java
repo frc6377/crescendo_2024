@@ -17,9 +17,13 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.Turret.TurretCommand;
+import frc.robot.commands.Turret.TurretMagicCommand;
+import frc.robot.commands.Turret.TurretOdomCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
 /**
@@ -36,6 +40,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+  private final TurretSubsystem turretSubsystem = new TurretSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -74,6 +79,10 @@ public class RobotContainer {
     Trigger intakeButton = m_driverController.leftTrigger(0.3);
     intakeButton.whileTrue(new IntakeCommand(intakeSubsystem));
 
+    m_driverController.y().whileTrue(new TurretCommand(turretSubsystem));
+    // m_driverController.x().whileTrue(new TurretOdomCommand(turretSubsystem, drivetrain.getPose2d()))
+    // m_driverController.x().whileTrue(new TurretMagicCommand(turretSubsystem, limelightSubsystem.Pose2d));
+
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
@@ -96,6 +105,8 @@ public class RobotContainer {
                         -m_driverController.getRightX()
                             * MaxAngularRate) // Drive counterclockwise with negative X (left)
             ));
+
+
 
     m_driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
     m_driverController

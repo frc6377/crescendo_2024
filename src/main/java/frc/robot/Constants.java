@@ -18,6 +18,29 @@ public final class Constants {
     public static final double INTAKE_PERCENTAGE = -0.75;
   }
 
+  public static class TurretConstants {
+    public static final int TURRET_MOTOR_ID = 7;
+
+    // PID coefficients
+    public static final double TURRET_KP = 5e-5;
+    public static final double TURRET_KI = 1e-6;
+    public static final double TURRET_KD = 0;
+    public static final double TURRET_KIZ = 0;
+    public static final double TURRET_KFF = 0.000156;
+    public static final double TURRET_KMAXOUTPUT = 1;
+    public static final double TURRET_KMINOUTPUT = -1;
+    public static final int TURRET_MAXRPM = 5700;
+
+    // Smart Motion Coefficients
+    public static final int TURRET_MAXVEL = 10; // rpm
+    public static final int TURRET_MAXACC = 1;
+    public static final int TURRET_SMARTMOTION_SLOT = 0;
+    public static final int TURRET_MINVEL = 0; // replace 0 with the actual value
+    public static final double TURRET_ALLOWEDERR = 0; // replace 0 with the actual value
+
+  }
+
+
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
