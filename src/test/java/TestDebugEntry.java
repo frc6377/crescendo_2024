@@ -1,26 +1,30 @@
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.networktables.DebugEntry;
 import frc.robot.subsystems.ExampleSubsystem;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 public class TestDebugEntry {
   private ExampleSubsystem subsystem;
 
+  private class TestSubsystem extends SubsystemBase {}
+
+  private TestSubsystem subsystem2;
+
   @BeforeEach
   public void setup() {
     assert HAL.initialize(500, 0);
     subsystem = new ExampleSubsystem();
+    subsystem2 = new TestSubsystem();
   }
 
   @Test
@@ -38,45 +42,37 @@ public class TestDebugEntry {
 
   @Test
   public void raiseDataTypeError() {
-    // Unsupported data type
     try (MockedStatic<DriverStation> mockedFactory = Mockito.mockStatic(DriverStation.class)) {
       mockedFactory
           .when(() -> DriverStation.reportWarning(anyString(), anyBoolean()))
           .thenCallRealMethod();
-      try (MockedConstruction<DebugEntry> mockedDebugEntry =
-          Mockito.mockConstruction(
-              DebugEntry.class,
-              (mock, context) -> {
-                DriverStation.reportWarning(anyString(), anyBoolean());
-              })) {
-        new DebugEntry<String>("nonDouble", "test", subsystem);
-      }
-      mockedFactory.verify(() -> DriverStation.reportWarning(anyString(), anyBoolean()), times(1));
-    }
-  }
 
-  @Test
-  public void logInvalidTypeError() {
-    // Invalid data type for log
-    try (MockedStatic<DriverStation> mockedFactory = Mockito.mockStatic(DriverStation.class)) {
       mockedFactory
           .when(() -> DriverStation.reportError(anyString(), anyBoolean()))
           .thenCallRealMethod();
-      try (MockedConstruction<DebugEntry> mockedDebugEntry =
-          Mockito.mockConstruction(
-              DebugEntry.class,
-              (mock, context) -> {
-                try {
 
-                  mock.log(any());
-                  DriverStation.reportError(anyString(), anyBoolean());
-                } catch (Exception e) {
-                  fail("Unexpected exception: " + e.getMessage());
-                }
-              })) {
-        new DebugEntry<String>("nonDouble", "test", subsystem);
-      }
-      mockedFactory.verify(() -> DriverStation.reportError(anyString(), anyBoolean()), times(1));
+      DebugEntry<Float> dut =
+          new DebugEntry<Float>(Float.valueOf((float) 10.0), "test2", subsystem);
+      mockedFactory.verify(() -> DriverStation.reportWarning(anyString(), anyBoolean()), times(1));
+
+      dut.log((float) 10.0);
+      mockedFactory.verify(
+          () -> DriverStation.reportError(eq("Invalid type for log " + "test2"), anyBoolean()),
+          times(1));
+    }
+  }
+
+  @Disabled
+  @Test
+  public void testSameNameDifferentSubsystem() {
+    try (MockedStatic<DriverStation> mockedFactory = Mockito.mockStatic(DriverStation.class)) {
+      mockedFactory
+          .when(() -> DriverStation.reportWarning(anyString(), anyBoolean()))
+          .thenCallRealMethod();
+
+      new DebugEntry<Double>(0.0, "test3", subsystem);
+      new DebugEntry<Double>(0.0, "test3", subsystem2);
+      mockedFactory.verify(() -> DriverStation.reportWarning(anyString(), anyBoolean()), times(0));
     }
   }
 }
