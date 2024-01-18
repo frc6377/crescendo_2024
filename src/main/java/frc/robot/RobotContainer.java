@@ -4,13 +4,23 @@
 
 package frc.robot;
 
+import java.util.Map;
+
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
@@ -56,10 +66,19 @@ public class RobotContainer {
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   private final RobotStateManager robotStateManager = new RobotStateManager();
+
+  private SendableChooser<Command> autoChooser;
+  private ShuffleboardTab configTab = Shuffleboard.getTab("Config");
+  private Map<String, Command> autonCommands;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+    autonCommands.put("Shoot", autonTest());
+    NamedCommands.registerCommands(autonCommands);
+    autoChooser = AutoBuilder.buildAutoChooser();
+    configTab.add("Auton Selection", autoChooser);
+    SmartDashboard.putBoolean("NamedCommand test", false);
   }
 
   /**
@@ -130,6 +149,10 @@ public class RobotContainer {
 
   public void onExitDisabled() {
     signalingSubsystem.clearLEDs();
+  }
+
+  private Command autonTest() {
+    return new InstantCommand(() -> SmartDashboard.putBoolean("NamedCommand test", true));
   }
 
   /**

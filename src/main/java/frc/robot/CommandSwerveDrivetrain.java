@@ -5,6 +5,12 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.ReplanningConfig;
+
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,6 +25,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
   private static final double kSimLoopPeriod = 0.005; // 5 ms
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
+  private SwerveDriveKinematics kinematics = new SwerveDriveKinematics();//TODO need translations
 
   public CommandSwerveDrivetrain(
       SwerveDrivetrainConstants driveTrainConstants,
@@ -28,14 +35,20 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     if (Utils.isSimulation()) {
       startSimThread();
     }
+    
+    AutoBuilder.configureHolonomic(
+      () -> super.getState().Pose,
+      (a) -> super.seedFieldRelative(a), 
+      () -> getChassisSpeeds(), 
+      (a) -> applyRequest(() -> new SwerveRequest.FieldCentric().withVelocityX(a.vxMetersPerSecond).withVelocityY(a.vyMetersPerSecond).withRotationalDeadband(a.omegaRadiansPerSecond)), 
+      new HolonomicPathFollowerConfig(0, 0, new ReplanningConfig(true, true)), //TODO constants
+      () -> true, 
+      this);
   }
 
   public CommandSwerveDrivetrain(
       SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
-    super(driveTrainConstants, modules);
-    if (Utils.isSimulation()) {
-      startSimThread();
-    }
+      this(driveTrainConstants, 0, modules);
   }
 
   private void startSimThread() {
@@ -53,6 +66,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
               updateSimState(deltaTime, RobotController.getBatteryVoltage());
             });
     m_simNotifier.startPeriodic(kSimLoopPeriod);
+  }
+
+  private ChassisSpeeds getChassisSpeeds() {
+    return kinematics.toChassisSpeeds(super.getState().ModuleStates);
   }
 
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
