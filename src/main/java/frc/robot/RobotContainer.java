@@ -10,7 +10,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.Autos;
@@ -38,8 +37,6 @@ public class RobotContainer {
   private final SignalingSubsystem signalingSubsystem =
       new SignalingSubsystem(1, OI.Driver::setRumble);
 
-
-
   private final RobotStateManager robotStateManager = new RobotStateManager();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -63,20 +60,23 @@ public class RobotContainer {
 
     // Swerve config
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-        drivetrain.applyRequest(() ->
-                drivetrain.drive(OI.Driver.getXTranslationSupplier().get(), OI.Driver.getYTranslationSupplier().get(), OI.Driver.getRotationSupplier().get())
-            ));
-    OI.Driver.getBrakeButton().whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
+        drivetrain.applyRequest(
+            () ->
+                drivetrain.getDriveRequest(
+                    OI.Driver.getXTranslationSupplier().get(),
+                    OI.Driver.getYTranslationSupplier().get(),
+                    OI.Driver.getRotationSupplier().get())));
+    OI.Driver.getBrakeButton()
+        .whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
     OI.Driver.getResetRotationButton()
         .onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
     OI.Driver.getOrientationButton()
         .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
-    //OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
+    // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     }
-
   }
 
   public void onDisabled() {

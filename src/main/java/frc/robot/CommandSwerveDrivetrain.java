@@ -6,7 +6,6 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Notifier;
@@ -22,8 +21,9 @@ import java.util.function.Supplier;
 public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsystem {
   private static final double kSimLoopPeriod = 0.005; // 5 ms
   private static final double maxSpeed = Units.feetToMeters(18.2); // Desired top speed
-  private static final double maxAngularRate = Math.PI; // Max angular velocity
-  private final Telemetry telemetry = new Telemetry(maxSpeed); //TODO unused?
+  private static final double maxAngularRate =
+      Math.PI; // Max angular velocity in radians per second
+  private final Telemetry telemetry = new Telemetry(maxSpeed);
 
   private static boolean isFieldOriented = true;
   private static Rotation2d alignmentRotation = null;
@@ -44,11 +44,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
   public CommandSwerveDrivetrain(
       SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
-    super(driveTrainConstants, modules);
-    if (Utils.isSimulation()) {
-      startSimThread();
-    }
-    this.registerTelemetry(telemetry::telemeterize);
+    this(driveTrainConstants, 0, modules);
   }
 
   private void startSimThread() {
@@ -68,39 +64,52 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     m_simNotifier.startPeriodic(kSimLoopPeriod);
   }
 
-  public SwerveRequest drive(double x, double y, double r){
-    x *= maxSpeed;
-    y *= maxSpeed;
-    r *= maxAngularRate;
-    if(isFieldOriented){
-      if(alignmentRotation != null){
-        return new SwerveRequest.FieldCentricFacingAngle().withTargetDirection(alignmentRotation).withDriveRequestType(DriveRequestType.Velocity).withVelocityX(x).withVelocityY(y);
+  // xSpeed, ySpeed, rotationSpeed should be axes with range -1<0<1
+  public SwerveRequest getDriveRequest(double xSpeed, double ySpeed, double rotationSpeed) {
+    xSpeed *= maxSpeed;
+    ySpeed *= maxSpeed;
+    rotationSpeed *= maxAngularRate;
+    if (isFieldOriented) {
+      if (alignmentRotation != null) {
+        return new SwerveRequest.FieldCentricFacingAngle()
+            .withTargetDirection(alignmentRotation)
+            .withDriveRequestType(DriveRequestType.Velocity)
+            .withVelocityX(xSpeed)
+            .withVelocityY(ySpeed);
       }
-      return new SwerveRequest.FieldCentric().withDriveRequestType(DriveRequestType.Velocity).withVelocityX(x).withVelocityY(y).withRotationalRate(r);
+      return new SwerveRequest.FieldCentric()
+          .withDriveRequestType(DriveRequestType.Velocity)
+          .withVelocityX(xSpeed)
+          .withVelocityY(ySpeed)
+          .withRotationalRate(rotationSpeed);
     }
-    return new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.Velocity).withVelocityX(x).withVelocityY(y).withRotationalRate(r);
+    return new SwerveRequest.RobotCentric()
+        .withDriveRequestType(DriveRequestType.Velocity)
+        .withVelocityX(xSpeed)
+        .withVelocityY(ySpeed)
+        .withRotationalRate(rotationSpeed);
   }
 
-  public SwerveRequest getBrakeRequest(){
+  public SwerveRequest getBrakeRequest() {
     return new SwerveRequest.SwerveDriveBrake();
   }
 
-  public SwerveRequest getAlignRequest(Rotation2d rotation){
+  public SwerveRequest getAlignRequest(Rotation2d rotation) {
     return new SwerveRequest.FieldCentricFacingAngle().withTargetDirection(rotation);
   }
 
-  public void toggleOrientation(){
+  public void toggleOrientation() {
     isFieldOriented = !isFieldOriented;
-    if(!isFieldOriented){
+    if (!isFieldOriented) {
       endAlignment();
     }
   }
 
-  public void setAlignment(Rotation2d rotation){
+  public void setAlignment(Rotation2d rotation) {
     alignmentRotation = rotation;
   }
 
-  public void endAlignment(){
+  public void endAlignment() {
     alignmentRotation = null;
   }
 

@@ -1,12 +1,13 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -17,7 +18,6 @@ public class OI {
   private static final int operatorJoystickPort = 1;
 
   public static final class Driver {
-
     private static enum Button {
       A(1),
       B(2),
@@ -25,6 +25,8 @@ public class OI {
       Y(4),
       LB(5), // Left Bumper
       RB(6), // Right Bumper
+      LT(2, 0.5), // Left Trigger
+      RT(3, 0.5), // Right Trigger
       Back(7),
       Start(8),
       LJ(9), // Left Joystick Button
@@ -36,32 +38,48 @@ public class OI {
 
       private final int buttonID;
       private String buttonAction;
+      private double triggerDetent; // Percentage where axis is triggered as a button
 
       Button(int ID) {
         this.buttonID = ID;
         this.buttonAction = "";
       }
 
+      Button(int ID, double axisDetent) {
+        this(ID);
+        this.triggerDetent = axisDetent;
+      }
+
       private int getButtonID() {
         return this.buttonID;
       }
-      ;
+
+      private double getTriggerDetent() {
+        return this.triggerDetent;
+      }
+
+      private JoystickButton buildButton(String action) {
+        buttonAction = action;
+        return new JoystickButton(joystick, getButtonID());
+      }
+
+      private Trigger buildTrigger(String action) {
+        // "Trigger" referring to the type of button, not the WPI class
+        buttonAction = action;
+        return new Trigger(() -> joystick.getRawAxis(getButtonID()) > getTriggerDetent());
+      }
 
       private String getButtonAction() {
         return this.buttonAction;
       }
-
-      private void setButtonAction(String name) {
-        this.buttonAction = name;
-      }
     };
-    
+
     private static final Joystick joystick = new Joystick(driverJoystickPort);
     private static final XboxController rumbleController = new XboxController(driverJoystickPort);
-    
+
     private static final Button orientationButton = Button.Start; // Toggle swerve orientation
     private static final Button outtakeButton = Button.RB; // Run outtake
-    private static final Button intakeButton = Button.LB; // Run intake
+    private static final Button intakeButton = Button.LT; // Run intake
     private static final Button brakeButton = Button.A; // Brake
     private static final Button resetRotationButton = Button.Back; // Reset field rotation
 
@@ -90,31 +108,26 @@ public class OI {
     }
 
     public static JoystickButton getOrientationButton() {
-      orientationButton.setButtonAction("Toggle swerve orientation");
-      return new JoystickButton(joystick, orientationButton.getButtonID());
+      return orientationButton.buildButton("Toggle swerve orientation");
     }
 
-    public static JoystickButton getIntakeButton() {
-      intakeButton.setButtonAction("Intake");
-      return new JoystickButton(joystick, intakeButton.getButtonID());
+    public static Trigger getIntakeButton() {
+      return intakeButton.buildTrigger("Intake");
     }
 
     public static JoystickButton getOuttakeButton() {
-      outtakeButton.setButtonAction("Outtake");
-      return new JoystickButton(joystick, outtakeButton.getButtonID());
+      return outtakeButton.buildButton("Outtake");
     }
 
     public static JoystickButton getBrakeButton() {
-      outtakeButton.setButtonAction("Brake");
-      return new JoystickButton(joystick, brakeButton.getButtonID());
+      return brakeButton.buildButton("Brake");
     }
 
     public static JoystickButton getResetRotationButton() {
-      outtakeButton.setButtonAction("Reset Rotation");
-      return new JoystickButton(joystick, resetRotationButton.getButtonID());
+      return resetRotationButton.buildButton("Reset Rotation");
     }
 
-    public static void setRumble(double rumbleIntensity){
+    public static void setRumble(double rumbleIntensity) {
       rumbleController.setRumble(RumbleType.kBothRumble, rumbleIntensity);
     }
   }
@@ -127,6 +140,8 @@ public class OI {
       Y(4),
       LB(5), // Left Bumper
       RB(6), // Right Bumper
+      LT(2, 0.5), // Left Trigger
+      RT(3, 0.5), // Right Trigger
       Back(7),
       Start(8),
       LJ(9), // Left Joystick Button
@@ -138,34 +153,43 @@ public class OI {
 
       private final int buttonID;
       private String buttonAction;
+      private double triggerDetent; // Percentage where axis is triggered as a button
 
       Button(int ID) {
         this.buttonID = ID;
         this.buttonAction = "";
       }
 
+      Button(int ID, double axisDetent) {
+        this(ID);
+        this.triggerDetent = axisDetent;
+      }
+
       private int getButtonID() {
         return this.buttonID;
       }
-      ;
+
+      private double getTriggerDetent() {
+        return this.triggerDetent;
+      }
+
+      private JoystickButton buildButton(String action) {
+        buttonAction = action;
+        return new JoystickButton(joystick, getButtonID());
+      }
+
+      private Trigger buildTrigger(String action) {
+        // "Trigger" referring to the type of button, not the WPI class
+        buttonAction = action;
+        return new Trigger(() -> joystick.getRawAxis(getButtonID()) > getTriggerDetent());
+      }
 
       private String getButtonAction() {
         return this.buttonAction;
       }
-
-      private void setButtonAction(String name) {
-        this.buttonAction = name;
-      }
     };
 
-    private static final Joystick joystick = new Joystick(OI.operatorJoystickPort);
-    private static final Button kExampleButton =
-        Button.LB; // Toggles intake mode between cone and cube
-
-    public static JoystickButton getExampleButton() {
-      kExampleButton.setButtonAction("Example");
-      return new JoystickButton(joystick, kExampleButton.getButtonID());
-    }
+    private static final Joystick joystick = new Joystick(operatorJoystickPort);
   }
 
   public static void putControllerButtons() {
