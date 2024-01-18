@@ -38,16 +38,16 @@ public class OI {
 
       private final int buttonID;
       private String buttonAction;
-      private double triggerDetent; // Percentage where axis is triggered as a button
+      private final double triggerDetent; // Percentage where axis is triggered as a button
 
-      Button(int ID) {
+      Button(int ID, double triggerDetent) {
         this.buttonID = ID;
         this.buttonAction = "";
+        this.triggerDetent = triggerDetent;
       }
 
-      Button(int ID, double axisDetent) {
-        this(ID);
-        this.triggerDetent = axisDetent;
+      Button(int ID) {
+        this(ID, 0);
       }
 
       private int getButtonID() {
@@ -153,16 +153,16 @@ public class OI {
 
       private final int buttonID;
       private String buttonAction;
-      private double triggerDetent; // Percentage where axis is triggered as a button
+      private final double triggerDetent; // Percentage where axis is triggered as a button
 
-      Button(int ID) {
+      Button(int ID, double triggerDetent) {
         this.buttonID = ID;
         this.buttonAction = "";
+        this.triggerDetent = triggerDetent;
       }
 
-      Button(int ID, double axisDetent) {
-        this(ID);
-        this.triggerDetent = axisDetent;
+      Button(int ID) {
+        this(ID, 0);
       }
 
       private int getButtonID() {
