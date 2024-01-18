@@ -9,6 +9,7 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,10 +26,13 @@ public class Telemetry {
    */
   public Telemetry(double maxSpeed) {
     MaxSpeed = maxSpeed;
+    SmartDashboard.putData(field);
   }
 
   /* What to publish over networktables for telemetry */
   NetworkTableInstance inst = NetworkTableInstance.getDefault();
+
+  Field2d field = new Field2d();
 
   /* Robot pose for field positioning */
   NetworkTable table = inst.getTable("Pose");
@@ -97,6 +101,8 @@ public class Telemetry {
     lastTime = currentTime;
     Translation2d distanceDiff = pose.minus(m_lastPose).getTranslation();
     m_lastPose = pose;
+
+    field.setRobotPose(m_lastPose);
 
     Translation2d velocities = distanceDiff.div(diffTime);
 
