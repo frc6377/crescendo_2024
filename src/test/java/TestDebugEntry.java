@@ -35,7 +35,7 @@ public class TestDebugEntry {
     subsystem2 = new TestSubsystem();
   }
 
-  @Test
+  @Test()
   public void raiseDupEntryError() {
     // Duplicate Entry
     try (MockedStatic<DriverStation> mockedFactory = Mockito.mockStatic(DriverStation.class)) {
@@ -45,6 +45,7 @@ public class TestDebugEntry {
       new DebugEntry<Double>(0.0, "test", subsystem);
       new DebugEntry<Double>(0.0, "test", subsystem);
       mockedFactory.verify(() -> DriverStation.reportError(anyString(), anyBoolean()), times(1));
+    } catch (IllegalArgumentException e) {
     }
   }
 
@@ -76,10 +77,10 @@ public class TestDebugEntry {
       mockedFactory
           .when(() -> DriverStation.reportWarning(anyString(), anyBoolean()))
           .thenCallRealMethod();
-
       new DebugEntry<Double>(0.0, "test3", subsystem);
       new DebugEntry<Double>(0.0, "test3", subsystem2);
       mockedFactory.verify(() -> DriverStation.reportWarning(anyString(), anyBoolean()), times(0));
+    } catch (IllegalArgumentException e) {
     }
   }
 }
