@@ -22,7 +22,7 @@ public class DynamicRobotConfig {
   private static TunerConstants tunerConstants;
   private static Logger logger = Logger.getLogger(DynamicRobotConfig.class.getName());
 
-  private DynamicRobotConfig() {
+  public DynamicRobotConfig() {
     // This code interacts with ConfigVariables using reflection, essentially using it as a map.
     // First, the code gets a reference to every variable from the static class, referred to as a
     // "Field"
@@ -60,10 +60,6 @@ public class DynamicRobotConfig {
               ConfigVariables.backRightOffset);
     }
     return tunerConstants;
-  }
-
-  public static DynamicRobotConfig loadDynamicRobotConfig() {
-    return new DynamicRobotConfig();
   }
 
   private static void raiseWarning(String warning) {
