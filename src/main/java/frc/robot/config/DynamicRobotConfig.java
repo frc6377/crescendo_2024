@@ -19,6 +19,7 @@ public class DynamicRobotConfig {
     public static double backRightOffset = 0.2529296875;
   }
 
+  private static TunerConstants tunerConstants;
   private static Logger logger = Logger.getLogger(DynamicRobotConfig.class.getName());
 
   private DynamicRobotConfig() {
@@ -50,11 +51,15 @@ public class DynamicRobotConfig {
   }
 
   public TunerConstants getTunerConstants() {
-    return new TunerConstants(
-        ConfigVariables.frontLeftOffset,
-        ConfigVariables.frontRightOffset,
-        ConfigVariables.backLeftOffset,
-        ConfigVariables.backRightOffset);
+    if (tunerConstants == null) {
+      tunerConstants =
+          new TunerConstants(
+              ConfigVariables.frontLeftOffset,
+              ConfigVariables.frontRightOffset,
+              ConfigVariables.backLeftOffset,
+              ConfigVariables.backRightOffset);
+    }
+    return tunerConstants;
   }
 
   public static DynamicRobotConfig loadDynamicRobotConfig() {
