@@ -13,10 +13,10 @@ import java.util.logging.Logger;
  */
 public class DynamicRobotConfig {
   private static class ConfigVariables {
-    public static double frontLeftOffset = 0;
-    public static double frontRightOffset = 0;
-    public static double backLeftOffset = 2;
-    public static double backRightOffset = 0;
+    public static double frontLeftOffset = -0.0361328125;
+    public static double frontRightOffset = -0.10595703125;
+    public static double backLeftOffset = -0.298095703125;
+    public static double backRightOffset = 0.2529296875;
   }
 
   private static Logger logger = Logger.getLogger(DynamicRobotConfig.class.getName());
