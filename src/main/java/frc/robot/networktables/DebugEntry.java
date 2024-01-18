@@ -48,8 +48,10 @@ public class DebugEntry<T> {
           entries.put(name, networkEntry);
         } else {
           // networkEntry = entries.get(name);
-          DriverStation.reportError(
-              "Duplicate ShuffleboardEntry on " + networkTab.getTitle() + " tab: " + name, false);
+          String errorMessage =
+              "Duplicate ShuffleboardEntry on " + networkTab.getTitle() + " tab: " + name;
+          DriverStation.reportError(errorMessage, false);
+          throw new IllegalArgumentException(errorMessage);
         }
       }
       localConsumer.accept(defaultValue);
