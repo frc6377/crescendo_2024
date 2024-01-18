@@ -102,7 +102,7 @@ public class Telemetry {
     Translation2d distanceDiff = pose.minus(m_lastPose).getTranslation();
     m_lastPose = pose;
 
-    field.setRobotPose(m_lastPose);
+    field.setRobotPose(pose);
 
     Translation2d velocities = distanceDiff.div(diffTime);
 
