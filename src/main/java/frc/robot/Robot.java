@@ -58,7 +58,7 @@ public class Robot extends LoggedRobot {
                   LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
         }
       } catch (Exception StringIndexOutOfBoundsException) {
-        System.out.print("No log file found, simulating as normal.");
+        System.out.println("No log file found, simulating as normal.");
       }
     }
 
