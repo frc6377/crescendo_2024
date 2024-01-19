@@ -47,7 +47,6 @@ public class DebugEntry<T> {
           networkEntry = networkTab.add(name, defaultValue).getEntry();
           entries.put(name, networkEntry);
         } else {
-          // networkEntry = entries.get(name);
           String errorMessage =
               "Duplicate ShuffleboardEntry on " + networkTab.getTitle() + " tab: " + name;
           DriverStation.reportError(errorMessage, false);
