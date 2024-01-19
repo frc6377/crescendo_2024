@@ -7,7 +7,6 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -29,19 +28,19 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public ShooterSubsystem() {
     // Bools for if motor on bot
-    TLMotorBool1 = false;
-    TLMotorBool2 = false;
+    TLMotorBool1 = true;
+    TLMotorBool2 = true;
     BRMotorBool1 = false;
     BRMotorBool2 = false;
     feederBool1 = true;
-    feederBool2 = true;
+    feederBool2 = false;
 
     // IDs
     TLID1 = 2;
-    TLID2 = 3;
+    TLID2 = 4;
     BRID1 = 3;
     BRID2 = 2;
-    feederID1 = 2;
+    feederID1 = 1;
     feederID2 = 1;
 
     // PID values
@@ -64,9 +63,9 @@ public class ShooterSubsystem extends SubsystemBase {
     BRFF = 15e-6;
 
     // Motor Speeds
-    TLMotorSpeed = 1000;
+    TLMotorSpeed = 2700;
     BRMotorSpeed = 1000;
-    feederSpeed = .25;
+    feederSpeed = 100;
 
     // initialize LT motor
     if (TLMotorBool1) {
@@ -79,12 +78,11 @@ public class ShooterSubsystem extends SubsystemBase {
       TLMotor1.getPIDController().setFF(TLFF1);
     }
 
-      
     // initialize TL motor 2
     if (TLMotorBool2) {
       TLMotor2 = new CANSparkMax(TLID2, MotorType.kBrushless);
       TLMotor2.restoreFactoryDefaults();
-      TLMotor2.setInverted(true);
+      TLMotor2.setInverted(false);
       TLMotor2.getPIDController().setP(TLP1);
       TLMotor2.getPIDController().setI(TLI1);
       TLMotor2.getPIDController().setD(TLD1);
@@ -140,7 +138,7 @@ public class ShooterSubsystem extends SubsystemBase {
     //   SmartDashboard.putNumber("Top/Left FF 2", TLFF2);
     // }
     if (TLMotorBool1 || TLMotorBool2) {
-      SmartDashboard.putNumber("TL Set Speed 1", TLMotorSpeed);
+      SmartDashboard.putNumber("TL Set Speed", TLMotorSpeed);
     }
     if (BRMotorBool1 || BRMotorBool2) {
       SmartDashboard.putNumber("Bottom/Right P", BRP);
@@ -153,42 +151,65 @@ public class ShooterSubsystem extends SubsystemBase {
     if (feederBool1 || feederBool2) {
       SmartDashboard.putNumber("Feeder Speed", feederSpeed);
     }
-
   }
 
   public Command RunMotors() {
     return run(
         () -> {
-          if (TLMotorBool1) { TLMotor1.getPIDController().setReference(TLMotorSpeed, ControlType.kVelocity); }
-          if (TLMotorBool2) { TLMotor2.getPIDController().setReference(TLMotorSpeed, ControlType.kVelocity); }
-          if (BRMotorBool1) { BRMotor1.getPIDController().setReference(BRMotorSpeed, ControlType.kVelocity); }
-          if (BRMotorBool2) { BRMotor2.getPIDController().setReference(BRMotorSpeed, ControlType.kVelocity); }
+          if (TLMotorBool1) {
+            TLMotor1.getPIDController().setReference(TLMotorSpeed, ControlType.kVelocity);
+          }
+          if (TLMotorBool2) {
+            TLMotor2.getPIDController().setReference(TLMotorSpeed, ControlType.kVelocity);
+          }
+          if (BRMotorBool1) {
+            BRMotor1.getPIDController().setReference(BRMotorSpeed, ControlType.kVelocity);
+          }
+          if (BRMotorBool2) {
+            BRMotor2.getPIDController().setReference(BRMotorSpeed, ControlType.kVelocity);
+          }
         });
   }
 
   public Command StopMotors() {
     return runOnce(
         () -> {
-          if (TLMotorBool1) { TLMotor1.stopMotor(); }
-          if (TLMotorBool2) { TLMotor2.stopMotor(); }
-          if (BRMotorBool1) { BRMotor1.stopMotor(); }
-          if (BRMotorBool2) { BRMotor2.stopMotor(); }
+          if (TLMotorBool1) {
+            TLMotor1.stopMotor();
+          }
+          if (TLMotorBool2) {
+            TLMotor2.stopMotor();
+          }
+          if (BRMotorBool1) {
+            BRMotor1.stopMotor();
+          }
+          if (BRMotorBool2) {
+            BRMotor2.stopMotor();
+          }
         });
   }
 
   public Command RunFeeder() {
     return run(
         () -> {
-          if (feederBool1) { feederMotor1.set(feederSpeed); }
-          if (feederBool2) { feederMotor2.set(feederSpeed); }
+          if (feederBool1) {
+            feederMotor1.set(feederSpeed);
+          }
+          if (feederBool2) {
+            feederMotor2.set(feederSpeed);
+          }
         });
   }
 
   public Command StopFeeder() {
     return runOnce(
         () -> {
-          if (feederBool1) { feederMotor1.stopMotor(); }
-          if (feederBool2) { feederMotor2.stopMotor(); }
+          if (feederBool1) {
+            feederMotor1.stopMotor();
+          }
+          if (feederBool2) {
+            feederMotor2.stopMotor();
+          }
         });
   }
 
@@ -204,11 +225,21 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (TLMotorBool1) { SmartDashboard.putNumber("TL RPM1", TLMotor1.getEncoder().getVelocity()); }
-    if (TLMotorBool2) { SmartDashboard.putNumber("TL RPM2", TLMotor2.getEncoder().getVelocity()); }
-    if (BRMotorBool1) { SmartDashboard.putNumber("BR RPM1", BRMotor1.getEncoder().getVelocity()); }
-    if (BRMotorBool2) { SmartDashboard.putNumber("BR RPM2", BRMotor2.getEncoder().getVelocity()); }
-    if (feederBool1 || feederBool2) { feederSpeed = SmartDashboard.getNumber("Feeder Speed", feederSpeed); }
+    if (TLMotorBool1) {
+      SmartDashboard.putNumber("TL RPM1", TLMotor1.getEncoder().getVelocity());
+    }
+    if (TLMotorBool2) {
+      SmartDashboard.putNumber("TL RPM2", TLMotor2.getEncoder().getVelocity());
+    }
+    if (BRMotorBool1) {
+      SmartDashboard.putNumber("BR RPM1", BRMotor1.getEncoder().getVelocity());
+    }
+    if (BRMotorBool2) {
+      SmartDashboard.putNumber("BR RPM2", BRMotor2.getEncoder().getVelocity());
+    }
+    if (feederBool1 || feederBool2) {
+      feederSpeed = SmartDashboard.getNumber("Feeder Speed", feederSpeed);
+    }
 
     if (TLMotorBool1 || TLMotorBool2) {
       TLP1 = SmartDashboard.getNumber("Top/Left P", TLP1);
@@ -236,7 +267,5 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   @Override
-  public void simulationPeriodic() {
-    
-  }
+  public void simulationPeriodic() {}
 }
