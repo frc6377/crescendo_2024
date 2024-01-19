@@ -51,7 +51,6 @@ public class DebugEntry<T> {
           String errorMessage =
               "Duplicate ShuffleboardEntry on " + networkTab.getTitle() + " tab: " + name;
           DriverStation.reportError(errorMessage, false);
-          throw new IllegalArgumentException(errorMessage);
         }
       }
       localConsumer.accept(defaultValue);

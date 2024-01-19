@@ -45,7 +45,6 @@ public class TestDebugEntry {
       new DebugEntry<Double>(0.0, "test", subsystem);
       new DebugEntry<Double>(0.0, "test", subsystem);
       mockedFactory.verify(() -> DriverStation.reportError(anyString(), anyBoolean()), times(1));
-    } catch (IllegalArgumentException e) {
     }
   }
 
