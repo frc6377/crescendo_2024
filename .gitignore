@@ -178,7 +178,6 @@ logs/
 ctre_sim/
 
 # Howdybot added
-src/main/deploy/*.txt
 simgui*
 networktables.json
 networktables.json.bck
