@@ -46,16 +46,20 @@ public class Robot extends LoggedRobot {
       Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
       Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
       new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
-    } else if (IS_REPLAY) {
-      setUseTiming(false); // Run as fast as possible
+    } else {
+      try {
+        String logPath = LogFileUtil.findReplayLog();
+        if (logPath != null) {
+          setUseTiming(false); // Run as fast as possible
 
-      String logPath =
-          LogFileUtil
-              .findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-      Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-      Logger.addDataReceiver(
-          new WPILOGWriter(
-              LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+          Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+          Logger.addDataReceiver(
+              new WPILOGWriter(
+                  LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+        }
+      } catch (Exception StringIndexOutOfBoundsException) {
+        System.out.print("No log file found, simulating as normal.");
+      }
     }
 
     // Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps" in the
