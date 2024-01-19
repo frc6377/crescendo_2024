@@ -192,21 +192,3 @@ test {
     useJUnitPlatform()
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
 }
-
-// tasks.register("writeBuildDate") {
-//     def stdout = new ByteArrayOutputStream()
-
-//     exec {
-//         commandLine "date"
-//         standardOutput = stdout
-//     }
-
-//     def outstream = stdout.toString().trim()
-
-//     new File(
-//             projectDir.toString() + "/src/main/deploy",
-//             "date.txt"
-//             ).text = outstream
-// }
-
-compileJava.dependsOn("spotlessApply")
