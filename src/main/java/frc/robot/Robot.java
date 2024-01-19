@@ -28,9 +28,6 @@ public class Robot extends LoggedRobot {
 
   private RobotContainer m_robotContainer;
 
-  // TODO : back log card to auto detecting
-  private final boolean IS_REPLAY = false;
-
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
