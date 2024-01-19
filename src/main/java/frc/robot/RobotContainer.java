@@ -55,22 +55,21 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
-    Trigger intakeButton = OI.Driver.getIntakeButton();
-    intakeButton.whileTrue(new IntakeCommand(intakeSubsystem));
+    OI.getTrigger(OI.Driver.intakeTrigger).whileTrue(new IntakeCommand(intakeSubsystem));
 
     // Swerve config
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(
             () ->
                 drivetrain.getDriveRequest(
-                    OI.Driver.getXTranslationSupplier().get(),
-                    OI.Driver.getYTranslationSupplier().get(),
-                    OI.Driver.getRotationSupplier().get())));
-    OI.Driver.getBrakeButton()
+                    OI.getAxisSupplier(OI.Driver.xTranslationAxis).get(),
+                    OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
+                    OI.getAxisSupplier(OI.Driver.rotationAxis).get())));
+    OI.getButton(OI.Driver.brakeButton)
         .whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
-    OI.Driver.getResetRotationButton()
+    OI.getButton(OI.Driver.resetRotationButton)
         .onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
-    OI.Driver.getOrientationButton()
+    OI.getButton(OI.Driver.orientationButton)
         .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 

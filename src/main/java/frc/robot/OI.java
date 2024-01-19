@@ -1,12 +1,13 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -18,225 +19,191 @@ public class OI {
   private static final int operatorJoystickPort = 1;
 
   public static final class Driver {
-    private static enum Button {
-      A(1),
-      B(2),
-      X(3),
-      Y(4),
-      LB(5), // Left Bumper
-      RB(6), // Right Bumper
-      LT(2, 0.5), // Left Trigger
-      RT(3, 0.5), // Right Trigger
-      Back(7),
-      Start(8),
-      LJ(9), // Left Joystick Button
-      RJ(10), // Right Joystick Button
-      POVUP(0),
-      POVDOWN(180),
-      POVLEFT(270),
-      POVRIGHT(90);
+    private static final XboxController controller = new XboxController(driverJoystickPort);
 
-      private final int buttonID;
-      private String buttonAction;
-      private final double triggerDetent; // Percentage where axis is triggered as a button
+    public static final Control orientationButton =
+        new Control(XboxController.Button.kStart, "Toggle swerve orientation", controller);
+    public static final Control outtakeButton =
+        new Control(XboxController.Button.kRightBumper, "Run outtake", controller);
+    public static final Control intakeTrigger =
+        new Control(XboxController.Axis.kLeftTrigger, "Run intake", controller, 0.5);
+    public static final Control brakeButton =
+        new Control(XboxController.Button.kA, "Brake", controller);
+    public static final Control resetRotationButton =
+        new Control(XboxController.Button.kBack, "Reset field rotation", controller);
 
-      Button(int ID, double triggerDetent) {
-        this.buttonID = ID;
-        this.buttonAction = "";
-        this.triggerDetent = triggerDetent;
-      }
-
-      Button(int ID) {
-        this(ID, 0);
-      }
-
-      private int getButtonID() {
-        return this.buttonID;
-      }
-
-      private double getTriggerDetent() {
-        return this.triggerDetent;
-      }
-
-      private JoystickButton buildButton(String action) {
-        buttonAction = action;
-        return new JoystickButton(joystick, getButtonID());
-      }
-
-      private Trigger buildTrigger(String action) {
-        // "Trigger" referring to the type of button, not the WPI class
-        buttonAction = action;
-        return new Trigger(() -> joystick.getRawAxis(getButtonID()) > getTriggerDetent());
-      }
-
-      private String getButtonAction() {
-        return this.buttonAction;
-      }
-    };
-
-    private static final Joystick joystick = new Joystick(driverJoystickPort);
-    private static final XboxController rumbleController = new XboxController(driverJoystickPort);
-
-    private static final Button orientationButton = Button.Start; // Toggle swerve orientation
-    private static final Button outtakeButton = Button.RB; // Run outtake
-    private static final Button intakeButton = Button.LT; // Run intake
-    private static final Button brakeButton = Button.A; // Brake
-    private static final Button resetRotationButton = Button.Back; // Reset field rotation
-
-    private static final int xTranslationAxis = 0;
-    private static final int yTranslationAxis = 1;
-    private static final int rotationAxis = 4;
-
-    // TODO: Tune curves to driver preference
     private static final ControlCurve xTranslationCurve = new ControlCurve(0.85, 0.05, 0.85, 0.1);
     private static final ControlCurve yTranslationCurve = new ControlCurve(0.85, 0.05, 0.85, 0.1);
     private static final ControlCurve rotationCurve = new ControlCurve(0.8, 0, 1, 0.1);
 
-    public static Supplier<Double> getXTranslationSupplier() {
-      // This axis is inverted
-      return () -> xTranslationCurve.calculate(-joystick.getRawAxis(xTranslationAxis));
-    }
-
-    public static Supplier<Double> getYTranslationSupplier() {
-      // This axis is inverted
-      return () -> yTranslationCurve.calculate(-joystick.getRawAxis(yTranslationAxis));
-    }
-
-    public static Supplier<Double> getRotationSupplier() {
-      // This axis is inverted
-      return () -> rotationCurve.calculate(-joystick.getRawAxis(rotationAxis));
-    }
-
-    public static JoystickButton getOrientationButton() {
-      return orientationButton.buildButton("Toggle swerve orientation");
-    }
-
-    public static Trigger getIntakeButton() {
-      return intakeButton.buildTrigger("Intake");
-    }
-
-    public static JoystickButton getOuttakeButton() {
-      return outtakeButton.buildButton("Outtake");
-    }
-
-    public static JoystickButton getBrakeButton() {
-      return brakeButton.buildButton("Brake");
-    }
-
-    public static JoystickButton getResetRotationButton() {
-      return resetRotationButton.buildButton("Reset Rotation");
-    }
+    public static final Control xTranslationAxis =
+        new Control(XboxController.Axis.kLeftX, "X Translation", controller, xTranslationCurve);
+    public static final Control yTranslationAxis =
+        new Control(XboxController.Axis.kLeftY, "Y Translation", controller, yTranslationCurve);
+    public static final Control rotationAxis =
+        new Control(XboxController.Axis.kRightX, "Rotation", controller, rotationCurve);
 
     public static void setRumble(double rumbleIntensity) {
-      rumbleController.setRumble(RumbleType.kBothRumble, rumbleIntensity);
+      controller.setRumble(RumbleType.kBothRumble, rumbleIntensity);
     }
   }
 
   public static final class Operator {
-    private static enum Button {
-      A(1),
-      B(2),
-      X(3),
-      Y(4),
-      LB(5), // Left Bumper
-      RB(6), // Right Bumper
-      LT(2, 0.5), // Left Trigger
-      RT(3, 0.5), // Right Trigger
-      Back(7),
-      Start(8),
-      LJ(9), // Left Joystick Button
-      RJ(10), // Right Joystick Button
-      POVUP(0),
-      POVDOWN(180),
-      POVLEFT(270),
-      POVRIGHT(90);
-
-      private final int buttonID;
-      private String buttonAction;
-      private final double triggerDetent; // Percentage where axis is triggered as a button
-
-      Button(int ID, double triggerDetent) {
-        this.buttonID = ID;
-        this.buttonAction = "";
-        this.triggerDetent = triggerDetent;
-      }
-
-      Button(int ID) {
-        this(ID, 0);
-      }
-
-      private int getButtonID() {
-        return this.buttonID;
-      }
-
-      private double getTriggerDetent() {
-        return this.triggerDetent;
-      }
-
-      private JoystickButton buildButton(String action) {
-        buttonAction = action;
-        return new JoystickButton(joystick, getButtonID());
-      }
-
-      private Trigger buildTrigger(String action) {
-        // "Trigger" referring to the type of button, not the WPI class
-        buttonAction = action;
-        return new Trigger(() -> joystick.getRawAxis(getButtonID()) > getTriggerDetent());
-      }
-
-      private String getButtonAction() {
-        return this.buttonAction;
-      }
-    };
-
-    private static final Joystick joystick = new Joystick(operatorJoystickPort);
+    private static final XboxController controller = new XboxController(operatorJoystickPort);
   }
 
-  public static void putControllerButtons() {
-    ShuffleboardLayout driverButtonsLayout =
-        Shuffleboard.getTab("Controls")
-            .getLayout("Driver Buttons", BuiltInLayouts.kList)
-            .withSize(2, 5)
-            .withPosition(0, 0)
-            .withProperties(Map.of("Label position", "HIDDEN")); // hide labels for Variables;
+  // --- OI UTILITIES -- //
 
-    ShuffleboardLayout operatorButtonsLayout =
-        Shuffleboard.getTab("Controls")
-            .getLayout("Operator Buttons", BuiltInLayouts.kList)
-            .withSize(2, 5)
-            .withPosition(2, 0)
-            .withProperties(Map.of("Label position", "HIDDEN")); // hide labels for Variables;
+  public static Supplier<Double> getAxisSupplier(Control axis) {
+    if (axis.getType() != Control.ControlType.AXIS) {
+      DriverStation.reportWarning(axis.getAction() + " is not an axis", true);
+      return () -> 0d;
+    }
+    return () -> axis.getCurve().calculate(axis.getController().getRawAxis(axis.getId()));
+  }
 
-    for (Driver.Button button : Driver.Button.values()) {
-      driverButtonsLayout.add(
-          String.valueOf(button.getButtonID()),
-          "Button " + button.toString() + ": " + button.getButtonAction());
+  public static JoystickButton getButton(Control button) {
+    if (button.getType() != Control.ControlType.BUTTON) {
+      DriverStation.reportWarning(button.getAction() + " is not a button", true);
+    }
+    return new JoystickButton(button.getController(), button.getId());
+  }
+
+  public static POVButton getPOVButton(Control povButton) {
+    if (povButton.getType() != Control.ControlType.POVBUTTON) {
+      DriverStation.reportWarning(povButton.getAction() + " is not a POV button", true);
+    }
+    return new POVButton(povButton.getController(), povButton.getId());
+  }
+
+  public static Trigger getTrigger(Control trigger) {
+    // "Trigger" referring to the type of button, not the WPI class
+    if (trigger.getType() != Control.ControlType.TRIGGER) {
+      DriverStation.reportWarning(trigger.getAction() + " is not a trigger", true);
+      return new Trigger(() -> false);
+    }
+    return new Trigger(
+        () -> trigger.getController().getRawAxis(trigger.getId()) > trigger.getDetent());
+  }
+
+  private static class Control {
+    private enum ControlType {
+      AXIS,
+      BUTTON,
+      POVBUTTON,
+      TRIGGER
     }
 
-    for (Operator.Button button : Operator.Button.values()) {
-      operatorButtonsLayout.add(
-          String.valueOf(button.getButtonID() + Operator.Button.values().length),
-          "Button " + button.toString() + ": " + button.getButtonAction());
+    private int id;
+    private String action;
+    private String name; // Refers to button name
+    private XboxController controller;
+    private ControlCurve curve;
+    private double detent; // Percentage where axis is triggered as a button
+    private ControlType type;
+
+    private Control(
+        int id, String action, String name, XboxController controller, ControlType type) {
+      this.id = id;
+      this.action = action;
+      this.name = name;
+      this.controller = controller;
+      this.type = type;
+      putControl();
+    }
+
+    Control(
+        XboxController.Axis axis, String action, XboxController controller, ControlCurve curve) {
+      this(axis.value, action, axis.name(), controller, ControlType.AXIS);
+      this.curve = curve;
+    }
+
+    Control(XboxController.Axis axis, String action, XboxController controller) {
+      this(axis, action, controller, new ControlCurve(1, 0, 0, 0));
+    }
+
+    Control(XboxController.Button button, String action, XboxController controller) {
+      this(button.value, action, button.name(), controller, ControlType.BUTTON);
+    }
+
+    Control(double povAngle, String action, XboxController controller) {
+      this((int) povAngle, action, "POV " + povAngle, controller, ControlType.POVBUTTON);
+    }
+
+    Control(XboxController.Axis axis, String action, XboxController controller, double detent) {
+      this(axis.value, action, axis.name(), controller, ControlType.TRIGGER);
+      this.detent = detent;
+    }
+
+    private int getId() {
+      return id;
+    }
+
+    private String getAction() {
+      return action;
+    }
+
+    private String getName() {
+      return name;
+    }
+
+    private XboxController getController() {
+      return controller;
+    }
+
+    private ControlCurve getCurve() {
+      return curve;
+    }
+
+    private double getDetent() {
+      return detent;
+    }
+
+    private ControlType getType() {
+      return type;
+    }
+
+    private void putControl() {
+      if (controller.getPort() == driverJoystickPort) {
+        driverControlsLayout.add(
+            "Driver" + String.valueOf(getId()),
+            type.toString() + " " + getName() + ": " + getAction());
+      }
+      if (controller.getPort() == operatorJoystickPort) {
+        operatorControlsLayout.add(
+            "Operator" + String.valueOf(getId()),
+            type.toString() + " " + getName() + ": " + getAction());
+      }
     }
   }
 
   public static class ControlCurve {
-    private double ySaturation; // Maximum output, in percentage of possible output
-    private double yIntercept; // Minimum output, in percentage of saturation
-    private double curvature; // Curvature shift between linear and cubic
-    private double deadzone; // Range of input that will always return zero output
+    private final double ySaturation; // Maximum output, in percentage of possible output
+    private final double yIntercept; // Minimum output, in percentage of saturation
+    private final double curvature; // Curvature shift between linear and cubic
+    private final double deadzone; // Range of input that will always return zero output
+    private final boolean inverted;
 
-    public ControlCurve(double ySaturation, double yIntercept, double curvature, double deadzone) {
+    public ControlCurve(
+        double ySaturation,
+        double yIntercept,
+        double curvature,
+        double deadzone,
+        boolean inverted) {
       this.ySaturation = ySaturation;
       this.yIntercept = yIntercept;
       this.curvature = curvature;
       this.deadzone = deadzone;
+      this.inverted = inverted;
+    }
+
+    public ControlCurve(double ySaturation, double yIntercept, double curvature, double deadzone) {
+      this(ySaturation, yIntercept, curvature, deadzone, false);
     }
 
     public double calculate(double input) {
       /* https://www.desmos.com/calculator/w6ovblmmqj
-      Two equations, separated by a ternary
-      The first is the deadzone
+      First is the deadzone
       y = 0 {|x| < d}
       The second is the curve
       y = a(sign(x) * b + (1 - b) * (c * x^3 + (1 - c) * x)) {|x| >= d}
@@ -249,11 +216,27 @@ public class OI {
       d = deadzone
       and 0 <= a,b,c,d < 1
       */
-      return Math.abs(input) < deadzone
-          ? 0
-          : ySaturation
-              * (Math.signum(input) * yIntercept
-                  + (1 - yIntercept) * (curvature * Math.pow(input, 3) + (1 - curvature) * input));
+      if (Math.abs(input) < deadzone) {
+        return 0;
+      }
+      return (inverted ? -1 : 1)
+          * ySaturation
+          * (Math.signum(input) * yIntercept
+              + (1 - yIntercept) * (curvature * Math.pow(input, 3) + (1 - curvature) * input));
     }
   }
+
+  private static ShuffleboardLayout driverControlsLayout =
+      Shuffleboard.getTab("Controls")
+          .getLayout("Driver Controls", BuiltInLayouts.kList)
+          .withSize(2, 5)
+          .withPosition(0, 0)
+          .withProperties(Map.of("Label position", "HIDDEN")); // hide labels for Variables;
+
+  private static ShuffleboardLayout operatorControlsLayout =
+      Shuffleboard.getTab("Controls")
+          .getLayout("Operator Controls", BuiltInLayouts.kList)
+          .withSize(2, 5)
+          .withPosition(2, 0)
+          .withProperties(Map.of("Label position", "HIDDEN")); // hide labels for Variables;
 }
