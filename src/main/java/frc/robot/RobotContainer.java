@@ -74,10 +74,6 @@ public class RobotContainer {
     Trigger intakeButton = m_driverController.leftTrigger(0.3);
     intakeButton.whileTrue(new IntakeCommand(intakeSubsystem));
 
-    m_driverController
-        .y()
-        .onTrue(signalingSubsystem.run(() -> signalingSubsystem.startAmplification(false)));
-
     // Swerve config
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(

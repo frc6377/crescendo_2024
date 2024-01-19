@@ -31,11 +31,8 @@ public class SignalingSubsystem extends SubsystemBase {
 
   private int tick;
   private int patternTick;
-  private final Timer amplifierTimer;
   private final Timer rumbleTimer;
   private double rumbleEndTime = 0;
-  private boolean isAllianceAmplified;
-  private boolean isOpponentAmplified;
 
   private DisablePattern disablePattern = DisablePattern.getRandom();
 
@@ -46,10 +43,7 @@ public class SignalingSubsystem extends SubsystemBase {
 
     tick = 0;
     patternTick = 0;
-    amplifierTimer = new Timer();
     rumbleTimer = new Timer();
-    isAllianceAmplified = false;
-    isOpponentAmplified = false;
 
     // Initialize LED Strip
     ledStrip = new AddressableLED(ID);
@@ -70,28 +64,6 @@ public class SignalingSubsystem extends SubsystemBase {
       driverRumbleConsumer.accept(0.0);
       setFullStrip(RGB.BLACK);
     }
-    // Alliance Amplification Timer
-    if (isAllianceAmplified) {
-      displayAmplificationTimer(
-          10 - (int) amplifierTimer.get(),
-          getColorFromAlliance(AllianceColor.getFromInt((int) allianceSubscriber.get())));
-      if (amplifierTimer.get() > 10) {
-        isAllianceAmplified = false;
-        amplifierTimer.reset();
-        startSignal(Constants.AMPLIFICATION_RUMBLE_TIME, Constants.AMPLIFICATION_RUMBLE_INTENSITY);
-      }
-    }
-    // Opponent Amplification Timer
-    else if (isOpponentAmplified) {
-      displayAmplificationTimer(
-          10 - (int) amplifierTimer.get(),
-          getColorFromAlliance(AllianceColor.getFromInt((int) allianceSubscriber.get())));
-      if (amplifierTimer.get() > 10) {
-        isOpponentAmplified = false;
-        amplifierTimer.reset();
-        startSignal(Constants.AMPLIFICATION_RUMBLE_TIME, Constants.AMPLIFICATION_RUMBLE_INTENSITY);
-      }
-    }
   }
 
   private RGB getColorFromAlliance(AllianceColor alliance) {
@@ -101,27 +73,6 @@ public class SignalingSubsystem extends SubsystemBase {
       return RGB.BLUE;
     }
     return RGB.YELLOW;
-  }
-
-  public void startAmplification(final boolean isOpposingTeam) {
-    amplifierTimer.reset();
-    amplifierTimer.start();
-    startSignal(Constants.AMPLIFICATION_RUMBLE_TIME, Constants.AMPLIFICATION_RUMBLE_INTENSITY);
-    if (isOpposingTeam) {
-      isOpponentAmplified = true;
-    } else {
-      isAllianceAmplified = true;
-    }
-  }
-
-  public void endAmplification(final boolean isOpposingTeam) {
-    if (isOpposingTeam) {
-      isOpponentAmplified = false;
-    } else {
-      isAllianceAmplified = false;
-    }
-    amplifierTimer.reset();
-    startSignal(Constants.AMPLIFICATION_RUMBLE_TIME, Constants.AMPLIFICATION_RUMBLE_INTENSITY);
   }
 
   private void startSignal(final double time, final double intensity) {
@@ -153,14 +104,6 @@ public class SignalingSubsystem extends SubsystemBase {
   private void setSection(final RGB rgb, final int startID, final int count) {
     for (var i = Math.max(startID, 0); i < Math.min(startID + count, numberOfLEDS); i++) {
       ledBuffer.setRGB(i, rgb.red, rgb.green, rgb.blue);
-    }
-    ledStrip.setData(ledBuffer);
-  }
-
-  private void displayAmplificationTimer(final int timeRemaining, final RGB rgb) {
-    for (var i = 0; i <= numberOfLEDS / 10; i++) {
-      setSection(rgb, i * 10, timeRemaining);
-      setSection(RGB.BLACK, i * 10 + timeRemaining, 10 - timeRemaining);
     }
     ledStrip.setData(ledBuffer);
   }
