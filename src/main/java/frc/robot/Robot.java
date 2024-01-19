@@ -54,7 +54,7 @@ public class Robot extends LoggedRobot {
               new WPILOGWriter(
                   LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
         }
-      } catch (Exception StringIndexOutOfBoundsException) {
+      } catch (StringIndexOutOfBoundsException e) {
         System.out.println("No log file found, simulating as normal.");
       }
     }
