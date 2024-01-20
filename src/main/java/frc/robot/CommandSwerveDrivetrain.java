@@ -73,18 +73,18 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
       if (alignmentRotation != null) {
         return new SwerveRequest.FieldCentricFacingAngle()
             .withTargetDirection(alignmentRotation)
-            .withDriveRequestType(DriveRequestType.Velocity)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
             .withVelocityX(xSpeed)
             .withVelocityY(ySpeed);
       }
       return new SwerveRequest.FieldCentric()
-          .withDriveRequestType(DriveRequestType.Velocity)
+          .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
           .withVelocityX(xSpeed)
           .withVelocityY(ySpeed)
           .withRotationalRate(rotationSpeed);
     }
     return new SwerveRequest.RobotCentric()
-        .withDriveRequestType(DriveRequestType.Velocity)
+        .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
         .withVelocityX(xSpeed)
         .withVelocityY(ySpeed)
         .withRotationalRate(rotationSpeed);
