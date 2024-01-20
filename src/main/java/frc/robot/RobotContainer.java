@@ -76,9 +76,12 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-
-    Trigger intakeButton = m_driverController.leftTrigger(0.3);
-    intakeButton.whileTrue(new IntakeCommand(intakeSubsystem));
+    Trigger turretButton = m_driverController.leftTrigger(0.3);
+    turretButton.whileTrue(new IntakeCommand(intakeSubsystem, "TURRET"));
+    Trigger trapButton = m_driverController.rightTrigger(0.3);
+    trapButton.whileTrue(new IntakeCommand(intakeSubsystem, "TRAP"));
+    Trigger reverseButton  = m_driverController.x();
+    reverseButton.whileTrue(new IntakeCommand(intakeSubsystem, "REVERSE"));
 
     // Swerve config
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically

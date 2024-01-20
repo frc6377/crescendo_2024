@@ -12,14 +12,16 @@ import frc.robot.subsystems.IntakeSubsystem;
 public class IntakeCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final IntakeSubsystem intakeSubsystem;
+  private String pos;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public IntakeCommand(final IntakeSubsystem intakeSubsystem) {
+  public IntakeCommand(final IntakeSubsystem intakeSubsystem, String pos) {
     this.intakeSubsystem = intakeSubsystem;
+    this.pos = pos;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intakeSubsystem);
   }
@@ -31,7 +33,15 @@ public class IntakeCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intakeSubsystem.setIntakeSpeed(Constants.IntakeConstants.INTAKE_PERCENTAGE);
+    if (pos.equals("TURRET")) {
+      intakeSubsystem.setIntakeSpeed(Constants.IntakeConstants.INTAKE_PERCENTAGE);
+    }
+    else if (pos.equals("TRAP")) {
+      intakeSubsystem.reverseChooser(Constants.IntakeConstants.INTAKE_PERCENTAGE);
+    }
+    else {
+      intakeSubsystem.reverseIntake(Constants.IntakeConstants.INTAKE_PERCENTAGE);
+    }
   }
 
   // Called once the command ends or is interrupted.
