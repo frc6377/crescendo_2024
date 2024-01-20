@@ -62,8 +62,12 @@ public class SignalingSubsystem extends SubsystemBase {
     if (rumbleTimer.get() > rumbleEndTime) {
       rumbleTimer.reset();
       driverRumbleConsumer.accept(0.0);
-      setFullStrip(RGB.BLACK);
+      resetLEDs();
     }
+  }
+
+  private void resetLEDs() {
+    setFullStrip(RGB.BLACK);
   }
 
   private RGB getColorFromAlliance(AllianceColor alliance) {
