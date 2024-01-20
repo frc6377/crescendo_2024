@@ -21,11 +21,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.IntakeCommand;
-import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.config.DynamicRobotConfig;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.color.SignalingSubsystem;
 import java.util.HashMap;
 
@@ -41,13 +40,12 @@ public class RobotContainer {
       Math.PI; // Half a rotation per second max angular velocity
 
   // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final HowdyXboxController m_driverController =
       new HowdyXboxController(OperatorConstants.kDriverControllerPort);
-  private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
+  private final SwerveSubsystem drivetrain;
 
   private final SignalingSubsystem signalingSubsystem =
       new SignalingSubsystem(1, m_driverController::setRumble);
@@ -60,7 +58,9 @@ public class RobotContainer {
   // driving in open loop
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-  private final Telemetry logger = new Telemetry(MaxSpeed);
+  private final Telemetry logger;
+
+  private final DynamicRobotConfig dynamicRobotConfig;
 
   private final RobotStateManager robotStateManager = new RobotStateManager();
 
@@ -69,6 +69,9 @@ public class RobotContainer {
   private HashMap<String, Command> autonCommands = new HashMap<String, Command>();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    dynamicRobotConfig = new DynamicRobotConfig();
+    drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
+    logger = new Telemetry(MaxSpeed);
     // Configure the trigger bindings
     configureBindings();
     autonCommands.put("Shoot", autonTest());
@@ -91,18 +94,6 @@ public class RobotContainer {
 
     Trigger intakeButton = m_driverController.leftTrigger(0.3);
     intakeButton.whileTrue(new IntakeCommand(intakeSubsystem));
-
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
-
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-
-    m_driverController
-        .y()
-        .onTrue(signalingSubsystem.run(() -> signalingSubsystem.startAmplification(false)));
 
     // Swerve config
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
