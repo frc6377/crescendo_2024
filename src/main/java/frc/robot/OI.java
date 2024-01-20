@@ -22,19 +22,20 @@ public class OI {
     private static final XboxController controller = new XboxController(driverJoystickPort);
 
     public static final Control orientationButton =
-        new Control(XboxController.Button.kStart, "Toggle swerve orientation", controller);
+        new Control(XboxController.Button.kBack, "Toggle swerve orientation", controller);
     public static final Control outtakeButton =
         new Control(XboxController.Button.kRightBumper, "Run outtake", controller);
     public static final Control intakeTrigger =
-        new Control(XboxController.Axis.kLeftTrigger, "Run intake", controller, 0.5);
+        new Control(XboxController.Axis.kRightTrigger, "Run intake", controller, 0.5);
     public static final Control brakeButton =
         new Control(XboxController.Button.kA, "Brake", controller);
     public static final Control resetRotationButton =
-        new Control(XboxController.Button.kBack, "Reset field rotation", controller);
+        new Control(XboxController.Button.kStart, "Reset field rotation", controller);
 
-    private static final ControlCurve xTranslationCurve = new ControlCurve(0.85, 0.05, 0.85, 0.1);
-    private static final ControlCurve yTranslationCurve = new ControlCurve(0.85, 0.05, 0.85, 0.1);
-    private static final ControlCurve rotationCurve = new ControlCurve(0.8, 0, 1, 0.1);
+    private static final ControlCurve xTranslationCurve = new ControlCurve(0.85, 0, 0, 0.0, true);
+    private static final ControlCurve yTranslationCurve = new ControlCurve(0.85, 0, 0, 0.0);
+    public static final ControlCurve translationMagnitudeCurve = new ControlCurve(0.85, 0, 1, 0.1);
+    private static final ControlCurve rotationCurve = new ControlCurve(0.8, 0, 1, 0.1, true);
 
     public static final Control xTranslationAxis =
         new Control(XboxController.Axis.kLeftX, "X Translation", controller, xTranslationCurve);
@@ -229,14 +230,14 @@ public class OI {
   private static ShuffleboardLayout driverControlsLayout =
       Shuffleboard.getTab("Controls")
           .getLayout("Driver Controls", BuiltInLayouts.kList)
-          .withSize(2, 5)
+          .withSize(3, 5)
           .withPosition(0, 0)
           .withProperties(Map.of("Label position", "HIDDEN")); // hide labels for Variables;
 
   private static ShuffleboardLayout operatorControlsLayout =
       Shuffleboard.getTab("Controls")
           .getLayout("Operator Controls", BuiltInLayouts.kList)
-          .withSize(2, 5)
-          .withPosition(2, 0)
+          .withSize(3, 5)
+          .withPosition(3, 0)
           .withProperties(Map.of("Label position", "HIDDEN")); // hide labels for Variables;
 }
