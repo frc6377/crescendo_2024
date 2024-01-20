@@ -83,7 +83,7 @@ public class OI {
       return new Trigger(() -> false);
     }
     return new Trigger(
-        () -> trigger.getController().getRawAxis(trigger.getId()) > trigger.getDetent());
+        () -> trigger.getController().getRawAxis(trigger.getId()) > trigger.getThreshold());
   }
 
   private static class Control {
@@ -99,7 +99,7 @@ public class OI {
     private String name; // Refers to button name
     private XboxController controller;
     private ControlCurve curve;
-    private double detent; // Percentage where axis is triggered as a button
+    private double threshold; // Percentage where axis is triggered as a button
     private ControlType type;
 
     private Control(
@@ -130,9 +130,9 @@ public class OI {
       this((int) povAngle, action, "POV " + povAngle, controller, ControlType.POVBUTTON);
     }
 
-    Control(XboxController.Axis axis, String action, XboxController controller, double detent) {
+    Control(XboxController.Axis axis, String action, XboxController controller, double threshold) {
       this(axis.value, action, axis.name(), controller, ControlType.TRIGGER);
-      this.detent = detent;
+      this.threshold = threshold;
     }
 
     private int getId() {
@@ -155,8 +155,8 @@ public class OI {
       return curve;
     }
 
-    private double getDetent() {
-      return detent;
+    private double getThreshold() {
+      return threshold;
     }
 
     private ControlType getType() {
