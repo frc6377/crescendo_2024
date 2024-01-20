@@ -8,7 +8,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
-
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.Notifier;
@@ -25,7 +25,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
   private static final double kSimLoopPeriod = 0.005; // 5 ms
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
-  private SwerveDriveKinematics kinematics = new SwerveDriveKinematics();//TODO need translations
+  private SwerveDriveKinematics kinematics;
+  private Translation2d[] kinematicsTranslations = new Translation2d[4];
 
   public CommandSwerveDrivetrain(
       SwerveDrivetrainConstants driveTrainConstants,
@@ -35,20 +36,36 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    
+
+    for (int i = 0; i < 4; i++) {
+      kinematicsTranslations[i] = new Translation2d(modules[i].LocationX, modules[i].LocationY);
+    }
+    kinematics =
+        new SwerveDriveKinematics(
+            kinematicsTranslations[0],
+            kinematicsTranslations[1],
+            kinematicsTranslations[2],
+            kinematicsTranslations[3]); // there has to be a better way to do this
+
     AutoBuilder.configureHolonomic(
-      () -> super.getState().Pose,
-      (a) -> super.seedFieldRelative(a), 
-      () -> getChassisSpeeds(), 
-      (a) -> applyRequest(() -> new SwerveRequest.FieldCentric().withVelocityX(a.vxMetersPerSecond).withVelocityY(a.vyMetersPerSecond).withRotationalDeadband(a.omegaRadiansPerSecond)), 
-      new HolonomicPathFollowerConfig(0, 0, new ReplanningConfig(true, true)), //TODO constants
-      () -> true, 
-      this);
+        () -> super.getState().Pose,
+        (a) -> super.seedFieldRelative(a),
+        () -> getChassisSpeeds(),
+        (a) ->
+            applyRequest(
+                () ->
+                    new SwerveRequest.FieldCentric()
+                        .withVelocityX(a.vxMetersPerSecond)
+                        .withVelocityY(a.vyMetersPerSecond)
+                        .withRotationalDeadband(a.omegaRadiansPerSecond)),
+        new HolonomicPathFollowerConfig(2, 0.47383085589748, new ReplanningConfig(true, true)),
+        () -> true,
+        this);
   }
 
   public CommandSwerveDrivetrain(
       SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
-      this(driveTrainConstants, 0, modules);
+    this(driveTrainConstants, 0, modules);
   }
 
   private void startSimThread() {
