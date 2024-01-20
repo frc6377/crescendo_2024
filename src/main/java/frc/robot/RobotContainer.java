@@ -17,8 +17,6 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.config.DynamicRobotConfig;
-import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.color.SignalingSubsystem;
