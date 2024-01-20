@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import java.util.NoSuchElementException;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -54,8 +55,8 @@ public class Robot extends LoggedRobot {
               new WPILOGWriter(
                   LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
         }
-      } catch (Exception StringIndexOutOfBoundsException) {
-        System.out.println("No log file found, simulating as normal.");
+      } catch (NoSuchElementException | StringIndexOutOfBoundsException ex) {
+        System.out.println("No log file found, simulating as normal. \n");
       }
     }
 
