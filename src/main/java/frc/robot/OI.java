@@ -166,12 +166,12 @@ public class OI {
     private void putControl() {
       if (controller.getPort() == driverJoystickPort) {
         driverControlsLayout.add(
-            "Driver" + String.valueOf(getId()),
+            "Driver " + getType().toString() + " " + String.valueOf(getId()),
             type.toString() + " " + getName() + ": " + getAction());
       }
       if (controller.getPort() == operatorJoystickPort) {
         operatorControlsLayout.add(
-            "Operator" + String.valueOf(getId()),
+            "Operator " + getType().toString() + " " + String.valueOf(getId()),
             type.toString() + " " + getName() + ": " + getAction());
       }
     }
