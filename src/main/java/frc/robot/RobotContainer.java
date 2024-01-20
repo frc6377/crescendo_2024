@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.Autos;
-import frc.robot.commands.IntakeCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -55,8 +54,8 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
-    OI.getTrigger(OI.Driver.intakeTrigger).whileTrue(new IntakeCommand(intakeSubsystem));
-
+    OI.getTrigger(OI.Driver.intakeTrigger).whileTrue(intakeSubsystem.getIntakeCommand());
+    OI.getButton(OI.Driver.outtakeButton).whileTrue(intakeSubsystem.getOuttakeCommand());
     // Swerve config
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(
@@ -68,7 +67,13 @@ public class RobotContainer {
     OI.getButton(OI.Driver.brakeButton)
         .whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
     OI.getButton(OI.Driver.resetRotationButton)
-        .onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
+        .onTrue(
+            drivetrain.runOnce(
+                () ->
+                    drivetrain.seedFieldRelative(
+                        new Pose2d(
+                            drivetrain.getState().Pose.getTranslation(),
+                            Rotation2d.fromDegrees(270)))));
     OI.getButton(OI.Driver.orientationButton)
         .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));

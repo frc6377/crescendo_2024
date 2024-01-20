@@ -4,6 +4,7 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -66,6 +67,13 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
   // xSpeed, ySpeed, rotationSpeed should be axes with range -1<0<1
   public SwerveRequest getDriveRequest(double xSpeed, double ySpeed, double rotationSpeed) {
+    double magnitude = OI.Driver.translationMagnitudeCurve.calculate(Math.hypot(xSpeed, ySpeed));
+    Rotation2d rotation = new Rotation2d(xSpeed, ySpeed);
+    xSpeed = magnitude * Math.cos(rotation.getRadians());
+    ySpeed = magnitude * Math.sin(rotation.getRadians());
+    if (xSpeed == 0 && ySpeed == 0 && rotationSpeed == 0) {
+      return new SwerveRequest.Idle();
+    }
     xSpeed *= maxSpeed;
     ySpeed *= maxSpeed;
     rotationSpeed *= maxAngularRate;
@@ -74,17 +82,20 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return new SwerveRequest.FieldCentricFacingAngle()
             .withTargetDirection(alignmentRotation)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+            .withSteerRequestType(SteerRequestType.MotionMagicExpo)
             .withVelocityX(xSpeed)
             .withVelocityY(ySpeed);
       }
       return new SwerveRequest.FieldCentric()
           .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+          .withSteerRequestType(SteerRequestType.MotionMagicExpo)
           .withVelocityX(xSpeed)
           .withVelocityY(ySpeed)
           .withRotationalRate(rotationSpeed);
     }
     return new SwerveRequest.RobotCentric()
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+        .withSteerRequestType(SteerRequestType.MotionMagicExpo)
         .withVelocityX(xSpeed)
         .withVelocityY(ySpeed)
         .withRotationalRate(rotationSpeed);
