@@ -12,6 +12,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 public class IntakeCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final IntakeSubsystem intakeSubsystem;
+
   private String pos;
 
   /**
@@ -35,11 +36,9 @@ public class IntakeCommand extends Command {
   public void execute() {
     if (pos.equals("TURRET")) {
       intakeSubsystem.setIntakeSpeed(Constants.IntakeConstants.INTAKE_PERCENTAGE);
-    }
-    else if (pos.equals("TRAP")) {
+    } else if (pos.equals("TRAP")) {
       intakeSubsystem.reverseChooser(Constants.IntakeConstants.INTAKE_PERCENTAGE);
-    }
-    else {
+    } else {
       intakeSubsystem.reverseIntake(Constants.IntakeConstants.INTAKE_PERCENTAGE);
     }
   }

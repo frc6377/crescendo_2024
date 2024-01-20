@@ -17,7 +17,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public IntakeSubsystem() {
     intakeMotor = new CANSparkMax(Constants.IntakeConstants.INTAKE_MOTOR_ID, MotorType.kBrushless);
-    chooserMotor = new CANSparkMax(Constants.IntakeConstants.INTAKE_CHOOSER_ID, MotorType.kBrushless);
+    chooserMotor =
+        new CANSparkMax(Constants.IntakeConstants.INTAKE_CHOOSER_ID, MotorType.kBrushless);
     intakeMotor.restoreFactoryDefaults();
     chooserMotor.restoreFactoryDefaults();
     intakeMotor.setSmartCurrentLimit(40);
@@ -33,8 +34,8 @@ public class IntakeSubsystem extends SubsystemBase {
         });
   }
 
-
-  //TODO: Add check to make sure turret is below 45 degrees before running & add photogate when implemented.
+  // TODO: Add check to make sure turret is below 45 degrees before running & add photogate when
+  // implemented.
   public void setIntakeSpeed(double speed) {
     intakeMotor.set(speed);
   }

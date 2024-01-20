@@ -80,7 +80,7 @@ public class RobotContainer {
     turretButton.whileTrue(new IntakeCommand(intakeSubsystem, "TURRET"));
     Trigger trapButton = m_driverController.rightTrigger(0.3);
     trapButton.whileTrue(new IntakeCommand(intakeSubsystem, "TRAP"));
-    Trigger reverseButton  = m_driverController.x();
+    Trigger reverseButton = m_driverController.x();
     reverseButton.whileTrue(new IntakeCommand(intakeSubsystem, "REVERSE"));
 
     // Swerve config
