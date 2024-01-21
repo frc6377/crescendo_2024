@@ -2,7 +2,9 @@ package frc.robot.stateManagement;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import java.util.Optional;
 
@@ -12,6 +14,7 @@ public class RobotStateManager extends SubsystemBase {
 
   // End Game
   private boolean isEndGame = false;
+  private Trigger endGameStart;
 
   // Note State
   private NoteState noteState = NoteState.NO_NOTE;
@@ -19,7 +22,13 @@ public class RobotStateManager extends SubsystemBase {
   // Placement Mode
   private PlacementMode placementMode = PlacementMode.SPEAKER;
 
-  public RobotStateManager() {}
+  public RobotStateManager() {
+    endGameStart =
+        new Trigger(
+            () ->
+                (DriverStation.getMatchTime() < Constants.END_GAME_WARNING_TIME
+                    && DriverStation.isTeleopEnabled()));
+  }
 
   @Override
   public void periodic() {
@@ -30,13 +39,7 @@ public class RobotStateManager extends SubsystemBase {
             alliance.get().equals(Alliance.Red) ? AllianceColor.RED : AllianceColor.BLUE;
       }
     }
-    if (!isEndGame) {
-      double matchTimer = DriverStation.getMatchTime();
-      boolean isTeleopEnabled = DriverStation.isTeleopEnabled();
-      if (matchTimer < Constants.END_GAME_WARNING_TIME && isTeleopEnabled) {
-        isEndGame = true;
-      }
-    }
+    endGameStart.onTrue(new InstantCommand(() -> isEndGame = true));
   }
 
   // Note State
