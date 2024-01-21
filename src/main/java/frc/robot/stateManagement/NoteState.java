@@ -7,7 +7,7 @@ public enum NoteState {
   LOADING(10),
   CHAMBER(20),
   READY_TO_FIRE(30),
-  AMP(40);
+  READY_TO_PLACE(40);
 
   private final int integerValue;
 
