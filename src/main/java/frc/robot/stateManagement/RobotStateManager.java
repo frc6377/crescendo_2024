@@ -3,6 +3,7 @@ package frc.robot.stateManagement;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import java.util.Optional;
 
 public class RobotStateManager extends SubsystemBase {
@@ -32,7 +33,7 @@ public class RobotStateManager extends SubsystemBase {
     if (!isEndGame) {
       double matchTimer = DriverStation.getMatchTime();
       boolean isTeleopEnabled = DriverStation.isTeleopEnabled();
-      if (matchTimer < 20 && isTeleopEnabled) {
+      if (matchTimer < Constants.END_GAME_WARNING_TIME && isTeleopEnabled) {
         isEndGame = true;
       }
     }
