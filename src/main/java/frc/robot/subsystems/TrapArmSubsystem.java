@@ -9,10 +9,10 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TrapArmConstants;
+import frc.robot.networktables.DebugEntry;
 
 public class TrapArmSubsystem extends SubsystemBase {
   // Wrist motors
@@ -38,6 +38,11 @@ public class TrapArmSubsystem extends SubsystemBase {
   // P, I, D, Iz, FF
   private Double[] basePID = {36e-5, 5e-7, 1e-4, 0.0, 2e-6};
   private Double[] scoringPID = {36e-5, 5e-7, 1e-4, 0.0, 2e-6};
+
+  private DebugEntry<Boolean> sourceLog;
+  private DebugEntry<Boolean> groundLog;
+  private DebugEntry<Boolean> baseLog;
+  private DebugEntry<Boolean> scoringLog;
 
   // States
   public static enum TrapArmState {
@@ -113,7 +118,10 @@ public class TrapArmSubsystem extends SubsystemBase {
     scoringBreak = new DigitalInput(TrapArmConstants.scoringBreak_ID);
 
     // SmartDashboard
-    SmartDashboard.putBoolean("Arm Zeroed", (baseBreak.get() && scoringBreak.get()));
+    sourceLog = new DebugEntry<Boolean>(baseBreak.get(), "Bace Limit Switch", this);
+    groundLog = new DebugEntry<Boolean>(baseBreak.get(), "Bace Limit Switch", this);
+    baseLog = new DebugEntry<Boolean>(baseBreak.get(), "Bace Limit Switch", this);
+    scoringLog = new DebugEntry<Boolean>(baseBreak.get(), "Bace Limit Switch", this);
   }
 
   // Commands
@@ -169,14 +177,20 @@ public class TrapArmSubsystem extends SubsystemBase {
     return startEnd(
         () -> {
           if (!baseBreak.get()) {
-            baseMotor1.getPIDController().setReference(10, ControlType.kVelocity);
-            baseMotor2.getPIDController().setReference(10, ControlType.kVelocity);
+            baseMotor1
+                .getPIDController()
+                .setReference(TrapArmConstants.armZeroingSpeed, ControlType.kVelocity);
+            baseMotor2
+                .getPIDController()
+                .setReference(TrapArmConstants.armZeroingSpeed, ControlType.kVelocity);
           } else {
             baseMotor1.stopMotor();
             baseMotor2.stopMotor();
           }
           if (!scoringBreak.get()) {
-            scoringMotor.getPIDController().setReference(10, ControlType.kVelocity);
+            scoringMotor
+                .getPIDController()
+                .setReference(TrapArmConstants.armZeroingSpeed, ControlType.kVelocity);
           } else {
             scoringMotor.stopMotor();
           }
@@ -208,10 +222,9 @@ public class TrapArmSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putBoolean("Source Beam Break", sourceBreak.get());
-    SmartDashboard.putBoolean("Intake Beam Break", sourceBreak.get());
-    SmartDashboard.putBoolean("Base Beam Break", sourceBreak.get());
-    SmartDashboard.putBoolean("Scoring Beam Break", sourceBreak.get());
-    SmartDashboard.putBoolean("Arm Zeroed", (baseBreak.get() && scoringBreak.get()));
+    sourceLog.log(sourceBreak.get());
+    groundLog.log(groundBreak.get());
+    baseLog.log(baseBreak.get());
+    scoringLog.log(sourceBreak.get());
   }
 }

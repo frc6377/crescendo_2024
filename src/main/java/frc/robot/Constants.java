@@ -38,6 +38,7 @@ public final class Constants {
     // Speeds
     public static final Double rollerIntakeSpeed = 0.25;
     public static final Double rollerScoringSpeed = 0.4;
+    public static final int armZeroingSpeed = 10; // RPM
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
