@@ -26,7 +26,6 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
   private SwerveDriveKinematics kinematics;
-  private Translation2d[] kinematicsTranslations = new Translation2d[4];
 
   public SwerveSubsystem(
       SwerveDrivetrainConstants driveTrainConstants,
@@ -37,15 +36,11 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
       startSimThread();
     }
 
+    Translation2d[] kinematicsTranslations = new Translation2d[4];
     for (int i = 0; i < 4; i++) {
       kinematicsTranslations[i] = new Translation2d(modules[i].LocationX, modules[i].LocationY);
     }
-    kinematics =
-        new SwerveDriveKinematics(
-            kinematicsTranslations[0],
-            kinematicsTranslations[1],
-            kinematicsTranslations[2],
-            kinematicsTranslations[3]); // there has to be a better way to do this
+    kinematics = new SwerveDriveKinematics(kinematicsTranslations);
 
     AutoBuilder.configureHolonomic(
         () -> super.getState().Pose,
