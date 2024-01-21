@@ -5,7 +5,6 @@
 package frc.robot;
 
 import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -20,8 +19,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.IntakeCommand;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -35,30 +32,15 @@ import java.util.HashMap;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private static final double MaxSpeed = 6; // 6 meters per second desired top speed
-  private static final double MaxAngularRate =
-      Math.PI; // Half a rotation per second max angular velocity
 
   // The robot's subsystems and commands are defined here...
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final HowdyXboxController m_driverController =
-      new HowdyXboxController(OperatorConstants.kDriverControllerPort);
   private final SwerveSubsystem drivetrain;
 
   private final SignalingSubsystem signalingSubsystem =
-      new SignalingSubsystem(1, m_driverController::setRumble);
-
-  private final SwerveRequest.FieldCentric drive =
-      new SwerveRequest.FieldCentric()
-          .withDeadband(MaxSpeed * 0.1)
-          .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-          .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
-  // driving in open loop
-  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-  private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-  private final Telemetry logger;
+      new SignalingSubsystem(1, OI.Driver::setRumble);
 
   private final DynamicRobotConfig dynamicRobotConfig;
 
@@ -71,7 +53,6 @@ public class RobotContainer {
   public RobotContainer() {
     dynamicRobotConfig = new DynamicRobotConfig();
     drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
-    logger = new Telemetry(MaxSpeed);
     // Configure the trigger bindings
     configureBindings();
     registerCommands();
@@ -90,44 +71,33 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-
-    Trigger intakeButton = m_driverController.leftTrigger(0.3);
-    intakeButton.whileTrue(new IntakeCommand(intakeSubsystem));
-
+    OI.getTrigger(OI.Driver.intakeTrigger).whileTrue(intakeSubsystem.getIntakeCommand());
+    OI.getButton(OI.Driver.outtakeButton).whileTrue(intakeSubsystem.getOuttakeCommand());
     // Swerve config
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(
             () ->
-                drive
-                    .withVelocityX(-m_driverController.getLeftY() * MaxSpeed) // Drive forward with
-                    // negative Y (forward)
-                    .withVelocityY(
-                        -m_driverController.getLeftX()
-                            * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(
-                        -m_driverController.getRightX()
-                            * MaxAngularRate) // Drive counterclockwise with negative X (left)
-            ));
-
-    m_driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
-    m_driverController
-        .b()
-        .whileTrue(
-            drivetrain.applyRequest(
+                drivetrain.getDriveRequest(
+                    OI.getAxisSupplier(OI.Driver.xTranslationAxis).get(),
+                    OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
+                    OI.getAxisSupplier(OI.Driver.rotationAxis).get())));
+    OI.getButton(OI.Driver.brakeButton)
+        .whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
+    OI.getButton(OI.Driver.resetRotationButton)
+        .onTrue(
+            drivetrain.runOnce(
                 () ->
-                    point.withModuleDirection(
-                        new Rotation2d(
-                            -m_driverController.getLeftY(), -m_driverController.getLeftX()))));
-
-    // reset the field-centric heading on left bumper press
-    m_driverController
-        .leftBumper()
-        .onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
+                    drivetrain.seedFieldRelative(
+                        new Pose2d(
+                            drivetrain.getState().Pose.getTranslation(),
+                            Rotation2d.fromDegrees(270)))));
+    OI.getButton(OI.Driver.orientationButton)
+        .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
+    // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     }
-    drivetrain.registerTelemetry(logger::telemeterize);
   }
 
   // Register commands for auton
