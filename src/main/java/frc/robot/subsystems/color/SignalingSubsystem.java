@@ -6,9 +6,9 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.AllianceColor;
 import frc.robot.Constants;
 import frc.robot.subsystems.color.patterns.FireFlyPattern;
 import frc.robot.subsystems.color.patterns.PatternNode;
@@ -66,10 +66,10 @@ public class SignalingSubsystem extends SubsystemBase {
     }
   }
 
-  private RGB getColorFromAlliance(AllianceColor alliance) {
-    if (alliance == AllianceColor.RED) {
+  private RGB getColorFromAlliance(Alliance alliance) {
+    if (alliance == Alliance.Red) {
       return RGB.RED;
-    } else if (alliance == AllianceColor.BLUE) {
+    } else if (alliance == Alliance.Blue) {
       return RGB.BLUE;
     }
     return RGB.PURPLE;

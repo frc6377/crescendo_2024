@@ -43,7 +43,7 @@ public class RobotContainer {
 
   private final SignalingSubsystem signalingSubsystem =
       new SignalingSubsystem(1, m_driverController::setRumble);
-    
+
   private final TrapArmSubsystem trapArmSubsystem = new TrapArmSubsystem();
 
   private final SwerveRequest.FieldCentric drive =
@@ -58,7 +58,7 @@ public class RobotContainer {
 
   private final DynamicRobotConfig dynamicRobotConfig;
 
-  private final RobotStateManager robotStateManager = new RobotStateManager();
+  // private final RobotStateManager robotStateManager = new RobotStateManager();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {

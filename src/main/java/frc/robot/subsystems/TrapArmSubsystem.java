@@ -5,11 +5,11 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
+import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TrapArmConstants;
@@ -37,22 +37,22 @@ public class TrapArmSubsystem extends SubsystemBase {
 
   // PID
   //                             P      I     D     Iz   FF
-  private Double[] basePID =    {36e-5, 5e-7, 1e-4, 0.0, 2e-6};
+  private Double[] basePID = {36e-5, 5e-7, 1e-4, 0.0, 2e-6};
   private Double[] scoringPID = {36e-5, 5e-7, 1e-4, 0.0, 2e-6};
 
   // States
-  public static enum TrapArmState{
-    STOWED(      0.0, 0.0, 0.0),
-    FROM_INTAKE( 0.3, 0.0, 0.0),
-    FROM_SOURCE( 0.4, 0.0, 1.0),
-    TRAP_SCORE(  0.0, 1.0, 2.0),
-    AMP_SCORE(   0.0, 0.0, 0.0);
+  public static enum TrapArmState {
+    STOWED(0.0, 0.0, 0.0),
+    FROM_INTAKE(0.3, 0.0, 0.0),
+    FROM_SOURCE(0.4, 0.0, 1.0),
+    TRAP_SCORE(0.0, 1.0, 2.0),
+    AMP_SCORE(0.0, 0.0, 0.0);
 
     private Double wristPose;
     private Double basePose;
     private Double scoringPose;
 
-    TrapArmState(Double wrist, Double base, Double scoring){
+    TrapArmState(Double wrist, Double base, Double scoring) {
       this.wristPose = wrist;
       this.basePose = base;
       this.scoringPose = scoring;
@@ -70,7 +70,6 @@ public class TrapArmSubsystem extends SubsystemBase {
       return scoringPose;
     }
   };
-
 
   /** Creates a new TrapArm. */
   public TrapArmSubsystem() {
@@ -106,82 +105,81 @@ public class TrapArmSubsystem extends SubsystemBase {
 
     scoringMotor = new CANSparkMax(TrapArmConstants.scoringMotor_ID, MotorType.kBrushless);
     scoringMotor.restoreFactoryDefaults();
-    scoringMotor.getPIDController().setP(basePID[0]);
-    scoringMotor.getPIDController().setI(basePID[1]);
-    scoringMotor.getPIDController().setD(basePID[2]);
-    scoringMotor.getPIDController().setIZone(basePID[3]);
-    scoringMotor.getPIDController().setFF(basePID[4]);
+    scoringMotor.getPIDController().setP(scoringPID[0]);
+    scoringMotor.getPIDController().setI(scoringPID[1]);
+    scoringMotor.getPIDController().setD(scoringPID[2]);
+    scoringMotor.getPIDController().setIZone(scoringPID[3]);
+    scoringMotor.getPIDController().setFF(scoringPID[4]);
 
     scoringBreak = new DigitalInput(TrapArmConstants.scoringBreak_ID);
+
+    // Smartdashboard
+    SmartDashboard.putNumberArray("Base PID", basePID);
+    SmartDashboard.putNumberArray("Scoring PID", scoringPID);
   }
 
-
-  // Commands 
+  // Commands
   public Command intakeSource() {
     return run(
-      () -> {
-        if (!sourceBreak.get()) {
-          setTrapArm(TrapArmState.FROM_SOURCE);
-          rollerMotor.set(TrapArmConstants.rollerIntakeSpeed);
-        } else {
-          stop();
-        }
-      }
-    );
+        () -> {
+          if (!sourceBreak.get()) {
+            setTrapArm(TrapArmState.FROM_SOURCE);
+            rollerMotor.set(TrapArmConstants.rollerIntakeSpeed);
+          } else {
+            stop();
+          }
+        });
   }
 
   public Command intakeGround() {
     return run(
-      () -> {
-        if (!groundBreak.get()) {
-          setTrapArm(TrapArmState.FROM_INTAKE);
-          rollerMotor.set(-TrapArmConstants.rollerIntakeSpeed);
-        } else {
-          stop();
-        }
-      }
-    );
+        () -> {
+          if (!groundBreak.get()) {
+            setTrapArm(TrapArmState.FROM_INTAKE);
+            rollerMotor.set(-TrapArmConstants.rollerIntakeSpeed);
+          } else {
+            stop();
+          }
+        });
   }
 
   public Command scoreAMP() {
     return run(
-      () -> {
-        setTrapArm(TrapArmState.AMP_SCORE);
-        rollerMotor.set(TrapArmConstants.rollerScoringSpeed);
-      }
-    );
+        () -> {
+          setTrapArm(TrapArmState.AMP_SCORE);
+          rollerMotor.set(TrapArmConstants.rollerScoringSpeed);
+        });
   }
 
   public Command scoreTrap() {
     return run(
-      () -> {
-        setTrapArm(TrapArmState.TRAP_SCORE);
-        rollerMotor.set(TrapArmConstants.rollerScoringSpeed);
-      }
-    );
+        () -> {
+          setTrapArm(TrapArmState.TRAP_SCORE);
+          rollerMotor.set(TrapArmConstants.rollerScoringSpeed);
+        });
   }
 
   public Command setTrapArm(TrapArmState state) {
     return run(
-      () -> {
-        wristMotor.getPIDController().setReference(state.getWristPose(), ControlType.kPosition);
-        baseMotor1.getPIDController().setReference(state.getBasePose(), ControlType.kPosition);
-        baseMotor2.getPIDController().setReference(state.getBasePose(), ControlType.kPosition);
-        scoringMotor.getPIDController().setReference(state.getScoringPose(), ControlType.kPosition);
-      }
-    );
+        () -> {
+          wristMotor.getPIDController().setReference(state.getWristPose(), ControlType.kPosition);
+          baseMotor1.getPIDController().setReference(state.getBasePose(), ControlType.kPosition);
+          baseMotor2.getPIDController().setReference(state.getBasePose(), ControlType.kPosition);
+          scoringMotor
+              .getPIDController()
+              .setReference(state.getScoringPose(), ControlType.kPosition);
+        });
   }
 
   public Command stop() {
     return run(
-      () -> {
-        wristMotor.stopMotor();
-        baseMotor1.stopMotor();
-        baseMotor2.stopMotor();
-        scoringMotor.stopMotor();
-        rollerMotor.stopMotor();
-      }
-    );
+        () -> {
+          wristMotor.stopMotor();
+          baseMotor1.stopMotor();
+          baseMotor2.stopMotor();
+          scoringMotor.stopMotor();
+          rollerMotor.stopMotor();
+        });
   }
 
   @Override
