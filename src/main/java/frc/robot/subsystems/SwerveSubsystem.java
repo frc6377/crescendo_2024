@@ -15,6 +15,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -32,6 +34,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   private static final double maxSpeed = Units.feetToMeters(18.2); // Desired top speed
   private static final double maxAngularRate =
       Math.PI; // Max angular velocity in radians per second
+  private final double drivetrainRadius;
   private final Telemetry telemetry = new Telemetry(maxSpeed);
 
   private static boolean isFieldOriented = true;
@@ -50,6 +53,8 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
       startSimThread();
     }
 
+    drivetrainRadius = modules[0].LocationX * Math.sqrt(2);
+
     Translation2d[] kinematicsTranslations = new Translation2d[4];
     for (int i = 0; i < 4; i++) {
       kinematicsTranslations[i] = new Translation2d(modules[i].LocationX, modules[i].LocationY);
@@ -66,8 +71,11 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
                     .withVelocityX(a.vxMetersPerSecond)
                     .withVelocityY(a.vyMetersPerSecond)
                     .withRotationalRate(a.omegaRadiansPerSecond)),
-        new HolonomicPathFollowerConfig(2, 0.47383085589748, new ReplanningConfig(true, true)),
-        () -> DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red,
+        new HolonomicPathFollowerConfig(
+            maxSpeed * 0.85, drivetrainRadius, new ReplanningConfig(true, true)),
+        () ->
+            DriverStation.getAlliance().isPresent()
+                && DriverStation.getAlliance().get() == Alliance.Red,
         this);
     this.registerTelemetry(telemetry::telemeterize);
   }
