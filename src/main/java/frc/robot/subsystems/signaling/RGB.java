@@ -1,4 +1,4 @@
-package frc.robot.subsystems.color;
+package frc.robot.subsystems.signaling;
 
 import java.util.function.IntSupplier;
 

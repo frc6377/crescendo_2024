@@ -14,9 +14,10 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.Autos;
 import frc.robot.config.DynamicRobotConfig;
+import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.color.SignalingSubsystem;
+import frc.robot.subsystems.signaling.SignalingSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -25,6 +26,11 @@ import frc.robot.subsystems.color.SignalingSubsystem;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  private static final double MaxSpeed = 6; // 6 meters per second desired top speed
+  private static final double MaxAngularRate =
+      Math.PI; // Half a rotation per second max angular velocity
+
+  private final RobotStateManager robotStateManager = new RobotStateManager();
 
   // The robot's subsystems and commands are defined here...
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
@@ -33,11 +39,9 @@ public class RobotContainer {
   private final SwerveSubsystem drivetrain;
 
   private final SignalingSubsystem signalingSubsystem =
-      new SignalingSubsystem(1, OI.Driver::setRumble);
+      new SignalingSubsystem(1, OI.Driver::setRumble, robotStateManager);
 
   private final DynamicRobotConfig dynamicRobotConfig;
-
-  private final RobotStateManager robotStateManager = new RobotStateManager();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
