@@ -3,7 +3,7 @@ package frc.robot.stateManagement;
 import java.util.Arrays;
 
 public enum NoteState {
-  NO_TE(0),
+  NO_NOTE(0),
   LOADING(10),
   CHAMBER(20),
   READY_TO_FIRE(30),
@@ -23,6 +23,6 @@ public enum NoteState {
     return Arrays.stream(NoteState.values())
         .filter(v -> v.getAsInt() == integerValue)
         .findFirst()
-        .orElse(NO_TE);
+        .orElse(NO_NOTE);
   }
 }

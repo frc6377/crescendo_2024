@@ -33,6 +33,8 @@ public class RobotContainer {
   private static final double MaxAngularRate =
       Math.PI; // Half a rotation per second max angular velocity
 
+  private final RobotStateManager robotStateManager = new RobotStateManager();
+
   // The robot's subsystems and commands are defined here...
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
@@ -42,7 +44,7 @@ public class RobotContainer {
   private final SwerveSubsystem drivetrain;
 
   private final SignalingSubsystem signalingSubsystem =
-      new SignalingSubsystem(1, m_driverController::setRumble);
+      new SignalingSubsystem(1, m_driverController::setRumble, robotStateManager);
 
   private final SwerveRequest.FieldCentric drive =
       new SwerveRequest.FieldCentric()
@@ -55,8 +57,6 @@ public class RobotContainer {
   private final Telemetry logger;
 
   private final DynamicRobotConfig dynamicRobotConfig;
-
-  private final RobotStateManager robotStateManager = new RobotStateManager();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
