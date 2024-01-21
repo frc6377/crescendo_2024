@@ -52,12 +52,11 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
         (a) -> super.seedFieldRelative(a),
         () -> getChassisSpeeds(),
         (a) ->
-            applyRequest(
-                () ->
-                    new SwerveRequest.FieldCentric()
-                        .withVelocityX(a.vxMetersPerSecond)
-                        .withVelocityY(a.vyMetersPerSecond)
-                        .withRotationalDeadband(a.omegaRadiansPerSecond)),
+            this.setControl(
+                new SwerveRequest.FieldCentric()
+                    .withVelocityX(a.vxMetersPerSecond)
+                    .withVelocityY(a.vyMetersPerSecond)
+                    .withRotationalRate(a.omegaRadiansPerSecond)),
         new HolonomicPathFollowerConfig(2, 0.47383085589748, new ReplanningConfig(true, true)),
         () -> true,
         this);
