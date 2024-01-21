@@ -36,6 +36,8 @@ public class RobotContainer {
   private final SignalingSubsystem signalingSubsystem =
       new SignalingSubsystem(1, OI.Driver::setRumble);
 
+  private final TrapArmSubsystem trapArmSubsystem = new TrapArmSubsystem();
+
   private final DynamicRobotConfig dynamicRobotConfig;
 
   // private final RobotStateManager robotStateManager = new RobotStateManager();
@@ -82,14 +84,10 @@ public class RobotContainer {
         .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
-    m_driverController.x().onTrue(trapArmSubsystem.intakeSource());
-    m_driverController.x().onFalse(trapArmSubsystem.stop());
-    m_driverController.y().onTrue(trapArmSubsystem.intakeGround());
-    m_driverController.y().onFalse(trapArmSubsystem.stop());
-    m_driverController.povUp().onTrue(trapArmSubsystem.scoreAMP());
-    m_driverController.povUp().onFalse(trapArmSubsystem.stop());
-    m_driverController.povDown().onTrue(trapArmSubsystem.scoreTrap());
-    m_driverController.povDown().onFalse(trapArmSubsystem.stop());
+    OI.getButton(OI.Driver.groundIntakeButton).onTrue(trapArmSubsystem.intakeGround());
+    OI.getButton(OI.Driver.sourceIntakeButton).onTrue(trapArmSubsystem.intakeSource());
+    OI.getButton(OI.Driver.ampScoreButton).onTrue(trapArmSubsystem.scoreAMP());
+    OI.getButton(OI.Driver.trapScoreButton).onTrue(trapArmSubsystem.scoreTrap());
 
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));

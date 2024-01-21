@@ -120,43 +120,47 @@ public class TrapArmSubsystem extends SubsystemBase {
 
   // Commands
   public Command intakeSource() {
-    return run(
+    return startEnd(
         () -> {
-          if (!sourceBreak.get()) {
             setTrapArm(TrapArmState.FROM_SOURCE);
             rollerMotor.set(TrapArmConstants.rollerIntakeSpeed);
-          } else {
-            stop();
-          }
-        });
+        },
+
+        () -> { stop(); }
+        );
   }
 
   public Command intakeGround() {
-    return run(
+    return startEnd(
         () -> {
-          if (!groundBreak.get()) {
             setTrapArm(TrapArmState.FROM_INTAKE);
             rollerMotor.set(-TrapArmConstants.rollerIntakeSpeed);
-          } else {
-            stop();
-          }
-        });
+        },
+
+        () -> { stop(); }
+        );
   }
 
   public Command scoreAMP() {
-    return run(
+    return startEnd(
         () -> {
-          setTrapArm(TrapArmState.AMP_SCORE);
-          rollerMotor.set(TrapArmConstants.rollerScoringSpeed);
-        });
+            setTrapArm(TrapArmState.AMP_SCORE);
+            rollerMotor.set(TrapArmConstants.rollerScoringSpeed);
+        },
+
+        () -> { stop(); }
+        );
   }
 
   public Command scoreTrap() {
-    return run(
+    return startEnd(
         () -> {
           setTrapArm(TrapArmState.TRAP_SCORE);
           rollerMotor.set(TrapArmConstants.rollerScoringSpeed);
-        });
+        },
+        
+        () -> { stop(); }
+        );
   }
 
   public Command setTrapArm(TrapArmState state) {
