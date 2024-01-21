@@ -8,12 +8,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -172,27 +167,25 @@ public class TrapArmSubsystem extends SubsystemBase {
 
   public Command zeroArm() {
     return startEnd(
-      () -> {
-        if (!baseBreak.get()) {
-          baseMotor1.getPIDController().setReference(10, ControlType.kVelocity);
-          baseMotor2.getPIDController().setReference(10, ControlType.kVelocity);
-        } else {
+        () -> {
+          if (!baseBreak.get()) {
+            baseMotor1.getPIDController().setReference(10, ControlType.kVelocity);
+            baseMotor2.getPIDController().setReference(10, ControlType.kVelocity);
+          } else {
+            baseMotor1.stopMotor();
+            baseMotor2.stopMotor();
+          }
+          if (!scoringBreak.get()) {
+            scoringMotor.getPIDController().setReference(10, ControlType.kVelocity);
+          } else {
+            scoringMotor.stopMotor();
+          }
+        },
+        () -> {
           baseMotor1.stopMotor();
           baseMotor2.stopMotor();
-        }
-        if (!scoringBreak.get()) {
-          scoringMotor.getPIDController().setReference(10, ControlType.kVelocity);
-        } else {
           scoringMotor.stopMotor();
-        }
-      },
-
-      () -> {
-        baseMotor1.stopMotor();
-        baseMotor2.stopMotor();
-        scoringMotor.stopMotor();
-      }
-    );
+        });
   }
 
   public Command setTrapArm(TrapArmState state) {
