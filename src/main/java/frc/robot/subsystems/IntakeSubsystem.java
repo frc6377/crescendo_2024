@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -31,6 +32,18 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void setIntakeSpeed(double speed) {
     intakeMotor.set(speed);
+  }
+
+  public Command getIntakeCommand() {
+    return buildCommand(Constants.IntakeConstants.INTAKE_PERCENTAGE);
+  }
+
+  public Command getOuttakeCommand() {
+    return buildCommand(-Constants.IntakeConstants.INTAKE_PERCENTAGE);
+  }
+
+  private Command buildCommand(double speed) {
+    return new StartEndCommand(() -> setIntakeSpeed(speed), () -> setIntakeSpeed(0), this);
   }
 
   @Override
