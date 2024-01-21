@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.OI;
+import frc.robot.Telemetry;
 import java.util.function.Supplier;
 
 /**
@@ -112,6 +114,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   public void toggleOrientation() {
     isFieldOriented = !isFieldOriented;
     if (!isFieldOriented) {
+      // robot oriented drive means we can't hold a field oriented heading
       endAlignment();
     }
   }

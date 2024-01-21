@@ -57,7 +57,7 @@ public class OI {
 
   public static Supplier<Double> getAxisSupplier(Control axis) {
     if (axis.getType() != Control.ControlType.AXIS) {
-      DriverStation.reportWarning(axis.getAction() + " is not an axis", true);
+      DriverStation.reportError(axis.getAction() + " is not an axis", true);
       return () -> 0d;
     }
     return () -> axis.getCurve().calculate(axis.getController().getRawAxis(axis.getId()));
@@ -65,14 +65,14 @@ public class OI {
 
   public static JoystickButton getButton(Control button) {
     if (button.getType() != Control.ControlType.BUTTON) {
-      DriverStation.reportWarning(button.getAction() + " is not a button", true);
+      DriverStation.reportError(button.getAction() + " is not a button", true);
     }
     return new JoystickButton(button.getController(), button.getId());
   }
 
   public static POVButton getPOVButton(Control povButton) {
     if (povButton.getType() != Control.ControlType.POVBUTTON) {
-      DriverStation.reportWarning(povButton.getAction() + " is not a POV button", true);
+      DriverStation.reportError(povButton.getAction() + " is not a POV button", true);
     }
     return new POVButton(povButton.getController(), povButton.getId());
   }
@@ -80,7 +80,7 @@ public class OI {
   public static Trigger getTrigger(Control trigger) {
     // "Trigger" referring to the type of button, not the WPI class
     if (trigger.getType() != Control.ControlType.TRIGGER) {
-      DriverStation.reportWarning(trigger.getAction() + " is not a trigger", true);
+      DriverStation.reportError(trigger.getAction() + " is not a trigger", true);
       return new Trigger(() -> false);
     }
     return new Trigger(
