@@ -31,10 +31,14 @@ public class OI {
         new Control(XboxController.Button.kA, "Brake", controller);
     public static final Control resetRotationButton =
         new Control(XboxController.Button.kStart, "Reset field rotation", controller);
-    public static final Control sourceIntakeButton = new Control(XboxController.Button.kX, "Intake Source", controller);
-    public static final Control groundIntakeButton = new Control(XboxController.Button.kY, "Intake Ground", controller);
-    public static final Control ampScoreButton = new Control(XboxController.Button.kLeftStick, "Score AMP", controller);
-    public static final Control trapScoreButton = new Control(XboxController.Button.kRightStick, "Score Trap", controller);
+    public static final Control sourceIntakeButton =
+        new Control(XboxController.Button.kX, "Intake Source", controller);
+    public static final Control groundIntakeButton =
+        new Control(XboxController.Button.kY, "Intake Ground", controller);
+    public static final Control ampScoreButton =
+        new Control(XboxController.Button.kLeftStick, "Score AMP", controller);
+    public static final Control trapScoreButton =
+        new Control(XboxController.Button.kRightStick, "Score Trap", controller);
 
     private static final ControlCurve xTranslationCurve = new ControlCurve(1, 0, 0, 0.0, true);
     private static final ControlCurve yTranslationCurve = new ControlCurve(1, 0, 0, 0.0);

@@ -88,10 +88,10 @@ public class RobotContainer {
         .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
-    OI.getButton(OI.Driver.groundIntakeButton).onTrue(trapArmSubsystem.intakeGround());
-    OI.getButton(OI.Driver.sourceIntakeButton).onTrue(trapArmSubsystem.intakeSource());
-    OI.getButton(OI.Driver.ampScoreButton).onTrue(trapArmSubsystem.scoreAMP());
-    OI.getButton(OI.Driver.trapScoreButton).onTrue(trapArmSubsystem.scoreTrap());
+    OI.getButton(OI.Driver.groundIntakeButton).whileTrue(trapArmSubsystem.intakeGround());
+    OI.getButton(OI.Driver.sourceIntakeButton).whileTrue(trapArmSubsystem.intakeSource());
+    OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapArmSubsystem.scoreAMP());
+    OI.getButton(OI.Driver.trapScoreButton).whileTrue(trapArmSubsystem.scoreTrap());
 
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));

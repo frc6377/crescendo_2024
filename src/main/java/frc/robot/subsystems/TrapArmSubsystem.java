@@ -10,8 +10,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TrapArmConstants;
@@ -85,7 +84,7 @@ public class TrapArmSubsystem extends SubsystemBase {
     sourceBreak = new DigitalInput(TrapArmConstants.sourceBreak_ID);
     groundBreak = new DigitalInput(TrapArmConstants.groundBreak_ID);
 
-    // Elevator
+    // Arm
     baseMotor1 = new CANSparkMax(TrapArmConstants.baseMotor1_ID, MotorType.kBrushless);
     baseMotor1.restoreFactoryDefaults();
     baseMotor1.getPIDController().setP(basePID[0]);
@@ -124,40 +123,44 @@ public class TrapArmSubsystem extends SubsystemBase {
     Shuffleboard.getTab("Trap Arm Tab").add("scoring I", scoringPID[1]).withPosition(6, 1);
     Shuffleboard.getTab("Trap Arm Tab").add("scoring D", scoringPID[2]).withPosition(7, 1);
     Shuffleboard.getTab("Trap Arm Tab").add("scoring FF", scoringPID[4]).withPosition(8, 1);
-  } 
+  }
 
   // Commands
   public Command intakeSource() {
     return startEnd(
         () -> {
+          if (!sourceBreak.get()) {
             setTrapArm(TrapArmState.FROM_SOURCE);
             rollerMotor.set(TrapArmConstants.rollerIntakeSpeed);
+          }
         },
-
-        () -> { stop(); }
-        );
+        () -> {
+          rollerMotor.stopMotor();
+        });
   }
 
   public Command intakeGround() {
     return startEnd(
         () -> {
+          if (!groundBreak.get()) {
             setTrapArm(TrapArmState.FROM_INTAKE);
             rollerMotor.set(-TrapArmConstants.rollerIntakeSpeed);
+          }
         },
-
-        () -> { stop(); }
-        );
+        () -> {
+          rollerMotor.stopMotor();
+        });
   }
 
   public Command scoreAMP() {
     return startEnd(
         () -> {
-            setTrapArm(TrapArmState.AMP_SCORE);
-            rollerMotor.set(TrapArmConstants.rollerScoringSpeed);
+          setTrapArm(TrapArmState.AMP_SCORE);
+          rollerMotor.set(TrapArmConstants.rollerScoringSpeed);
         },
-
-        () -> { stop(); }
-        );
+        () -> {
+          rollerMotor.stopMotor();
+        });
   }
 
   public Command scoreTrap() {
@@ -166,31 +169,25 @@ public class TrapArmSubsystem extends SubsystemBase {
           setTrapArm(TrapArmState.TRAP_SCORE);
           rollerMotor.set(TrapArmConstants.rollerScoringSpeed);
         },
-
-        () -> { stop(); }
-        );
+        () -> {
+          rollerMotor.stopMotor();
+        });
   }
 
   public Command setTrapArm(TrapArmState state) {
-    return run(
+    return startEnd(
         () -> {
           wristMotor.getPIDController().setReference(state.getWristPose(), ControlType.kPosition);
           baseMotor1.getPIDController().setReference(state.getBasePose(), ControlType.kPosition);
           baseMotor2.getPIDController().setReference(state.getBasePose(), ControlType.kPosition);
-          scoringMotor
-              .getPIDController()
-              .setReference(state.getScoringPose(), ControlType.kPosition);
-        });
-  }
-
-  public Command stop() {
-    return run(
+          scoringMotor.getPIDController().setReference(state.getScoringPose(), ControlType.kPosition);
+        },
+        
         () -> {
           wristMotor.stopMotor();
           baseMotor1.stopMotor();
           baseMotor2.stopMotor();
           scoringMotor.stopMotor();
-          rollerMotor.stopMotor();
         });
   }
 
