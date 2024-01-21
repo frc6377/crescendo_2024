@@ -1,7 +1,7 @@
-package frc.robot.subsystems.color.patterns;
+package frc.robot.subsystems.signaling.patterns;
 
 import frc.robot.Constants;
-import frc.robot.subsystems.color.RGB;
+import frc.robot.subsystems.signaling.RGB;
 
 public class BIFlag {
   public static int numberOfLEDS = Constants.LED_COUNT;

@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.stateManagement;
 
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.BooleanTopic;

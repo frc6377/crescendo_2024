@@ -17,9 +17,10 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.config.DynamicRobotConfig;
+import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.color.SignalingSubsystem;
+import frc.robot.subsystems.signaling.SignalingSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.color;
+package frc.robot.subsystems.signaling;
 
 import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.IntegerTopic;
@@ -8,12 +8,13 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.AllianceColor;
 import frc.robot.Constants;
-import frc.robot.subsystems.color.patterns.FireFlyPattern;
-import frc.robot.subsystems.color.patterns.PatternNode;
-import frc.robot.subsystems.color.patterns.RainbowPattern;
-import frc.robot.subsystems.color.patterns.TransFlag;
+import frc.robot.stateManagement.AllianceColor;
+import frc.robot.subsystems.signaling.patterns.FireFlyPattern;
+import frc.robot.subsystems.signaling.patterns.PatternNode;
+import frc.robot.subsystems.signaling.patterns.RainbowPattern;
+import frc.robot.subsystems.signaling.patterns.TransFlag;
+
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
