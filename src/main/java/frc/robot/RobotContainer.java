@@ -92,6 +92,7 @@ public class RobotContainer {
     OI.getButton(OI.Driver.sourceIntakeButton).whileTrue(trapArmSubsystem.intakeSource());
     OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapArmSubsystem.scoreAMP());
     OI.getButton(OI.Driver.trapScoreButton).whileTrue(trapArmSubsystem.scoreTrap());
+    OI.getButton(OI.Driver.zeroArm).whileTrue(trapArmSubsystem.zeroArm());
 
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));

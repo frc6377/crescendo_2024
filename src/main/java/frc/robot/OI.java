@@ -39,6 +39,7 @@ public class OI {
         new Control(XboxController.Button.kLeftStick, "Score AMP", controller);
     public static final Control trapScoreButton =
         new Control(XboxController.Button.kRightStick, "Score Trap", controller);
+    public static final Control zeroArm = new Control(XboxController.Button.kStart, "Zero Arm", controller);
 
     private static final ControlCurve xTranslationCurve = new ControlCurve(1, 0, 0, 0.0, true);
     private static final ControlCurve yTranslationCurve = new ControlCurve(1, 0, 0, 0.0);

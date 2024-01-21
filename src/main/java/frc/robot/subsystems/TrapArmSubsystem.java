@@ -8,9 +8,13 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TrapArmConstants;
@@ -113,16 +117,8 @@ public class TrapArmSubsystem extends SubsystemBase {
 
     scoringBreak = new DigitalInput(TrapArmConstants.scoringBreak_ID);
 
-    // Smartdashboard
-    Shuffleboard.getTab("Trap Arm Tab").add("Base P", basePID[0]).withPosition(5, 0);
-    Shuffleboard.getTab("Trap Arm Tab").add("Base I", basePID[1]).withPosition(6, 0);
-    Shuffleboard.getTab("Trap Arm Tab").add("Base D", basePID[2]).withPosition(7, 0);
-    Shuffleboard.getTab("Trap Arm Tab").add("Base FF", basePID[4]).withPosition(8, 0);
-
-    Shuffleboard.getTab("Trap Arm Tab").add("scoring P", scoringPID[0]).withPosition(5, 1);
-    Shuffleboard.getTab("Trap Arm Tab").add("scoring I", scoringPID[1]).withPosition(6, 1);
-    Shuffleboard.getTab("Trap Arm Tab").add("scoring D", scoringPID[2]).withPosition(7, 1);
-    Shuffleboard.getTab("Trap Arm Tab").add("scoring FF", scoringPID[4]).withPosition(8, 1);
+    // SmartDashboard
+    SmartDashboard.putBoolean("Arm Zeroed", (baseBreak.get() && scoringBreak.get()));
   }
 
   // Commands
@@ -156,7 +152,7 @@ public class TrapArmSubsystem extends SubsystemBase {
     return startEnd(
         () -> {
           setTrapArm(TrapArmState.AMP_SCORE);
-          rollerMotor.set(TrapArmConstants.rollerScoringSpeed);
+          rollerMotor.set(-TrapArmConstants.rollerScoringSpeed);
         },
         () -> {
           rollerMotor.stopMotor();
@@ -174,15 +170,41 @@ public class TrapArmSubsystem extends SubsystemBase {
         });
   }
 
+  public Command zeroArm() {
+    return startEnd(
+      () -> {
+        if (!baseBreak.get()) {
+          baseMotor1.getPIDController().setReference(10, ControlType.kVelocity);
+          baseMotor2.getPIDController().setReference(10, ControlType.kVelocity);
+        } else {
+          baseMotor1.stopMotor();
+          baseMotor2.stopMotor();
+        }
+        if (!scoringBreak.get()) {
+          scoringMotor.getPIDController().setReference(10, ControlType.kVelocity);
+        } else {
+          scoringMotor.stopMotor();
+        }
+      },
+
+      () -> {
+        baseMotor1.stopMotor();
+        baseMotor2.stopMotor();
+        scoringMotor.stopMotor();
+      }
+    );
+  }
+
   public Command setTrapArm(TrapArmState state) {
     return startEnd(
         () -> {
           wristMotor.getPIDController().setReference(state.getWristPose(), ControlType.kPosition);
           baseMotor1.getPIDController().setReference(state.getBasePose(), ControlType.kPosition);
           baseMotor2.getPIDController().setReference(state.getBasePose(), ControlType.kPosition);
-          scoringMotor.getPIDController().setReference(state.getScoringPose(), ControlType.kPosition);
+          scoringMotor
+              .getPIDController()
+              .setReference(state.getScoringPose(), ControlType.kPosition);
         },
-        
         () -> {
           wristMotor.stopMotor();
           baseMotor1.stopMotor();
@@ -193,6 +215,10 @@ public class TrapArmSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    SmartDashboard.putBoolean("Source Beam Break", sourceBreak.get());
+    SmartDashboard.putBoolean("Intake Beam Break", sourceBreak.get());
+    SmartDashboard.putBoolean("Base Beam Break", sourceBreak.get());
+    SmartDashboard.putBoolean("Scoring Beam Break", sourceBreak.get());
+    SmartDashboard.putBoolean("Arm Zeroed", (baseBreak.get() && scoringBreak.get()));
   }
 }
