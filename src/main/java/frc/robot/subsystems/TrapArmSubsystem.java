@@ -9,6 +9,8 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -34,9 +36,8 @@ public class TrapArmSubsystem extends SubsystemBase {
 
   // Encoders
   private final CANcoder wristEncoder;
-
   // PID
-  //                             P      I     D     Iz   FF
+  // P, I, D, Iz, FF
   private Double[] basePID = {36e-5, 5e-7, 1e-4, 0.0, 2e-6};
   private Double[] scoringPID = {36e-5, 5e-7, 1e-4, 0.0, 2e-6};
 
@@ -69,7 +70,7 @@ public class TrapArmSubsystem extends SubsystemBase {
     public Double getScoringPose() {
       return scoringPose;
     }
-  };
+  }
 
   /** Creates a new TrapArm. */
   public TrapArmSubsystem() {
@@ -114,9 +115,16 @@ public class TrapArmSubsystem extends SubsystemBase {
     scoringBreak = new DigitalInput(TrapArmConstants.scoringBreak_ID);
 
     // Smartdashboard
-    SmartDashboard.putNumberArray("Base PID", basePID);
-    SmartDashboard.putNumberArray("Scoring PID", scoringPID);
-  }
+    Shuffleboard.getTab("Trap Arm Tab").add("Base P", basePID[0]).withPosition(5, 0);
+    Shuffleboard.getTab("Trap Arm Tab").add("Base I", basePID[1]).withPosition(6, 0);
+    Shuffleboard.getTab("Trap Arm Tab").add("Base D", basePID[2]).withPosition(7, 0);
+    Shuffleboard.getTab("Trap Arm Tab").add("Base FF", basePID[4]).withPosition(8, 0);
+
+    Shuffleboard.getTab("Trap Arm Tab").add("scoring P", scoringPID[0]).withPosition(5, 1);
+    Shuffleboard.getTab("Trap Arm Tab").add("scoring I", scoringPID[1]).withPosition(6, 1);
+    Shuffleboard.getTab("Trap Arm Tab").add("scoring D", scoringPID[2]).withPosition(7, 1);
+    Shuffleboard.getTab("Trap Arm Tab").add("scoring FF", scoringPID[4]).withPosition(8, 1);
+  } 
 
   // Commands
   public Command intakeSource() {
@@ -158,7 +166,7 @@ public class TrapArmSubsystem extends SubsystemBase {
           setTrapArm(TrapArmState.TRAP_SCORE);
           rollerMotor.set(TrapArmConstants.rollerScoringSpeed);
         },
-        
+
         () -> { stop(); }
         );
   }
