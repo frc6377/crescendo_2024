@@ -15,16 +15,16 @@ import frc.robot.subsystems.TurretSubsystem;
 public class TurretMagicCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final TurretSubsystem turretSubsystem;
-  private final Rotation2d limelightRotation;
+  private final Pose2d limelightPose2d;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public TurretMagicCommand(final TurretSubsystem turretSubsystem, Rotation2d limelightRotation) {
+  public TurretMagicCommand(final TurretSubsystem turretSubsystem, Pose2d limelightPose2d) {
     this.turretSubsystem = turretSubsystem;
-    this.limelightRotation = limelightRotation;
+    this.limelightPose2d = limelightPose2d;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(turretSubsystem);
   }
@@ -36,13 +36,13 @@ public class TurretMagicCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    turretSubsystem.magicMethod(limelightRotation);
+    turretSubsystem.magicMethod(limelightPose2d.getRotation());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(final boolean interrupted) {
-    turretSubsystem.setTurretVelo(0.0);
+    turretSubsystem.stopTurret();
     turretSubsystem.setTurretPos(turretSubsystem.getTurretPos());
   }
 

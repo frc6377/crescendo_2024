@@ -11,13 +11,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.Turret.TurretCommand;
 import frc.robot.commands.Turret.TurretMagicCommand;
 import frc.robot.commands.Turret.TurretOdomCommand;
 import frc.robot.generated.TunerConstants;
@@ -79,7 +79,7 @@ public class RobotContainer {
     Trigger intakeButton = m_driverController.leftTrigger(0.3);
     intakeButton.whileTrue(new IntakeCommand(intakeSubsystem));
 
-    m_driverController.y().whileTrue(new TurretCommand(turretSubsystem));
+    m_driverController.y().whileTrue(new InstantCommand(turretSubsystem::TurretCommand));
     // m_driverController.x().whileTrue(new TurretOdomCommand(turretSubsystem, drivetrain.getPose2d()))
     // m_driverController.x().whileTrue(new TurretMagicCommand(turretSubsystem, limelightSubsystem.Pose2d));
 

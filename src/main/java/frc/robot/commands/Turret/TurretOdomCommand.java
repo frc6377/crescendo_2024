@@ -41,7 +41,7 @@ public class TurretOdomCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(final boolean interrupted) {
-    turretSubsystem.setTurretVelo(0.0);
+    turretSubsystem.stopTurret();
     turretSubsystem.setTurretPos(turretSubsystem.getTurretPos());
   }
 

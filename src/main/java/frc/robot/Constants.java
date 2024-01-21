@@ -20,6 +20,7 @@ public final class Constants {
 
   public static class TurretConstants {
     public static final int TURRET_MOTOR_ID = 7;
+    public static final int CANcoder_ID = 8; //replace with actual CANcoder ID
 
     // PID coefficients
     public static final double TURRET_KP = 5e-5;
@@ -29,15 +30,7 @@ public final class Constants {
     public static final double TURRET_KFF = 0.000156;
     public static final double TURRET_KMAXOUTPUT = 1;
     public static final double TURRET_KMINOUTPUT = -1;
-    public static final int TURRET_MAXRPM = 5700;
-
-    // Smart Motion Coefficients
-    public static final int TURRET_MAXVEL = 10; // rpm
-    public static final int TURRET_MAXACC = 1;
-    public static final int TURRET_SMARTMOTION_SLOT = 0;
-    public static final int TURRET_MINVEL = 0; // replace 0 with the actual value
-    public static final double TURRET_ALLOWEDERR = 0; // replace 0 with the actual value
-
+    public static final int TURRET_MAXRPM = 5700; 
   }
 
 
