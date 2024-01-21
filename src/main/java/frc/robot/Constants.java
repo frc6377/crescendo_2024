@@ -38,7 +38,8 @@ public final class Constants {
     public static final int scoringBreak_ID = 4;
 
     // Speeds
-    public static final Double rollerMoterSpeed = 0.25;
+    public static final Double rollerIntakeSpeed = 0.25;
+    public static final Double rollerScoringSpeed = 0.4;
   }
 
   // Rumble

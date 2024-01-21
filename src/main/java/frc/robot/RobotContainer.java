@@ -19,6 +19,7 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.TrapArmSubsystem;
 import frc.robot.subsystems.color.SignalingSubsystem;
 
 /**
@@ -42,6 +43,8 @@ public class RobotContainer {
 
   private final SignalingSubsystem signalingSubsystem =
       new SignalingSubsystem(1, m_driverController::setRumble);
+    
+  private final TrapArmSubsystem trapArmSubsystem = new TrapArmSubsystem();
 
   private final SwerveRequest.FieldCentric drive =
       new SwerveRequest.FieldCentric()
@@ -109,6 +112,15 @@ public class RobotContainer {
     m_driverController
         .leftBumper()
         .onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
+
+    m_driverController.x().onTrue(trapArmSubsystem.intakeSource());
+    m_driverController.x().onFalse(trapArmSubsystem.stop());
+    m_driverController.y().onTrue(trapArmSubsystem.intakeGround());
+    m_driverController.y().onFalse(trapArmSubsystem.stop());
+    m_driverController.povUp().onTrue(trapArmSubsystem.scoreAMP());
+    m_driverController.povUp().onFalse(trapArmSubsystem.stop());
+    m_driverController.povDown().onTrue(trapArmSubsystem.scoreTrap());
+    m_driverController.povDown().onFalse(trapArmSubsystem.stop());
 
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
