@@ -13,6 +13,8 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.Constants.TrapArmConstants;
 
 public class TrapArm extends SubsystemBase {
   // Wrist motors
@@ -59,26 +61,26 @@ public class TrapArm extends SubsystemBase {
   /** Creates a new TrapArm. */
   public TrapArm() {
     // Wrist
-    wristMotor = new CANSparkMax(1, MotorType.kBrushless);
+    wristMotor = new CANSparkMax(TrapArmConstants.wristMotor_ID, MotorType.kBrushless);
     wristMotor.restoreFactoryDefaults();
     wristEncoder = new CANcoder(6);
 
-    rollerMotor = new CANSparkMax(2, MotorType.kBrushless);
+    rollerMotor = new CANSparkMax(TrapArmConstants.rollerMoter_ID, MotorType.kBrushless);
     rollerMotor.restoreFactoryDefaults();
 
-    sourceBreak = new DigitalInput(1);
-    groundBreak = new DigitalInput(2);
+    sourceBreak = new DigitalInput(TrapArmConstants.sourceBreak_ID);
+    groundBreak = new DigitalInput(TrapArmConstants.groundBreak_ID);
 
     // Elevator
-    baseMotor1 = new CANSparkMax(3, MotorType.kBrushless);
+    baseMotor1 = new CANSparkMax(TrapArmConstants.baseMotor1_ID, MotorType.kBrushless);
     baseMotor1.restoreFactoryDefaults();
-    baseMotor2 = new CANSparkMax(4, MotorType.kBrushless);
+    baseMotor2 = new CANSparkMax(TrapArmConstants.baseMotor2_ID, MotorType.kBrushless);
     baseMotor2.restoreFactoryDefaults();
     baseMotor2.follow(baseMotor1);
-    baseBreak = new DigitalInput(3);
+    baseBreak = new DigitalInput(TrapArmConstants.baseBreak_ID);
 
-    scoringMotor = new CANSparkMax(5, MotorType.kBrushless);     
-    scoringBreak = new DigitalInput(4);
+    scoringMotor = new CANSparkMax(TrapArmConstants.scoringMotor_ID, MotorType.kBrushless);     
+    scoringBreak = new DigitalInput(TrapArmConstants.scoringBreak_ID);
 
     // States
     wristMotorPose = new HashMap<TrapArmState, Double>() {{
@@ -113,6 +115,33 @@ public class TrapArm extends SubsystemBase {
       put(TrapArmState.AMP_Score, 0.25);
     }};
 
+  }
+
+
+  // Commands 
+
+  public Command intakeSource() {
+    return run(
+      () -> {
+        rollerMotor.set(TrapArmConstants.rollerMoterSpeed);
+      }
+    );
+  }
+
+  public Command intakeGround() {
+    return run(
+      () -> {
+        rollerMotor.set(-TrapArmConstants.rollerMoterSpeed);
+      }
+    );
+  }
+
+  public Command intakeStop() {
+    return run(
+      () -> {
+        rollerMotor.stopMotor();
+      }
+    );
   }
 
   public Command fromSource() {
