@@ -57,7 +57,7 @@ public class RobotContainer {
     configureBindings();
     registerCommands();
     autoChooser = AutoBuilder.buildAutoChooser();
-    configTab.add("Auton Selection", autoChooser);
+    configTab.add("Auton Selection", autoChooser).withSize(3, 1);
     SmartDashboard.putBoolean("NamedCommand test", false);
   }
 
