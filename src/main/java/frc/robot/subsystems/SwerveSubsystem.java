@@ -62,7 +62,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
         () -> getChassisSpeeds(),
         (a) ->
             this.setControl(
-                new SwerveRequest.FieldCentric()
+                new SwerveRequest.RobotCentric()
                     .withVelocityX(a.vxMetersPerSecond)
                     .withVelocityY(a.vyMetersPerSecond)
                     .withRotationalRate(a.omegaRadiansPerSecond)),
