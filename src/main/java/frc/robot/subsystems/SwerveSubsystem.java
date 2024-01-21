@@ -67,7 +67,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
                     .withVelocityY(a.vyMetersPerSecond)
                     .withRotationalRate(a.omegaRadiansPerSecond)),
         new HolonomicPathFollowerConfig(2, 0.47383085589748, new ReplanningConfig(true, true)),
-        () -> true,
+        () -> DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red,
         this);
     this.registerTelemetry(telemetry::telemeterize);
   }
