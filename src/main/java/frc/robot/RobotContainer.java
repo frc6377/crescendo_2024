@@ -66,7 +66,7 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser;
   private ShuffleboardTab configTab = Shuffleboard.getTab("Config");
-  private HashMap<String, Command> autonCommands = new HashMap<String, Command>();
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     dynamicRobotConfig = new DynamicRobotConfig();
@@ -74,8 +74,7 @@ public class RobotContainer {
     logger = new Telemetry(MaxSpeed);
     // Configure the trigger bindings
     configureBindings();
-    autonCommands.put("Shoot", autonTest());
-    NamedCommands.registerCommands(autonCommands);
+    registerCommands();
     autoChooser = AutoBuilder.buildAutoChooser();
     configTab.add("Auton Selection", autoChooser);
     SmartDashboard.putBoolean("NamedCommand test", false);
@@ -129,6 +128,15 @@ public class RobotContainer {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     }
     drivetrain.registerTelemetry(logger::telemeterize);
+  }
+
+  // Register commands for auton
+  public void registerCommands() {
+    HashMap<String, Command> autonCommands = new HashMap<String, Command>();
+
+    autonCommands.put("Shoot", autonTest());
+
+    NamedCommands.registerCommands(autonCommands);
   }
 
   public void onDisabled() {
