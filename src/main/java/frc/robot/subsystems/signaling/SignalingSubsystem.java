@@ -1,8 +1,5 @@
-package frc.robot.subsystems.color;
+package frc.robot.subsystems.signaling;
 
-import edu.wpi.first.networktables.IntegerSubscriber;
-import edu.wpi.first.networktables.IntegerTopic;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -10,10 +7,12 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.color.patterns.FireFlyPattern;
-import frc.robot.subsystems.color.patterns.PatternNode;
-import frc.robot.subsystems.color.patterns.RainbowPattern;
-import frc.robot.subsystems.color.patterns.TransFlag;
+import frc.robot.stateManagement.AllianceColor;
+import frc.robot.stateManagement.RobotStateManager;
+import frc.robot.subsystems.signaling.patterns.FireFlyPattern;
+import frc.robot.subsystems.signaling.patterns.PatternNode;
+import frc.robot.subsystems.signaling.patterns.RainbowPattern;
+import frc.robot.subsystems.signaling.patterns.TransFlag;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
@@ -22,10 +21,6 @@ public class SignalingSubsystem extends SubsystemBase {
 
   private final AddressableLED ledStrip;
   private final AddressableLEDBuffer ledBuffer;
-
-  private final IntegerTopic allianceTopic =
-      NetworkTableInstance.getDefault().getIntegerTopic("ALLIANCE");
-  private final IntegerSubscriber allianceSubscriber = allianceTopic.subscribe(0);
 
   private static final int numberOfLEDS = Constants.LED_COUNT;
 
@@ -38,8 +33,14 @@ public class SignalingSubsystem extends SubsystemBase {
 
   private final Consumer<Double> driverRumbleConsumer;
 
-  public SignalingSubsystem(final int ID, final Consumer<Double> driverRumbleConsumer) {
+  private final RobotStateManager robotStateManager;
+
+  public SignalingSubsystem(
+      final int ID,
+      final Consumer<Double> driverRumbleConsumer,
+      final RobotStateManager robotStateManager) {
     this.driverRumbleConsumer = driverRumbleConsumer;
+    this.robotStateManager = robotStateManager;
 
     tick = 0;
     patternTick = 0;
@@ -62,12 +63,16 @@ public class SignalingSubsystem extends SubsystemBase {
     if (rumbleTimer.get() > rumbleEndTime) {
       rumbleTimer.reset();
       driverRumbleConsumer.accept(0.0);
-      setFullStrip(RGB.BLACK);
+      resetLEDs();
     }
   }
 
-  private RGB getColorFromAlliance(Alliance alliance) {
-    if (alliance == Alliance.Red) {
+  private void resetLEDs() {
+    setFullStrip(RGB.BLACK);
+  }
+
+  private RGB getColorFromAlliance(AllianceColor alliance) {
+    if (alliance == AllianceColor.RED) {
       return RGB.RED;
     } else if (alliance == Alliance.Blue) {
       return RGB.BLUE;

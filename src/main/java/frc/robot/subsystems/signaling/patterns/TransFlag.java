@@ -1,12 +1,17 @@
-package frc.robot.subsystems.color.patterns;
+package frc.robot.subsystems.signaling.patterns;
 
 import frc.robot.Constants;
-import frc.robot.subsystems.color.RGB;
+import frc.robot.subsystems.signaling.RGB;
 
-public class FireFlyPattern {
+public class TransFlag {
   public static int numberOfLEDS = Constants.LED_COUNT;
   private static final PatternNode[] pattern = {
-    new PatternNode(RGB.GREEN, 5), new PatternNode(RGB.WHITE, 5)
+    new PatternNode(RGB.BLACK, 1),
+    new PatternNode(RGB.HOWDY_BLUE, 4),
+    new PatternNode(RGB.PINK, 4),
+    new PatternNode(RGB.WHITE, 4),
+    new PatternNode(RGB.PINK, 4),
+    new PatternNode(RGB.HOWDY_BLUE, 4),
   };
   private static int patternLength;
 
