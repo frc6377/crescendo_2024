@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -20,6 +22,20 @@ public final class Constants {
 
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
+  }
+
+  public static class TrapArmConstants {
+    // IDs | TODO: get real device IDs
+    public static final int wristMotor_ID = 1;
+    public static final int rollerMoter_ID = 2;
+    public static final int baseMotor1_ID = 3;
+    public static final int baseMotor2_ID = 4;
+    public static final int scoringMotor_ID = 5;
+    public static final int wristEncoder_ID = 6;
+    public static final int sourceBreak_ID = 1;
+    public static final int groundBreak_ID = 2;
+    public static final int baseBreak_ID = 3;
+    public static final int scoringBreak_ID = 4;
   }
 
   // Rumble
