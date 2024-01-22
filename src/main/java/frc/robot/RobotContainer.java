@@ -18,13 +18,11 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.Turret.TurretMagicCommand;
-import frc.robot.commands.Turret.TurretOdomCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -79,9 +77,9 @@ public class RobotContainer {
     Trigger intakeButton = m_driverController.leftTrigger(0.3);
     intakeButton.whileTrue(new IntakeCommand(intakeSubsystem));
 
-    m_driverController.y().whileTrue(new InstantCommand(turretSubsystem::TurretCommand));
-    // m_driverController.x().whileTrue(new TurretOdomCommand(turretSubsystem, drivetrain.getPose2d()))
-    // m_driverController.x().whileTrue(new TurretMagicCommand(turretSubsystem, limelightSubsystem.Pose2d));
+    m_driverController.y().whileTrue(new InstantCommand(turretSubsystem::LockTurret));
+    // m_driverController.x().whileTrue(new TurretOdomCommand(turretSubsystem,
+    // drivetrain.getPose2d()))
 
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     new Trigger(m_exampleSubsystem::exampleCondition)
@@ -105,8 +103,6 @@ public class RobotContainer {
                         -m_driverController.getRightX()
                             * MaxAngularRate) // Drive counterclockwise with negative X (left)
             ));
-
-
 
     m_driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
     m_driverController

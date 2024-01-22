@@ -20,7 +20,7 @@ public final class Constants {
 
   public static class TurretConstants {
     public static final int TURRET_MOTOR_ID = 7;
-    public static final int CANcoder_ID = 8; //replace with actual CANcoder ID
+    public static final int CANcoder_ID = 8; // replace with actual CANcoder ID
 
     // PID coefficients
     public static final double TURRET_KP = 5e-5;
@@ -30,9 +30,9 @@ public final class Constants {
     public static final double TURRET_KFF = 0.000156;
     public static final double TURRET_KMAXOUTPUT = 1;
     public static final double TURRET_KMINOUTPUT = -1;
-    public static final int TURRET_MAXRPM = 5700; 
+    public static final double CONVERSION_FACTOR = 0.25; // for the revbot prototype turret
+    public static final int TURRET_MAXRPM = 5700;
   }
-
 
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
