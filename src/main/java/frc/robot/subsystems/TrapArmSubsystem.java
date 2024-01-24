@@ -9,6 +9,13 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TrapArmConstants;
@@ -43,6 +50,14 @@ public class TrapArmSubsystem extends SubsystemBase {
   private DebugEntry<Boolean> groundLog;
   private DebugEntry<Boolean> baseLog;
   private DebugEntry<Boolean> scoringLog;
+
+  private Mechanism2d armMechanism;
+  private MechanismRoot2d root;
+  private MechanismLigament2d baseMech;
+  private MechanismLigament2d scoringMech;
+  private MechanismLigament2d wristMech;
+
+  private ShuffleboardTab TrapArmTab = Shuffleboard.getTab("Trap Arm Tab");
 
   // States
   public static enum TrapArmState {
@@ -117,11 +132,26 @@ public class TrapArmSubsystem extends SubsystemBase {
 
     scoringBreak = new DigitalInput(TrapArmConstants.scoringBreak_ID);
 
+    // 2D Mechanism
+    armMechanism = new Mechanism2d(5, 5);
+    root = armMechanism.getRoot("Root", 2, 1);
+    baseMech =
+        root.append(new MechanismLigament2d("Base Arm", 1.5, 90, 3, new Color8Bit(Color.kBlue)));
+    scoringMech =
+        baseMech.append(
+            new MechanismLigament2d("Scoring Arm", 4.5, 0, 1, new Color8Bit(Color.kAqua)));
+    wristMech =
+        scoringMech.append(
+            new MechanismLigament2d("Wrist Mech", 3, -170, 2, new Color8Bit(Color.kRed)));
+    // baseMech.set
+
     // SmartDashboard
     sourceLog = new DebugEntry<Boolean>(baseBreak.get(), "Bace Limit Switch", this);
     groundLog = new DebugEntry<Boolean>(baseBreak.get(), "Bace Limit Switch", this);
     baseLog = new DebugEntry<Boolean>(baseBreak.get(), "Bace Limit Switch", this);
     scoringLog = new DebugEntry<Boolean>(baseBreak.get(), "Bace Limit Switch", this);
+
+    TrapArmTab.add("Trap Arm Mech", armMechanism);
   }
 
   // Commands
@@ -227,4 +257,7 @@ public class TrapArmSubsystem extends SubsystemBase {
     baseLog.log(baseBreak.get());
     scoringLog.log(sourceBreak.get());
   }
+
+  @Override
+  public void simulationPeriodic() {}
 }

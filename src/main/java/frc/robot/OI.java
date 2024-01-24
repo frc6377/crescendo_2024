@@ -21,14 +21,24 @@ public class OI {
   public static final class Driver {
     private static final XboxController controller = new XboxController(driverJoystickPort);
 
-    public static final Control orientationButton =
-        new Control(XboxController.Button.kBack, "Toggle swerve orientation", controller);
-    public static final Control outtakeButton =
-        new Control(XboxController.Button.kRightBumper, "Run outtake", controller);
-    public static final Control intakeTrigger =
-        new Control(XboxController.Axis.kRightTrigger, "Run intake", controller, 0.5);
+    // A B Y X Buttons
     public static final Control brakeButton =
         new Control(XboxController.Button.kA, "Brake", controller);
+    public static final Control B = new Control(XboxController.Button.kB, null, controller);
+    public static final Control Y = new Control(XboxController.Button.kY, null, controller);
+    public static final Control X = new Control(XboxController.Button.kX, null, controller);
+
+    // Bumpers & Triggers
+    public static final Control intakeTrigger =
+        new Control(XboxController.Axis.kLeftTrigger, "Run intake", controller, 0.5);
+    public static final Control RT =
+        new Control(XboxController.Axis.kRightTrigger, null, controller, 0.5);
+    public static final Control LB =
+        new Control(XboxController.Button.kLeftBumper, null, controller);
+    public static final Control outtakeButton =
+        new Control(XboxController.Button.kRightBumper, "Run outtake", controller);
+
+    // Start, End & Left/Right stick buttons
     public static final Control resetRotationButton =
         new Control(XboxController.Button.kStart, "Reset field rotation", controller);
     public static final Control sourceIntakeButton =
@@ -41,18 +51,28 @@ public class OI {
         new Control(XboxController.Button.kRightStick, "Score Trap", controller);
     public static final Control zeroArm =
         new Control(XboxController.Button.kB, "Zero Arm", controller);
+    public static final Control orientationButton =
+        new Control(XboxController.Button.kBack, "Toggle swerve orientation", controller);
+    public static final Control LSB =
+        new Control(XboxController.Button.kLeftStick, null, controller);
+    public static final Control RSB =
+        new Control(XboxController.Button.kRightStick, null, controller);
 
+    // Controll Curves
     private static final ControlCurve xTranslationCurve = new ControlCurve(1, 0, 0, 0.0, true);
     private static final ControlCurve yTranslationCurve = new ControlCurve(1, 0, 0, 0.0);
     public static final ControlCurve translationMagnitudeCurve = new ControlCurve(1, 0, 1, 0.1);
     private static final ControlCurve rotationCurve = new ControlCurve(0.8, 0, 1, 0.1, true);
 
+    // Joystick Axies
     public static final Control xTranslationAxis =
         new Control(XboxController.Axis.kLeftX, "X Translation", controller, xTranslationCurve);
     public static final Control yTranslationAxis =
         new Control(XboxController.Axis.kLeftY, "Y Translation", controller, yTranslationCurve);
     public static final Control rotationAxis =
         new Control(XboxController.Axis.kRightX, "Rotation", controller, rotationCurve);
+    public static final Control RightY =
+        new Control(XboxController.Axis.kRightY, null, controller, null);
 
     public static void setRumble(double rumbleIntensity) {
       controller.setRumble(RumbleType.kBothRumble, rumbleIntensity);
@@ -61,6 +81,50 @@ public class OI {
 
   public static final class Operator {
     private static final XboxController controller = new XboxController(operatorJoystickPort);
+
+    // A B Y X Buttons
+    public static final Control A = new Control(XboxController.Button.kA, null, controller);
+    public static final Control B = new Control(XboxController.Button.kB, null, controller);
+    public static final Control Y = new Control(XboxController.Button.kY, null, controller);
+    public static final Control X = new Control(XboxController.Button.kX, null, controller);
+
+    // Bumpers & Triggers
+    public static final Control LT =
+        new Control(XboxController.Axis.kLeftTrigger, null, controller, 0.5);
+    public static final Control RT =
+        new Control(XboxController.Axis.kRightTrigger, null, controller, 0.5);
+    public static final Control LB =
+        new Control(XboxController.Button.kLeftBumper, null, controller);
+    public static final Control RB =
+        new Control(XboxController.Button.kRightBumper, null, controller);
+
+    // Start, End & Left/Right stick buttons
+    public static final Control start = new Control(XboxController.Button.kStart, null, controller);
+    public static final Control back = new Control(XboxController.Button.kBack, null, controller);
+    public static final Control LSB =
+        new Control(XboxController.Button.kLeftStick, null, controller);
+    public static final Control RSB =
+        new Control(XboxController.Button.kRightStick, null, controller);
+
+    // Controll Curves
+    private static final ControlCurve xTranslationCurve = new ControlCurve(1, 0, 0, 0.0, true);
+    private static final ControlCurve yTranslationCurve = new ControlCurve(1, 0, 0, 0.0);
+    public static final ControlCurve translationMagnitudeCurve = new ControlCurve(1, 0, 1, 0.1);
+    private static final ControlCurve rotationCurve = new ControlCurve(0.8, 0, 1, 0.1, true);
+
+    // Joystick Axies
+    public static final Control xTranslationAxis =
+        new Control(XboxController.Axis.kLeftX, "X Translation", controller, xTranslationCurve);
+    public static final Control yTranslationAxis =
+        new Control(XboxController.Axis.kLeftY, "Y Translation", controller, yTranslationCurve);
+    public static final Control rotationAxis =
+        new Control(XboxController.Axis.kRightX, "Rotation", controller, rotationCurve);
+    public static final Control RightY =
+        new Control(XboxController.Axis.kRightY, null, controller, null);
+
+    public static void setRumble(double rumbleIntensity) {
+      controller.setRumble(RumbleType.kBothRumble, rumbleIntensity);
+    }
   }
 
   // --- OI UTILITIES -- //
