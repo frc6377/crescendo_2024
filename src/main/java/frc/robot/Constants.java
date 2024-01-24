@@ -18,6 +18,10 @@ public final class Constants {
     public static final double INTAKE_PERCENTAGE = -0.75;
   }
 
+  public static class ShooterConstants {
+    public static final int SHOOTER_MOTOR_ID = 55;
+  }
+
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
