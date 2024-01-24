@@ -8,7 +8,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 
 public class ShooterSubsystem extends SubsystemBase {
+
     private CANSparkMax shooterMotor;
+    boolean readyToFire = true; // Take in readiness state from ShooterTrigger?
     
     public ShooterSubsystem() {
         shooterMotor = new CANSparkMax(Constants.ShooterConstants.SHOOTER_MOTOR_ID, MotorType.kBrushless);
@@ -16,13 +18,25 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterMotor.setSmartCurrentLimit(40);
     }
 
-    public Command shooterCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-        return runOnce(
+    public Command shooterFire() {
+        return startEnd(
         () -> {
-          /* one-time action goes here */
+            if (readyToFire) {
+                readyShooter();
+            }
+        },
+        () -> {
+            setShooterSpeed(0);
         });
+    }
+
+    public void readyShooter() {
+        double speed = 0;
+        double distance = 0; // Take in distance from vision
+        // TargetType target =  ||| Take in target type from vision / elsewhere
+
+        speed = calculateShooterSpeed(distance); // Include target
+        setShooterSpeed(speed);
     }
 
     public void setShooterSpeed(double speed) {
