@@ -8,9 +8,14 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -19,6 +24,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TrapArmConstants;
+import frc.robot.Robot;
 import frc.robot.networktables.DebugEntry;
 
 public class TrapArmSubsystem extends SubsystemBase {
@@ -56,6 +62,9 @@ public class TrapArmSubsystem extends SubsystemBase {
   private MechanismLigament2d baseMech;
   private MechanismLigament2d scoringMech;
   private MechanismLigament2d wristMech;
+
+  private final ElevatorSim m_baseElevatorSim;
+  private final ElevatorSim m_scoringElevatorSim;
 
   private ShuffleboardTab TrapArmTab = Shuffleboard.getTab("Trap Arm Tab");
 
@@ -133,17 +142,36 @@ public class TrapArmSubsystem extends SubsystemBase {
     scoringBreak = new DigitalInput(TrapArmConstants.scoringBreak_ID);
 
     // 2D Mechanism
-    armMechanism = new Mechanism2d(5, 5);
-    root = armMechanism.getRoot("Root", 2, 1);
+    armMechanism = new Mechanism2d(5, 8);
+    root = armMechanism.getRoot("Root", 2, 0);
     baseMech =
-        root.append(new MechanismLigament2d("Base Arm", 1.5, 90, 3, new Color8Bit(Color.kBlue)));
+        root.append(new MechanismLigament2d("Base Arm", 1.5, 90, 20, new Color8Bit(Color.kBlue)));
     scoringMech =
         baseMech.append(
-            new MechanismLigament2d("Scoring Arm", 4.5, 0, 1, new Color8Bit(Color.kAqua)));
+            new MechanismLigament2d("Scoring Arm", 4.5, 0, 10, new Color8Bit(Color.kAqua)));
     wristMech =
         scoringMech.append(
-            new MechanismLigament2d("Wrist Mech", 3, -170, 2, new Color8Bit(Color.kRed)));
-    // baseMech.set
+            new MechanismLigament2d("Wrist Mech", 3, -170, 5, new Color8Bit(Color.kRed)));
+
+    m_baseElevatorSim = new ElevatorSim(
+          DCMotor.getNEO(1), 1,
+          5.4,
+          Units.inchesToMeters(1),
+          0,
+          Units.inchesToMeters(18),
+          true,
+          0,
+          VecBuilder.fill(0.01));
+
+    m_scoringElevatorSim = new ElevatorSim(
+          DCMotor.getNEO(1), 1,
+          5.4,
+          Units.inchesToMeters(1),
+          0,
+          Units.inchesToMeters(18),
+          true,
+          0,
+          VecBuilder.fill(0.01));
 
     // SmartDashboard
     sourceLog = new DebugEntry<Boolean>(baseBreak.get(), "Bace Limit Switch", this);
@@ -162,9 +190,17 @@ public class TrapArmSubsystem extends SubsystemBase {
             setTrapArm(TrapArmState.FROM_SOURCE);
             rollerMotor.set(TrapArmConstants.rollerIntakeSpeed);
           }
+          if (Robot.isSimulation()) {
+            wristMech.setAngle(wristMech.getAngle() + 20);
+            scoringMech.setLength(scoringMech.getLength() + 1);
+          }
         },
         () -> {
           rollerMotor.stopMotor();
+          if (Robot.isSimulation()) {
+            wristMech.setAngle(wristMech.getAngle() - 20);
+            scoringMech.setLength(scoringMech.getLength() - 1);
+          }
         });
   }
 
@@ -186,9 +222,15 @@ public class TrapArmSubsystem extends SubsystemBase {
         () -> {
           setTrapArm(TrapArmState.AMP_SCORE);
           rollerMotor.set(-TrapArmConstants.rollerScoringSpeed);
+          if (Robot.isSimulation()) {
+            wristMech.setAngle(-70);
+          }
         },
         () -> {
           rollerMotor.stopMotor();
+          if (Robot.isSimulation()) {
+            wristMech.setAngle(-170);
+          }
         });
   }
 
@@ -197,9 +239,19 @@ public class TrapArmSubsystem extends SubsystemBase {
         () -> {
           setTrapArm(TrapArmState.TRAP_SCORE);
           rollerMotor.set(TrapArmConstants.rollerScoringSpeed);
+          if (Robot.isSimulation()) {
+            baseMech.setLength(baseMech.getLength() + 1);
+            scoringMech.setLength(scoringMech.getLength() + 1);
+            wristMech.setAngle(-90);
+          }
         },
         () -> {
           rollerMotor.stopMotor();
+          if (Robot.isSimulation()) {
+            baseMech.setLength(baseMech.getLength() - 1);
+            scoringMech.setLength(scoringMech.getLength() - 1);
+            wristMech.setAngle(-170);
+          }
         });
   }
 

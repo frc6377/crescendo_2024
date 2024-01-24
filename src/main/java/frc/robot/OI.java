@@ -24,9 +24,12 @@ public class OI {
     // A B Y X Buttons
     public static final Control brakeButton =
         new Control(XboxController.Button.kA, "Brake", controller);
-    public static final Control B = new Control(XboxController.Button.kB, null, controller);
-    public static final Control Y = new Control(XboxController.Button.kY, null, controller);
-    public static final Control X = new Control(XboxController.Button.kX, null, controller);
+    public static final Control zeroArm =
+        new Control(XboxController.Button.kB, "Zero Arm", controller);
+    public static final Control sourceIntakeButton =
+        new Control(XboxController.Button.kX, "Intake Source", controller);
+    public static final Control groundIntakeButton =
+        new Control(XboxController.Button.kY, "Intake Ground", controller);
 
     // Bumpers & Triggers
     public static final Control intakeTrigger =
@@ -41,22 +44,12 @@ public class OI {
     // Start, End & Left/Right stick buttons
     public static final Control resetRotationButton =
         new Control(XboxController.Button.kStart, "Reset field rotation", controller);
-    public static final Control sourceIntakeButton =
-        new Control(XboxController.Button.kX, "Intake Source", controller);
-    public static final Control groundIntakeButton =
-        new Control(XboxController.Button.kY, "Intake Ground", controller);
     public static final Control ampScoreButton =
         new Control(XboxController.Button.kLeftStick, "Score AMP", controller);
     public static final Control trapScoreButton =
         new Control(XboxController.Button.kRightStick, "Score Trap", controller);
-    public static final Control zeroArm =
-        new Control(XboxController.Button.kB, "Zero Arm", controller);
     public static final Control orientationButton =
         new Control(XboxController.Button.kBack, "Toggle swerve orientation", controller);
-    public static final Control LSB =
-        new Control(XboxController.Button.kLeftStick, null, controller);
-    public static final Control RSB =
-        new Control(XboxController.Button.kRightStick, null, controller);
 
     // Controll Curves
     private static final ControlCurve xTranslationCurve = new ControlCurve(1, 0, 0, 0.0, true);
