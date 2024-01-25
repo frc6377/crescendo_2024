@@ -127,14 +127,16 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
             .withTargetDirection(alignmentRotation)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
             .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-            // Mixup is intentional
+            // Mixup is intentional, WPI has its coordinate plane from the perspective of the
+            // scoring table
             .withVelocityX(ySpeed)
             .withVelocityY(xSpeed);
       }
       return new SwerveRequest.FieldCentric()
           .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
           .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-          // Mixup is intentional
+          // Mixup is intentional, WPI has its coordinate plane from the perspective of the scoring
+          // table
           .withVelocityX(ySpeed)
           .withVelocityY(xSpeed)
           .withRotationalRate(rotationSpeed);
@@ -142,7 +144,8 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     return new SwerveRequest.RobotCentric()
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
         .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-        // Mixup is intentional
+        // Mixup is intentional, WPI has its coordinate plane from the perspective of the scoring
+        // table
         .withVelocityX(ySpeed)
         .withVelocityY(xSpeed)
         .withRotationalRate(rotationSpeed);
