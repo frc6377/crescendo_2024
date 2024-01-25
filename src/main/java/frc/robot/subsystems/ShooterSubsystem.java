@@ -26,7 +26,7 @@ public class ShooterSubsystem extends SubsystemBase {
           }
         },
         () -> {
-          setShooterSpeed(0);
+          setShooterSpeed(Constants.ShooterConstants.SHOOTER_MINIMUM_SPEED);
         });
   }
 

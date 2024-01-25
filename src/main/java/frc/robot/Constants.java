@@ -20,6 +20,7 @@ public final class Constants {
 
   public static class ShooterConstants {
     public static final int SHOOTER_MOTOR_ID = 55;
+    public static final double SHOOTER_MINIMUM_SPEED = 0.1;
   }
 
   public static class OperatorConstants {
