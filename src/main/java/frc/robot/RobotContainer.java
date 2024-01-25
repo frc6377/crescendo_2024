@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.signaling.SignalingSubsystem;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ public class RobotContainer {
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final SwerveSubsystem drivetrain;
+  private final LimelightSubsystem limelightSubsystem;
 
   private final SignalingSubsystem signalingSubsystem =
       new SignalingSubsystem(1, OI.Driver::setRumble, robotStateManager);
@@ -57,6 +59,7 @@ public class RobotContainer {
   public RobotContainer() {
     dynamicRobotConfig = new DynamicRobotConfig();
     drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
+    limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
     // Configure the trigger bindings
     configureBindings();
     registerCommands();
@@ -94,7 +97,7 @@ public class RobotContainer {
                     drivetrain.seedFieldRelative(
                         new Pose2d(
                             drivetrain.getState().Pose.getTranslation(),
-                            Rotation2d.fromDegrees(270)))));
+                            Rotation2d.fromDegrees(180)))));
     OI.getButton(OI.Driver.orientationButton)
         .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));

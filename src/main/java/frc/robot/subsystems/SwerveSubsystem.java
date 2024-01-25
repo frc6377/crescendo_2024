@@ -10,6 +10,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -23,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.OI;
 import frc.robot.Telemetry;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 /**
@@ -125,22 +127,32 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
             .withTargetDirection(alignmentRotation)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
             .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-            .withVelocityX(xSpeed)
-            .withVelocityY(ySpeed);
+            // Mixup is intentional, WPI has its coordinate plane from the perspective of the
+            // scoring table
+            .withVelocityX(ySpeed)
+            .withVelocityY(xSpeed);
       }
       return new SwerveRequest.FieldCentric()
           .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
           .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-          .withVelocityX(xSpeed)
-          .withVelocityY(ySpeed)
+          // Mixup is intentional, WPI has its coordinate plane from the perspective of the scoring
+          // table
+          .withVelocityX(ySpeed)
+          .withVelocityY(xSpeed)
           .withRotationalRate(rotationSpeed);
     }
     return new SwerveRequest.RobotCentric()
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
         .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-        .withVelocityX(xSpeed)
-        .withVelocityY(ySpeed)
+        // Mixup is intentional, WPI has its coordinate plane from the perspective of the scoring
+        // table
+        .withVelocityX(ySpeed)
+        .withVelocityY(xSpeed)
         .withRotationalRate(rotationSpeed);
+  }
+
+  public BiConsumer<Pose2d, Double> getVisionMeasurementConsumer() {
+    return (t, u) -> addVisionMeasurement(t, u);
   }
 
   public SwerveRequest getBrakeRequest() {
