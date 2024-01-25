@@ -18,25 +18,27 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterMotor.setSmartCurrentLimit(40);
   }
 
-  public Command shooterFire() {
+  public Command shooterFire(double distance) {
     return startEnd(
-        () -> {
-          if (readyToFire) {
-            readyShooter();
-          }
-        },
-        () -> {
-          setShooterSpeed(0);
-        });
+      () -> {
+        if (readyToFire) {
+          readyShooter(distance);
+        }
+      },
+      () -> {
+        setShooterSpeed(0);
+      }
+    );
   }
 
-  public void readyShooter() {
-    double speed = 0;
-    double distance = 0; // Take in distance from vision
+  // Fold into shooterFire if checking shooter readiness / piece handling isn't necessary
+  public Command readyShooter(double distance) {
     // TargetType target =  ||| Take in target type from vision / elsewhere
-
-    speed = calculateShooterSpeed(distance); // Include target
-    setShooterSpeed(speed);
+    return runOnce(
+      () -> {
+        setShooterSpeed(calculateShooterSpeed(distance)); // Take in distance from vision
+      }
+    );
   }
 
   public void setShooterSpeed(double speed) {
