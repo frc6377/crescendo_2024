@@ -10,10 +10,14 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
+import frc.robot.networktables.DebugEntry;
 import java.util.function.BiConsumer;
 
 public class LimelightSubsystem extends SubsystemBase {
   private LimelightHelpers.LimelightResults results;
+
+  private int measurementsUsed = 0;
+  private DebugEntry<Integer> measurementEntry = new DebugEntry<Integer>(0, "measurements", this);
 
   private final BiConsumer<Pose2d, Double> measurementConsumer;
 
@@ -47,7 +51,11 @@ public class LimelightSubsystem extends SubsystemBase {
     results = LimelightHelpers.getLatestResults("");
 
     if (getTagCount() > 1) {
+      measurementsUsed++;
       measurementConsumer.accept(getPose2d(), getTime());
+      if (measurementsUsed % 100 == 0) {
+        measurementEntry.log(measurementsUsed);
+      }
     }
   }
 
