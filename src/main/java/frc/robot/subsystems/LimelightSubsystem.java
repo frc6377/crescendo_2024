@@ -29,7 +29,7 @@ public class LimelightSubsystem extends SubsystemBase {
   }
 
   private Pose2d getPose2d() {
-    double[] botpose = results.targetingResults.botpose_wpiblue;
+    double[] botpose = LimelightHelpers.getBotPose_wpiBlue("");
     return new Pose2d(botpose[0], botpose[1], new Rotation2d(botpose[5]));
   }
 
