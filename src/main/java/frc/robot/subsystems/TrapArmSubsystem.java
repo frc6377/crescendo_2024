@@ -8,6 +8,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
@@ -23,7 +24,6 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.CANSparkMaxSim;
 import frc.robot.Constants.TrapArmConstants;
 import frc.robot.Robot;
 import frc.robot.networktables.DebugEntry;
@@ -34,9 +34,9 @@ public class TrapArmSubsystem extends SubsystemBase {
   private final CANSparkMax rollerMotor;
 
   // Elevator motors
-  private final CANSparkMax baseMotor1;
+  private final CANSparkMaxSim baseMotor1;
   private final CANSparkMax baseMotor2;
-  private final CANSparkMax scoringMotor;
+  private final CANSparkMaxSim scoringMotor;
 
   // Beam Breaks
   private final DigitalInput sourceBreak;
@@ -67,9 +67,6 @@ public class TrapArmSubsystem extends SubsystemBase {
 
   private final ElevatorSim m_baseElevatorSim;
   private final ElevatorSim m_scoringElevatorSim;
-
-  private final CANSparkMaxSim baseCANSim;
-  private final CANSparkMaxSim scoringCANSim;
 
   private ShuffleboardTab TrapArmTab = Shuffleboard.getTab("Trap Arm Tab");
   private GenericEntry basePIDEntry = TrapArmTab.add("Base PID", basePID).getEntry();
@@ -124,7 +121,7 @@ public class TrapArmSubsystem extends SubsystemBase {
     groundBreak = new DigitalInput(TrapArmConstants.groundBreak_ID);
 
     // Arm
-    baseMotor1 = new CANSparkMax(TrapArmConstants.baseMotor1_ID, MotorType.kBrushless);
+    baseMotor1 = new CANSparkMaxSim(TrapArmConstants.baseMotor1_ID, MotorType.kBrushless);
     baseMotor1.restoreFactoryDefaults();
     baseMotor1.getPIDController().setP(basePID[0]);
     baseMotor1.getPIDController().setI(basePID[1]);
@@ -142,7 +139,7 @@ public class TrapArmSubsystem extends SubsystemBase {
 
     baseBreak = new DigitalInput(TrapArmConstants.baseBreak_ID);
 
-    scoringMotor = new CANSparkMax(TrapArmConstants.scoringMotor_ID, MotorType.kBrushless);
+    scoringMotor = new CANSparkMaxSim(TrapArmConstants.scoringMotor_ID, MotorType.kBrushless);
     scoringMotor.restoreFactoryDefaults();
     scoringMotor.getPIDController().setP(scoringPID[0]);
     scoringMotor.getPIDController().setI(scoringPID[1]);
@@ -175,10 +172,6 @@ public class TrapArmSubsystem extends SubsystemBase {
           scoringMech.append(
               new MechanismLigament2d("Wrist Mech", 3, -170, 5, new Color8Bit(Color.kRed)));
 
-      // Elivator Sim
-      baseCANSim = new CANSparkMaxSim(baseMotor1);
-      scoringCANSim = new CANSparkMaxSim(scoringMotor);
-
       m_baseElevatorSim =
           new ElevatorSim(
               DCMotor.getNEO(1),
@@ -203,8 +196,6 @@ public class TrapArmSubsystem extends SubsystemBase {
 
       TrapArmTab.add("Trap Arm Mech", armMechanism);
     } else {
-      baseCANSim = null;
-      scoringCANSim = null;
       m_baseElevatorSim = null;
       m_scoringElevatorSim = null;
     }
@@ -310,19 +301,15 @@ public class TrapArmSubsystem extends SubsystemBase {
           wristMotor.getPIDController().setReference(state.getWristPose(), ControlType.kPosition);
           baseMotor1.getPIDController().setReference(state.getBasePose(), ControlType.kPosition);
           baseMotor2.getPIDController().setReference(state.getBasePose(), ControlType.kPosition);
-          baseCANSim.setSetpoint(state.getBasePose(), ControlType.kPosition);
           scoringMotor
               .getPIDController()
               .setReference(state.getScoringPose(), ControlType.kPosition);
-          scoringCANSim.setSetpoint(state.getScoringPose(), ControlType.kPosition);
         },
         () -> {
           wristMotor.stopMotor();
           baseMotor1.stopMotor();
           baseMotor2.stopMotor();
           scoringMotor.stopMotor();
-          baseCANSim.stopMotor();
-          scoringCANSim.stopMotor();
         });
   }
 
@@ -349,18 +336,18 @@ public class TrapArmSubsystem extends SubsystemBase {
     scoringMotor.getPIDController().setFF(scoringPID[4]);
 
     for (double i = 0; i < Robot.defaultPeriodSecs; i += CANSparkMaxSim.kPeriod) {
-      m_baseElevatorSim.setInput(baseCANSim.getOutput() * 12);
+      m_baseElevatorSim.setInput(baseMotor1.get() * 12);
       m_baseElevatorSim.update(CANSparkMaxSim.kPeriod);
-      baseCANSim.update(
+      baseMotor1.update(
           m_baseElevatorSim.getVelocityMetersPerSecond() * 70 / Units.inchesToMeters(1));
 
-      m_scoringElevatorSim.setInput(scoringCANSim.getOutput() * 12);
+      m_scoringElevatorSim.setInput(scoringMotor.get() * 12);
       m_scoringElevatorSim.update(CANSparkMaxSim.kPeriod);
-      scoringCANSim.update(
+      scoringMotor.update(
           m_scoringElevatorSim.getVelocityMetersPerSecond() * 70 / Units.inchesToMeters(1));
     }
-    SmartDashboard.putNumber("base CAN Sim", baseCANSim.getOutput());
-    SmartDashboard.putNumber("scoring CAN Sim", scoringCANSim.getOutput());
+    SmartDashboard.putNumber("base CAN Sim", baseMotor1.get());
+    SmartDashboard.putNumber("scoring CAN Sim", scoringMotor.get());
     baseMech.setLength(m_baseElevatorSim.getPositionMeters());
     scoringMech.setLength(m_scoringElevatorSim.getPositionMeters());
     SmartDashboard.putNumber(
