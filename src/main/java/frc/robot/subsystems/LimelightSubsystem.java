@@ -36,8 +36,9 @@ public class LimelightSubsystem extends SubsystemBase {
   private double getTime() {
     // Accounts for latency
     // (https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization)
-    double[] botpose = results.targetingResults.botpose_wpiblue;
-    return Timer.getFPGATimestamp() - (botpose[6] / 1000.0);
+    return Timer.getFPGATimestamp()
+        - (LimelightHelpers.getLatency_Capture("") / 1000.0)
+        - (LimelightHelpers.getLatency_Pipeline("") / 1000.0);
   }
 
   @Override
