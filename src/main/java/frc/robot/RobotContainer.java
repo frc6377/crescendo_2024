@@ -105,7 +105,7 @@ public class RobotContainer {
     HashMap<String, Command> autonCommands = new HashMap<String, Command>();
 
     autonCommands.put("Shoot", autonTest());
-
+    autonCommands.put("Intake", intakeSubsystem.getIntakeCommand());
     NamedCommands.registerCommands(autonCommands);
   }
 
