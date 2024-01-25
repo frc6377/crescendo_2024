@@ -53,7 +53,9 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
       startSimThread();
     }
 
-    drivetrainRadius = modules[0].LocationX * Math.sqrt(2); // 45-45-90 triangle - hypotenuse is side length * root(2)
+    drivetrainRadius =
+        modules[0].LocationX
+            * Math.sqrt(2); // 45-45-90 triangle - hypotenuse is side length * root(2)
 
     Translation2d[] kinematicsTranslations = new Translation2d[4];
     for (int i = 0; i < 4; i++) {
