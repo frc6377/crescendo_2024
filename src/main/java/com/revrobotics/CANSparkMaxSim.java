@@ -7,6 +7,10 @@
  */
 package com.revrobotics;
 
+import edu.wpi.first.math.MathSharedStore;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableRegistry;
 import frc.robot.Robot;
 
 /*
@@ -26,10 +30,13 @@ import frc.robot.Robot;
 
 public class CANSparkMaxSim extends CANSparkMax {
 
-  private class SparkPIDControllerSim extends SparkPIDController {
+  private class SparkPIDControllerSim extends SparkPIDController implements Sendable {
+    private static int instances = 0;
 
     SparkPIDControllerSim(CANSparkBase device) {
       super(device);
+      instances++;
+      SendableRegistry.addLW(this, "PIDController", instances);
     }
 
     public double getReference() {
@@ -43,6 +50,32 @@ public class CANSparkMaxSim extends CANSparkMax {
       type = control;
       stopped = false;
       return ret;
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+      builder.setSmartDashboardType("PIDController");
+      builder.addDoubleProperty("p", this::getP, this::setP);
+      builder.addDoubleProperty("i", this::getI, this::setI);
+      builder.addDoubleProperty("d", this::getD, this::setD);
+      builder.addDoubleProperty("ff", this::getFF, this::setFF);
+      builder.addDoubleProperty(
+          "izone",
+          this::getIZone,
+          (double toSet) -> {
+            try {
+              setIZone(toSet);
+            } catch (IllegalArgumentException e) {
+              MathSharedStore.reportError(
+                  "IZone must be a non-negative number!", e.getStackTrace());
+            }
+          });
+      builder.addDoubleProperty(
+          "setpoint",
+          this::getReference,
+          (a) -> {
+            setReference(a, type);
+          });
     }
   }
 
@@ -109,7 +142,7 @@ public class CANSparkMaxSim extends CANSparkMax {
   }
 
   @Override
-  public SparkPIDController getPIDController() {
+  public SparkPIDControllerSim getPIDController() {
     throwIfClosed();
     synchronized (pidControllerLock) {
       if (ctrl == null) {
