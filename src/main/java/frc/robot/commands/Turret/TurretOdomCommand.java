@@ -13,16 +13,22 @@ public class TurretOdomCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final TurretSubsystem turretSubsystem;
 
-  private final Pose2d robotPos;
+  // private final Pose2d robotPos;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public TurretOdomCommand(final TurretSubsystem turretSubsystem, Pose2d robotPos) {
+  // public TurretOdomCommand(final TurretSubsystem turretSubsystem, Pose2d robotPos) {
+  //   this.turretSubsystem = turretSubsystem;
+  //   this.robotPos = robotPos;
+  //   // Use addRequirements() here to declare subsystem dependencies.
+  //   addRequirements(turretSubsystem);TurretCommand
+  // }
+
+   public TurretOdomCommand(final TurretSubsystem turretSubsystem) {
     this.turretSubsystem = turretSubsystem;
-    this.robotPos = robotPos;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(turretSubsystem);
   }
@@ -34,7 +40,8 @@ public class TurretOdomCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    turretSubsystem.setTurretPos(turretSubsystem.turretFromOdometry(robotPos));
+    // turretSubsystem.setTurretPos(turretSubsystem.turretFromOdometry(robotPos));
+    turretSubsystem.setTurretPos(Math.PI/2);
   }
 
   // Called once the command ends or is interrupted.

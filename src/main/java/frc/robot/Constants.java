@@ -19,8 +19,8 @@ public final class Constants {
   }
 
   public static class TurretConstants {
-    public static final int TURRET_MOTOR_ID = 7;
-    public static final int CANcoder_ID = 8; // replace with actual CANcoder ID
+    public static final int TURRET_MOTOR_ID = 9;
+    public static final int CANcoder_ID = 17; // replace with actual CANcoder ID
 
     // PID coefficients
     public static final double TURRET_KP = 5e-5;

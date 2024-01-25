@@ -11,18 +11,18 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.Turret.TurretOdomCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -43,18 +43,18 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
-  private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
-  private final LimelightSubsystem limelightSubsystem =
-      new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
+//   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
+//   private final LimelightSubsystem limelightSubsystem =
+//       new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
 
-  private final SwerveRequest.FieldCentric drive =
-      new SwerveRequest.FieldCentric()
-          .withDeadband(MaxSpeed * 0.1)
-          .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-          .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
-  // driving in open loop
-  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-  private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+//   private final SwerveRequest.FieldCentric drive =
+//       new SwerveRequest.FieldCentric()
+//           .withDeadband(MaxSpeed * 0.1)
+//           .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+//           .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
+//   // driving in open loop
+//   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+//   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -77,9 +77,11 @@ public class RobotContainer {
     Trigger intakeButton = m_driverController.leftTrigger(0.3);
     intakeButton.whileTrue(new IntakeCommand(intakeSubsystem));
 
-    m_driverController.y().whileTrue(new InstantCommand(turretSubsystem::LockTurret));
-    // m_driverController.x().whileTrue(new TurretOdomCommand(turretSubsystem,
-    // drivetrain.getPose2d()))
+    // m_driverController.y().whileTrue(new TurretOdomCommand(turretSubsystem, drivetrain.getState().Pose));
+    m_driverController.y().whileTrue(new TurretOdomCommand(turretSubsystem));
+
+    // m_driverController.x().whileTrue(new TurretOdomCommand(turretSubsystem, drivetrain.getPose2d()))
+    // m_driverController.x().whileTrue(new TurretMagicCommand(turretSubsystem, limelightSubsystem.Pose2d));
 
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     new Trigger(m_exampleSubsystem::exampleCondition)
@@ -89,40 +91,42 @@ public class RobotContainer {
     // cancelling on release.
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
-    // Swerve config
-    drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-        drivetrain.applyRequest(
-            () ->
-                drive
-                    .withVelocityX(-m_driverController.getLeftY() * MaxSpeed) // Drive forward with
-                    // negative Y (forward)
-                    .withVelocityY(
-                        -m_driverController.getLeftX()
-                            * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(
-                        -m_driverController.getRightX()
-                            * MaxAngularRate) // Drive counterclockwise with negative X (left)
-            ));
+    // // Swerve config
+    // drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
+    //     drivetrain.applyRequest(
+    //         () ->
+    //             drive
+    //                 .withVelocityX(-m_driverController.getLeftY() * MaxSpeed) // Drive forward with
+    //                 // negative Y (forward)
+    //                 .withVelocityY(
+    //                     -m_driverController.getLeftX()
+    //                         * MaxSpeed) // Drive left with negative X (left)
+    //                 .withRotationalRate(
+    //                     -m_driverController.getRightX()
+    //                         * MaxAngularRate) // Drive counterclockwise with negative X (left)
+    //         ));
 
-    m_driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
-    m_driverController
-        .b()
-        .whileTrue(
-            drivetrain.applyRequest(
-                () ->
-                    point.withModuleDirection(
-                        new Rotation2d(
-                            -m_driverController.getLeftY(), -m_driverController.getLeftX()))));
 
-    // reset the field-centric heading on left bumper press
-    m_driverController
-        .leftBumper()
-        .onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 
-    if (Utils.isSimulation()) {
-      drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
-    }
-    drivetrain.registerTelemetry(logger::telemeterize);
+    // m_driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
+    // m_driverController
+    //     .b()
+    //     .whileTrue(
+    //         drivetrain.applyRequest(
+    //             () ->
+    //                 point.withModuleDirection(
+    //                     new Rotation2d(
+    //                         -m_driverController.getLeftY(), -m_driverController.getLeftX()))));
+
+    // // reset the field-centric heading on left bumper press
+    // m_driverController
+    //     .leftBumper()
+    //     .onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
+
+    // if (Utils.isSimulation()) {
+    //   drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
+    // }
+    // drivetrain.registerTelemetry(logger::telemeterize);
   }
 
   /**

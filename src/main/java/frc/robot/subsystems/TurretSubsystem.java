@@ -7,8 +7,11 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -32,12 +35,13 @@ public class TurretSubsystem extends SubsystemBase {
     turretMotor.restoreFactoryDefaults();
     turretMotor.setSmartCurrentLimit(40);
 
+    
+    turretMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, 2);
+    turretMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, -2);
+    
     turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
     turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
-
-    turretMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, 1);
-    turretMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, -1);
-
+    
     // initialze PID controller and encoder objects
     turretPIDController =
         new PIDController(
@@ -45,6 +49,8 @@ public class TurretSubsystem extends SubsystemBase {
             Constants.TurretConstants.TURRET_KI,
             Constants.TurretConstants.TURRET_KD);
     m_encoder = new CANcoder(Constants.TurretConstants.CANcoder_ID);
+
+    zeroTurretEncoder();
 
     // set PID coefficients
     turretPIDController.setP(Constants.TurretConstants.TURRET_KP);
@@ -67,8 +73,12 @@ public class TurretSubsystem extends SubsystemBase {
 
   public void updateTurretPosition() {
     turretPosition =
-        (Math.toRadians((m_encoder.getPosition().getValueAsDouble()) * 360))
-            * Constants.TurretConstants.CONVERSION_FACTOR;
+        Math.toRadians(((m_encoder.getPosition().getValueAsDouble()) * 360)
+            * Constants.TurretConstants.CONVERSION_FACTOR);
+    SmartDashboard.putNumber("Turret Position", turretPosition);
+    SmartDashboard.putBoolean("Out of Bounds", Math.abs(turretPosition) > 3.14);
+    SmartDashboard.putBoolean("Soft limit enabled forward", turretMotor.isSoftLimitEnabled(SoftLimitDirection.kForward));
+    SmartDashboard.putBoolean("Soft limit enabled reverse", turretMotor.isSoftLimitEnabled(SoftLimitDirection.kReverse));
   }
 
   public void lockOntoTag(double rotationFromTag) {
