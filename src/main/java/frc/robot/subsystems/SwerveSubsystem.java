@@ -7,9 +7,17 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -30,6 +38,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   private static final double maxSpeed = Units.feetToMeters(18.2); // Desired top speed
   private static final double maxAngularRate =
       Math.PI; // Max angular velocity in radians per second
+  private final double drivetrainRadius;
   private final Telemetry telemetry = new Telemetry(maxSpeed);
 
   private final Field2d field = new Field2d();
@@ -39,6 +48,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
 
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
+  private SwerveDriveKinematics kinematics;
 
   public SwerveSubsystem(
       SwerveDrivetrainConstants driveTrainConstants,
@@ -48,6 +58,33 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     if (Utils.isSimulation()) {
       startSimThread();
     }
+
+    drivetrainRadius =
+        modules[0].LocationX
+            * Math.sqrt(2); // 45-45-90 triangle - hypotenuse is side length * root(2)
+
+    Translation2d[] kinematicsTranslations = new Translation2d[4];
+    for (int i = 0; i < 4; i++) {
+      kinematicsTranslations[i] = new Translation2d(modules[i].LocationX, modules[i].LocationY);
+    }
+    kinematics = new SwerveDriveKinematics(kinematicsTranslations);
+
+    AutoBuilder.configureHolonomic(
+        () -> super.getState().Pose,
+        (a) -> super.seedFieldRelative(a),
+        () -> getChassisSpeeds(),
+        (a) ->
+            this.setControl(
+                new SwerveRequest.RobotCentric()
+                    .withVelocityX(a.vxMetersPerSecond)
+                    .withVelocityY(a.vyMetersPerSecond)
+                    .withRotationalRate(a.omegaRadiansPerSecond)),
+        new HolonomicPathFollowerConfig(
+            maxSpeed * 0.85, drivetrainRadius, new ReplanningConfig(true, true)),
+        () ->
+            DriverStation.getAlliance().isPresent()
+                && DriverStation.getAlliance().get() == Alliance.Red,
+        this);
     this.registerTelemetry(telemetry::telemeterize);
     SmartDashboard.putData("Field", field);
   }
@@ -74,6 +111,9 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     m_simNotifier.startPeriodic(kSimLoopPeriod);
   }
 
+  private ChassisSpeeds getChassisSpeeds() {
+    return kinematics.toChassisSpeeds(super.getState().ModuleStates);
+  }
   // xSpeed, ySpeed, rotationSpeed should be axes with range -1<0<1
   public SwerveRequest getDriveRequest(double xSpeed, double ySpeed, double rotationSpeed) {
     double magnitude = OI.Driver.translationMagnitudeCurve.calculate(Math.hypot(xSpeed, ySpeed));
