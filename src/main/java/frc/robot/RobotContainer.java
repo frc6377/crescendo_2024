@@ -38,8 +38,7 @@ public class RobotContainer {
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final SwerveSubsystem drivetrain;
-  private final LimelightSubsystem limelightSubsystem =
-      new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
+  private final LimelightSubsystem limelightSubsystem;
 
   private final SignalingSubsystem signalingSubsystem =
       new SignalingSubsystem(1, OI.Driver::setRumble, robotStateManager);
@@ -50,6 +49,7 @@ public class RobotContainer {
   public RobotContainer() {
     dynamicRobotConfig = new DynamicRobotConfig();
     drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
+    limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
     // Configure the trigger bindings
     configureBindings();
   }
