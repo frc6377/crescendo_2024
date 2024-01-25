@@ -80,6 +80,7 @@ public class CANSparkMaxSim extends CANSparkMax {
 
   public static final double kPeriod = 0.001; // 1kHz
   private SparkPIDControllerSim ctrl;
+  private final Object pidControllerLock = new Object();
   private SparkRelativeEncoderSim enc;
   private double prevError, IState, setpoint, position, velocity, output;
   private boolean stopped;
@@ -87,7 +88,6 @@ public class CANSparkMaxSim extends CANSparkMax {
 
   public CANSparkMaxSim(int deviceId, MotorType motorType) {
     super(deviceId, motorType);
-    ctrl = new SparkPIDControllerSim(this);
     setpoint = 0;
     position = 0;
     velocity = 0;
@@ -99,6 +99,9 @@ public class CANSparkMaxSim extends CANSparkMax {
 
   @Override
   public RelativeEncoder getEncoder(SparkRelativeEncoder.Type encoderType, int countsPerRev) {
+    if (Robot.isReal()) {
+      return super.getEncoder(encoderType, countsPerRev);
+    }
     if (enc == null) {
       enc = new SparkRelativeEncoderSim(this, encoderType, countsPerRev);
     }
@@ -107,7 +110,13 @@ public class CANSparkMaxSim extends CANSparkMax {
 
   @Override
   public SparkPIDController getPIDController() {
-    return ctrl;
+    throwIfClosed();
+    synchronized (pidControllerLock) {
+      if (ctrl == null) {
+        ctrl = new SparkPIDControllerSim(this);
+      }
+      return ctrl;
+    }
   }
 
   @Override
