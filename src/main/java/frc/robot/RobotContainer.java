@@ -91,7 +91,8 @@ public class RobotContainer {
     OI.getButton(OI.Driver.groundIntakeButton).whileTrue(trapArmSubsystem.intakeGround());
     OI.getButton(OI.Driver.sourceIntakeButton).whileTrue(trapArmSubsystem.intakeSource());
     OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapArmSubsystem.scoreAMP());
-    OI.getButton(OI.Driver.trapScoreButton).whileTrue(trapArmSubsystem.scoreTrap());
+    OI.getButton(OI.Driver.trapScoreButton)
+        .whileTrue(trapArmSubsystem.setTrapArm(TrapArmSubsystem.TrapArmState.TRAP_SCORE));
     OI.getButton(OI.Driver.zeroArm).whileTrue(trapArmSubsystem.zeroArm());
 
     if (Utils.isSimulation()) {
