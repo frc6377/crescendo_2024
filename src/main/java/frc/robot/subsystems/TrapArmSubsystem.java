@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -48,10 +49,11 @@ public class TrapArmSubsystem extends SubsystemBase {
 
   // Encoders
   private final CANcoder wristEncoder;
+
   // PID
   // P, I, D, Iz, FF
-  private Double[] basePID = {36e-5, 5e-7, 1e-4, 0.0, 2e-6};
-  private Double[] scoringPID = {36e-5, 5e-7, 1e-4, 0.0, 2e-6};
+  private double[] basePID = {36e-5, 5e-7, 1e-4, 0.0, 2e-6};
+  private double[] scoringPID = {36e-5, 5e-7, 1e-4, 0.0, 2e-6};
 
   private DebugEntry<Boolean> sourceLog;
   private DebugEntry<Boolean> groundLog;
@@ -71,6 +73,8 @@ public class TrapArmSubsystem extends SubsystemBase {
   private final CANSparkMaxSim scoringCANSim;
 
   private ShuffleboardTab TrapArmTab = Shuffleboard.getTab("Trap Arm Tab");
+  private GenericEntry basePIDEntry = TrapArmTab.add("Base PID", basePID).getEntry();
+  private GenericEntry scoringPIDEntry = TrapArmTab.add("Scoring PID", scoringPID).getEntry();
 
   // States
   public static enum TrapArmState {
@@ -151,15 +155,8 @@ public class TrapArmSubsystem extends SubsystemBase {
     baseLog = new DebugEntry<Boolean>(baseBreak.get(), "Base Limit Switch", this);
     scoringLog = new DebugEntry<Boolean>(baseBreak.get(), "Scoring Limit Switch", this);
 
-    SmartDashboard.putNumber("Base P", basePID[0]);
-    SmartDashboard.putNumber("Base I", basePID[1]);
-    SmartDashboard.putNumber("Base D", basePID[2]);
-    SmartDashboard.putNumber("Base FF", basePID[4]);
-
-    SmartDashboard.putNumber("Scoring P", scoringPID[0]);
-    SmartDashboard.putNumber("Scoring I", scoringPID[1]);
-    SmartDashboard.putNumber("Scoring D", scoringPID[2]);
-    SmartDashboard.putNumber("Scoring FF", scoringPID[4]);
+    basePIDEntry.setDoubleArray(basePID);
+    scoringPIDEntry.setDoubleArray(scoringPID);
 
     // Simulation
     if (Robot.isSimulation()) {
@@ -338,19 +335,13 @@ public class TrapArmSubsystem extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
-    SmartDashboard.getNumber("Base P", basePID[0]);
-    SmartDashboard.getNumber("Base I", basePID[1]);
-    SmartDashboard.getNumber("Base D", basePID[2]);
-    SmartDashboard.getNumber("Base FF", basePID[4]);
+    basePID = basePIDEntry.getDoubleArray(basePID);
     baseMotor1.getPIDController().setP(basePID[0]);
     baseMotor1.getPIDController().setI(basePID[1]);
     baseMotor1.getPIDController().setD(basePID[2]);
     baseMotor1.getPIDController().setFF(basePID[4]);
 
-    SmartDashboard.getNumber("Scoring P", scoringPID[0]);
-    SmartDashboard.getNumber("Scoring I", scoringPID[1]);
-    SmartDashboard.getNumber("Scoring D", scoringPID[2]);
-    SmartDashboard.getNumber("Scoring FF", scoringPID[4]);
+    scoringPID = scoringPIDEntry.getDoubleArray(scoringPID);
     scoringMotor.getPIDController().setP(scoringPID[0]);
     scoringMotor.getPIDController().setI(scoringPID[1]);
     scoringMotor.getPIDController().setD(scoringPID[2]);
@@ -359,11 +350,13 @@ public class TrapArmSubsystem extends SubsystemBase {
     for (double i = 0; i < Robot.defaultPeriodSecs; i += CANSparkMaxSim.kPeriod) {
       m_baseElevatorSim.setInput(baseCANSim.get() * 12);
       m_baseElevatorSim.update(CANSparkMaxSim.kPeriod);
-      baseCANSim.update(m_baseElevatorSim.getVelocityMetersPerSecond() * 70 / Units.inchesToMeters(1));
+      baseCANSim.update(
+          m_baseElevatorSim.getVelocityMetersPerSecond() * 70 / Units.inchesToMeters(1));
 
       m_scoringElevatorSim.setInput(scoringCANSim.get() * 12);
       m_scoringElevatorSim.update(CANSparkMaxSim.kPeriod);
-      scoringCANSim.update(m_scoringElevatorSim.getVelocityMetersPerSecond() * 70 / Units.inchesToMeters(1));
+      scoringCANSim.update(
+          m_scoringElevatorSim.getVelocityMetersPerSecond() * 70 / Units.inchesToMeters(1));
     }
     SmartDashboard.putNumber("base CAN Sim", baseCANSim.get());
     SmartDashboard.putNumber("scoring CAN Sim", scoringCANSim.get());
