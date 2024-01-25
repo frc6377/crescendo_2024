@@ -83,7 +83,7 @@ public class RobotContainer {
                     drivetrain.seedFieldRelative(
                         new Pose2d(
                             drivetrain.getState().Pose.getTranslation(),
-                            Rotation2d.fromDegrees(270)))));
+                            Rotation2d.fromDegrees(180)))));
     OI.getButton(OI.Driver.orientationButton)
         .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));

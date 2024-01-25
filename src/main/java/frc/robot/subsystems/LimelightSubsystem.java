@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
@@ -30,7 +31,7 @@ public class LimelightSubsystem extends SubsystemBase {
 
   private Pose2d getPose2d() {
     double[] botpose = LimelightHelpers.getBotPose_wpiBlue("");
-    return new Pose2d(botpose[0], botpose[1], new Rotation2d(botpose[5]));
+    return new Pose2d(botpose[0], botpose[1], new Rotation2d(Units.degreesToRadians(botpose[5])));
   }
 
   private double getTime() {

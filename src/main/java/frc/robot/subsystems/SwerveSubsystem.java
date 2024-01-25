@@ -92,21 +92,24 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
             .withTargetDirection(alignmentRotation)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
             .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-            .withVelocityX(xSpeed)
-            .withVelocityY(ySpeed);
+            // Mixup is intentional
+            .withVelocityX(ySpeed)
+            .withVelocityY(xSpeed);
       }
       return new SwerveRequest.FieldCentric()
           .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
           .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-          .withVelocityX(xSpeed)
-          .withVelocityY(ySpeed)
+          // Mixup is intentional
+          .withVelocityX(ySpeed)
+          .withVelocityY(xSpeed)
           .withRotationalRate(rotationSpeed);
     }
     return new SwerveRequest.RobotCentric()
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
         .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-        .withVelocityX(xSpeed)
-        .withVelocityY(ySpeed)
+        // Mixup is intentional
+        .withVelocityX(ySpeed)
+        .withVelocityY(xSpeed)
         .withRotationalRate(rotationSpeed);
   }
 
