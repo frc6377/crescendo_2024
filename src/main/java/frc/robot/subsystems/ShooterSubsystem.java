@@ -8,7 +8,7 @@ import frc.robot.Constants;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-  private CANSparkMax shooterMotor;
+  private final CANSparkMax shooterMotor;
   boolean readyToFire = true; // Take in readiness state from ShooterTrigger?
 
   public ShooterSubsystem() {
@@ -18,27 +18,25 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterMotor.setSmartCurrentLimit(40);
   }
 
-  public Command shooterFire(double distance) {
+  public Command shooterFire(final double distance) {
     return startEnd(
-      () -> {
-        if (readyToFire) {
-          readyShooter(distance);
-        }
-      },
-      () -> {
-        setShooterSpeed(0);
-      }
-    );
+        () -> {
+          if (readyToFire) {
+            readyShooter(distance);
+          }
+        },
+        () -> {
+          setShooterSpeed(0);
+        });
   }
 
   // Fold into shooterFire if checking shooter readiness / piece handling isn't necessary
-  public Command readyShooter(double distance) {
+  public Command readyShooter(final double distance) {
     // TargetType target =  ||| Take in target type from vision / elsewhere
     return runOnce(
-      () -> {
-        setShooterSpeed(calculateShooterSpeed(distance)); // Take in distance from vision
-      }
-    );
+        () -> {
+          setShooterSpeed(calculateShooterSpeed(distance)); // Take in distance from vision
+        });
   }
 
   public void setShooterSpeed(double speed) {
