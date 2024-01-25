@@ -23,8 +23,8 @@ import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import java.util.HashMap;
 import frc.robot.subsystems.signaling.SignalingSubsystem;
+import java.util.HashMap;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -50,11 +50,9 @@ public class RobotContainer {
 
   private final DynamicRobotConfig dynamicRobotConfig;
 
-  private final RobotStateManager robotStateManager = new RobotStateManager();
-
   private SendableChooser<Command> autoChooser;
   private ShuffleboardTab configTab = Shuffleboard.getTab("Config");
-  
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     dynamicRobotConfig = new DynamicRobotConfig();
