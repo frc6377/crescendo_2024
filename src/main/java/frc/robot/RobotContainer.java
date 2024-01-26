@@ -8,6 +8,7 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.playingwithfusion.TimeOfFlight;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -65,11 +66,14 @@ public class RobotContainer {
           .withProperties(Map.of("min", 0, "max", 2))
           .getEntry();
 
+  private TimeOfFlight testSensor;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     dynamicRobotConfig = new DynamicRobotConfig();
     drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
     limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
+    testSensor = new TimeOfFlight(3);
     // Configure the trigger bindings
     configureBindings();
     registerCommands();
@@ -132,6 +136,10 @@ public class RobotContainer {
 
   public void onExitDisabled() {
     signalingSubsystem.clearLEDs();
+  }
+
+  public void getSensorRange() {
+    SmartDashboard.putNumber("Target Distance Millimeters", testSensor.getRange());
   }
 
   private Command autonTest() {
