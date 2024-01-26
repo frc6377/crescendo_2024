@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.util.Units;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -36,9 +38,15 @@ public final class Constants {
     public static final int scoringBreak_ID = 4;
 
     // Speeds
-    public static final Double rollerIntakeSpeed = 0.25;
-    public static final Double rollerScoringSpeed = 0.4;
+    public static final double rollerIntakeSpeed = 0.25;
+    public static final double rollerScoringSpeed = 0.4;
     public static final int armZeroingSpeed = 10; // RPM
+
+    // Simulation
+    public static final int elevatorGearRatio = 70;
+    public static final double elevatorCariageMass = 5.4; // kg
+    public static final double elevatorMinHight = Units.inchesToMeters(12);
+    public static final double elevatorMaxHight = Units.inchesToMeters(30);
   }
 
   public static final int END_GAME_WARNING_TIME = 20;

@@ -24,8 +24,8 @@ public class OI {
     // A B Y X Buttons
     public static final Control brakeButton =
         new Control(XboxController.Button.kA, "Brake", controller);
-    public static final Control zeroArm =
-        new Control(XboxController.Button.kB, "Zero Arm", controller);
+    public static final Control trapScoreButton =
+        new Control(XboxController.Button.kB, "Score Trap", controller);
     public static final Control sourceIntakeButton =
         new Control(XboxController.Button.kX, "Intake Source", controller);
     public static final Control groundIntakeButton =
@@ -46,8 +46,8 @@ public class OI {
         new Control(XboxController.Button.kStart, "Reset field rotation", controller);
     public static final Control ampScoreButton =
         new Control(XboxController.Button.kLeftStick, "Score AMP", controller);
-    public static final Control trapScoreButton =
-        new Control(XboxController.Button.kRightStick, "Score Trap", controller);
+    public static final Control zeroArm =
+        new Control(XboxController.Button.kRightStick, "Zero Arm", controller);
     public static final Control orientationButton =
         new Control(XboxController.Button.kBack, "Toggle swerve orientation", controller);
 

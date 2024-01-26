@@ -13,6 +13,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
@@ -51,8 +52,8 @@ public class TrapArmSubsystem extends SubsystemBase {
 
   // PID
   // P, I, D, Iz, FF
-  private double[] basePID = {36e-5, 5e-7, 1e-4, 0.0, 2e-6};
-  private double[] scoringPID = {36e-5, 5e-7, 1e-4, 0.0, 2e-6};
+  private double[] basePID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
+  private double[] scoringPID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
 
   private DebugEntry<Boolean> sourceLog;
   private DebugEntry<Boolean> groundLog;
@@ -65,20 +66,21 @@ public class TrapArmSubsystem extends SubsystemBase {
   private MechanismLigament2d scoringMech;
   private MechanismLigament2d wristMech;
 
-  private final ElevatorSim m_baseElevatorSim;
-  private final ElevatorSim m_scoringElevatorSim;
+  private ElevatorSim m_baseElevatorSim;
+  private ElevatorSim m_scoringElevatorSim;
 
   private ShuffleboardTab TrapArmTab = Shuffleboard.getTab("Trap Arm Tab");
   private GenericEntry basePIDEntry = TrapArmTab.add("Base PID", basePID).getEntry();
   private GenericEntry scoringPIDEntry = TrapArmTab.add("Scoring PID", scoringPID).getEntry();
+  private GenericEntry baseGoal = TrapArmTab.add("Base Goal", 0).getEntry();
 
   // States
   public static enum TrapArmState {
     STOWED(0.0, 0.0, 0.0),
-    FROM_INTAKE(0.3, 0.0, 0.0),
-    FROM_SOURCE(0.4, 0.0, 1.0),
-    TRAP_SCORE(0.0, 1.0, 1.25),
-    AMP_SCORE(0.0, 0.0, 0.0);
+    FROM_INTAKE(15.0, 0.0, 0.0),
+    FROM_SOURCE(150.0, 0.0, 12.0),
+    TRAP_SCORE(0.0, 12.0, 12.0),
+    AMP_SCORE(90.0, 0.0, 12.0);
 
     private Double wristPose;
     private Double basePose;
@@ -91,11 +93,15 @@ public class TrapArmSubsystem extends SubsystemBase {
     }
 
     private double feetToRotations(double f) {
-      return Units.feetToMeters(f) / (2 * Math.PI * Units.inchesToMeters(1)) * 70;
+      return Units.inchesToMeters(f) / (2 * Math.PI * Units.inchesToMeters(1)) * 70;
+    }
+
+    private double angleToRotations(double a) {
+      return a / 360;
     }
 
     public Double getWristPose() {
-      return feetToRotations(wristPose);
+      return angleToRotations(wristPose);
     }
 
     public Double getBasePose() {
@@ -121,6 +127,7 @@ public class TrapArmSubsystem extends SubsystemBase {
     groundBreak = new DigitalInput(TrapArmConstants.groundBreak_ID);
 
     // Arm
+
     baseMotor1 = new CANSparkMaxSim(TrapArmConstants.baseMotor1_ID, MotorType.kBrushless);
     baseMotor1.restoreFactoryDefaults();
     baseMotor1.getPIDController().setP(basePID[0]);
@@ -128,6 +135,7 @@ public class TrapArmSubsystem extends SubsystemBase {
     baseMotor1.getPIDController().setD(basePID[2]);
     baseMotor1.getPIDController().setIZone(basePID[3]);
     baseMotor1.getPIDController().setFF(basePID[4]);
+    TrapArmTab.add("Base Elv PID", baseMotor1.getPIDController());
 
     baseMotor2 = new CANSparkMax(TrapArmConstants.baseMotor2_ID, MotorType.kBrushless);
     baseMotor2.restoreFactoryDefaults();
@@ -146,6 +154,7 @@ public class TrapArmSubsystem extends SubsystemBase {
     scoringMotor.getPIDController().setD(scoringPID[2]);
     scoringMotor.getPIDController().setIZone(scoringPID[3]);
     scoringMotor.getPIDController().setFF(scoringPID[4]);
+    TrapArmTab.add("Scoring Elv PID", scoringMotor.getPIDController());
 
     scoringBreak = new DigitalInput(TrapArmConstants.scoringBreak_ID);
 
@@ -161,43 +170,40 @@ public class TrapArmSubsystem extends SubsystemBase {
     // Simulation
     if (Robot.isSimulation()) {
       // 2D Mechanism
-      armMechanism = new Mechanism2d(4, 4);
-      root = armMechanism.getRoot("Root", 2, 0);
+      armMechanism = new Mechanism2d(2, 2);
+      root = armMechanism.getRoot("Root", 1, 0);
       baseMech =
-          root.append(new MechanismLigament2d("Base Arm", 1.5, 90, 20, new Color8Bit(Color.kBlue)));
+          root.append(new MechanismLigament2d("Base Arm", 0, 90, 20, new Color8Bit(Color.kBlue)));
       scoringMech =
           baseMech.append(
-              new MechanismLigament2d("Scoring Arm", 4.5, 0, 10, new Color8Bit(Color.kAqua)));
+              new MechanismLigament2d("Scoring Arm", 0, 0, 10, new Color8Bit(Color.kAqua)));
       wristMech =
           scoringMech.append(
-              new MechanismLigament2d("Wrist Mech", 3, -170, 5, new Color8Bit(Color.kRed)));
+              new MechanismLigament2d("Wrist Mech", 1.5, -170, 5, new Color8Bit(Color.kRed)));
 
       m_baseElevatorSim =
           new ElevatorSim(
               DCMotor.getNEO(1),
-              70,
-              5.4,
+              TrapArmConstants.elevatorGearRatio,
+              TrapArmConstants.elevatorCariageMass,
               Units.inchesToMeters(1),
-              0,
-              Units.inchesToMeters(18),
+              TrapArmConstants.elevatorMinHight,
+              TrapArmConstants.elevatorMaxHight,
               true,
               0);
 
       m_scoringElevatorSim =
           new ElevatorSim(
               DCMotor.getNEO(1),
-              70,
-              5.4,
+              TrapArmConstants.elevatorGearRatio,
+              TrapArmConstants.elevatorCariageMass,
               Units.inchesToMeters(1),
-              0,
-              Units.inchesToMeters(18),
+              TrapArmConstants.elevatorMinHight,
+              TrapArmConstants.elevatorMaxHight,
               true,
               0);
 
       TrapArmTab.add("Trap Arm Mech", armMechanism);
-    } else {
-      m_baseElevatorSim = null;
-      m_scoringElevatorSim = null;
     }
   }
 
@@ -269,21 +275,17 @@ public class TrapArmSubsystem extends SubsystemBase {
   public Command zeroArm() {
     return startEnd(
         () -> {
+          // Command for zering elevator if elevator happens to be not at zero
+          // Runs elevator motors until there limit switches are pressed
           if (!baseBreak.get()) {
-            baseMotor1
-                .getPIDController()
-                .setReference(TrapArmConstants.armZeroingSpeed, ControlType.kVelocity);
-            baseMotor2
-                .getPIDController()
-                .setReference(TrapArmConstants.armZeroingSpeed, ControlType.kVelocity);
+            baseMotor1.set(.1);
+            baseMotor2.set(.1);
           } else {
             baseMotor1.stopMotor();
             baseMotor2.stopMotor();
           }
           if (!scoringBreak.get()) {
-            scoringMotor
-                .getPIDController()
-                .setReference(TrapArmConstants.armZeroingSpeed, ControlType.kVelocity);
+            scoringMotor.set(.1);
           } else {
             scoringMotor.stopMotor();
           }
@@ -298,6 +300,8 @@ public class TrapArmSubsystem extends SubsystemBase {
   public Command setTrapArm(TrapArmState state) {
     return startEnd(
         () -> {
+          baseGoal.setDouble(
+              Units.metersToInches(TrapArmConstants.elevatorMinHight) + state.basePose);
           wristMotor.getPIDController().setReference(state.getWristPose(), ControlType.kPosition);
           baseMotor1.getPIDController().setReference(state.getBasePose(), ControlType.kPosition);
           baseMotor2.getPIDController().setReference(state.getBasePose(), ControlType.kPosition);
@@ -307,9 +311,9 @@ public class TrapArmSubsystem extends SubsystemBase {
         },
         () -> {
           wristMotor.stopMotor();
-          baseMotor1.stopMotor();
-          baseMotor2.stopMotor();
-          scoringMotor.stopMotor();
+          baseMotor1.getPIDController().setReference(0, ControlType.kPosition);
+          baseMotor2.getPIDController().setReference(0, ControlType.kPosition);
+          scoringMotor.getPIDController().setReference(0, ControlType.kPosition);
         });
   }
 
@@ -323,28 +327,18 @@ public class TrapArmSubsystem extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
-    basePID = basePIDEntry.getDoubleArray(basePID);
-    baseMotor1.getPIDController().setP(basePID[0]);
-    baseMotor1.getPIDController().setI(basePID[1]);
-    baseMotor1.getPIDController().setD(basePID[2]);
-    baseMotor1.getPIDController().setFF(basePID[4]);
-
-    scoringPID = scoringPIDEntry.getDoubleArray(scoringPID);
-    scoringMotor.getPIDController().setP(scoringPID[0]);
-    scoringMotor.getPIDController().setI(scoringPID[1]);
-    scoringMotor.getPIDController().setD(scoringPID[2]);
-    scoringMotor.getPIDController().setFF(scoringPID[4]);
-
     for (double i = 0; i < Robot.defaultPeriodSecs; i += CANSparkMaxSim.kPeriod) {
-      m_baseElevatorSim.setInput(baseMotor1.get() * 12);
+      m_baseElevatorSim.setInput(baseMotor1.get() * RobotController.getBatteryVoltage());
       m_baseElevatorSim.update(CANSparkMaxSim.kPeriod);
       baseMotor1.update(
           m_baseElevatorSim.getVelocityMetersPerSecond() * 70 / Units.inchesToMeters(1));
 
-      m_scoringElevatorSim.setInput(scoringMotor.get() * 12);
+      m_scoringElevatorSim.setInput(scoringMotor.get() * RobotController.getBatteryVoltage());
       m_scoringElevatorSim.update(CANSparkMaxSim.kPeriod);
       scoringMotor.update(
-          m_scoringElevatorSim.getVelocityMetersPerSecond() * 70 / Units.inchesToMeters(1));
+          m_scoringElevatorSim.getVelocityMetersPerSecond()
+              * TrapArmConstants.elevatorGearRatio
+              / Units.inchesToMeters(1));
     }
     SmartDashboard.putNumber("base CAN Sim", baseMotor1.get());
     SmartDashboard.putNumber("scoring CAN Sim", scoringMotor.get());
