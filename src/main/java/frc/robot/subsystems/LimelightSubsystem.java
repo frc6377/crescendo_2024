@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.LimelightHelpers;
 import java.util.function.BiConsumer;
@@ -48,13 +49,15 @@ public class LimelightSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    results = LimelightHelpers.getLatestResults("");
+    if (Robot.isReal()) {
+      results = LimelightHelpers.getLatestResults("");
 
-    if (getTagCount() > 1) {
-      measurementsUsed++;
-      measurementConsumer.accept(getPose2d(), getTime());
-      if (measurementsUsed % 100 == 0) {
-        measurementEntry.log(measurementsUsed);
+      if (getTagCount() > 1) {
+        measurementsUsed++;
+        measurementConsumer.accept(getPose2d(), getTime());
+        if (measurementsUsed % 100 == 0) {
+          measurementEntry.log(measurementsUsed);
+        }
       }
     }
   }
