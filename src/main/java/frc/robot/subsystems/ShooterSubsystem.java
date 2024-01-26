@@ -32,11 +32,11 @@ public class ShooterSubsystem extends SubsystemBase {
     TLMotorBool2 = true;
     BRMotorBool1 = false;
     BRMotorBool2 = false;
-    feederBool1 = true;
+    feederBool1 = false;
     feederBool2 = false;
 
     // IDs
-    TLID1 = 2;
+    TLID1 = 1;
     TLID2 = 4;
     BRID1 = 3;
     BRID2 = 2;
@@ -139,13 +139,13 @@ public class ShooterSubsystem extends SubsystemBase {
     // }
     if (TLMotorBool1 || TLMotorBool2) {
       SmartDashboard.putNumber("TL Set Speed", TLMotorSpeed);
+      SmartDashboard.putNumber("BR Set Speed", BRMotorSpeed);
     }
     if (BRMotorBool1 || BRMotorBool2) {
       SmartDashboard.putNumber("Bottom/Right P", BRP);
       SmartDashboard.putNumber("Bottom/Right I", BRI);
       SmartDashboard.putNumber("Bottom/Right D", BRD);
       SmartDashboard.putNumber("Bottom/Right FF", BRFF);
-      SmartDashboard.putNumber("BR Set Speed", BRMotorSpeed);
     }
 
     if (feederBool1 || feederBool2) {
@@ -160,7 +160,7 @@ public class ShooterSubsystem extends SubsystemBase {
             TLMotor1.getPIDController().setReference(TLMotorSpeed, ControlType.kVelocity);
           }
           if (TLMotorBool2) {
-            TLMotor2.getPIDController().setReference(TLMotorSpeed, ControlType.kVelocity);
+            TLMotor2.getPIDController().setReference(BRMotorSpeed, ControlType.kVelocity);
           }
           if (BRMotorBool1) {
             BRMotor1.getPIDController().setReference(BRMotorSpeed, ControlType.kVelocity);
@@ -251,6 +251,7 @@ public class ShooterSubsystem extends SubsystemBase {
       TLMotor1.getPIDController().setP(TLP1);
       TLMotor1.getPIDController().setFF(TLFF1);
       TLMotorSpeed = SmartDashboard.getNumber("TL Set Speed", TLMotorSpeed);
+      BRMotorSpeed = SmartDashboard.getNumber("BR Set Speed", BRMotorSpeed);
     }
 
     if (BRMotorBool1 || BRMotorBool2) {
@@ -262,7 +263,6 @@ public class ShooterSubsystem extends SubsystemBase {
       BRMotor1.getPIDController().setI(BRI);
       BRMotor1.getPIDController().setD(BRD);
       BRMotor1.getPIDController().setFF(BRFF);
-      BRMotorSpeed = SmartDashboard.getNumber("BR Set Speed", BRMotorSpeed);
     }
   }
 
