@@ -72,7 +72,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
                     .withVelocityY(a.vyMetersPerSecond)
                     .withRotationalRate(a.omegaRadiansPerSecond)),
         new HolonomicPathFollowerConfig(
-            maxSpeed * 0.85, drivetrainRadius, new ReplanningConfig(true, true)),
+            maxSpeed * 0.1, drivetrainRadius, new ReplanningConfig(true, true)),
         () ->
             DriverStation.getAlliance().isPresent()
                 && DriverStation.getAlliance().get() == Alliance.Red,
