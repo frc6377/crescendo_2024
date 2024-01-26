@@ -32,7 +32,7 @@ public class ShooterSubsystem extends SubsystemBase {
           }
         },
         () -> {
-          setShooterSpeed(Constants.ShooterConstants.SHOOTER_MINIMUM_SPEED);
+          //shooterIdle();
         });
   }
 
@@ -55,6 +55,13 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     return shooterReady;
+  }
+
+  public Command shooterIdle() {
+    return run(
+        () -> {
+          setShooterSpeed(Constants.ShooterConstants.SHOOTER_MINIMUM_SPEED);
+        });
   }
 
   public void setShooterSpeed(double speed) {
