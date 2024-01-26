@@ -19,12 +19,11 @@ public final class Constants {
   }
 
   public static class ShooterTriggerConstants {
-    public static final int SHOOTER_TRIGGER_MOTOR_ID = 9; // edit all constants when testing
-    public static final double SHOOTER_TRIGGER_LOAD_PERCENTAGE =
-        0.5; // used when intaking into the turret
-    public static final double SHOOTER_TRIGGER_HOLD_PERCENTAGE =
+    public static final int MOTOR_ID = 9; // edit all constants when testing
+    public static final double LOAD_PERCENTAGE = 0.5; // used when intaking into the turret
+    public static final double HOLD_PERCENTAGE =
         0.05; // very slow motor speed in case note slips out of trigger
-    public static final double SHOOTER_TRIGGER_SHOOT_PERCENTAGE =
+    public static final double SHOOT_PERCENTAGE =
         -0.5; // used when feeding note into turret to fire (should be negative value because it
     // outtakes)
   }

@@ -22,8 +22,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.ShooterTriggerSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.TriggerSubsystem;
 import frc.robot.subsystems.signaling.SignalingSubsystem;
 import java.util.HashMap;
 
@@ -42,7 +42,7 @@ public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-  private final ShooterTriggerSubsystem shooterTriggerSubsystem = new ShooterTriggerSubsystem();
+  private final TriggerSubsystem triggerSubsystem;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final SwerveSubsystem drivetrain;
@@ -59,6 +59,7 @@ public class RobotContainer {
   public RobotContainer() {
     dynamicRobotConfig = new DynamicRobotConfig();
     drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
+    triggerSubsystem = new TriggerSubsystem();
     // Configure the trigger bindings
     configureBindings();
     registerCommands();
