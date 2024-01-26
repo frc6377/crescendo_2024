@@ -36,12 +36,19 @@ public class ShooterSubsystem extends SubsystemBase {
         });
   }
 
-  // Fold into shooterFire if checking shooter readiness / piece handling isn't necessary
+  // TODO: Fold into shooterFire
   public Command readyShooter(final double distance) {
     // TargetType target =  ||| Take in target type from vision / elsewhere
     return runOnce(
         () -> {
           setShooterSpeed(calculateShooterSpeed(distance)); // Take in distance from vision
+        });
+  }
+
+  public Command shooterIdle() {
+    return run(
+        () -> {
+          setShooterSpeed(Constants.ShooterConstants.SHOOTER_MINIMUM_SPEED);
         });
   }
 
@@ -57,20 +64,34 @@ public class ShooterSubsystem extends SubsystemBase {
     return shooterReady;
   }
 
-  public Command shooterIdle() {
-    return run(
-        () -> {
-          setShooterSpeed(Constants.ShooterConstants.SHOOTER_MINIMUM_SPEED);
-        });
-  }
-
   public void setShooterSpeed(double speed) {
     shooterMotor.getPIDController().setReference(speed, CANSparkBase.ControlType.kVelocity);
   }
 
   // Parameter: TargetType target ???
+  // Distance in inches.
   public double calculateShooterSpeed(double distance) {
-    double speed = distance; // Placeholder
+    double speed = 0;
+
+    // Distance-speed pairs, in inches and RPM respectively.
+    double[] pointOne = {0, 0};
+    double[] pointTwo = {0, 0};
+
+    // A linear search which determines which points the input distance falls between. May be converted to a binary search if there are many points
+    for (int i = 0; i <= Constants.ShooterConstants.SpeakerRanges.SpeakerRanges.length; i++) {
+      if (i == Constants.ShooterConstants.SpeakerRanges.SpeakerRanges.length) {
+        pointOne = Constants.ShooterConstants.SpeakerRanges.SpeakerRanges[i];
+        pointTwo = Constants.ShooterConstants.SpeakerRanges.SpeakerRanges[i];
+      }
+      else if (speed > Constants.ShooterConstants.SpeakerRanges.SpeakerRanges[i][1]) {
+        pointOne = Constants.ShooterConstants.SpeakerRanges.SpeakerRanges[i];
+        pointTwo = Constants.ShooterConstants.SpeakerRanges.SpeakerRanges[i+1];
+      }
+    }
+
+    double distanceProportion = (distance - pointOne[0]) / (pointTwo[0] - pointOne[0]);
+    speed = (distanceProportion * (pointTwo[1] - pointOne[1])) + pointOne[1];
+
     return speed;
   }
 }

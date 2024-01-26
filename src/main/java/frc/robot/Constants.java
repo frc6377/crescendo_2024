@@ -22,6 +22,11 @@ public final class Constants {
     public static final int SHOOTER_MOTOR_ID = 55;
     public static final double SHOOTER_MINIMUM_SPEED = 150; // Placeholder; in RPM
     public static final double SHOOTER_SPEED_TOLERANCE = 0.1; // Placeholder; speed must be within (1-n)v to v/(1-n) to fire
+
+    // Placeholder; assumes normal line to target is perpendicular to wall; distance - speed pairs, in inches and RPM respectively
+    public static class SpeakerRanges {
+      public static final double[][] SpeakerRanges = {{0, 450}, {40, 550}, {195, 800}, {290, 1100}};
+    }
   }
 
   public static class OperatorConstants {
