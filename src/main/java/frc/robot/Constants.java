@@ -18,7 +18,7 @@ public final class Constants {
     public static final double INTAKE_PERCENTAGE = -0.75;
   }
 
-  public static class ShooterTriggerConstants {
+  public static class TriggerConstants {
     public static final int MOTOR_ID = 9; // edit all constants when testing
     public static final double LOAD_PERCENTAGE = 0.5; // used when intaking into the turret
     public static final double HOLD_PERCENTAGE =
