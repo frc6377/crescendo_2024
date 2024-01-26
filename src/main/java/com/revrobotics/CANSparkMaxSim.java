@@ -30,7 +30,7 @@ import frc.robot.Robot;
 
 public class CANSparkMaxSim extends CANSparkMax {
 
-  private class SparkPIDControllerSim extends SparkPIDController implements Sendable {
+  public class SparkPIDControllerSim extends SparkPIDController implements Sendable {
     private static int instances = 0;
 
     SparkPIDControllerSim(CANSparkBase device) {
