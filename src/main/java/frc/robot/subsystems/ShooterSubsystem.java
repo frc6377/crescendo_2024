@@ -48,7 +48,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public boolean isShooterReady(double distance) {
     boolean shooterReady = false;
     double minSpeedTolerance = calculateShooterSpeed(distance)*(1-Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
-    double maxSpeedTolerance = calculateShooterSpeed(distance)/(1-Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+    double maxSpeedTolerance = calculateShooterSpeed(distance)*(1+Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
 
     if (minSpeedTolerance < shooterMotor.getEncoder().getVelocity() & shooterMotor.getEncoder().getVelocity() < maxSpeedTolerance) {
       shooterReady = true;
