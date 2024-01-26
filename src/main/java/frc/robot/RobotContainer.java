@@ -11,19 +11,25 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.DynamicRobotConfig;
+import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.color.SignalingSubsystem;
+import frc.robot.subsystems.signaling.SignalingSubsystem;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -32,27 +38,38 @@ import java.util.HashMap;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  private static final double MaxSpeed = 6; // 6 meters per second desired top speed
+  private static final double MaxAngularRate =
+      Math.PI; // Half a rotation per second max angular velocity
+
+  private final RobotStateManager robotStateManager = new RobotStateManager();
 
   // The robot's subsystems and commands are defined here...
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final SwerveSubsystem drivetrain;
+  private final LimelightSubsystem limelightSubsystem;
 
   private final SignalingSubsystem signalingSubsystem =
-      new SignalingSubsystem(1, OI.Driver::setRumble);
+      new SignalingSubsystem(1, OI.Driver::setRumble, robotStateManager);
 
   private final DynamicRobotConfig dynamicRobotConfig;
 
-  private final RobotStateManager robotStateManager = new RobotStateManager();
-
   private SendableChooser<Command> autoChooser;
   private ShuffleboardTab configTab = Shuffleboard.getTab("Config");
+  private GenericEntry autoDelay =
+      configTab
+          .add("Auton Start Delay(seconds)", 0)
+          .withWidget(BuiltInWidgets.kNumberSlider)
+          .withProperties(Map.of("min", 0, "max", 2))
+          .getEntry();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     dynamicRobotConfig = new DynamicRobotConfig();
     drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
+    limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
     // Configure the trigger bindings
     configureBindings();
     registerCommands();
@@ -90,7 +107,7 @@ public class RobotContainer {
                     drivetrain.seedFieldRelative(
                         new Pose2d(
                             drivetrain.getState().Pose.getTranslation(),
-                            Rotation2d.fromDegrees(270)))));
+                            Rotation2d.fromDegrees(180)))));
     OI.getButton(OI.Driver.orientationButton)
         .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
@@ -124,10 +141,9 @@ public class RobotContainer {
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
-   * @return the command to run in autonomous
+   * @return the command to run in autonomous(including the delay)
    */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return autoChooser.getSelected();
+    return new WaitCommand(autoDelay.getDouble(0)).andThen(autoChooser.getSelected());
   }
 }

@@ -1,6 +1,6 @@
-package frc.robot.subsystems.color.patterns;
+package frc.robot.subsystems.signaling.patterns;
 
-import frc.robot.subsystems.color.RGB;
+import frc.robot.subsystems.signaling.RGB;
 
 public class PatternNode {
   public final RGB color;
