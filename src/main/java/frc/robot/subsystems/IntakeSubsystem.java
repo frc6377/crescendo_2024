@@ -14,10 +14,10 @@ import frc.robot.stateManagement.RobotStateManager;
 public class IntakeSubsystem extends SubsystemBase {
   private CANSparkMax intakeMotor;
   private CANSparkMax chooserMotor;
+
   public IntakeSubsystem() {
     intakeMotor = new CANSparkMax(Constants.IntakeConstants.INTAKE_MOTOR_ID, MotorType.kBrushless);
     chooserMotor =
-       
         new CANSparkMax(Constants.IntakeConstants.INTAKE_CHOOSER_ID, MotorType.kBrushless);
     intakeMotor.restoreFactoryDefaults();
     chooserMotor.restoreFactoryDefaults();
@@ -25,8 +25,8 @@ public class IntakeSubsystem extends SubsystemBase {
     chooserMotor.setSmartCurrentLimit(20);
   }
 
-
-  //TODO: Add check to make sure turret is below 45 degrees before running & add photogate when implemented.
+  // TODO: Add check to make sure turret is below 45 degrees before running & add photogate when
+  // implemented.
   public void runIntake() {
     intakeMotor.set(Constants.IntakeConstants.INTAKE_PERCENTAGE);
   }
