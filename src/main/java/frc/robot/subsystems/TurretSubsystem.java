@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -51,11 +52,6 @@ public class TurretSubsystem extends SubsystemBase {
     m_encoder = new CANcoder(Constants.TurretConstants.CANcoder_ID);
 
     zeroTurretEncoder();
-
-    // set PID coefficients
-    turretPIDController.setP(Constants.TurretConstants.TURRET_KP);
-    turretPIDController.setI(Constants.TurretConstants.TURRET_KI);
-    turretPIDController.setD(Constants.TurretConstants.TURRET_KD);
     turretPIDController.setIZone(Constants.TurretConstants.TURRET_KIZ);
   }
 
@@ -64,7 +60,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public void setTurretPos(double setpoint) {
-    turretMotor.set(turretPIDController.calculate(turretPosition, setpoint));
+    turretMotor.set(MathUtil.clamp(turretPIDController.calculate(turretPosition, setpoint),0,220));
   }
 
   public void zeroTurretEncoder() {
@@ -75,6 +71,7 @@ public class TurretSubsystem extends SubsystemBase {
     turretPosition =
         Math.toRadians(((m_encoder.getPosition().getValueAsDouble()) * 360)
             * Constants.TurretConstants.CONVERSION_FACTOR);
+    setTurretPos(turretPosition);
     SmartDashboard.putNumber("Turret Position", turretPosition);
     SmartDashboard.putBoolean("Out of Bounds", Math.abs(turretPosition) > 3.14);
     SmartDashboard.putBoolean("Soft limit enabled forward", turretMotor.isSoftLimitEnabled(SoftLimitDirection.kForward));
@@ -94,7 +91,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public Command LockTurret() {
-    return run(() -> lockOntoTag(LimelightHelpers.getTX("")));
+    return run(() -> lockOntoTag(Math.toRadians(LimelightHelpers.getTX(""))));
   }
 
   @Override
