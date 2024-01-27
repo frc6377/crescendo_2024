@@ -37,22 +37,22 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeMotor.set(-Constants.IntakeConstants.INTAKE_PERCENTAGE);
   }
 
-  public void runChooser() {
+  public void speakerChooser() {
     chooserMotor.set(Constants.IntakeConstants.CHOOSER_PERCENTAGE);
   }
 
-  public void reverseChooser() {
+  public void ampChooser() {
     chooserMotor.set(-Constants.IntakeConstants.CHOOSER_PERCENTAGE);
   }
 
   public void speakerIntake() {
     runIntake();
-    runChooser();
+    speakerChooser();
   }
 
-  public void trapIntake() {
+  public void ampIntake() {
     runIntake();
-    reverseChooser();
+    ampChooser();
   }
 
   public void stopMotors() {
@@ -64,7 +64,7 @@ public class IntakeSubsystem extends SubsystemBase {
     return new StartEndCommand(this::reverseIntake, this::stopMotors, this);
   }
 
-  // Runs the speaker intake or trap intake based on the robot state provided
+  // Runs the speaker intake or amp intake based on the robot state provided
   public Command getIntakeCommand(PlacementMode mode) {
     return buildIntakeCommand(mode.equals(PlacementMode.SPEAKER));
   }
@@ -73,13 +73,13 @@ public class IntakeSubsystem extends SubsystemBase {
     return buildIntakeCommand(true);
   }
 
-  public Command getTrapIntakeCommand() {
+  public Command getAmpIntakeCommand() {
     return buildIntakeCommand(false);
   }
 
   private Command buildIntakeCommand(boolean isSpeaker) {
     return new StartEndCommand(
-        isSpeaker ? this::speakerIntake : this::trapIntake, this::stopMotors, this);
+        isSpeaker ? this::speakerIntake : this::ampIntake, this::stopMotors, this);
   }
 
   @Override

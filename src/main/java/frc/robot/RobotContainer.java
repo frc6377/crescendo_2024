@@ -125,7 +125,7 @@ public class RobotContainer {
 
     autonCommands.put("Shoot", autonTest());
     autonCommands.put("Speaker Intake", intakeSubsystem.getSpeakerIntakeCommand());
-    autonCommands.put("Trap Intake", intakeSubsystem.getTrapIntakeCommand());
+    autonCommands.put("Amp Intake", intakeSubsystem.getAmpIntakeCommand());
 
     NamedCommands.registerCommands(autonCommands);
   }
