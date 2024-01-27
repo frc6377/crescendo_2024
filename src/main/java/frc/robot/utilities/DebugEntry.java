@@ -1,5 +1,5 @@
 // Temporary path & name for the file.
-package frc.robot.networktables;
+package frc.robot.utilities;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.datalog.DataLog;
@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Robot;
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -24,7 +24,7 @@ public class DebugEntry<T> {
   private final String name;
   private T lastValue;
 
-  public DebugEntry(T defaultValue, String name, SubsystemBase subsystem) {
+  public DebugEntry(T defaultValue, String name, Subsystem subsystem) {
     this.name = name;
     this.lastValue = defaultValue;
     if (defaultValue instanceof Double) {
@@ -47,9 +47,9 @@ public class DebugEntry<T> {
           networkEntry = networkTab.add(name, defaultValue).getEntry();
           entries.put(name, networkEntry);
         } else {
-          networkEntry = entries.get(name);
-          DriverStation.reportWarning(
-              "Duplicate ShuffleboardEntry on " + networkTab.getTitle() + " tab: " + name, false);
+          String errorMessage =
+              "Duplicate ShuffleboardEntry on " + networkTab.getTitle() + " tab: " + name;
+          DriverStation.reportError(errorMessage, false);
         }
       }
       localConsumer.accept(defaultValue);
