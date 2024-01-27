@@ -69,12 +69,11 @@ public class ShooterSubsystem extends SubsystemBase {
   public static double calculateShooterSpeed(double distance) {
     double speed = 0;
     double distanceProportion;
-    
+
     // If distance below minimum, set speed to minimum.
     if (distance < speakerConfigList[0].getDistance()) {
       speed = speakerConfigList[0].getSpeed();
-    }
-    else {
+    } else {
       // A linear search which determines which points the input distance falls between. May be
       // converted to a binary search if there are many points
       for (int i = 0; i < speakerConfigList.length; i++) {
@@ -82,12 +81,15 @@ public class ShooterSubsystem extends SubsystemBase {
         if (i == speakerConfigList.length - 1) {
           speed = speakerConfigList[i].getSpeed();
           break;
-        } else if (distance >= speakerConfigList[i].getDistance()) {
+        } else if (distance >= speakerConfigList[i].getDistance()
+            && distance < speakerConfigList[i + 1].getDistance()) {
           // Math to linearly interpolate the speed.
           distanceProportion =
-              (distance - speakerConfigList[i].getDistance()) / (speakerConfigList[i + 1].getDistance() - speakerConfigList[i].getDistance());
+              (distance - speakerConfigList[i].getDistance())
+                  / (speakerConfigList[i + 1].getDistance() - speakerConfigList[i].getDistance());
           speed =
-              (distanceProportion * (speakerConfigList[i + 1].getSpeed() - speakerConfigList[i].getSpeed()))
+              (distanceProportion
+                      * (speakerConfigList[i + 1].getSpeed() - speakerConfigList[i].getSpeed()))
                   + speakerConfigList[i].getSpeed();
           break;
         }
@@ -115,9 +117,9 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   private static SpeakerConfig[] speakerConfigList = {
-      new SpeakerConfig(0, 450),
-      new SpeakerConfig(40, 550),
-      new SpeakerConfig(195, 750),
-      new SpeakerConfig(290, 1000)
+    new SpeakerConfig(0, 450),
+    new SpeakerConfig(40, 550),
+    new SpeakerConfig(195, 750),
+    new SpeakerConfig(290, 1000)
   };
 }
