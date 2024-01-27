@@ -96,8 +96,7 @@ public class RobotContainer {
 
     // Trap Elv Scoring
     OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapElvSubsystem.scoreAMP());
-    OI.getButton(OI.Driver.trapScoreButton)
-        .whileTrue(trapElvSubsystem.setTrapArm(TrapElvSubsystem.TrapElvState.TRAP_SCORE));
+    OI.getButton(OI.Driver.trapScoreButton).whileTrue(trapElvSubsystem.scoreTrap());
 
     // Trap Elv zeroing button
     OI.getButton(OI.Driver.zeroArm).whileTrue(trapElvSubsystem.zeroArm());

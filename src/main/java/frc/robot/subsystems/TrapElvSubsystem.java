@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -24,7 +25,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TrapElvConstants;
 import frc.robot.Robot;
@@ -33,7 +33,7 @@ import java.util.function.BooleanSupplier;
 
 public class TrapElvSubsystem extends SubsystemBase {
   // Wrist motors
-  private final CANSparkMax wristMotor;
+  private final CANSparkMaxSim wristMotor;
   private final CANSparkMax rollerMotor;
 
   // Elevator motors
@@ -70,6 +70,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   private ElevatorSim m_baseElevatorSim;
   private ElevatorSim m_scoringElevatorSim;
+  private SingleJointedArmSim m_wristMotorSim;
 
   private ShuffleboardTab TrapElvTab = Shuffleboard.getTab("Trap Arm Tab");
   private GenericEntry baseGoal = TrapElvTab.add("Base Goal", 0).getEntry();
@@ -116,7 +117,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   /** Creates a new TrapArm. */
   public TrapElvSubsystem() {
     // Wrist
-    wristMotor = new CANSparkMax(TrapElvConstants.wristMotor_ID, MotorType.kBrushless);
+    wristMotor = new CANSparkMaxSim(TrapElvConstants.wristMotor_ID, MotorType.kBrushless);
     wristMotor.restoreFactoryDefaults();
     wristEncoder = new CANcoder(6);
 
@@ -176,7 +177,8 @@ public class TrapElvSubsystem extends SubsystemBase {
               new MechanismLigament2d("Scoring Arm", 0, 0, 10, new Color8Bit(Color.kAqua)));
       wristMech =
           scoringMech.append(
-              new MechanismLigament2d("Wrist Mech", 1.5, -170, 5, new Color8Bit(Color.kRed)));
+              new MechanismLigament2d(
+                  "Wrist Mech", TrapElvConstants.wristLength, -170, 5, new Color8Bit(Color.kRed)));
 
       m_baseElevatorSim =
           new ElevatorSim(
@@ -199,6 +201,17 @@ public class TrapElvSubsystem extends SubsystemBase {
               TrapElvConstants.elevatorMaxHight,
               true,
               0);
+
+      m_wristMotorSim =
+          new SingleJointedArmSim(
+              DCMotor.getNEO(1),
+              TrapElvConstants.elevatorGearRatio,
+              1,
+              TrapElvConstants.wristLength,
+              TrapElvConstants.wristMinAngle, // min rotation
+              TrapElvConstants.wristMaxAngle, // max rotation
+              true,
+              TrapElvConstants.wristMinAngle);
 
       TrapElvTab.add("Trap Arm Mech", elvMechanism);
     }
@@ -237,27 +250,53 @@ public class TrapElvSubsystem extends SubsystemBase {
   }
 
   public Command intakeSource() {
-    return new SequentialCommandGroup(
-        setTrapArm(TrapElvState.FROM_SOURCE), setRoller(TrapElvConstants.rollerIntakeSpeed));
+    return startEnd(
+        () -> {
+          setTrapArm(TrapElvState.FROM_SOURCE);
+          rollerMotor.set(TrapElvConstants.rollerIntakeSpeed);
+        },
+        () -> {
+          setTrapArm(TrapElvState.STOWED);
+          rollerMotor.stopMotor();
+        });
   }
 
   public Command intakeGround() {
-    return new SequentialCommandGroup(
-        setTrapArm(TrapElvState.FROM_INTAKE), setRoller(-TrapElvConstants.rollerIntakeSpeed));
+    return startEnd(
+        () -> {
+          setTrapArm(TrapElvState.FROM_SOURCE);
+          rollerMotor.set(TrapElvConstants.rollerIntakeSpeed);
+        },
+        () -> {
+          stowTrapElv();
+        });
   }
 
   public Command scoreAMP() {
-    return new SequentialCommandGroup(
-        setTrapArm(TrapElvState.AMP_SCORE), setRoller(-TrapElvConstants.rollerScoringSpeed));
+    return startEnd(
+        () -> {
+          setTrapArm(TrapElvState.AMP_SCORE);
+          setRoller(-TrapElvConstants.rollerScoringSpeed);
+        },
+        () -> {
+          stowTrapElv();
+        });
   }
 
   public Command scoreTrap() {
-    return new SequentialCommandGroup(
-        setTrapArm(TrapElvState.TRAP_SCORE), setRoller(TrapElvConstants.rollerScoringSpeed));
+    return startEnd(
+        () -> {
+          setTrapArm(TrapElvState.TRAP_SCORE);
+          rollerMotor.set(TrapElvConstants.rollerIntakeSpeed);
+        },
+        () -> {
+          stowTrapElv();
+        });
   }
 
-  public Command stowTrapElv() {
-    return new SequentialCommandGroup(setTrapArm(TrapElvState.STOWED), stopRoller());
+  public void stowTrapElv() {
+    setTrapArm(TrapElvState.STOWED);
+    rollerMotor.stopMotor();
   }
 
   public Command zeroArm() {
@@ -266,14 +305,14 @@ public class TrapElvSubsystem extends SubsystemBase {
           // Command for zering elevator if elevator happens to be not at zero
           // Runs elevator motors until there limit switches are pressed
           if (!baseLimit.get()) {
-            baseMotor1.set(.1);
-            baseMotor2.set(.1);
+            baseMotor1.set(TrapElvConstants.elvZeroingSpeed);
+            baseMotor2.set(TrapElvConstants.elvZeroingSpeed);
           } else {
             baseMotor1.stopMotor();
             baseMotor2.stopMotor();
           }
           if (!scoringLimit.get()) {
-            scoringMotor.set(.1);
+            scoringMotor.set(TrapElvConstants.elvZeroingSpeed);
           } else {
             scoringMotor.stopMotor();
           }
@@ -285,24 +324,12 @@ public class TrapElvSubsystem extends SubsystemBase {
         });
   }
 
-  public Command setTrapArm(TrapElvState state) {
-    return startEnd(
-        () -> {
-          baseGoal.setDouble(
-              Units.metersToInches(TrapElvConstants.elevatorMinHight) + state.basePose);
-          wristMotor.getPIDController().setReference(state.getWristPose(), ControlType.kPosition);
-          baseMotor1.getPIDController().setReference(state.getBasePose(), ControlType.kPosition);
-          baseMotor2.getPIDController().setReference(state.getBasePose(), ControlType.kPosition);
-          scoringMotor
-              .getPIDController()
-              .setReference(state.getScoringPose(), ControlType.kPosition);
-        },
-        () -> {
-          wristMotor.stopMotor();
-          baseMotor1.getPIDController().setReference(0, ControlType.kPosition);
-          baseMotor2.getPIDController().setReference(0, ControlType.kPosition);
-          scoringMotor.getPIDController().setReference(0, ControlType.kPosition);
-        });
+  public void setTrapArm(TrapElvState state) {
+    baseGoal.setDouble(Units.metersToInches(TrapElvConstants.elevatorMinHight) + state.basePose);
+    wristMotor.getPIDController().setReference(state.getWristPose(), ControlType.kPosition);
+    baseMotor1.getPIDController().setReference(state.getBasePose(), ControlType.kPosition);
+    baseMotor2.getPIDController().setReference(state.getBasePose(), ControlType.kPosition);
+    scoringMotor.getPIDController().setReference(state.getScoringPose(), ControlType.kPosition);
   }
 
   @Override
@@ -327,14 +354,21 @@ public class TrapElvSubsystem extends SubsystemBase {
           m_scoringElevatorSim.getVelocityMetersPerSecond()
               * TrapElvConstants.elevatorGearRatio
               / Units.inchesToMeters(1));
+
+      m_wristMotorSim.setInput(wristMotor.get() * RobotController.getBatteryVoltage());
+      m_wristMotorSim.update(CANSparkMaxSim.kPeriod);
+      wristMotor.update(m_wristMotorSim.getVelocityRadPerSec());
     }
     SmartDashboard.putNumber("base CAN Sim", baseMotor1.get());
     SmartDashboard.putNumber("scoring CAN Sim", scoringMotor.get());
     baseMech.setLength(m_baseElevatorSim.getPositionMeters());
     scoringMech.setLength(m_scoringElevatorSim.getPositionMeters());
+    wristMech.setAngle(Units.radiansToDegrees(m_wristMotorSim.getAngleRads()));
+
     SmartDashboard.putNumber(
         "Base Elv Length", Units.metersToInches(m_baseElevatorSim.getPositionMeters()));
     SmartDashboard.putNumber(
         "Scoring Elv Length", Units.metersToInches(m_scoringElevatorSim.getPositionMeters()));
+    SmartDashboard.putNumber("Wrist Angle", Units.radiansToDegrees(m_wristMotorSim.getAngleRads()));
   }
 }
