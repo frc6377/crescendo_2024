@@ -86,32 +86,32 @@ public class TunerConstants {
   private static final int kFrontLeftSteerMotorId = 2;
   private static final int kFrontLeftEncoderId = 1;
 
-  private static final double kFrontLeftXPosInches = 12;
-  private static final double kFrontLeftYPosInches = 12;
+  private static final double kFrontLeftXPosInches = 12.375;
+  private static final double kFrontLeftYPosInches = 12.375;
 
   // Front Right
   private static final int kFrontRightDriveMotorId = 3;
   private static final int kFrontRightSteerMotorId = 4;
   private static final int kFrontRightEncoderId = 2;
 
-  private static final double kFrontRightXPosInches = 12;
-  private static final double kFrontRightYPosInches = -12;
+  private static final double kFrontRightXPosInches = 12.375;
+  private static final double kFrontRightYPosInches = -12.375;
 
   // Back Left
   private static final int kBackLeftDriveMotorId = 7;
   private static final int kBackLeftSteerMotorId = 8;
   private static final int kBackLeftEncoderId = 4;
 
-  private static final double kBackLeftXPosInches = -12;
-  private static final double kBackLeftYPosInches = 12;
+  private static final double kBackLeftXPosInches = -12.375;
+  private static final double kBackLeftYPosInches = 12.375;
 
   // Back Right
   private static final int kBackRightDriveMotorId = 5;
   private static final int kBackRightSteerMotorId = 6;
   private static final int kBackRightEncoderId = 3;
 
-  private static final double kBackRightXPosInches = -12;
-  private static final double kBackRightYPosInches = -12;
+  private static final double kBackRightXPosInches = -12.375;
+  private static final double kBackRightYPosInches = -12.375;
 
   private final SwerveModuleConstants FrontLeft;
   private final SwerveModuleConstants FrontRight;
