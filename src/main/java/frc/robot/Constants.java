@@ -20,7 +20,13 @@ public final class Constants {
 
   public static class ShooterConstants {
     public static final int SHOOTER_MOTOR_ID = 55;
-    public static final double SHOOTER_MINIMUM_SPEED = 150; // Placeholder; in RPM
+
+    public static final double SHOOTER_P = 0.0;
+    public static final double SHOOTER_I = 0.0;
+    public static final double SHOOTER_D = 0.0;
+    public static final double SHOOTER_FF = 0.0;
+
+    public static final double SHOOTER_IDLE_SPEED = 150; // Placeholder; in RPM
     public static final double SHOOTER_SPEED_TOLERANCE =
         0.1; // Placeholder; speed must be within (1-n)v to (1+n)v to fire
   }

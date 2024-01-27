@@ -18,10 +18,10 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterMotor.setSmartCurrentLimit(40);
 
     // Placeholder values
-    shooterMotor.getPIDController().setP(0);
-    shooterMotor.getPIDController().setI(0);
-    shooterMotor.getPIDController().setD(0);
-    shooterMotor.getPIDController().setFF(0);
+    shooterMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_P);
+    shooterMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_I);
+    shooterMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_D);
+    shooterMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
   }
 
   // Fires the shooter.
@@ -41,7 +41,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command shooterIdle() {
     return run(
         () -> {
-          setShooterSpeed(Constants.ShooterConstants.SHOOTER_MINIMUM_SPEED);
+          setShooterSpeed(Constants.ShooterConstants.SHOOTER_IDLE_SPEED);
         });
   }
 
@@ -71,24 +71,24 @@ public class ShooterSubsystem extends SubsystemBase {
     double distanceProportion;
     
     // If distance below minimum, set speed to minimum.
-    if (distance < SpeakerConfigList[0].getDistance()) {
-      speed = SpeakerConfigList[0].getSpeed();
+    if (distance < speakerConfigList[0].getDistance()) {
+      speed = speakerConfigList[0].getSpeed();
     }
     else {
       // A linear search which determines which points the input distance falls between. May be
       // converted to a binary search if there are many points
-      for (int i = 0; i <= SpeakerConfigList.length; i++) {
+      for (int i = 0; i < speakerConfigList.length; i++) {
         // If distance above maximum, set speed to maximum.
-        if (i == SpeakerConfigList.length) {
-          speed = SpeakerConfigList[i].getSpeed();
+        if (i == speakerConfigList.length - 1) {
+          speed = speakerConfigList[i].getSpeed();
           break;
-        } else if (distance >= SpeakerConfigList[i].getDistance()) {
+        } else if (distance >= speakerConfigList[i].getDistance()) {
           // Math to linearly interpolate the speed.
           distanceProportion =
-              (distance - SpeakerConfigList[i].getDistance()) / (SpeakerConfigList[i + 1].getDistance() - SpeakerConfigList[i].getDistance());
+              (distance - speakerConfigList[i].getDistance()) / (speakerConfigList[i + 1].getDistance() - speakerConfigList[i].getDistance());
           speed =
-              (distanceProportion * (SpeakerConfigList[i + 1].getSpeed() - SpeakerConfigList[i].getSpeed()))
-                  + SpeakerConfigList[i].getSpeed();
+              (distanceProportion * (speakerConfigList[i + 1].getSpeed() - speakerConfigList[i].getSpeed()))
+                  + speakerConfigList[i].getSpeed();
           break;
         }
       }
@@ -114,7 +114,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
   }
 
-  private static SpeakerConfig[] SpeakerConfigList = {
+  private static SpeakerConfig[] speakerConfigList = {
       new SpeakerConfig(0, 450),
       new SpeakerConfig(40, 550),
       new SpeakerConfig(195, 750),
