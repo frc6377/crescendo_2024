@@ -25,7 +25,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   // Fires the shooter.
-  public Command shooterFire(final double distance) {
+  public Command shooterFire(double distance) {
     return startEnd(
         () -> {
           if (isShooterReady(distance)) {
@@ -88,8 +88,11 @@ public class ShooterSubsystem extends SubsystemBase {
           break;
         } else if (distance > SpeakerRanges[i][0]) {
           // Math to linearly interpolate the speed.
-          distanceProportion = (distance - SpeakerRanges[i][0]) / (SpeakerRanges[i+1][0] - SpeakerRanges[i][0]);
-          speed = (distanceProportion * (SpeakerRanges[i+1][1] - SpeakerRanges[i][1])) + SpeakerRanges[i][1];
+          distanceProportion =
+              (distance - SpeakerRanges[i][0]) / (SpeakerRanges[i + 1][0] - SpeakerRanges[i][0]);
+          speed =
+              (distanceProportion * (SpeakerRanges[i + 1][1] - SpeakerRanges[i][1]))
+                  + SpeakerRanges[i][1];
           break;
         }
       }
