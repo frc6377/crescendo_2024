@@ -7,9 +7,10 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.stateManagement.RobotStateManager;
+import frc.robot.stateManagement.PlacementMode;
 
 public class IntakeSubsystem extends SubsystemBase {
   private CANSparkMax intakeMotor;
@@ -32,16 +33,16 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeMotor.set(Constants.IntakeConstants.INTAKE_PERCENTAGE);
   }
 
-  public void reverseIntake() {
+  public void reverseIntake(){
     intakeMotor.set(-Constants.IntakeConstants.INTAKE_PERCENTAGE);
   }
 
   public void runChooser() {
-    chooserMotor.set(Constants.IntakeConstants.INTAKE_PERCENTAGE);
+    chooserMotor.set(Constants.IntakeConstants.CHOOSER_PERCENTAGE);
   }
 
   public void reverseChooser() {
-    chooserMotor.set(-Constants.IntakeConstants.INTAKE_PERCENTAGE);
+    chooserMotor.set(-Constants.IntakeConstants.CHOOSER_PERCENTAGE);
   }
 
   public void speakerIntake() {
@@ -58,11 +59,29 @@ public class IntakeSubsystem extends SubsystemBase {
     chooserMotor.set(0);
     intakeMotor.set(0);
   }
+  
+  public Command reverseIntakeCommand() {
+    return new StartEndCommand(this::reverseIntake, this::stopMotors, this);
+  }
+ 
+  // Runs the speaker intake or trap intake based on the robot state provided
+  public Command getIntakeCommand(PlacementMode mode) {
+    return buildIntakeCommand(mode.equals(PlacementMode.SPEAKER));
+  }
 
-  public Command intakeCommand(RobotStateManager robotStateManager) {
-    return robotStateManager.getPlacementMode().getAsInt() == 0
-        ? runOnce(() -> speakerIntake())
-        : runOnce(() -> trapIntake());
+  public Command getSpeakerIntakeCommand(){
+    return buildIntakeCommand(true);
+  }
+
+  public Command getTrapIntakeCommand(){
+    return buildIntakeCommand(false);
+  }
+
+  private Command buildIntakeCommand(boolean isSpeaker){
+    return new StartEndCommand(
+      isSpeaker ? this::speakerIntake : this::trapIntake,
+      this::stopMotors,
+      this);
   }
 
   @Override

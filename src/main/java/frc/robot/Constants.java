@@ -18,6 +18,7 @@ public final class Constants {
     public static final int INTAKE_MOTOR_ID = 6;
     public static final int INTAKE_CHOOSER_ID = 7;
     public static final double INTAKE_PERCENTAGE = -0.75;
+    public static final double CHOOSER_PERCENTAGE = -0.75;
   }
 
   public static class OperatorConstants {
