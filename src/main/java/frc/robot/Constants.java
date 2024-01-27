@@ -22,7 +22,7 @@ public final class Constants {
     public static final int SHOOTER_MOTOR_ID = 55;
     public static final double SHOOTER_MINIMUM_SPEED = 150; // Placeholder; in RPM
     public static final double SHOOTER_SPEED_TOLERANCE =
-        0.1; // Placeholder; speed must be within (1-n)v to v/(1-n) to fire
+        0.1; // Placeholder; speed must be within (1-n)v to (1+n)v to fire
   }
 
   public static class OperatorConstants {

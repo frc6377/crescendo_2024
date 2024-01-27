@@ -29,7 +29,7 @@ public class ShooterSubsystem extends SubsystemBase {
     return startEnd(
         () -> {
           if (isShooterReady(distance)) {
-            setShooterSpeed(SpeakerRanges.getSpeed(distance));
+            setShooterSpeed(calculateShooterSpeed(distance));
           }
         },
         () -> {
@@ -49,9 +49,9 @@ public class ShooterSubsystem extends SubsystemBase {
   public boolean isShooterReady(double distance) {
     boolean shooterReady = false;
     double minSpeedTolerance =
-        SpeakerRanges.getSpeed(distance) * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+        calculateShooterSpeed(distance) * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
     double maxSpeedTolerance =
-        SpeakerRanges.getSpeed(distance) * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+        calculateShooterSpeed(distance) * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
 
     if (minSpeedTolerance < shooterMotor.getEncoder().getVelocity()
         & shooterMotor.getEncoder().getVelocity() < maxSpeedTolerance) {
@@ -66,37 +66,58 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterMotor.getPIDController().setReference(speed, CANSparkBase.ControlType.kVelocity);
   }
 
-  private class SpeakerRanges {
-    private static double speed;
-
-    // Placeholder; in inches and RPM respectively.
-    private static double[][] SpeakerRanges = {
-      {0, 450},
-      {40, 550},
-      {195, 750},
-      {290, 1000}
-    };
-
-    public static double getSpeed(double distance) {
-      double distanceProportion;
+  public static double calculateShooterSpeed(double distance) {
+    double speed = 0;
+    double distanceProportion;
+    
+    // If distance below minimum, set speed to minimum.
+    if (distance < SpeakerConfigList[0].getDistance()) {
+      speed = SpeakerConfigList[0].getSpeed();
+    }
+    else {
       // A linear search which determines which points the input distance falls between. May be
       // converted to a binary search if there are many points
-      for (int i = 0; i <= SpeakerRanges.length; i++) {
-        if (i == SpeakerRanges.length) {
-          // Maximum possible speed.
-          speed = SpeakerRanges[i][1];
+      for (int i = 0; i <= SpeakerConfigList.length; i++) {
+        // If distance above maximum, set speed to maximum.
+        if (i == SpeakerConfigList.length) {
+          speed = SpeakerConfigList[i].getSpeed();
           break;
-        } else if (distance > SpeakerRanges[i][0]) {
+        } else if (distance >= SpeakerConfigList[i].getDistance()) {
           // Math to linearly interpolate the speed.
           distanceProportion =
-              (distance - SpeakerRanges[i][0]) / (SpeakerRanges[i + 1][0] - SpeakerRanges[i][0]);
+              (distance - SpeakerConfigList[i].getDistance()) / (SpeakerConfigList[i + 1].getDistance() - SpeakerConfigList[i].getDistance());
           speed =
-              (distanceProportion * (SpeakerRanges[i + 1][1] - SpeakerRanges[i][1]))
-                  + SpeakerRanges[i][1];
+              (distanceProportion * (SpeakerConfigList[i + 1].getSpeed() - SpeakerConfigList[i].getSpeed()))
+                  + SpeakerConfigList[i].getSpeed();
           break;
         }
       }
+    }
+    return speed;
+  }
+
+  private static class SpeakerConfig {
+    private double distance;
+    private double speed;
+
+    public SpeakerConfig(double distance, double speed) {
+      this.distance = distance;
+      this.speed = speed;
+    }
+
+    public double getDistance() {
+      return distance;
+    }
+
+    public double getSpeed() {
       return speed;
     }
   }
+
+  private static SpeakerConfig[] SpeakerConfigList = {
+      new SpeakerConfig(0, 450),
+      new SpeakerConfig(40, 550),
+      new SpeakerConfig(195, 750),
+      new SpeakerConfig(290, 1000)
+  };
 }
