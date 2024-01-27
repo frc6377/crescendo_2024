@@ -24,7 +24,7 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
   }
 
-  public static class TrapArmConstants {
+  public static class TrapElvConstants {
     // IDs | TODO: get real device IDs
     public static final int wristMotor_ID = 1;
     public static final int rollerMoter_ID = 2;
@@ -40,7 +40,7 @@ public final class Constants {
     // Speeds
     public static final double rollerIntakeSpeed = 0.25;
     public static final double rollerScoringSpeed = 0.4;
-    public static final int armZeroingSpeed = 10; // RPM
+    public static final int elvZeroingSpeed = 10; // RPM
 
     // Simulation
     public static final int elevatorGearRatio = 70;

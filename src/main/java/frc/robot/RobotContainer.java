@@ -17,7 +17,7 @@ import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.TrapArmSubsystem;
+import frc.robot.subsystems.TrapElvSubsystem;
 import frc.robot.subsystems.signaling.SignalingSubsystem;
 
 /**
@@ -42,7 +42,7 @@ public class RobotContainer {
   private final SignalingSubsystem signalingSubsystem =
       new SignalingSubsystem(1, OI.Driver::setRumble, robotStateManager);
 
-  private final TrapArmSubsystem trapArmSubsystem = new TrapArmSubsystem();
+  private final TrapElvSubsystem trapElvSubsystem = new TrapElvSubsystem();
 
   private final DynamicRobotConfig dynamicRobotConfig;
 
@@ -88,12 +88,19 @@ public class RobotContainer {
         .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
-    OI.getButton(OI.Driver.groundIntakeButton).whileTrue(trapArmSubsystem.intakeGround());
-    OI.getButton(OI.Driver.sourceIntakeButton).whileTrue(trapArmSubsystem.intakeSource());
-    OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapArmSubsystem.scoreAMP());
+    // Trap Elv Intaking
+    OI.getButton(OI.Driver.groundIntakeButton)
+        .whileTrue(trapElvSubsystem.intakeGround().onlyWhile(trapElvSubsystem.getGroundBreak()));
+    OI.getButton(OI.Driver.sourceIntakeButton)
+        .whileTrue(trapElvSubsystem.intakeSource().onlyWhile(trapElvSubsystem.getSourceBreak()));
+
+    // Trap Elv Scoring
+    OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapElvSubsystem.scoreAMP());
     OI.getButton(OI.Driver.trapScoreButton)
-        .whileTrue(trapArmSubsystem.setTrapArm(TrapArmSubsystem.TrapArmState.TRAP_SCORE));
-    OI.getButton(OI.Driver.zeroArm).whileTrue(trapArmSubsystem.zeroArm());
+        .whileTrue(trapElvSubsystem.setTrapArm(TrapElvSubsystem.TrapElvState.TRAP_SCORE));
+
+    // Trap Elv zeroing button
+    OI.getButton(OI.Driver.zeroArm).whileTrue(trapElvSubsystem.zeroArm());
 
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));

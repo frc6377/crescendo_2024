@@ -24,12 +24,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.TrapArmConstants;
+import frc.robot.Constants.TrapElvConstants;
 import frc.robot.Robot;
 import frc.robot.networktables.DebugEntry;
+import java.util.function.BooleanSupplier;
 
-public class TrapArmSubsystem extends SubsystemBase {
+public class TrapElvSubsystem extends SubsystemBase {
   // Wrist motors
   private final CANSparkMax wristMotor;
   private final CANSparkMax rollerMotor;
@@ -44,8 +46,8 @@ public class TrapArmSubsystem extends SubsystemBase {
   private final DigitalInput groundBreak;
 
   // Limit Switches
-  private final DigitalInput baseBreak;
-  private final DigitalInput scoringBreak;
+  private final DigitalInput baseLimit;
+  private final DigitalInput scoringLimit;
 
   // Encoders
   private final CANcoder wristEncoder;
@@ -60,7 +62,7 @@ public class TrapArmSubsystem extends SubsystemBase {
   private DebugEntry<Boolean> baseLog;
   private DebugEntry<Boolean> scoringLog;
 
-  private Mechanism2d armMechanism;
+  private Mechanism2d elvMechanism;
   private MechanismRoot2d root;
   private MechanismLigament2d baseMech;
   private MechanismLigament2d scoringMech;
@@ -69,13 +71,11 @@ public class TrapArmSubsystem extends SubsystemBase {
   private ElevatorSim m_baseElevatorSim;
   private ElevatorSim m_scoringElevatorSim;
 
-  private ShuffleboardTab TrapArmTab = Shuffleboard.getTab("Trap Arm Tab");
-  private GenericEntry basePIDEntry = TrapArmTab.add("Base PID", basePID).getEntry();
-  private GenericEntry scoringPIDEntry = TrapArmTab.add("Scoring PID", scoringPID).getEntry();
-  private GenericEntry baseGoal = TrapArmTab.add("Base Goal", 0).getEntry();
+  private ShuffleboardTab TrapElvTab = Shuffleboard.getTab("Trap Arm Tab");
+  private GenericEntry baseGoal = TrapElvTab.add("Base Goal", 0).getEntry();
 
   // States
-  public static enum TrapArmState {
+  public static enum TrapElvState {
     STOWED(0.0, 0.0, 0.0),
     FROM_INTAKE(15.0, 0.0, 0.0),
     FROM_SOURCE(150.0, 0.0, 12.0),
@@ -86,7 +86,7 @@ public class TrapArmSubsystem extends SubsystemBase {
     private Double basePose;
     private Double scoringPose;
 
-    TrapArmState(Double wrist, Double base, Double scoring) {
+    TrapElvState(Double wrist, Double base, Double scoring) {
       this.wristPose = wrist;
       this.basePose = base;
       this.scoringPose = scoring;
@@ -114,30 +114,30 @@ public class TrapArmSubsystem extends SubsystemBase {
   }
 
   /** Creates a new TrapArm. */
-  public TrapArmSubsystem() {
+  public TrapElvSubsystem() {
     // Wrist
-    wristMotor = new CANSparkMax(TrapArmConstants.wristMotor_ID, MotorType.kBrushless);
+    wristMotor = new CANSparkMax(TrapElvConstants.wristMotor_ID, MotorType.kBrushless);
     wristMotor.restoreFactoryDefaults();
     wristEncoder = new CANcoder(6);
 
-    rollerMotor = new CANSparkMax(TrapArmConstants.rollerMoter_ID, MotorType.kBrushless);
+    rollerMotor = new CANSparkMax(TrapElvConstants.rollerMoter_ID, MotorType.kBrushless);
     rollerMotor.restoreFactoryDefaults();
 
-    sourceBreak = new DigitalInput(TrapArmConstants.sourceBreak_ID);
-    groundBreak = new DigitalInput(TrapArmConstants.groundBreak_ID);
+    sourceBreak = new DigitalInput(TrapElvConstants.sourceBreak_ID);
+    groundBreak = new DigitalInput(TrapElvConstants.groundBreak_ID);
 
     // Arm
 
-    baseMotor1 = new CANSparkMaxSim(TrapArmConstants.baseMotor1_ID, MotorType.kBrushless);
+    baseMotor1 = new CANSparkMaxSim(TrapElvConstants.baseMotor1_ID, MotorType.kBrushless);
     baseMotor1.restoreFactoryDefaults();
     baseMotor1.getPIDController().setP(basePID[0]);
     baseMotor1.getPIDController().setI(basePID[1]);
     baseMotor1.getPIDController().setD(basePID[2]);
     baseMotor1.getPIDController().setIZone(basePID[3]);
     baseMotor1.getPIDController().setFF(basePID[4]);
-    TrapArmTab.add("Base Elv PID", baseMotor1.getPIDController());
+    TrapElvTab.add("Base Elv PID", baseMotor1.getPIDController());
 
-    baseMotor2 = new CANSparkMax(TrapArmConstants.baseMotor2_ID, MotorType.kBrushless);
+    baseMotor2 = new CANSparkMax(TrapElvConstants.baseMotor2_ID, MotorType.kBrushless);
     baseMotor2.restoreFactoryDefaults();
     baseMotor2.getPIDController().setP(basePID[0]);
     baseMotor2.getPIDController().setI(basePID[1]);
@@ -145,33 +145,30 @@ public class TrapArmSubsystem extends SubsystemBase {
     baseMotor2.getPIDController().setIZone(basePID[3]);
     baseMotor2.getPIDController().setFF(basePID[4]);
 
-    baseBreak = new DigitalInput(TrapArmConstants.baseBreak_ID);
+    baseLimit = new DigitalInput(TrapElvConstants.baseBreak_ID);
 
-    scoringMotor = new CANSparkMaxSim(TrapArmConstants.scoringMotor_ID, MotorType.kBrushless);
+    scoringMotor = new CANSparkMaxSim(TrapElvConstants.scoringMotor_ID, MotorType.kBrushless);
     scoringMotor.restoreFactoryDefaults();
     scoringMotor.getPIDController().setP(scoringPID[0]);
     scoringMotor.getPIDController().setI(scoringPID[1]);
     scoringMotor.getPIDController().setD(scoringPID[2]);
     scoringMotor.getPIDController().setIZone(scoringPID[3]);
     scoringMotor.getPIDController().setFF(scoringPID[4]);
-    TrapArmTab.add("Scoring Elv PID", scoringMotor.getPIDController());
+    TrapElvTab.add("Scoring Elv PID", scoringMotor.getPIDController());
 
-    scoringBreak = new DigitalInput(TrapArmConstants.scoringBreak_ID);
+    scoringLimit = new DigitalInput(TrapElvConstants.scoringBreak_ID);
 
     // SmartDashboard
-    sourceLog = new DebugEntry<Boolean>(baseBreak.get(), "Source Beam Break", this);
-    groundLog = new DebugEntry<Boolean>(baseBreak.get(), "Ground Beam Break", this);
-    baseLog = new DebugEntry<Boolean>(baseBreak.get(), "Base Limit Switch", this);
-    scoringLog = new DebugEntry<Boolean>(baseBreak.get(), "Scoring Limit Switch", this);
-
-    basePIDEntry.setDoubleArray(basePID);
-    scoringPIDEntry.setDoubleArray(scoringPID);
+    sourceLog = new DebugEntry<Boolean>(baseLimit.get(), "Source Beam Break", this);
+    groundLog = new DebugEntry<Boolean>(baseLimit.get(), "Ground Beam Break", this);
+    baseLog = new DebugEntry<Boolean>(baseLimit.get(), "Base Limit Switch", this);
+    scoringLog = new DebugEntry<Boolean>(baseLimit.get(), "Scoring Limit Switch", this);
 
     // Simulation
     if (Robot.isSimulation()) {
       // 2D Mechanism
-      armMechanism = new Mechanism2d(2, 2);
-      root = armMechanism.getRoot("Root", 1, 0);
+      elvMechanism = new Mechanism2d(2, 2);
+      root = elvMechanism.getRoot("Root", 1, 0);
       baseMech =
           root.append(new MechanismLigament2d("Base Arm", 0, 90, 20, new Color8Bit(Color.kBlue)));
       scoringMech =
@@ -184,92 +181,83 @@ public class TrapArmSubsystem extends SubsystemBase {
       m_baseElevatorSim =
           new ElevatorSim(
               DCMotor.getNEO(1),
-              TrapArmConstants.elevatorGearRatio,
-              TrapArmConstants.elevatorCariageMass,
+              TrapElvConstants.elevatorGearRatio,
+              TrapElvConstants.elevatorCariageMass,
               Units.inchesToMeters(1),
-              TrapArmConstants.elevatorMinHight,
-              TrapArmConstants.elevatorMaxHight,
+              TrapElvConstants.elevatorMinHight,
+              TrapElvConstants.elevatorMaxHight,
               true,
               0);
 
       m_scoringElevatorSim =
           new ElevatorSim(
               DCMotor.getNEO(1),
-              TrapArmConstants.elevatorGearRatio,
-              TrapArmConstants.elevatorCariageMass,
+              TrapElvConstants.elevatorGearRatio,
+              TrapElvConstants.elevatorCariageMass,
               Units.inchesToMeters(1),
-              TrapArmConstants.elevatorMinHight,
-              TrapArmConstants.elevatorMaxHight,
+              TrapElvConstants.elevatorMinHight,
+              TrapElvConstants.elevatorMaxHight,
               true,
               0);
 
-      TrapArmTab.add("Trap Arm Mech", armMechanism);
+      TrapElvTab.add("Trap Arm Mech", elvMechanism);
     }
   }
 
+  // Boolean Suppliers
+  public BooleanSupplier getSourceBreak() {
+    return () -> sourceBreak.get();
+  }
+
+  public BooleanSupplier getGroundBreak() {
+    return () -> groundBreak.get();
+  }
+
+  public BooleanSupplier getBaseLimit() {
+    return () -> baseLimit.get();
+  }
+
+  public BooleanSupplier getScoringLimit() {
+    return () -> scoringLimit.get();
+  }
+
   // Commands
-  public Command intakeSource() {
-    return startEnd(
+  public Command setRoller(double s) {
+    return run(
         () -> {
-          if (!sourceBreak.get()) {
-            setTrapArm(TrapArmState.FROM_SOURCE);
-            rollerMotor.set(TrapArmConstants.rollerIntakeSpeed);
-          }
-        },
+          rollerMotor.set(s);
+        });
+  }
+
+  public Command stopRoller() {
+    return run(
         () -> {
           rollerMotor.stopMotor();
         });
+  }
+
+  public Command intakeSource() {
+    return new SequentialCommandGroup(
+        setTrapArm(TrapElvState.FROM_SOURCE), setRoller(TrapElvConstants.rollerIntakeSpeed));
   }
 
   public Command intakeGround() {
-    return startEnd(
-        () -> {
-          if (!groundBreak.get()) {
-            setTrapArm(TrapArmState.FROM_INTAKE);
-            rollerMotor.set(-TrapArmConstants.rollerIntakeSpeed);
-          }
-        },
-        () -> {
-          rollerMotor.stopMotor();
-        });
+    return new SequentialCommandGroup(
+        setTrapArm(TrapElvState.FROM_INTAKE), setRoller(-TrapElvConstants.rollerIntakeSpeed));
   }
 
   public Command scoreAMP() {
-    return startEnd(
-        () -> {
-          setTrapArm(TrapArmState.AMP_SCORE);
-          rollerMotor.set(-TrapArmConstants.rollerScoringSpeed);
-          if (Robot.isSimulation()) {
-            wristMech.setAngle(-70);
-          }
-        },
-        () -> {
-          rollerMotor.stopMotor();
-          if (Robot.isSimulation()) {
-            wristMech.setAngle(-170);
-          }
-        });
+    return new SequentialCommandGroup(
+        setTrapArm(TrapElvState.AMP_SCORE), setRoller(-TrapElvConstants.rollerScoringSpeed));
   }
 
   public Command scoreTrap() {
-    return startEnd(
-        () -> {
-          setTrapArm(TrapArmState.TRAP_SCORE);
-          rollerMotor.set(TrapArmConstants.rollerScoringSpeed);
-          if (Robot.isSimulation()) {
-            // baseMech.setLength(baseMech.getLength() + 1);
-            // scoringMech.setLength(scoringMech.getLength() + 1);
-            // wristMech.setAngle(-90);
-          }
-        },
-        () -> {
-          rollerMotor.stopMotor();
-          if (Robot.isSimulation()) {
-            // baseMech.setLength(baseMech.getLength() - 1);
-            // scoringMech.setLength(scoringMech.getLength() - 1);
-            // wristMech.setAngle(-170);
-          }
-        });
+    return new SequentialCommandGroup(
+        setTrapArm(TrapElvState.TRAP_SCORE), setRoller(TrapElvConstants.rollerScoringSpeed));
+  }
+
+  public Command stowTrapElv() {
+    return new SequentialCommandGroup(setTrapArm(TrapElvState.STOWED), stopRoller());
   }
 
   public Command zeroArm() {
@@ -277,14 +265,14 @@ public class TrapArmSubsystem extends SubsystemBase {
         () -> {
           // Command for zering elevator if elevator happens to be not at zero
           // Runs elevator motors until there limit switches are pressed
-          if (!baseBreak.get()) {
+          if (!baseLimit.get()) {
             baseMotor1.set(.1);
             baseMotor2.set(.1);
           } else {
             baseMotor1.stopMotor();
             baseMotor2.stopMotor();
           }
-          if (!scoringBreak.get()) {
+          if (!scoringLimit.get()) {
             scoringMotor.set(.1);
           } else {
             scoringMotor.stopMotor();
@@ -297,11 +285,11 @@ public class TrapArmSubsystem extends SubsystemBase {
         });
   }
 
-  public Command setTrapArm(TrapArmState state) {
+  public Command setTrapArm(TrapElvState state) {
     return startEnd(
         () -> {
           baseGoal.setDouble(
-              Units.metersToInches(TrapArmConstants.elevatorMinHight) + state.basePose);
+              Units.metersToInches(TrapElvConstants.elevatorMinHight) + state.basePose);
           wristMotor.getPIDController().setReference(state.getWristPose(), ControlType.kPosition);
           baseMotor1.getPIDController().setReference(state.getBasePose(), ControlType.kPosition);
           baseMotor2.getPIDController().setReference(state.getBasePose(), ControlType.kPosition);
@@ -321,7 +309,7 @@ public class TrapArmSubsystem extends SubsystemBase {
   public void periodic() {
     sourceLog.log(sourceBreak.get());
     groundLog.log(groundBreak.get());
-    baseLog.log(baseBreak.get());
+    baseLog.log(baseLimit.get());
     scoringLog.log(sourceBreak.get());
   }
 
@@ -337,7 +325,7 @@ public class TrapArmSubsystem extends SubsystemBase {
       m_scoringElevatorSim.update(CANSparkMaxSim.kPeriod);
       scoringMotor.update(
           m_scoringElevatorSim.getVelocityMetersPerSecond()
-              * TrapArmConstants.elevatorGearRatio
+              * TrapElvConstants.elevatorGearRatio
               / Units.inchesToMeters(1));
     }
     SmartDashboard.putNumber("base CAN Sim", baseMotor1.get());
