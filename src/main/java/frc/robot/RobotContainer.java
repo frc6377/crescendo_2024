@@ -11,11 +11,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
-import frc.robot.commands.IntakeCommand;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -76,12 +76,12 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    Trigger turretButton = m_driverController.leftTrigger(0.3);
-    turretButton.whileTrue(new IntakeCommand(intakeSubsystem, "TURRET"));
+    Trigger turretButton = m_driverController.leftTrigger(0.3); 
+    turretButton.whileTrue(new StartEndCommand(intakeSubsystem::intakeCommand, intakeSubsystem::stopIntake, intakeSubsystem));
     Trigger trapButton = m_driverController.rightTrigger(0.3);
-    trapButton.whileTrue(new IntakeCommand(intakeSubsystem, "TRAP"));
+    trapButton.whileTrue(new StartEndCommand(intakeSubsystem::intakeCommand, intakeSubsystem::stopIntake, intakeSubsystem));
     Trigger reverseButton = m_driverController.x();
-    reverseButton.whileTrue(new IntakeCommand(intakeSubsystem, "REVERSE"));
+    reverseButton.whileTrue(new StartEndCommand(intakeSubsystem::reverseIntake, intakeSubsystem::stopIntake, intakeSubsystem));
 
     // Swerve config
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically

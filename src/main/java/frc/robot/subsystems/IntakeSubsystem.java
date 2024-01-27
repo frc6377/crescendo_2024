@@ -11,10 +11,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class IntakeSubsystem extends SubsystemBase {
-
   private CANSparkMax intakeMotor;
   private CANSparkMax chooserMotor;
-
   public IntakeSubsystem() {
     intakeMotor = new CANSparkMax(Constants.IntakeConstants.INTAKE_MOTOR_ID, MotorType.kBrushless);
     chooserMotor =
@@ -25,32 +23,41 @@ public class IntakeSubsystem extends SubsystemBase {
     chooserMotor.setSmartCurrentLimit(20);
   }
 
-  public Command intakeCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-    return runOnce(
-        () -> {
-          /* one-time action goes here */
-        });
-  }
-
   // TODO: Add check to make sure turret is below 45 degrees before running & add photogate when
   // implemented.
-  public void setIntakeSpeed(double speed) {
-    intakeMotor.set(speed);
+  public void trapIntake() {
+    reverseChooser();
+    runIntake();
   }
 
-  public void reverseIntake(double speed) {
-    intakeMotor.set(-speed);
+  public void runIntake() {
+    intakeMotor.set(Constants.IntakeConstants.INTAKE_PERCENTAGE);
   }
 
-  public void setChooserSpeed(double speed) {
-    chooserMotor.set(speed);
+  public void reverseIntake() {
+    intakeMotor.set(-Constants.IntakeConstants.INTAKE_PERCENTAGE);
   }
 
-  public void reverseChooser(double speed) {
-    chooserMotor.set(-speed);
+  public void setChooseSpeed() {
+    chooserMotor.set(Constants.IntakeConstants.INTAKE_PERCENTAGE);
   }
+
+  public void reverseChooser() {
+    chooserMotor.set(-Constants.IntakeConstants.INTAKE_PERCENTAGE);
+  }
+
+  public void stopIntake() {
+    intakeMotor.stopMotor();
+    chooserMotor.stopMotor();
+  }
+
+  public void chooserState() {
+    // TODO: get robot state from manager to determine the choose position
+  }
+
+  public Command intakeCommand(){
+      return runOnce(() -> chooserState());
+    }
 
   @Override
   public void periodic() {}
