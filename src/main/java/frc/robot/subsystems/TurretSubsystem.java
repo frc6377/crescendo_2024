@@ -15,8 +15,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.LimelightHelpers;
-import frc.robot.networktables.DebugEntry;
+import frc.robot.utilities.LimelightHelpers;
+import frc.robot.utilities.DebugEntry;
 
 public class TurretSubsystem extends SubsystemBase {
 
