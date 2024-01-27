@@ -9,9 +9,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.LimelightHelpers;
 import frc.robot.Robot;
-import frc.robot.networktables.DebugEntry;
+import frc.robot.utilities.DebugEntry;
+import frc.robot.utilities.LimelightHelpers;
 import java.util.function.BiConsumer;
 
 public class LimelightSubsystem extends SubsystemBase {
