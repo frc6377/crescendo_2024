@@ -12,10 +12,8 @@ import frc.robot.Constants;
 import frc.robot.stateManagement.RobotStateManager;
 
 public class IntakeSubsystem extends SubsystemBase {
-
   private CANSparkMax intakeMotor;
   private CANSparkMax chooserMotor;
-
   public IntakeSubsystem() {
     intakeMotor = new CANSparkMax(Constants.IntakeConstants.INTAKE_MOTOR_ID, MotorType.kBrushless);
     chooserMotor =
@@ -25,15 +23,6 @@ public class IntakeSubsystem extends SubsystemBase {
     chooserMotor.restoreFactoryDefaults();
     intakeMotor.setSmartCurrentLimit(40);
     chooserMotor.setSmartCurrentLimit(20);
-  }
-
-  public Command intakeCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-    return runOnce(
-        () -> {
-          /* one-time action goes here */
-        });
   }
 
 
