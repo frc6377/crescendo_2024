@@ -29,7 +29,7 @@ public class ShooterSubsystem extends SubsystemBase {
     return startEnd(
         () -> {
           if (isShooterReady(distance)) {
-            setShooterSpeed(calculateShooterSpeed(distance));
+            setShooterSpeed(SpeakerRanges.getSpeed(distance));
           }
         },
         () -> {
@@ -49,9 +49,9 @@ public class ShooterSubsystem extends SubsystemBase {
   public boolean isShooterReady(double distance) {
     boolean shooterReady = false;
     double minSpeedTolerance =
-        calculateShooterSpeed(distance) * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+        SpeakerRanges.getSpeed(distance) * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
     double maxSpeedTolerance =
-        calculateShooterSpeed(distance) * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+        SpeakerRanges.getSpeed(distance) * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
 
     if (minSpeedTolerance < shooterMotor.getEncoder().getVelocity()
         & shooterMotor.getEncoder().getVelocity() < maxSpeedTolerance) {
@@ -66,31 +66,34 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterMotor.getPIDController().setReference(speed, CANSparkBase.ControlType.kVelocity);
   }
 
-  // Parameter: TargetType target ???
-  // Distance in inches.
-  public double calculateShooterSpeed(double distance) {
-    double speed = 0;
+  private class SpeakerRanges {
+    private static double speed;
 
-    // Distance-speed pairs, in inches and RPM respectively.
-    double[] pointOne = {0, 0};
-    double[] pointTwo = {0, 0};
+    // Placeholder; in inches and RPM respectively.
+    private static double[][] SpeakerRanges = {
+      {0, 450},
+      {40, 550},
+      {195, 750},
+      {290, 1000}
+    };
 
-    // A linear search which determines which points the input distance falls between. May be
-    // converted to a binary search if there are many points
-    for (int i = 0; i <= Constants.ShooterConstants.SpeakerRanges.SpeakerRanges.length; i++) {
-      if (i == Constants.ShooterConstants.SpeakerRanges.SpeakerRanges.length) {
-        pointOne = Constants.ShooterConstants.SpeakerRanges.SpeakerRanges[i];
-        pointTwo = Constants.ShooterConstants.SpeakerRanges.SpeakerRanges[i];
-      } else if (speed > Constants.ShooterConstants.SpeakerRanges.SpeakerRanges[i][1]) {
-        pointOne = Constants.ShooterConstants.SpeakerRanges.SpeakerRanges[i];
-        pointTwo = Constants.ShooterConstants.SpeakerRanges.SpeakerRanges[i + 1];
+    public static double getSpeed(double distance) {
+      double distanceProportion;
+      // A linear search which determines which points the input distance falls between. May be
+      // converted to a binary search if there are many points
+      for (int i = 0; i <= SpeakerRanges.length; i++) {
+        if (i == SpeakerRanges.length) {
+          // Maximum possible speed.
+          speed = SpeakerRanges[i][1];
+          break;
+        } else if (distance > SpeakerRanges[i][0]) {
+          // Math to linearly interpolate the speed.
+          distanceProportion = (distance - SpeakerRanges[i][0]) / (SpeakerRanges[i+1][0] - SpeakerRanges[i][0]);
+          speed = (distanceProportion * (SpeakerRanges[i+1][1] - SpeakerRanges[i][1])) + SpeakerRanges[i][1];
+          break;
+        }
       }
+      return speed;
     }
-
-    // Math to linearly interpolate the speed.
-    double distanceProportion = (distance - pointOne[0]) / (pointTwo[0] - pointOne[0]);
-    speed = (distanceProportion * (pointTwo[1] - pointOne[1])) + pointOne[1];
-
-    return speed;
   }
 }
