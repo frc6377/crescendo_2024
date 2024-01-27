@@ -7,14 +7,15 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
   // Motors
-  private Boolean TLMotorBool1, TLMotorBool2, BRMotorBool1, BRMotorBool2, feederBool1, feederBool2;
-  private CANSparkMax TLMotor1, TLMotor2, BRMotor1, BRMotor2, feederMotor1, feederMotor2;
+  private Boolean leftEnabled, rightEnabled, BRMotorBool1, BRMotorBool2, feederBool1, feederBool2;
+  private CANSparkMax leftMotor, rightMotor, BRMotor1, BRMotor2, feederMotor1, feederMotor2;
 
   // PID Values
   private double TLP1, TLI1, TLD1, TLFF1, TLIz1, TLP2, TLI2, TLD2, TLFF2, TLIz2;
@@ -24,12 +25,12 @@ public class ShooterSubsystem extends SubsystemBase {
   private int TLID1, TLID2, BRID1, BRID2, feederID1, feederID2;
 
   // Set Speeds
-  public double TLMotorSpeed, BRMotorSpeed, feederSpeed;
+  public double leftMotorSpeed, rightMotorSpeed, feederSpeed;
 
   public ShooterSubsystem() {
     // Bools for if motor on bot
-    TLMotorBool1 = true;
-    TLMotorBool2 = true;
+    leftEnabled = true;
+    rightEnabled = true;
     BRMotorBool1 = false;
     BRMotorBool2 = false;
     feederBool1 = false;
@@ -63,31 +64,31 @@ public class ShooterSubsystem extends SubsystemBase {
     BRFF = 15e-6;
 
     // Motor Speeds
-    TLMotorSpeed = 2700;
-    BRMotorSpeed = 1000;
+    leftMotorSpeed = 2700;
+    rightMotorSpeed = 1000;
     feederSpeed = 100;
 
     // initialize LT motor
-    if (TLMotorBool1) {
-      TLMotor1 = new CANSparkMax(TLID1, MotorType.kBrushless);
-      TLMotor1.restoreFactoryDefaults();
-      TLMotor1.getPIDController().setP(TLP1);
-      TLMotor1.getPIDController().setI(TLI1);
-      TLMotor1.getPIDController().setD(TLD1);
-      TLMotor1.getPIDController().setIZone(TLIz1);
-      TLMotor1.getPIDController().setFF(TLFF1);
+    if (leftEnabled) {
+      leftMotor = new CANSparkMax(TLID1, MotorType.kBrushless);
+      leftMotor.restoreFactoryDefaults();
+      leftMotor.getPIDController().setP(TLP1);
+      leftMotor.getPIDController().setI(TLI1);
+      leftMotor.getPIDController().setD(TLD1);
+      leftMotor.getPIDController().setIZone(TLIz1);
+      leftMotor.getPIDController().setFF(TLFF1);
     }
 
     // initialize TL motor 2
-    if (TLMotorBool2) {
-      TLMotor2 = new CANSparkMax(TLID2, MotorType.kBrushless);
-      TLMotor2.restoreFactoryDefaults();
-      TLMotor2.setInverted(false);
-      TLMotor2.getPIDController().setP(TLP1);
-      TLMotor2.getPIDController().setI(TLI1);
-      TLMotor2.getPIDController().setD(TLD1);
-      TLMotor2.getPIDController().setIZone(TLIz1);
-      TLMotor2.getPIDController().setFF(TLFF1);
+    if (rightEnabled) {
+      rightMotor = new CANSparkMax(TLID2, MotorType.kBrushless);
+      rightMotor.restoreFactoryDefaults();
+      rightMotor.setInverted(false);
+      rightMotor.getPIDController().setP(TLP1);
+      rightMotor.getPIDController().setI(TLI1);
+      rightMotor.getPIDController().setD(TLD1);
+      rightMotor.getPIDController().setIZone(TLIz1);
+      rightMotor.getPIDController().setFF(TLFF1);
     }
 
     if (BRMotorBool1) {
@@ -125,11 +126,11 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     // SmartDashboard
-    if (TLMotorBool1) {
-      SmartDashboard.putNumber("Top/Left P", TLP1);
-      SmartDashboard.putNumber("Top/Left I", TLI1);
-      SmartDashboard.putNumber("Top/Left D", TLD1);
-      SmartDashboard.putNumber("Top/Left FF", TLFF1);
+    if (leftEnabled) {
+      Preferences.initDouble("P", TLP1);
+      Preferences.initDouble("I", TLI1);
+      Preferences.initDouble("D", TLD1);
+      Preferences.initDouble("FF", TLFF1);
     }
     // if (TLMotorBool2) {
     //   SmartDashboard.putNumber("Top/Left P 2", TLP2);
@@ -137,9 +138,9 @@ public class ShooterSubsystem extends SubsystemBase {
     //   SmartDashboard.putNumber("Top/Left D 2", TLD2);
     //   SmartDashboard.putNumber("Top/Left FF 2", TLFF2);
     // }
-    if (TLMotorBool1 || TLMotorBool2) {
-      SmartDashboard.putNumber("TL Set Speed", TLMotorSpeed);
-      SmartDashboard.putNumber("BR Set Speed", BRMotorSpeed);
+    if (leftEnabled || rightEnabled) {
+      Preferences.initDouble("Left Set Speed", leftMotorSpeed);
+      Preferences.initDouble("Right Set Speed", rightMotorSpeed);
     }
     if (BRMotorBool1 || BRMotorBool2) {
       SmartDashboard.putNumber("Bottom/Right P", BRP);
@@ -156,17 +157,17 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command RunMotors() {
     return run(
         () -> {
-          if (TLMotorBool1) {
-            TLMotor1.getPIDController().setReference(TLMotorSpeed, ControlType.kVelocity);
+          if (leftEnabled) {
+            leftMotor.getPIDController().setReference(leftMotorSpeed, ControlType.kVelocity);
           }
-          if (TLMotorBool2) {
-            TLMotor2.getPIDController().setReference(BRMotorSpeed, ControlType.kVelocity);
+          if (rightEnabled) {
+            rightMotor.getPIDController().setReference(rightMotorSpeed, ControlType.kVelocity);
           }
           if (BRMotorBool1) {
-            BRMotor1.getPIDController().setReference(BRMotorSpeed, ControlType.kVelocity);
+            BRMotor1.getPIDController().setReference(rightMotorSpeed, ControlType.kVelocity);
           }
           if (BRMotorBool2) {
-            BRMotor2.getPIDController().setReference(BRMotorSpeed, ControlType.kVelocity);
+            BRMotor2.getPIDController().setReference(rightMotorSpeed, ControlType.kVelocity);
           }
         });
   }
@@ -174,11 +175,11 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command StopMotors() {
     return runOnce(
         () -> {
-          if (TLMotorBool1) {
-            TLMotor1.stopMotor();
+          if (leftEnabled) {
+            leftMotor.stopMotor();
           }
-          if (TLMotorBool2) {
-            TLMotor2.stopMotor();
+          if (rightEnabled) {
+            rightMotor.stopMotor();
           }
           if (BRMotorBool1) {
             BRMotor1.stopMotor();
@@ -225,11 +226,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (TLMotorBool1) {
-      SmartDashboard.putNumber("TL RPM1", TLMotor1.getEncoder().getVelocity());
+    if (leftEnabled) {
+      SmartDashboard.putNumber("Left RPM", leftMotor.getEncoder().getVelocity());
     }
-    if (TLMotorBool2) {
-      SmartDashboard.putNumber("TL RPM2", TLMotor2.getEncoder().getVelocity());
+    if (rightEnabled) {
+      SmartDashboard.putNumber("Right RPM", rightMotor.getEncoder().getVelocity());
     }
     if (BRMotorBool1) {
       SmartDashboard.putNumber("BR RPM1", BRMotor1.getEncoder().getVelocity());
@@ -241,17 +242,17 @@ public class ShooterSubsystem extends SubsystemBase {
       feederSpeed = SmartDashboard.getNumber("Feeder Speed", feederSpeed);
     }
 
-    if (TLMotorBool1 || TLMotorBool2) {
-      TLP1 = SmartDashboard.getNumber("Top/Left P", TLP1);
-      TLI1 = SmartDashboard.getNumber("Top/Left I", TLI1);
-      TLD1 = SmartDashboard.getNumber("Top/Left D", TLD1);
-      TLFF1 = SmartDashboard.getNumber("Top/Left FF", TLFF1);
-      TLMotor1.getPIDController().setI(TLI1);
-      TLMotor1.getPIDController().setD(TLD1);
-      TLMotor1.getPIDController().setP(TLP1);
-      TLMotor1.getPIDController().setFF(TLFF1);
-      TLMotorSpeed = SmartDashboard.getNumber("TL Set Speed", TLMotorSpeed);
-      BRMotorSpeed = SmartDashboard.getNumber("BR Set Speed", BRMotorSpeed);
+    if (leftEnabled || rightEnabled) {
+      TLP1 = Preferences.getDouble("P", TLP1);
+      TLI1 = Preferences.getDouble("I", TLI1);
+      TLD1 = Preferences.getDouble("D", TLD1);
+      TLFF1 = Preferences.getDouble("FF", TLFF1);
+      leftMotor.getPIDController().setI(TLI1);
+      leftMotor.getPIDController().setD(TLD1);
+      leftMotor.getPIDController().setP(TLP1);
+      leftMotor.getPIDController().setFF(TLFF1);
+      leftMotorSpeed = Preferences.getDouble("Left Set Speed", 0);
+      rightMotorSpeed = Preferences.getDouble("Right Set Speed", 0);
     }
 
     if (BRMotorBool1 || BRMotorBool2) {
