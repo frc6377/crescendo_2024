@@ -1,5 +1,5 @@
 // Temporary path & name for the file.
-package frc.robot.networktables;
+package frc.robot.utilities;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.datalog.DataLog;
