@@ -73,8 +73,9 @@ public class OI {
     private static final XboxController controller = new XboxController(operatorJoystickPort);
 
     // A B Y X Buttons
-    public static final Control A = new Control(XboxController.Button.kA, null, controller);
-    public static final Control alignTurretButton = new Control(XboxController.Button.kB, null, controller);
+    public static final Control testTurretButton = new Control(XboxController.Button.kA, "test turret", controller);
+    public static final Control alignTurretOdomButton =
+        new Control(XboxController.Button.kB, "align turret with odometry", controller);
     public static final Control Y = new Control(XboxController.Button.kY, null, controller);
     public static final Control X = new Control(XboxController.Button.kX, null, controller);
 

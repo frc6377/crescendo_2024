@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -19,19 +21,19 @@ public final class Constants {
   }
 
   public static class TurretConstants {
-    public static final int TURRET_MOTOR_ID = 9;
+    public static final int MOTOR_ID = 9;
     public static final int CANcoder_ID = 17; // replace with actual CANcoder ID
 
     // PID coefficients
-    public static final double TURRET_KP = 5e-5;
-    public static final double TURRET_KI = 1e-6;
-    public static final double TURRET_KD = 0;
-    public static final double TURRET_KIZ = 0;
-    public static final double TURRET_KFF = 0.000156;
-    public static final double TURRET_KMAXOUTPUT = 1;
-    public static final double TURRET_KMINOUTPUT = -1;
+    public static final double KP = 5e-5;
+    public static final double KI = 1e-6;
+    public static final double KD = 0;
+    public static final double KIZ = 0;
+    public static final double KFF = 0.000156;
+    public static final double KMAXOUTPUT = 1;
+    public static final double KMINOUTPUT = -1;
     public static final double CONVERSION_FACTOR = 0.25; // for the revbot prototype turret
-    public static final int TURRET_MAXRPM = 5700;
+    public static final int MAXRPM = 5700;
   }
 
   public static class OperatorConstants {

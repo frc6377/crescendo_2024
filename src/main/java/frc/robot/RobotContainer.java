@@ -25,15 +25,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
-import frc.robot.commands.Turret.TurretOdomCommand;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.signaling.SignalingSubsystem;
 import java.util.HashMap;
 import java.util.Map;
-import frc.robot.subsystems.TurretSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -50,7 +47,7 @@ public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-  private final TurretSubsystem turretSubsystem = new TurretSubsystem();
+  private final TurretSubsystem turretSubsystem = new TurretSubsystem(robotStateManager);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final SwerveSubsystem drivetrain;
@@ -93,10 +90,15 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    OI.getTrigger(OI.Operator.alignTurretButton).whileTrue(new TurretOdomCommand(turretSubsystem));
+    OI.getButton(OI.Operator.testTurretButton).whileTrue(turretSubsystem.testTurretCommand());
+    // need to see if limelight visible from limelight subsystem, get current robotPose from swerve, and get the speaker pose
+    //OI.getButton(OI.Operator.alignTurretOdomButton)
+      //.whileTrue(turretSubsystem.buildTurretCommand(false, null, null)); 
     OI.getTrigger(OI.Driver.intakeTrigger).whileTrue(intakeSubsystem.getIntakeCommand());
     OI.getButton(OI.Driver.outtakeButton).whileTrue(intakeSubsystem.getOuttakeCommand());
     // Swerve config
+    turretSubsystem.setDefaultCommand(
+        new InstantCommand(turretSubsystem::holdPosition, turretSubsystem));
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(
             () ->

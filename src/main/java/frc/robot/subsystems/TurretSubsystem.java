@@ -4,20 +4,24 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.Consumer;
+
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkBase.SoftLimitDirection;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.utilities.LimelightHelpers;
+import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.utilities.DebugEntry;
+import frc.robot.utilities.LimelightHelpers;
+import frc.robot.utilities.TunableNumber;
 
 public class TurretSubsystem extends SubsystemBase {
 
@@ -26,41 +30,55 @@ public class TurretSubsystem extends SubsystemBase {
   private CANcoder m_encoder;
   private double turretPosition;
   private double turretVelocity;
+  private Consumer<Double> testPosition;
   private DebugEntry<Double> turretPositionEntry =
       new DebugEntry<Double>(turretPosition, "Position", this);
   private DebugEntry<Double> turretVelocityEntry =
       new DebugEntry<Double>(turretVelocity, "Velocity", this);
+  private TunableNumber tunableTestPosition = new TunableNumber("Turret Test Position", 110, testPosition);
 
-  public TurretSubsystem() {
-    turretMotor = new CANSparkMax(Constants.TurretConstants.TURRET_MOTOR_ID, MotorType.kBrushless);
+  private final RobotStateManager robotStateManager;
+
+  public TurretSubsystem(RobotStateManager robotStateManager) {
+    turretMotor = new CANSparkMax(Constants.TurretConstants.MOTOR_ID, MotorType.kBrushless);
     turretMotor.restoreFactoryDefaults();
     turretMotor.setSmartCurrentLimit(40);
 
-    
+    this.robotStateManager = robotStateManager;
+
     turretMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, 2);
     turretMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, -2);
-    
+
     turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
     turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
-    
+
     // initialze PID controller and encoder objects
     turretPIDController =
         new PIDController(
-            Constants.TurretConstants.TURRET_KP,
-            Constants.TurretConstants.TURRET_KI,
-            Constants.TurretConstants.TURRET_KD);
+            Constants.TurretConstants.KP,
+            Constants.TurretConstants.KI,
+            Constants.TurretConstants.KD);
     m_encoder = new CANcoder(Constants.TurretConstants.CANcoder_ID);
 
     zeroTurretEncoder();
-    turretPIDController.setIZone(Constants.TurretConstants.TURRET_KIZ);
+    turretPIDController.setIZone(Constants.TurretConstants.KIZ);
   }
 
   public void stopTurret() {
     turretMotor.stopMotor();
   }
 
+  public Command stowTurret() {
+    return new InstantCommand(() -> setTurretPos(Math.toRadians(110)));
+  }
+
   public void setTurretPos(double setpoint) {
-    turretMotor.set(MathUtil.clamp(turretPIDController.calculate(turretPosition, setpoint),0,220));
+    turretMotor.set(
+        MathUtil.clamp(turretPIDController.calculate(turretPosition, setpoint), 0, Math.toRadians(220)));
+  }
+
+  public void holdPosition() {
+    setTurretPos(turretPosition);
   }
 
   public void zeroTurretEncoder() {
@@ -69,13 +87,15 @@ public class TurretSubsystem extends SubsystemBase {
 
   public void updateTurretPosition() {
     turretPosition =
-        Math.toRadians(((m_encoder.getPosition().getValueAsDouble()) * 360)
-            * Constants.TurretConstants.CONVERSION_FACTOR);
-    setTurretPos(turretPosition);
+        Math.toRadians(
+            ((m_encoder.getPosition().getValueAsDouble()) * 360)
+                * Constants.TurretConstants.CONVERSION_FACTOR);
     SmartDashboard.putNumber("Turret Position", turretPosition);
     SmartDashboard.putBoolean("Out of Bounds", Math.abs(turretPosition) > 3.14);
-    SmartDashboard.putBoolean("Soft limit enabled forward", turretMotor.isSoftLimitEnabled(SoftLimitDirection.kForward));
-    SmartDashboard.putBoolean("Soft limit enabled reverse", turretMotor.isSoftLimitEnabled(SoftLimitDirection.kReverse));
+    SmartDashboard.putBoolean(
+        "Soft limit enabled forward", turretMotor.isSoftLimitEnabled(SoftLimitDirection.kForward));
+    SmartDashboard.putBoolean(
+        "Soft limit enabled reverse", turretMotor.isSoftLimitEnabled(SoftLimitDirection.kReverse));
   }
 
   public void lockOntoTag(double rotationFromTag) {
@@ -90,8 +110,22 @@ public class TurretSubsystem extends SubsystemBase {
     return turretVelocity;
   }
 
-  public Command LockTurret() {
-    return run(() -> lockOntoTag(Math.toRadians(LimelightHelpers.getTX(""))));
+  public Command testTurretCommand() {
+    return runEnd(() -> setTurretPos(Math.toRadians(tunableTestPosition.get())),this::stopTurret);
+  }
+
+  public void LockTurret() {
+    turretPIDController.reset();
+    lockOntoTag(Math.toRadians(LimelightHelpers.getTX("")));
+  }
+
+  public void TurretOdomCommand(Pose2d robotPos, Pose2d targetPos) {
+    turretPIDController.reset();
+    setTurretPos(getTurretRotationFromOdometry(robotPos, targetPos));
+  }
+
+  public Command buildTurretCommand(boolean limelightVisible, Pose2d robotPos, Pose2d targetPos){
+    return limelightVisible ? run(this::LockTurret) : runEnd(() -> TurretOdomCommand(robotPos, targetPos), this::stopTurret);
   }
 
   @Override
@@ -104,9 +138,10 @@ public class TurretSubsystem extends SubsystemBase {
     turretVelocityEntry.log(turretVelocity);
   }
 
-  public double turretFromOdometry(
-      Pose2d robotPos) { // Doesn't work right now but will be used later
-    return Math.atan(robotPos.getY() / robotPos.getX()) + robotPos.getRotation().getDegrees();
+  public double getTurretRotationFromOdometry(
+      Pose2d robotPos, Pose2d targetPos) { // Doesn't work right now but will be used later
+    return Math.atan2(robotPos.getY() - targetPos.getY(), robotPos.getX() - targetPos.getX())
+        + robotPos.getRotation().getDegrees();
   }
 
   @Override
