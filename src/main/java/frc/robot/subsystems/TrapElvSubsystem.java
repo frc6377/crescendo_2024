@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TrapElvConstants;
 import frc.robot.Robot;
-import frc.robot.networktables.DebugEntry;
+import frc.robot.utilities.DebugEntry;
 import java.util.function.BooleanSupplier;
 
 public class TrapElvSubsystem extends SubsystemBase {
@@ -216,7 +216,9 @@ public class TrapElvSubsystem extends SubsystemBase {
           new SingleJointedArmSim(
               DCMotor.getNEO(1),
               TrapElvConstants.WRIST_GEAR_RATIO,
-              (1/3) * TrapElvConstants.ELV_LIFT_MASS * Math.pow(TrapElvConstants.WRIST_LENGTH, 2.0),
+              (1 / 3)
+                  * TrapElvConstants.ELV_LIFT_MASS
+                  * Math.pow(TrapElvConstants.WRIST_LENGTH, 2.0),
               TrapElvConstants.WRIST_LENGTH,
               TrapElvConstants.WRIST_MIN_ANGLE, // min rotation
               TrapElvConstants.WRIST_MAX_ANGLE, // max rotation
@@ -339,10 +341,18 @@ public class TrapElvSubsystem extends SubsystemBase {
   public void setTrapArm(TrapElvState state) {
     baseGoal.setDouble(Units.metersToInches(TrapElvConstants.ELV_MIN_HEIGHT) + state.basePose);
     SmartDashboard.putNumber("Wrist Goal", state.wristPose - TrapElvConstants.WRIST_MIN_ANGLE);
-    wristMotor.getPIDController().setReference(state.getWristPose()-wristMotorOffset, ControlType.kPosition);
-    baseMotor1.getPIDController().setReference(state.getBasePose()-baseMotorOffset1, ControlType.kPosition);
-    baseMotor2.getPIDController().setReference(state.getBasePose()-baseMotorOffset2, ControlType.kPosition);
-    scoringMotor.getPIDController().setReference(state.getScoringPose()-scoringMotorOffset, ControlType.kPosition);
+    wristMotor
+        .getPIDController()
+        .setReference(state.getWristPose() - wristMotorOffset, ControlType.kPosition);
+    baseMotor1
+        .getPIDController()
+        .setReference(state.getBasePose() - baseMotorOffset1, ControlType.kPosition);
+    baseMotor2
+        .getPIDController()
+        .setReference(state.getBasePose() - baseMotorOffset2, ControlType.kPosition);
+    scoringMotor
+        .getPIDController()
+        .setReference(state.getScoringPose() - scoringMotorOffset, ControlType.kPosition);
   }
 
   @Override
