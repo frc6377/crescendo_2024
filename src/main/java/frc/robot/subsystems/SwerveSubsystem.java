@@ -1,6 +1,9 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
@@ -21,9 +24,11 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.OI;
 import frc.robot.Telemetry;
+import frc.robot.config.DynamicRobotConfig;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -181,5 +186,69 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
 
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
     return run(() -> this.setControl(requestSupplier.get()));
+  }
+
+  /**
+   * A command to zero all the pods
+   *
+   * <p>Assumes that all the pods are zeroed before the command is ran
+   *
+   * @return A command to zero all the pods
+   */
+  public Command zeroPods() {
+    return Commands.runOnce(
+        () -> {
+          MagnetSensorConfigs magnetConfig = new MagnetSensorConfigs();
+          magnetConfig.withMagnetOffset(0);
+          CANcoderConfiguration canCoderConfig = new CANcoderConfiguration();
+          canCoderConfig.withMagnetSensor(magnetConfig);
+
+          CANcoder[] canCoders = new CANcoder[4];
+          for (int i = 0; i < 4; i++) {
+            Translation2d position = m_moduleLocations[i];
+
+            //  -x +x
+            // +y 2 3
+            // -y 0 1
+            int quadrent =
+                (int)
+                    ((Math.copySign(1, position.getX()) - 1) / 2
+                        + -(Math.copySign(1, position.getY()) - 1));
+
+            switch (quadrent) {
+              case 0:
+                DynamicRobotConfig.ConfigVariables.backLeftOffset =
+                    getCancoderAbsolutePosition(canCoders[i]);
+                break;
+              case 1:
+                DynamicRobotConfig.ConfigVariables.backRightOffset =
+                    getCancoderAbsolutePosition(canCoders[i]);
+                break;
+              case 2:
+                DynamicRobotConfig.ConfigVariables.frontLeftOffset =
+                    getCancoderAbsolutePosition(canCoders[i]);
+                break;
+              case 3:
+                DynamicRobotConfig.ConfigVariables.frontRightOffset =
+                    getCancoderAbsolutePosition(canCoders[i]);
+                break;
+              default:
+                break;
+            }
+          }
+        },
+        this);
+  }
+
+  /**
+   * Get the cancoders current absolute position.
+   *
+   * <p>this will block until the next can cycle to garuntee any command sent would of taken effect.
+   *
+   * @param coder The CANcoder to get the position
+   * @return the current position in revolutions
+   */
+  private double getCancoderAbsolutePosition(CANcoder coder) {
+    return coder.getAbsolutePosition().refresh().getValue();
   }
 }

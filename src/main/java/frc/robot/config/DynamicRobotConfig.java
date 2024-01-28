@@ -12,7 +12,7 @@ import java.util.logging.Logger;
  * IDs, Conversions, or setpoint information in this config.
  */
 public class DynamicRobotConfig {
-  private static class ConfigVariables {
+  public static class ConfigVariables {
     public static double frontLeftOffset = -0.0361328125;
     public static double frontRightOffset = -0.10595703125;
     public static double backLeftOffset = -0.298095703125;
@@ -44,6 +44,18 @@ public class DynamicRobotConfig {
               ConfigVariables.class,
               Preferences.getDouble(key, variable.getDouble(ConfigVariables.class)));
         }
+      } catch (IllegalAccessException e) {
+        raiseWarning("Invalid field " + key);
+      }
+    }
+  }
+
+  public static void saveConfig() {
+    for (Field variable : ConfigVariables.class.getFields()) {
+      // For each field, its name is stored as a string, so it can be used as a preference key
+      String key = variable.getName();
+      try {
+        Preferences.setDouble(key, variable.getDouble(ConfigVariables.class));
       } catch (IllegalAccessException e) {
         raiseWarning("Invalid field " + key);
       }
