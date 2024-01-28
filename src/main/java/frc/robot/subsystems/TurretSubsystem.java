@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.util.function.Consumer;
-
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -22,6 +20,7 @@ import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.LimelightHelpers;
 import frc.robot.utilities.TunableNumber;
+import java.util.function.Consumer;
 
 public class TurretSubsystem extends SubsystemBase {
 
@@ -35,7 +34,8 @@ public class TurretSubsystem extends SubsystemBase {
       new DebugEntry<Double>(turretPosition, "Position", this);
   private DebugEntry<Double> turretVelocityEntry =
       new DebugEntry<Double>(turretVelocity, "Velocity", this);
-  private TunableNumber tunableTestPosition = new TunableNumber("Turret Test Position", 110, testPosition);
+  private TunableNumber tunableTestPosition =
+      new TunableNumber("Turret Test Position", 110, testPosition);
 
   private final RobotStateManager robotStateManager;
 
@@ -74,7 +74,8 @@ public class TurretSubsystem extends SubsystemBase {
 
   public void setTurretPos(double setpoint) {
     turretMotor.set(
-        MathUtil.clamp(turretPIDController.calculate(turretPosition, setpoint), 0, Math.toRadians(220)));
+        MathUtil.clamp(
+            turretPIDController.calculate(turretPosition, setpoint), 0, Math.toRadians(220)));
   }
 
   public void holdPosition() {
@@ -111,7 +112,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public Command testTurretCommand() {
-    return runEnd(() -> setTurretPos(Math.toRadians(tunableTestPosition.get())),this::stopTurret);
+    return runEnd(() -> setTurretPos(Math.toRadians(tunableTestPosition.get())), this::stopTurret);
   }
 
   public void LockTurret() {
@@ -124,8 +125,10 @@ public class TurretSubsystem extends SubsystemBase {
     setTurretPos(getTurretRotationFromOdometry(robotPos, targetPos));
   }
 
-  public Command buildTurretCommand(boolean limelightVisible, Pose2d robotPos, Pose2d targetPos){
-    return limelightVisible ? run(this::LockTurret) : runEnd(() -> TurretOdomCommand(robotPos, targetPos), this::stopTurret);
+  public Command buildTurretCommand(boolean limelightVisible, Pose2d robotPos, Pose2d targetPos) {
+    return limelightVisible
+        ? run(this::LockTurret)
+        : runEnd(() -> TurretOdomCommand(robotPos, targetPos), this::stopTurret);
   }
 
   @Override

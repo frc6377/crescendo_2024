@@ -5,7 +5,6 @@
 package frc.robot;
 
 import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -92,8 +91,8 @@ public class RobotContainer {
   private void configureBindings() {
     OI.getButton(OI.Operator.testTurretButton).whileTrue(turretSubsystem.testTurretCommand());
     // need to see if limelight visible from limelight subsystem and get the speaker pose
-    //OI.getButton(OI.Operator.alignTurretButton)
-      //.whileTrue(turretSubsystem.buildTurretCommand(false, drivetrain.getState().Pose, null)); 
+    // OI.getButton(OI.Operator.alignTurretButton)
+    // .whileTrue(turretSubsystem.buildTurretCommand(false, drivetrain.getState().Pose, null));
     OI.getTrigger(OI.Driver.intakeTrigger).whileTrue(intakeSubsystem.getIntakeCommand());
     OI.getButton(OI.Driver.outtakeButton).whileTrue(intakeSubsystem.getOuttakeCommand());
     // Swerve config
