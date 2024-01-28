@@ -36,16 +36,16 @@ public class OI {
         new Control(XboxController.Axis.kLeftTrigger, "Run intake", controller, 0.5);
     public static final Control RT =
         new Control(XboxController.Axis.kRightTrigger, null, controller, 0.5);
-    public static final Control LB =
-        new Control(XboxController.Button.kLeftBumper, null, controller);
+    public static final Control ampScoreButton =
+        new Control(XboxController.Button.kLeftBumper, "Score AMP", controller);
     public static final Control outtakeButton =
         new Control(XboxController.Button.kRightBumper, "Run outtake", controller);
 
     // Start, End & Left/Right stick buttons
     public static final Control resetRotationButton =
         new Control(XboxController.Button.kStart, "Reset field rotation", controller);
-    public static final Control ampScoreButton =
-        new Control(XboxController.Button.kLeftStick, "Score AMP", controller);
+    public static final Control leftStick =
+        new Control(XboxController.Button.kLeftStick, null, controller);
     public static final Control zeroArm =
         new Control(XboxController.Button.kRightStick, "Zero Arm", controller);
     public static final Control orientationButton =

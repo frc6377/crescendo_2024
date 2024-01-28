@@ -26,31 +26,37 @@ public final class Constants {
 
   public static class TrapElvConstants {
     // IDs | TODO: get real device IDs
-    public static final int wristMotor_ID = 1;
-    public static final int rollerMoter_ID = 2;
-    public static final int baseMotor1_ID = 3;
-    public static final int baseMotor2_ID = 4;
-    public static final int scoringMotor_ID = 5;
-    public static final int wristEncoder_ID = 6;
-    public static final int sourceBreak_ID = 1;
-    public static final int groundBreak_ID = 2;
-    public static final int baseBreak_ID = 3;
-    public static final int scoringBreak_ID = 4;
+    public static final int WRIST_MOTOR_ID = 1;
+    public static final int ROLLER_MOTOR_ID = 2;
+    public static final int BASE_MOTOR1_ID = 3;
+    public static final int BASE_MOTOR2_ID = 4;
+    public static final int SCORING_MOTOR_ID = 5;
+    public static final int WRIST_ENCODER_ID = 6;
+    public static final int SOURCE_BREAK_ID = 1;
+    public static final int GROUND_BREAK_ID = 2;
+    public static final int BASE_BREAK_ID = 3;
+    public static final int SCORING_BREAK_ID = 4;
 
     // Speeds
-    public static final double rollerIntakeSpeed = 0.25;
-    public static final double rollerScoringSpeed = 0.4;
-    public static final double elvZeroingSpeed = 0.1; // Percent Power
+    public static final double ROLLER_INTAKE_SPEED = 0.25;
+    public static final double ROLLER_SCORING_SPEED = 0.4;
+    public static final double ELV_ZEROING_SPEED = 0.1; // Percent Power
+
+    // PIDs
+    // P, I, D, Iz, FF
+    public static final double[] BASE_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
+    public static final double[] SCORING_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
+    public static final double[] WRIST_PID = {36e-2, 5e-7, 1e-4, 0.0, 2e-6};
 
     // Simulation
-    public static final int elevatorGearRatio = 70;
-    public static final double elevatorCariageMass = 5.4; // kg
-    public static final double elevatorMinHight = Units.inchesToMeters(12);
-    public static final double elevatorMaxHight = Units.inchesToMeters(30);
+    public static final int ELV_GEAR_RATIO = 70;
+    public static final double ELV_LIFT_MASS = 5.4; // kg
+    public static final double ELV_MIN_HEIGHT = Units.inchesToMeters(12);
+    public static final double ELV_MAX_HEIGHT = Units.inchesToMeters(30);
 
-    public static final double wristMinAngle = -(Math.PI / 2); // RADS
-    public static final double wristMaxAngle = (Math.PI / 2);
-    public static final double wristLength = Units.inchesToMeters(12.5);
+    public static final double WRIST_MIN_ANGLE = -(Math.PI); // RADS
+    public static final double WRIST_MAX_ANGLE = (Math.PI); // RADS
+    public static final double WRIST_LENGTH = Units.inchesToMeters(12.5);
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
