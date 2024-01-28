@@ -205,6 +205,11 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
 
           CANcoder[] canCoders = new CANcoder[4];
           for (int i = 0; i < 4; i++) {
+            canCoders[i] = Modules[i].getCANcoder();
+            canCoders[i].getConfigurator().apply(canCoderConfig);
+          }
+
+          for (int i = 0; i < 4; i++) {
             Translation2d position = m_moduleLocations[i];
 
             //  -x +x
