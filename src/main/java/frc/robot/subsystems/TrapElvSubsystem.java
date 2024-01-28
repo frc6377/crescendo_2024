@@ -215,7 +215,7 @@ public class TrapElvSubsystem extends SubsystemBase {
       m_wristMotorSim =
           new SingleJointedArmSim(
               DCMotor.getNEO(1),
-              TrapElvConstants.ELV_GEAR_RATIO,
+              TrapElvConstants.WRIST_GEAR_RATIO,
               (1/3) * TrapElvConstants.ELV_LIFT_MASS * Math.pow(TrapElvConstants.WRIST_LENGTH, 2.0),
               TrapElvConstants.WRIST_LENGTH,
               TrapElvConstants.WRIST_MIN_ANGLE, // min rotation

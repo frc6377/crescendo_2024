@@ -50,6 +50,7 @@ public final class Constants {
 
     // Simulation
     public static final int ELV_GEAR_RATIO = 70;
+    public static final int WRIST_GEAR_RATIO = 70;
     public static final double ELV_LIFT_MASS = 5.4; // kg
     public static final double ELV_MIN_HEIGHT = Units.inchesToMeters(12);
     public static final double ELV_MAX_HEIGHT = Units.inchesToMeters(30);
