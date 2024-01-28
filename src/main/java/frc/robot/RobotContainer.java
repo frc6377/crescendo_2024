@@ -25,8 +25,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.signaling.SignalingSubsystem;
 import java.util.HashMap;
@@ -113,6 +113,7 @@ public class RobotContainer {
     OI.getButton(OI.Driver.orientationButton)
         .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
+    OI.getTrigger(OI.Operator.fireTrigger).whileTrue(shooterSubsystem.shooterFire());
 
     shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
 

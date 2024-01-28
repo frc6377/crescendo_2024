@@ -81,8 +81,8 @@ public class OI {
     // Bumpers & Triggers
     public static final Control LT =
         new Control(XboxController.Axis.kLeftTrigger, null, controller, 0.5);
-    public static final Control RT =
-        new Control(XboxController.Axis.kRightTrigger, null, controller, 0.5);
+    public static final Control fireTrigger =
+        new Control(XboxController.Axis.kRightTrigger, "Fire shooter", controller, 0.5);
     public static final Control LB =
         new Control(XboxController.Button.kLeftBumper, null, controller);
     public static final Control RB =

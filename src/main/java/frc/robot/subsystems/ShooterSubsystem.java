@@ -2,21 +2,29 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxSim;
+import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-  private final CANSparkMax shooterTopMotor;
-  private final CANSparkMax shooterBottomMotor;
+  private final CANSparkMaxSim shooterTopMotor;
+  private final CANSparkMaxSim shooterBottomMotor;
+
+  private final RelativeEncoder shooterTopEncoder;
+  private final RelativeEncoder shooterBottomEncoder;
 
   public ShooterSubsystem() {
     shooterTopMotor =
-        new CANSparkMax(Constants.ShooterConstants.SHOOTER_MOTOR_TOP_ID, MotorType.kBrushless);
+        new CANSparkMaxSim(Constants.ShooterConstants.SHOOTER_MOTOR_TOP_ID, MotorType.kBrushless);
     shooterBottomMotor =
-        new CANSparkMax(Constants.ShooterConstants.SHOOTER_MOTOR_BOTTOM_ID, MotorType.kBrushless);
+        new CANSparkMaxSim(
+            Constants.ShooterConstants.SHOOTER_MOTOR_BOTTOM_ID, MotorType.kBrushless);
+
+    shooterTopEncoder = shooterTopMotor.getEncoder();
+    shooterBottomEncoder = shooterBottomMotor.getEncoder();
 
     shooterTopMotor.restoreFactoryDefaults();
     shooterTopMotor.setSmartCurrentLimit(40);
@@ -33,15 +41,15 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterBottomMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
   }
 
-  // Fires the shooter.
-  public Command shooterFire(double distance) {
-    return startEnd(
+  // Fires the shooter. Currently inoperable, must receive distance during runtime without any
+  // arguments being passed in!
+  public Command shooterFire() {
+    return run(
         () -> {
           if (isShooterReady(distance)) {
             setShooterSpeeds(calculateShooterSpeeds(distance));
           }
-        },
-        () -> {});
+        });
   }
 
   // Idle shooter command; for default command purposes
