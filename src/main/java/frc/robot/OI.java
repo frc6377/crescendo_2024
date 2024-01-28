@@ -74,7 +74,7 @@ public class OI {
 
     // A B Y X Buttons
     public static final Control testTurretButton = new Control(XboxController.Button.kA, "test turret", controller);
-    public static final Control alignTurretOdomButton =
+    public static final Control alignTurretButton =
         new Control(XboxController.Button.kB, "align turret with odometry", controller);
     public static final Control Y = new Control(XboxController.Button.kY, null, controller);
     public static final Control X = new Control(XboxController.Button.kX, null, controller);

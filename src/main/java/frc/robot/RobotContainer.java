@@ -91,15 +91,15 @@ public class RobotContainer {
    */
   private void configureBindings() {
     OI.getButton(OI.Operator.testTurretButton).whileTrue(turretSubsystem.testTurretCommand());
-    // need to see if limelight visible from limelight subsystem, get current robotPose from swerve, and get the speaker pose
-    //OI.getButton(OI.Operator.alignTurretOdomButton)
-      //.whileTrue(turretSubsystem.buildTurretCommand(false, null, null)); 
+    // need to see if limelight visible from limelight subsystem and get the speaker pose
+    //OI.getButton(OI.Operator.alignTurretButton)
+      //.whileTrue(turretSubsystem.buildTurretCommand(false, drivetrain.getState().Pose, null)); 
     OI.getTrigger(OI.Driver.intakeTrigger).whileTrue(intakeSubsystem.getIntakeCommand());
     OI.getButton(OI.Driver.outtakeButton).whileTrue(intakeSubsystem.getOuttakeCommand());
     // Swerve config
     turretSubsystem.setDefaultCommand(
         new InstantCommand(turretSubsystem::holdPosition, turretSubsystem));
-    drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
+    /* drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(
             () ->
                 drivetrain.getDriveRequest(
@@ -117,7 +117,7 @@ public class RobotContainer {
                             drivetrain.getState().Pose.getTranslation(),
                             Rotation2d.fromDegrees(180)))));
     OI.getButton(OI.Driver.orientationButton)
-        .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
+        .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation())); */
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
     if (Utils.isSimulation()) {
