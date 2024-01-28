@@ -240,6 +240,8 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
               default:
                 break;
             }
+
+            DynamicRobotConfig.saveConfig();
           }
         },
         this);
