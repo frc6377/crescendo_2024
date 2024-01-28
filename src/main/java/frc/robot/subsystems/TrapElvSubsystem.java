@@ -80,10 +80,10 @@ public class TrapElvSubsystem extends SubsystemBase {
   public static enum TrapElvState {
     // Degrees, elv height, elv height
     STOWED(0.0, 0.0, 0.0),
-    FROM_INTAKE(15.0, 0.0, 0.0),
-    FROM_SOURCE(150.0, 0.0, 12.0),
+    FROM_INTAKE(-15.0, 0.0, 0.0),
+    FROM_SOURCE(-150.0, 0.0, 12.0),
     TRAP_SCORE(0.0, 12.0, 12.0),
-    AMP_SCORE(90.0, 0.0, 12.0);
+    AMP_SCORE(-90.0, 0.0, 12.0);
 
     private double wristPose;
     private double basePose;
@@ -188,7 +188,7 @@ public class TrapElvSubsystem extends SubsystemBase {
       wristMech =
           scoringMech.append(
               new MechanismLigament2d(
-                  "Wrist Mech", TrapElvConstants.WRIST_LENGTH, 150, 10, new Color8Bit(Color.kRed)));
+                  "Wrist Mech", TrapElvConstants.WRIST_LENGTH, 0, 10, new Color8Bit(Color.kRed)));
 
       m_baseElevatorSim =
           new ElevatorSim(
@@ -338,7 +338,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   public void setTrapArm(TrapElvState state) {
     baseGoal.setDouble(Units.metersToInches(TrapElvConstants.ELV_MIN_HEIGHT) + state.basePose);
-    SmartDashboard.putNumber("Wrist Goal", state.wristPose - TrapElvConstants.WRIST_MIN_ANGLE);
+    SmartDashboard.putNumber("Wrist Goal", state.wristPose - wristMotorOffset);
     wristMotor
         .getPIDController()
         .setReference(state.getWristPose() - wristMotorOffset, ControlType.kPosition);
@@ -385,16 +385,19 @@ public class TrapElvSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("base CAN Sim", baseMotor1.get());
     SmartDashboard.putNumber("scoring CAN Sim", scoringMotor.get());
-    SmartDashboard.putNumber("wristMotorSim", wristMotor.get());
 
     baseMech.setLength(m_baseElevatorSim.getPositionMeters());
     scoringMech.setLength(m_scoringElevatorSim.getPositionMeters());
-    // wristMech.setAngle(Units.radiansToDegrees(m_wristMotorSim.getAngleRads()));
+    wristMech.setAngle(Units.radiansToDegrees(m_wristMotorSim.getAngleRads()));
 
     SmartDashboard.putNumber(
         "Base Elv Length", Units.metersToInches(m_baseElevatorSim.getPositionMeters()));
     SmartDashboard.putNumber(
         "Scoring Elv Length", Units.metersToInches(m_scoringElevatorSim.getPositionMeters()));
-    SmartDashboard.putNumber("Wrist Angle", Units.radiansToDegrees(m_wristMotorSim.getAngleRads()));
+
+    SmartDashboard.putNumber("Wrist Motor Sim Output", wristMotor.get());
+    SmartDashboard.putNumber(
+        "Wrist Arm Sim Angle", Units.radiansToDegrees(m_wristMotorSim.getAngleRads()));
+    SmartDashboard.putNumber("Wrist Mech Angle", wristMech.getAngle());
   }
 }
