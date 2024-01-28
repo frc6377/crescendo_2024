@@ -6,19 +6,31 @@ package frc.robot;
 
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.Autos;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TrapElvSubsystem;
 import frc.robot.subsystems.signaling.SignalingSubsystem;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -38,6 +50,7 @@ public class RobotContainer {
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final SwerveSubsystem drivetrain;
+  private final LimelightSubsystem limelightSubsystem;
 
   private final SignalingSubsystem signalingSubsystem =
       new SignalingSubsystem(1, OI.Driver::setRumble, robotStateManager);
@@ -46,12 +59,26 @@ public class RobotContainer {
 
   private final DynamicRobotConfig dynamicRobotConfig;
 
+  private SendableChooser<Command> autoChooser;
+  private ShuffleboardTab configTab = Shuffleboard.getTab("Config");
+  private GenericEntry autoDelay =
+      configTab
+          .add("Auton Start Delay(seconds)", 0)
+          .withWidget(BuiltInWidgets.kNumberSlider)
+          .withProperties(Map.of("min", 0, "max", 2))
+          .getEntry();
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     dynamicRobotConfig = new DynamicRobotConfig();
     drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
+    limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
     // Configure the trigger bindings
     configureBindings();
+    registerCommands();
+    autoChooser = AutoBuilder.buildAutoChooser();
+    configTab.add("Auton Selection", autoChooser).withSize(3, 1);
+    SmartDashboard.putBoolean("NamedCommand test", false);
   }
 
   /**
@@ -83,7 +110,7 @@ public class RobotContainer {
                     drivetrain.seedFieldRelative(
                         new Pose2d(
                             drivetrain.getState().Pose.getTranslation(),
-                            Rotation2d.fromDegrees(270)))));
+                            Rotation2d.fromDegrees(180)))));
     OI.getButton(OI.Driver.orientationButton)
         .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
@@ -106,6 +133,15 @@ public class RobotContainer {
     }
   }
 
+  // Register commands for auton
+  public void registerCommands() {
+    HashMap<String, Command> autonCommands = new HashMap<String, Command>();
+
+    autonCommands.put("Shoot", autonTest());
+
+    NamedCommands.registerCommands(autonCommands);
+  }
+
   public void onDisabled() {
     signalingSubsystem.randomizePattern();
   }
@@ -114,13 +150,16 @@ public class RobotContainer {
     signalingSubsystem.clearLEDs();
   }
 
+  private Command autonTest() {
+    return new InstantCommand(() -> SmartDashboard.putBoolean("NamedCommand test", true));
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
-   * @return the command to run in autonomous
+   * @return the command to run in autonomous(including the delay)
    */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return Autos.exampleAuto();
+    return new WaitCommand(autoDelay.getDouble(0)).andThen(autoChooser.getSelected());
   }
 }
