@@ -251,6 +251,10 @@ public class ShooterSubsystem extends SubsystemBase {
       leftMotor.getPIDController().setD(TLD1);
       leftMotor.getPIDController().setP(TLP1);
       leftMotor.getPIDController().setFF(TLFF1);
+      rightMotor.getPIDController().setI(TLI1);
+      rightMotor.getPIDController().setD(TLD1);
+      rightMotor.getPIDController().setP(TLP1);
+      rightMotor.getPIDController().setFF(TLFF1);
       leftMotorSpeed = Preferences.getDouble("Left Set Speed", 0);
       rightMotorSpeed = Preferences.getDouble("Right Set Speed", 0);
     }
