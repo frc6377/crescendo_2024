@@ -9,19 +9,28 @@ import frc.robot.Constants;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-  private final CANSparkMax shooterMotor;
+  private final CANSparkMax shooterTopMotor;
+  private final CANSparkMax shooterBottomMotor;
 
   public ShooterSubsystem() {
-    shooterMotor =
-        new CANSparkMax(Constants.ShooterConstants.SHOOTER_MOTOR_ID, MotorType.kBrushless);
-    shooterMotor.restoreFactoryDefaults();
-    shooterMotor.setSmartCurrentLimit(40);
+    shooterTopMotor =
+        new CANSparkMax(Constants.ShooterConstants.SHOOTER_MOTOR_TOP_ID, MotorType.kBrushless);
+    shooterBottomMotor =
+        new CANSparkMax(Constants.ShooterConstants.SHOOTER_MOTOR_BOTTOM_ID, MotorType.kBrushless);
 
-    // Placeholder values
-    shooterMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_P);
-    shooterMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_I);
-    shooterMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_D);
-    shooterMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
+    shooterTopMotor.restoreFactoryDefaults();
+    shooterTopMotor.setSmartCurrentLimit(40);
+    shooterBottomMotor.restoreFactoryDefaults();
+    shooterBottomMotor.setSmartCurrentLimit(40);
+
+    shooterTopMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_P);
+    shooterTopMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_I);
+    shooterTopMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_D);
+    shooterTopMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
+    shooterBottomMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_P);
+    shooterBottomMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_I);
+    shooterBottomMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_D);
+    shooterBottomMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
   }
 
   // Fires the shooter.
@@ -29,19 +38,17 @@ public class ShooterSubsystem extends SubsystemBase {
     return startEnd(
         () -> {
           if (isShooterReady(distance)) {
-            setShooterSpeed(calculateShooterSpeed(distance));
+            setShooterSpeeds(calculateShooterSpeeds(distance));
           }
         },
-        () -> {
-          // shooterIdle();
-        });
+        () -> {});
   }
 
   // Idle shooter command; for default command purposes
   public Command shooterIdle() {
     return run(
         () -> {
-          setShooterSpeed(Constants.ShooterConstants.SHOOTER_IDLE_SPEED);
+          setShooterSpeeds(Constants.ShooterConstants.SHOOTER_IDLE_SPEEDS);
         });
   }
 
@@ -49,37 +56,45 @@ public class ShooterSubsystem extends SubsystemBase {
   public boolean isShooterReady(double distance) {
     boolean shooterReady = false;
     double minSpeedTolerance =
-        calculateShooterSpeed(distance) * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+        calculateShooterSpeeds(distance)[0]
+            * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
     double maxSpeedTolerance =
-        calculateShooterSpeed(distance) * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+        calculateShooterSpeeds(distance)[0]
+            * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
 
-    if (minSpeedTolerance < shooterMotor.getEncoder().getVelocity()
-        & shooterMotor.getEncoder().getVelocity() < maxSpeedTolerance) {
+    if (minSpeedTolerance < shooterTopMotor.getEncoder().getVelocity()
+        & shooterTopMotor.getEncoder().getVelocity() < maxSpeedTolerance) {
       shooterReady = true;
     }
 
     return shooterReady;
   }
 
-  // Speed in RPM.
-  public void setShooterSpeed(double speed) {
-    shooterMotor.getPIDController().setReference(speed, CANSparkBase.ControlType.kVelocity);
+  // Speed in RPM. Top is index 0, bottom is index 1.
+  public void setShooterSpeeds(double[] speeds) {
+    shooterTopMotor.getPIDController().setReference(speeds[0], CANSparkBase.ControlType.kVelocity);
+    shooterBottomMotor
+        .getPIDController()
+        .setReference(speeds[1], CANSparkBase.ControlType.kVelocity);
   }
 
-  public static double calculateShooterSpeed(double distance) {
-    double speed = 0;
+  // Top is index 0, bottom is index 1.
+  public static double[] calculateShooterSpeeds(double distance) {
+    double[] speeds = {0, 0};
     double distanceProportion;
 
     // If distance below minimum, set speed to minimum.
     if (distance < speakerConfigList[0].getDistance()) {
-      speed = speakerConfigList[0].getSpeed();
+      speeds[0] = speakerConfigList[0].getSpeedTop();
+      speeds[1] = speakerConfigList[0].getSpeedBottom();
     } else {
       // A linear search which determines which points the input distance falls between. May be
       // converted to a binary search if there are many points
       for (int i = 0; i < speakerConfigList.length; i++) {
         // If distance above maximum, set speed to maximum.
         if (i == speakerConfigList.length - 1) {
-          speed = speakerConfigList[i].getSpeed();
+          speeds[0] = speakerConfigList[i].getSpeedTop();
+          speeds[1] = speakerConfigList[i].getSpeedBottom();
           break;
         } else if (distance >= speakerConfigList[i].getDistance()
             && distance < speakerConfigList[i + 1].getDistance()) {
@@ -87,39 +102,51 @@ public class ShooterSubsystem extends SubsystemBase {
           distanceProportion =
               (distance - speakerConfigList[i].getDistance())
                   / (speakerConfigList[i + 1].getDistance() - speakerConfigList[i].getDistance());
-          speed =
+          speeds[0] =
               (distanceProportion
-                      * (speakerConfigList[i + 1].getSpeed() - speakerConfigList[i].getSpeed()))
-                  + speakerConfigList[i].getSpeed();
+                      * (speakerConfigList[i + 1].getSpeedTop()
+                          - speakerConfigList[i].getSpeedTop()))
+                  + speakerConfigList[i].getSpeedTop();
+          speeds[1] =
+              (distanceProportion
+                      * (speakerConfigList[i + 1].getSpeedBottom()
+                          - speakerConfigList[i].getSpeedBottom()))
+                  + speakerConfigList[i].getSpeedBottom();
           break;
         }
       }
     }
-    return speed;
+    return speeds;
   }
 
   private static class SpeakerConfig {
     private double distance;
-    private double speed;
+    private double speedTop;
+    private double speedBottom;
 
-    public SpeakerConfig(double distance, double speed) {
+    public SpeakerConfig(double distance, double speedTop, double speedBottom) {
       this.distance = distance;
-      this.speed = speed;
+      this.speedTop = speedTop;
+      this.speedBottom = speedBottom;
     }
 
     public double getDistance() {
       return distance;
     }
 
-    public double getSpeed() {
-      return speed;
+    public double getSpeedTop() {
+      return speedTop;
+    }
+
+    public double getSpeedBottom() {
+      return speedBottom;
     }
   }
 
   private static SpeakerConfig[] speakerConfigList = {
-    new SpeakerConfig(0, 450),
-    new SpeakerConfig(40, 550),
-    new SpeakerConfig(195, 750),
-    new SpeakerConfig(290, 1000)
+    new SpeakerConfig(0, 450, 250),
+    new SpeakerConfig(40, 550, 350),
+    new SpeakerConfig(195, 750, 500),
+    new SpeakerConfig(290, 1000, 700)
   };
 }
