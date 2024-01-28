@@ -95,12 +95,8 @@ public class TrapElvSubsystem extends SubsystemBase {
           * TrapElvConstants.ELV_GEAR_RATIO;
     }
 
-    private double angleToRotations(double a) {
-      return a / 360;
-    }
-
     public Double getWristPose() {
-      return angleToRotations(wristPose);
+      return Units.degreesToRotations(wristPose);
     }
 
     public Double getBasePose() {
