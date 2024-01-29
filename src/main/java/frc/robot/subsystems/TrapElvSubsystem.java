@@ -80,10 +80,10 @@ public class TrapElvSubsystem extends SubsystemBase {
   public static enum TrapElvState {
     // Degrees, elv height, elv height
     STOWED(0.0, 0.0, 0.0),
-    FROM_INTAKE(-15.0, 0.0, 0.0),
-    FROM_SOURCE(-150.0, 0.0, 12.0),
+    FROM_INTAKE(15.0, 0.0, 0.0),
+    FROM_SOURCE(150.0, 0.0, 12.0),
     TRAP_SCORE(0.0, 12.0, 12.0),
-    AMP_SCORE(-90.0, 0.0, 12.0);
+    AMP_SCORE(90.0, 0.0, 12.0);
 
     private double wristPose;
     private double basePose;
