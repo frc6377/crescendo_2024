@@ -80,10 +80,10 @@ public class TrapElvSubsystem extends SubsystemBase {
   public static enum TrapElvState {
     // Degrees, elv height, elv height
     STOWED(0.0, 0.0, 0.0),
-    FROM_INTAKE(15.0, 0.0, 0.0),
-    FROM_SOURCE(150.0, 0.0, 12.0),
+    FROM_INTAKE(.5, 0.0, 0.0),
+    FROM_SOURCE(.25, 0.0, 12.0),
     TRAP_SCORE(0.0, 12.0, 12.0),
-    AMP_SCORE(90.0, 0.0, 12.0);
+    AMP_SCORE(.75, 0.0, 12.0);
 
     private double wristPose;
     private double basePose;
@@ -102,7 +102,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     }
 
     public Double getWristPose() {
-      return Units.degreesToRotations(wristPose);
+      return wristPose;
     }
 
     public Double getBasePose() {
@@ -221,7 +221,7 @@ public class TrapElvSubsystem extends SubsystemBase {
               TrapElvConstants.WRIST_MIN_ANGLE, // min rotation
               TrapElvConstants.WRIST_MAX_ANGLE, // max rotation
               true,
-              TrapElvConstants.WRIST_MIN_ANGLE);
+              0);
 
       TrapElvTab.add("Trap Arm Mech", elvMechanism);
     }
@@ -397,7 +397,6 @@ public class TrapElvSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("Wrist Motor Sim Output", wristMotor.get());
     SmartDashboard.putNumber(
-        "Wrist Arm Sim Angle", Units.radiansToDegrees(m_wristMotorSim.getAngleRads()));
-    SmartDashboard.putNumber("Wrist Mech Angle", wristMech.getAngle());
+        "Wrist Sim Angle", Units.radiansToRotations(m_wristMotorSim.getAngleRads()));
   }
 }
