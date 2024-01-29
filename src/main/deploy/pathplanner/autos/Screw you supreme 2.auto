@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.53,
+      "y": 2.1
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Screw you 2-1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Screw you 2-2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Screw you 2-3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Screw you 2-4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Screw you 2-5"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
