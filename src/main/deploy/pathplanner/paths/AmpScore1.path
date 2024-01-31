@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.6,
-        "y": 5.55
+        "x": 0.53,
+        "y": 7.03
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6,
-        "y": 5.55
+        "x": 0.78,
+        "y": 7.03
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.6,
-        "y": 7.0
+        "x": 1.8175856037874687,
+        "y": 7.576911245120637
       },
       "prevControl": {
-        "x": 1.6,
-        "y": 7.0
+        "x": 1.5675856037874687,
+        "y": 7.576911245120637
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,11 +39,14 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": -90.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Source Side 4 Note",
-  "previewStartingState": null,
+  "folder": "2 Note Amp Score",
+  "previewStartingState": {
+    "rotation": -90.0,
+    "velocity": 0
+  },
   "useDefaultConstraints": false
 }

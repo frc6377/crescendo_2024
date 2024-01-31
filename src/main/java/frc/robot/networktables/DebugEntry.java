@@ -30,6 +30,9 @@ public class DebugEntry<T> {
     if (defaultValue instanceof Double) {
       localEntry = datalog.start("/" + subsystem.getName() + "/" + name, "double");
       localConsumer = (a) -> datalog.appendDouble(localEntry, (Double) a, 0);
+    } else if (defaultValue instanceof Integer) {
+      localEntry = datalog.start("/" + subsystem.getName() + "/" + name, "integer");
+      localConsumer = (a) -> datalog.appendInteger(localEntry, (Integer) a, 0);
     } else if (defaultValue instanceof String) {
       localEntry = datalog.start("/" + subsystem.getName() + "/" + name, "string");
       localConsumer = (a) -> datalog.appendString(localEntry, (String) a, 0);

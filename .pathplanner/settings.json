@@ -3,8 +3,9 @@
   "robotLength": 0.94,
   "holonomicMode": true,
   "pathFolders": [
-    "Amp Side 5 Note with amp scoring",
     "Amp Side 5 Note",
+    "Amp Side 5 Note with amp scoring",
+    "2 Note Amp Score",
     "Source Side 4 Note",
     "Source Side Middle Notes"
   ],

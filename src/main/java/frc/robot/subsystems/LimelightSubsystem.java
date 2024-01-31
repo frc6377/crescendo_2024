@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
@@ -20,13 +21,15 @@ public class LimelightSubsystem extends SubsystemBase {
   private int measurementsUsed = 0;
   private DebugEntry<Integer> measurementEntry = new DebugEntry<Integer>(0, "measurements", this);
 
+  private int lastHeartbeat = 0;
+
   private final BiConsumer<Pose2d, Double> measurementConsumer;
 
   public LimelightSubsystem(BiConsumer<Pose2d, Double> measurementConsumer) {
     results = LimelightHelpers.getLatestResults("");
 
     this.measurementConsumer = measurementConsumer;
-    LimelightHelpers.setLEDMode_ForceOff("");
+    // LimelightHelpers.setLEDMode_ForceOff("");
     LimelightHelpers.setStreamMode_PiPMain("");
   }
 
@@ -47,16 +50,25 @@ public class LimelightSubsystem extends SubsystemBase {
         - (LimelightHelpers.getLatency_Pipeline("") / 1000.0);
   }
 
+  private int getHeartbeat() {
+    // "hb" gets the id of the current network table frame
+    return (int)
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("hb").getInteger(0);
+  }
+
   @Override
   public void periodic() {
     if (Robot.isReal()) {
       results = LimelightHelpers.getLatestResults("");
-
-      if (getTagCount() > 1) {
-        measurementsUsed++;
-        measurementConsumer.accept(getPose2d(), getTime());
-        if (measurementsUsed % 100 == 0) {
-          measurementEntry.log(measurementsUsed);
+      int heartbeat = getHeartbeat();
+      if (heartbeat != lastHeartbeat) {
+        lastHeartbeat = heartbeat;
+        if (getTagCount() > 1) {
+          measurementsUsed++;
+          measurementConsumer.accept(getPose2d(), getTime());
+          if (measurementsUsed % 100 == 0) {
+            measurementEntry.log(measurementsUsed);
+          }
         }
       }
     }
