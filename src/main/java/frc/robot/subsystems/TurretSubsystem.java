@@ -8,14 +8,26 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxSim;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.LimelightHelpers;
@@ -24,7 +36,13 @@ import java.util.function.Consumer;
 
 public class TurretSubsystem extends SubsystemBase {
 
-  private CANSparkMax turretMotor;
+  private CANSparkMaxSim turretMotor;
+  private SingleJointedArmSim turretSim;
+  private Mechanism2d turretMech;
+  private MechanismRoot2d root;
+  private MechanismLigament2d turretAngleSim;
+  private ShuffleboardTab turretTab = Shuffleboard.getTab("Turret Tab");
+
   private PIDController turretPIDController;
   private CANcoder m_encoder;
   private double turretPosition;
@@ -40,7 +58,27 @@ public class TurretSubsystem extends SubsystemBase {
   private final RobotStateManager robotStateManager;
 
   public TurretSubsystem(RobotStateManager robotStateManager) {
-    turretMotor = new CANSparkMax(Constants.TurretConstants.MOTOR_ID, MotorType.kBrushless);
+    turretMotor = new CANSparkMaxSim(Constants.TurretConstants.MOTOR_ID, MotorType.kBrushless);
+
+    // Simulation
+    if (Robot.isSimulation()) {
+      turretSim =
+          new SingleJointedArmSim(
+              DCMotor.getNEO(1),
+              4,
+              3.5 * 0.1016 * 0.1016 / 3,
+              0.1016,
+              -Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES),
+              Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES),
+              false,
+              0);
+    }
+    turretMech = new Mechanism2d(4, 4);
+    root = turretMech.getRoot("Root", 2, 2);
+    turretAngleSim =
+        root.append(new MechanismLigament2d("Turret", 2, 0, 5, new Color8Bit(Color.kRed)));
+    turretTab.add("Turret", turretMech);
+
     turretMotor.restoreFactoryDefaults();
     turretMotor.setSmartCurrentLimit(40);
 
@@ -73,8 +111,16 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public void setTurretPos(double setpoint) {
-    turretMotor.set(MathUtil.clamp(
-            turretPIDController.calculate(turretPosition, MathUtil.clamp(setpoint, Math.toRadians(-Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES), Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES))), -1, 1));
+    turretMotor.set(
+        MathUtil.clamp(
+            turretPIDController.calculate(
+                turretPosition,
+                MathUtil.clamp(
+                    setpoint,
+                    Math.toRadians(-Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES),
+                    Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES))),
+            -1,
+            1));
   }
 
   public void holdPosition() {
@@ -138,14 +184,27 @@ public class TurretSubsystem extends SubsystemBase {
     turretVelocityEntry.log(turretVelocity);
   }
 
+  @Override
+  public void simulationPeriodic() {
+    updateTurretPosition();
+    turretVelocity =
+        (m_encoder.getVelocity().getValueAsDouble())
+            * 60; // changing from rotations per second to rotations per minute or rpm
+    turretPositionEntry.log(turretPosition);
+    turretVelocityEntry.log(turretVelocity);
+    for (var i = 0; i < Robot.defaultPeriodSecs; i += CANSparkMaxSim.kPeriod) {
+      turretSim.setInput(turretMotor.get() * RobotController.getBatteryVoltage());
+      turretSim.update(CANSparkMaxSim.kPeriod);
+      turretMotor.update(
+          turretSim.getVelocityRadPerSec() * Constants.TurretConstants.CONVERSION_FACTOR);
+    }
+    turretAngleSim.setAngle(Math.toDegrees(turretSim.getAngleRads()));
+    SmartDashboard.putNumber("Turret Angle", Math.toDegrees(turretSim.getAngleRads()));
+  }
+
   public double getTurretRotationFromOdometry(
       Pose2d robotPos, Pose2d targetPos) { // Doesn't work right now but will be used later
     return Math.atan2(robotPos.getY() - targetPos.getY(), robotPos.getX() - targetPos.getX())
         + robotPos.getRotation().getRadians();
-  }
-
-  @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
   }
 }
