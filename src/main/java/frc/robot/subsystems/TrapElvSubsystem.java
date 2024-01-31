@@ -102,7 +102,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     }
 
     public Double getWristPose() {
-      return wristPose;
+      return wristPose * TrapElvConstants.WRIST_GEAR_RATIO;
     }
 
     public Double getBasePose() {
@@ -216,7 +216,9 @@ public class TrapElvSubsystem extends SubsystemBase {
           new SingleJointedArmSim(
               DCMotor.getNEO(1),
               TrapElvConstants.WRIST_GEAR_RATIO,
-              TrapElvConstants.ELV_LIFT_MASS * Math.pow(TrapElvConstants.WRIST_LENGTH, 2.0),
+              (1.0 / 3.0)
+                  * TrapElvConstants.ELV_LIFT_MASS
+                  * Math.pow(TrapElvConstants.WRIST_LENGTH, 2.0),
               TrapElvConstants.WRIST_LENGTH,
               TrapElvConstants.WRIST_MIN_ANGLE, // min rotation
               TrapElvConstants.WRIST_MAX_ANGLE, // max rotation
@@ -273,7 +275,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   public Command intakeGround() {
     return startEnd(
         () -> {
-          setTrapArm(TrapElvState.FROM_SOURCE);
+          setTrapArm(TrapElvState.FROM_INTAKE);
           rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
         },
         () -> {
@@ -380,7 +382,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
       m_wristMotorSim.setInput(wristMotor.get() * RobotController.getBatteryVoltage());
       m_wristMotorSim.update(CANSparkMaxSim.kPeriod);
-      wristMotor.update(m_wristMotorSim.getVelocityRadPerSec() * TrapElvConstants.ELV_GEAR_RATIO);
+      wristMotor.update(m_wristMotorSim.getVelocityRadPerSec() * TrapElvConstants.WRIST_GEAR_RATIO);
     }
 
     SmartDashboard.putNumber("base CAN Sim", baseMotor1.get());
