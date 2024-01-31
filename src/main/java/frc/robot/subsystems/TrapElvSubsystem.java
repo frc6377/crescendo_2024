@@ -97,7 +97,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
     private double feetToRotations(double f) {
       return Units.inchesToMeters(f)
-          / (2 * Math.PI * Units.inchesToMeters(1))
+          / (2 * Math.PI * TrapElvConstants.DRUM_RADIUS)
           * TrapElvConstants.ELV_GEAR_RATIO;
     }
 
@@ -195,7 +195,7 @@ public class TrapElvSubsystem extends SubsystemBase {
               DCMotor.getNEO(2),
               TrapElvConstants.ELV_GEAR_RATIO,
               TrapElvConstants.ELV_LIFT_MASS,
-              Units.inchesToMeters(1),
+              TrapElvConstants.DRUM_RADIUS,
               TrapElvConstants.ELV_MIN_HEIGHT,
               TrapElvConstants.ELV_MAX_HEIGHT,
               true,
@@ -206,7 +206,7 @@ public class TrapElvSubsystem extends SubsystemBase {
               DCMotor.getNEO(1),
               TrapElvConstants.ELV_GEAR_RATIO,
               TrapElvConstants.ELV_LIFT_MASS,
-              Units.inchesToMeters(1),
+              TrapElvConstants.DRUM_RADIUS,
               TrapElvConstants.ELV_MIN_HEIGHT,
               TrapElvConstants.ELV_MAX_HEIGHT,
               true,
@@ -371,14 +371,14 @@ public class TrapElvSubsystem extends SubsystemBase {
       baseMotor1.update(
           m_baseElevatorSim.getVelocityMetersPerSecond()
               * TrapElvConstants.ELV_GEAR_RATIO
-              / Units.inchesToMeters(1));
+              / TrapElvConstants.DRUM_RADIUS);
 
       m_scoringElevatorSim.setInput(scoringMotor.get() * RobotController.getBatteryVoltage());
       m_scoringElevatorSim.update(CANSparkMaxSim.kPeriod);
       scoringMotor.update(
           m_scoringElevatorSim.getVelocityMetersPerSecond()
               * TrapElvConstants.ELV_GEAR_RATIO
-              / Units.inchesToMeters(1));
+              / TrapElvConstants.DRUM_RADIUS);
 
       m_wristMotorSim.setInput(wristMotor.get() * RobotController.getBatteryVoltage());
       m_wristMotorSim.update(CANSparkMaxSim.kPeriod);
