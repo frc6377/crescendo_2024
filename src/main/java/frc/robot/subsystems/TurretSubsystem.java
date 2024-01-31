@@ -35,7 +35,7 @@ public class TurretSubsystem extends SubsystemBase {
   private DebugEntry<Double> turretVelocityEntry =
       new DebugEntry<Double>(turretVelocity, "Velocity", this);
   private TunableNumber tunableTestPosition =
-      new TunableNumber("Turret Test Position", 110, testPosition);
+      new TunableNumber("Turret Test Position", 30, testPosition);
 
   private final RobotStateManager robotStateManager;
 
@@ -69,13 +69,12 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public Command stowTurret() {
-    return new InstantCommand(() -> setTurretPos(Math.toRadians(110)));
+    return new InstantCommand(() -> setTurretPos(Math.toRadians(0)));
   }
 
   public void setTurretPos(double setpoint) {
-    turretMotor.set(
-        MathUtil.clamp(
-            turretPIDController.calculate(turretPosition, setpoint), 0, Math.toRadians(220)));
+    turretMotor.set(MathUtil.clamp(
+            turretPIDController.calculate(turretPosition, MathUtil.clamp(setpoint, Math.toRadians(-Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES), Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES))), -1, 1));
   }
 
   public void holdPosition() {
@@ -116,12 +115,10 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public void LockTurret() {
-    turretPIDController.reset();
     lockOntoTag(Math.toRadians(LimelightHelpers.getTX("")));
   }
 
   public void TurretOdomCommand(Pose2d robotPos, Pose2d targetPos) {
-    turretPIDController.reset();
     setTurretPos(getTurretRotationFromOdometry(robotPos, targetPos));
   }
 
@@ -144,7 +141,7 @@ public class TurretSubsystem extends SubsystemBase {
   public double getTurretRotationFromOdometry(
       Pose2d robotPos, Pose2d targetPos) { // Doesn't work right now but will be used later
     return Math.atan2(robotPos.getY() - targetPos.getY(), robotPos.getX() - targetPos.getX())
-        + robotPos.getRotation().getDegrees();
+        + robotPos.getRotation().getRadians();
   }
 
   @Override
