@@ -24,29 +24,32 @@ public class OI {
     // A B Y X Buttons
     public static final Control brakeButton =
         new Control(XboxController.Button.kA, "Brake", controller);
-    public static final Control B = new Control(XboxController.Button.kB, null, controller);
-    public static final Control Y = new Control(XboxController.Button.kY, null, controller);
-    public static final Control X = new Control(XboxController.Button.kX, null, controller);
+    public static final Control trapScoreButton =
+        new Control(XboxController.Button.kB, "Score Trap", controller);
+    public static final Control sourceIntakeButton =
+        new Control(XboxController.Button.kX, "Intake Source", controller);
+    public static final Control groundIntakeButton =
+        new Control(XboxController.Button.kY, "Intake Ground", controller);
 
     // Bumpers & Triggers
     public static final Control intakeTrigger =
         new Control(XboxController.Axis.kLeftTrigger, "Run intake", controller, 0.5);
     public static final Control RT =
         new Control(XboxController.Axis.kRightTrigger, null, controller, 0.5);
-    public static final Control LB =
-        new Control(XboxController.Button.kLeftBumper, null, controller);
+    public static final Control ampScoreButton =
+        new Control(XboxController.Button.kLeftBumper, "Score AMP", controller);
     public static final Control outtakeButton =
         new Control(XboxController.Button.kRightBumper, "Run outtake", controller);
 
     // Start, End & Left/Right stick buttons
     public static final Control resetRotationButton =
         new Control(XboxController.Button.kStart, "Reset field rotation", controller);
+    public static final Control leftStick =
+        new Control(XboxController.Button.kLeftStick, null, controller);
+    public static final Control zeroArm =
+        new Control(XboxController.Button.kRightStick, "Zero Arm", controller);
     public static final Control orientationButton =
         new Control(XboxController.Button.kBack, "Toggle swerve orientation", controller);
-    public static final Control LSB =
-        new Control(XboxController.Button.kLeftStick, null, controller);
-    public static final Control RSB =
-        new Control(XboxController.Button.kRightStick, null, controller);
 
     // Control Curves
     private static final ControlCurve xTranslationCurve = new ControlCurve(1, 0, 0, 0.0);
