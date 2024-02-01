@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxSim;
 import edu.wpi.first.hal.SimDouble;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -87,11 +88,11 @@ public class TrapElvSubsystem extends SubsystemBase {
   // States
   public static enum TrapElvState {
     // Degrees, elv height, elv height
-    STOWED(0.0, 0.0, 0.0),
-    FROM_INTAKE(.5, 0.0, 0.0),
-    FROM_SOURCE(.25, 0.0, 12.0),
+    STOWED(-0.25, 0.0, 0.0),
+    FROM_INTAKE(0.25, 0.0, 0.0),
+    FROM_SOURCE(0.0, 0.0, 12.0),
     TRAP_SCORE(0.0, 12.0, 12.0),
-    AMP_SCORE(.75, 0.0, 12.0);
+    AMP_SCORE(0.5, 0.0, 12.0);
 
     private double wristPose;
     private double basePose;
@@ -110,7 +111,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     }
 
     public Double getWristPose() {
-      return wristPose * TrapElvConstants.WRIST_GEAR_RATIO;
+      return wristPose;
     }
 
     public Double getBasePose() {
@@ -125,7 +126,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   /** Creates a new TrapArm. */
   public TrapElvSubsystem() {
     // Wrist
-    wristMotorOffset = 0.0;
+    wristMotorOffset = 0.25;
 
     wristMotor = new CANSparkMax(TrapElvConstants.WRIST_MOTOR_ID, MotorType.kBrushless);
     wristMotor.restoreFactoryDefaults();
@@ -189,10 +190,17 @@ public class TrapElvSubsystem extends SubsystemBase {
       elvMechanism = new Mechanism2d(2, 2);
       root = elvMechanism.getRoot("Root", 1, 0);
       baseMech =
-          root.append(new MechanismLigament2d("Base Elv", 0, 90, 20, new Color8Bit(Color.kBlue)));
+          root.append(
+              new MechanismLigament2d(
+                  "Base Elv", TrapElvConstants.ELV_MIN_HEIGHT, 90, 20, new Color8Bit(Color.kBlue)));
       scoringMech =
           baseMech.append(
-              new MechanismLigament2d("Scoring Elv", 0, 0, 15, new Color8Bit(Color.kAqua)));
+              new MechanismLigament2d(
+                  "Scoring Elv",
+                  TrapElvConstants.ELV_MIN_HEIGHT,
+                  0,
+                  15,
+                  new Color8Bit(Color.kAqua)));
       wristMech =
           scoringMech.append(
               new MechanismLigament2d(
@@ -230,13 +238,14 @@ public class TrapElvSubsystem extends SubsystemBase {
               TrapElvConstants.WRIST_LENGTH,
               TrapElvConstants.WRIST_MIN_ANGLE, // min rotation
               TrapElvConstants.WRIST_MAX_ANGLE, // max rotation
-              false,
+              true,
               0);
 
       TrapElvTab.add("Trap Arm Mech", elvMechanism);
 
       simWristCoder = new SimDeviceSim("CANEncoder:CANCoder (v6)", wristEncoder.getDeviceID());
       simWristPos = simWristCoder.getDouble("rawPositionInput");
+      wristEncoder.setPosition(0);
     }
   }
 
@@ -259,61 +268,65 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   // Commands
   public Command setRoller(double s) {
-    return run(
-        () -> {
+    return run(() -> {
           rollerMotor.set(s);
-        });
+        })
+        .withName("setRoller");
   }
 
   public Command stopRoller() {
-    return run(
-        () -> {
+    return run(() -> {
           rollerMotor.stopMotor();
-        });
+        })
+        .withName("stopRoller");
   }
 
   public Command intakeSource() {
     return startEnd(
-        () -> {
-          setTrapArm(TrapElvState.FROM_SOURCE);
-          rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
-        },
-        () -> {
-          stowTrapElv();
-        });
+            () -> {
+              setTrapArm(TrapElvState.FROM_SOURCE);
+              rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
+            },
+            () -> {
+              stowTrapElv();
+            })
+        .withName("intakeSource");
   }
 
   public Command intakeGround() {
     return startEnd(
-        () -> {
-          setTrapArm(TrapElvState.FROM_INTAKE);
-          rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
-        },
-        () -> {
-          stowTrapElv();
-        });
+            () -> {
+              setTrapArm(TrapElvState.FROM_INTAKE);
+              rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
+            },
+            () -> {
+              stowTrapElv();
+            })
+        .withName("intakeGround");
   }
 
   public Command scoreAMP() {
     return startEnd(
-        () -> {
-          setTrapArm(TrapElvState.AMP_SCORE);
-          setRoller(-TrapElvConstants.ROLLER_SCORING_SPEED);
-        },
-        () -> {
-          stowTrapElv();
-        });
+            () -> {
+              setTrapArm(TrapElvState.AMP_SCORE);
+              setRoller(-TrapElvConstants.ROLLER_SCORING_SPEED);
+            },
+            () -> {
+              stowTrapElv();
+            })
+        .withName("scoreAMP");
   }
 
   public Command scoreTrap() {
     return startEnd(
-        () -> {
-          setTrapArm(TrapElvState.TRAP_SCORE);
-          rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
-        },
-        () -> {
-          stowTrapElv();
-        });
+            () -> {
+              setTrapArm(TrapElvState.TRAP_SCORE);
+              rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
+            },
+            () -> {
+              stowTrapElv();
+            })
+        .withName("scoreTrap");
   }
 
   public void stowTrapElv() {
@@ -351,7 +364,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   public void setTrapArm(TrapElvState state) {
     baseGoal.setDouble(Units.metersToInches(TrapElvConstants.ELV_MIN_HEIGHT) + state.basePose);
-    SmartDashboard.putNumber("Wrist Goal", state.wristPose - wristMotorOffset);
+    SmartDashboard.putNumber("Wrist Goal", state.wristPose);
     SmartDashboard.putNumber(
         "Wrist PID Control Output",
         wristPIDController.calculate(
@@ -375,7 +388,10 @@ public class TrapElvSubsystem extends SubsystemBase {
     baseLog.log(baseLimit.get());
     scoringLog.log(sourceBreak.get());
     wristMotor.set(
-        wristPIDController.calculate(wristEncoder.getPosition().getValueAsDouble(), wristState));
+        MathUtil.clamp(
+            wristPIDController.calculate(wristEncoder.getPosition().getValueAsDouble(), wristState),
+            -1,
+            1));
   }
 
   @Override
@@ -406,7 +422,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
     baseMech.setLength(m_baseElevatorSim.getPositionMeters());
     scoringMech.setLength(m_scoringElevatorSim.getPositionMeters());
-    wristMech.setAngle(Units.radiansToDegrees(m_wristMotorSim.getAngleRads()));
+    wristMech.setAngle(Units.radiansToDegrees(m_wristMotorSim.getAngleRads()) - 90);
 
     SmartDashboard.putNumber(
         "Base Elv Length", Units.metersToInches(m_baseElevatorSim.getPositionMeters()));
