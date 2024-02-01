@@ -5,9 +5,10 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -39,43 +40,51 @@ public class ShooterSubsystem extends SubsystemBase {
   // Spins up the shooter, and requests feeding it when the rollers are within parameters.
   // Receives distance-to-target from Limelight, or other sensor.
   // DOES NOT WORK CURRENTLY!
-  public ParallelCommandGroup shooterFire() {
-    addCommands(
-      setShooterSpeeds(calculateShooterSpeeds(LimelightGetDistance())),
-      isShooterReady(LimelightGetDistance())).withName("Shooter fire command");
+  public Command shooterFire() {
+    return Commands.parallel(
+      //setShooterSpeeds(calculateShooterSpeeds(LimelightGetDistance())),
+      //isShooterReady(LimelightGetDistance())).withName("Shooter fire command");
+      new WaitCommand(5));
   }
 
   // Idle shooter command; for default command purposes
   public Command shooterIdle() {
-    return run(
-        () -> {
+    return run(() -> {
           setShooterSpeeds(Constants.ShooterConstants.SHOOTER_IDLE_SPEEDS);
-        }).withName("Idle shooter command");
+        })
+        .withName("Idle shooter command");
   }
 
-  // Checks if shooter is ready. 
+  // Checks if shooter is ready.
   public void isShooterReady(double distance) {
     Pair<Double, Double> targetSpeeds = calculateShooterSpeeds(distance);
     double targetSpeedTop = targetSpeeds.getFirst();
     double targetSpeedBottom = targetSpeeds.getSecond();
 
-    double minSpeedToleranceTop = targetSpeedTop * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
-    double maxSpeedToleranceTop = targetSpeedTop * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
-    double minSpeedToleranceBottom = targetSpeedBottom * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
-    double maxSpeedToleranceBottom = targetSpeedBottom * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+    double minSpeedToleranceTop =
+        targetSpeedTop * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+    double maxSpeedToleranceTop =
+        targetSpeedTop * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+    double minSpeedToleranceBottom =
+        targetSpeedBottom * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+    double maxSpeedToleranceBottom =
+        targetSpeedBottom * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
 
     double speedTop = shooterTopMotor.getEncoder().getVelocity();
     double speedBottom = shooterBottomMotor.getEncoder().getVelocity();
 
     if ((minSpeedToleranceTop < speedTop && speedTop < maxSpeedToleranceTop)
-      && (minSpeedToleranceBottom < speedBottom && speedBottom < maxSpeedToleranceBottom) == true) {
-        // Request note from feeder.
+        && (minSpeedToleranceBottom < speedBottom && speedBottom < maxSpeedToleranceBottom)
+            == true) {
+      // Request note from feeder.
     }
   }
 
   // Speed in RPM. Top is index 0, bottom is index 1.
   public void setShooterSpeeds(Pair<Double, Double> speeds) {
-    shooterTopMotor.getPIDController().setReference(speeds.getFirst(), CANSparkBase.ControlType.kVelocity);
+    shooterTopMotor
+        .getPIDController()
+        .setReference(speeds.getFirst(), CANSparkBase.ControlType.kVelocity);
     shooterBottomMotor
         .getPIDController()
         .setReference(speeds.getSecond(), CANSparkBase.ControlType.kVelocity);
@@ -89,34 +98,35 @@ public class ShooterSubsystem extends SubsystemBase {
     double distanceProportion;
 
     // If distance below minimum, set speed to minimum.
-    if (distance < speakerConfigList[0].getDistance()) {
-      topSpeed = speakerConfigList[0].getSpeedTop();
-      bottomSpeed = speakerConfigList[0].getSpeedBottom();
+    if (distance < speakerConfigList[0].getDistanceInInches()) {
+      topSpeed = speakerConfigList[0].getSpeedTopInRPM();
+      bottomSpeed = speakerConfigList[0].getSpeedBottomInRPM();
     } else {
       // A linear search which determines which points the input distance falls between. May be
       // converted to a binary search if there are many points
       for (int i = 0; i < speakerConfigList.length; i++) {
         // If distance above maximum, set speed to maximum.
         if (i == speakerConfigList.length - 1) {
-          topSpeed = speakerConfigList[i].getSpeedTop();
-          bottomSpeed = speakerConfigList[i].getSpeedBottom();
+          topSpeed = speakerConfigList[i].getSpeedTopInRPM();
+          bottomSpeed = speakerConfigList[i].getSpeedBottomInRPM();
           break;
-        } else if (distance >= speakerConfigList[i].getDistance()
-            && distance < speakerConfigList[i + 1].getDistance()) {
+        } else if (distance >= speakerConfigList[i].getDistanceInInches()
+            && distance < speakerConfigList[i + 1].getDistanceInInches()) {
           // Math to linearly interpolate the speed.
           distanceProportion =
-              (distance - speakerConfigList[i].getDistance())
-                  / (speakerConfigList[i + 1].getDistance() - speakerConfigList[i].getDistance());
+              (distance - speakerConfigList[i].getDistanceInInches())
+                  / (speakerConfigList[i + 1].getDistanceInInches()
+                      - speakerConfigList[i].getDistanceInInches());
           topSpeed =
               (distanceProportion
-                      * (speakerConfigList[i + 1].getSpeedTop()
-                          - speakerConfigList[i].getSpeedTop()))
-                  + speakerConfigList[i].getSpeedTop();
+                      * (speakerConfigList[i + 1].getSpeedTopInRPM()
+                          - speakerConfigList[i].getSpeedTopInRPM()))
+                  + speakerConfigList[i].getSpeedTopInRPM();
           bottomSpeed =
               (distanceProportion
-                      * (speakerConfigList[i + 1].getSpeedBottom()
-                          - speakerConfigList[i].getSpeedBottom()))
-                  + speakerConfigList[i].getSpeedBottom();
+                      * (speakerConfigList[i + 1].getSpeedBottomInRPM()
+                          - speakerConfigList[i].getSpeedBottomInRPM()))
+                  + speakerConfigList[i].getSpeedBottomInRPM();
           break;
         }
       }
@@ -126,27 +136,28 @@ public class ShooterSubsystem extends SubsystemBase {
     return speeds;
   }
 
+  // Distance and speed in inches and RPM respectively.
   private static class SpeakerConfig {
-    private double distance;
-    private double speedTop;
-    private double speedBottom;
+    private double distanceInInches;
+    private double speedTopInRPM;
+    private double speedBottomInRPM;
 
     public SpeakerConfig(double distance, double speedTop, double speedBottom) {
-      this.distance = distance;
-      this.speedTop = speedTop;
-      this.speedBottom = speedBottom;
+      this.distanceInInches = distance;
+      this.speedTopInRPM = speedTop;
+      this.speedBottomInRPM = speedBottom;
     }
 
-    public double getDistance() {
-      return distance;
+    public double getDistanceInInches() {
+      return distanceInInches;
     }
 
-    public double getSpeedTop() {
-      return speedTop;
+    public double getSpeedTopInRPM() {
+      return speedTopInRPM;
     }
 
-    public double getSpeedBottom() {
-      return speedBottom;
+    public double getSpeedBottomInRPM() {
+      return speedBottomInRPM;
     }
   }
 

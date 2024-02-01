@@ -1,5 +1,5 @@
-import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.math.Pair;
+import frc.robot.subsystems.ShooterSubsystem;
 import java.util.Arrays;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
