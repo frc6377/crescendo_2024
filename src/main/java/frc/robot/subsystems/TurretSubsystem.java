@@ -107,7 +107,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public Command stowTurret() {
-    return new InstantCommand(() -> setTurretPos(Math.toRadians(0)));
+    return new InstantCommand(() -> setTurretPos(Math.toRadians(0))).withName("StowTurretCommand");
   }
 
   public void setTurretPos(double setpoint) {
