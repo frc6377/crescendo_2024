@@ -53,7 +53,7 @@ public class TurretSubsystem extends SubsystemBase {
   private DebugEntry<Double> turretVelocityEntry =
       new DebugEntry<Double>(turretVelocity, "Velocity", this);
   private TunableNumber tunableTestPosition =
-      new TunableNumber("Turret Test Position", 30, testPosition);
+      new TunableNumber("Turret Test Position", 60, testPosition);
 
   private final RobotStateManager robotStateManager;
 
@@ -193,6 +193,7 @@ public class TurretSubsystem extends SubsystemBase {
     turretPositionEntry.log(turretPosition);
     turretVelocityEntry.log(turretVelocity);
     for (var i = 0; i < Robot.defaultPeriodSecs; i += CANSparkMaxSim.kPeriod) {
+      System.out.println(Math.toDegrees(turretMotor.get()));
       turretSim.setInput(turretMotor.get() * RobotController.getBatteryVoltage());
       turretSim.update(CANSparkMaxSim.kPeriod);
       turretMotor.update(
