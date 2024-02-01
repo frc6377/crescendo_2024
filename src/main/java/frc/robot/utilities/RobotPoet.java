@@ -11,6 +11,8 @@ import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
+import com.github.javaparser.printer.DotPrinter;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 
 /** Add your docs here. */
 public class RobotPoet {
+  private CompilationUnit cu;
 
   private static ArrayList<String> clazzes = new ArrayList<String>();
   private static ArrayList<String> instances = new ArrayList<String>();
@@ -28,18 +31,7 @@ public class RobotPoet {
       clazzes.add(s);
     }
     try {
-      // ArrayList<ExpressionStmt> toRemove = new ArrayList<ExpressionStmt>();
-      CompilationUnit cu =
-          StaticJavaParser.parse(Path.of("src/main/java/frc/robot/RobotContainer.java"));
-      /*cu.findAll(ExpressionStmt.class).stream()
-            .filter(f -> f.toString().contains("drivetrain"))
-            .forEach(
-                f -> {
-                  System.out.println(f.toString());
-                  toRemove.add(f);
-                });
-      */
-      // for (ExpressionStmt n : toRemove) {
+      cu = StaticJavaParser.parse(Path.of("src/main/java/frc/robot/RobotContainer.java"));
       int clazzesSize;
       int instancesSize;
       do {
@@ -47,22 +39,25 @@ public class RobotPoet {
         instancesSize = instances.size();
         new DeleteVisitor().visit(cu, null);
       } while (clazzesSize != clazzes.size() || instancesSize != instances.size());
-      // }
 
       try (FileWriter fileWriter = new FileWriter("src/main/java/frc/robot/RobotContainer.java");
           PrintWriter printWriter = new PrintWriter(fileWriter)) {
         printWriter.print(cu.toString());
       }
 
-      /*
-            DotPrinter printer = new DotPrinter(true);
-            try (FileWriter fileWriter = new FileWriter("ast.dot");
-                PrintWriter printWriter = new PrintWriter(fileWriter)) {
-              printWriter.print(printer.output(cu));
-            }
-      */
-
     } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
+  public void printAstAsGraph() {
+    DotPrinter printer = new DotPrinter(true);
+    try (FileWriter fileWriter = new FileWriter("ast.dot");
+        PrintWriter printWriter = new PrintWriter(fileWriter)) {
+        printWriter.print(printer.output(cu));
+    }
+     catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
