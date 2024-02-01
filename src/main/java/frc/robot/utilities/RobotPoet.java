@@ -7,7 +7,6 @@ package frc.robot.utilities;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
@@ -50,7 +49,6 @@ public class RobotPoet {
       } while (clazzesSize != clazzes.size() || instancesSize != instances.size());
       // }
 
-      ClassOrInterfaceDeclaration robotContainer = cu.getClassByName("RobotContainer").get();
       try (FileWriter fileWriter = new FileWriter("src/main/java/frc/robot/RobotContainer.java");
           PrintWriter printWriter = new PrintWriter(fileWriter)) {
         printWriter.print(cu.toString());
@@ -122,6 +120,12 @@ public class RobotPoet {
         if (expr.getValue().toString().contains(inst)) {
           instances.add(expr.getTarget().toString());
           return null;
+        }
+      }
+
+      for (String sub : clazzes) {
+        if (expr.getValue().toString().contains(sub)) {
+          instances.add(expr.getTarget().toString());
         }
       }
       return expr;

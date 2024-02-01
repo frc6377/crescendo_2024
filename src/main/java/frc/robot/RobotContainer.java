@@ -8,16 +8,10 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.ReplanningConfig;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -29,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.DynamicRobotConfig;
-import frc.robot.config.TunerConstants;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
@@ -80,23 +73,6 @@ public class RobotContainer {
     dynamicRobotConfig = new DynamicRobotConfig();
     drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
     limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
-
-    AutoBuilder.configureHolonomic(
-        () -> drivetrain.getState().Pose,
-        (a) -> drivetrain.seedFieldRelative(a),
-        () -> drivetrain.getChassisSpeeds(),
-        (a) ->
-            drivetrain.setControl(
-                new SwerveRequest.RobotCentric()
-                    .withVelocityX(a.vxMetersPerSecond)
-                    .withVelocityY(a.vyMetersPerSecond)
-                    .withRotationalRate(a.omegaRadiansPerSecond)),
-        new HolonomicPathFollowerConfig(
-            MaxSpeed * 0.85, Units.inchesToMeters(12) * Math.sqrt(2), new ReplanningConfig(true, true)),
-        () ->
-            DriverStation.getAlliance().isPresent()
-                && DriverStation.getAlliance().get() == Alliance.Red,
-        drivetrain);
     // Configure the trigger bindings
     configureBindings();
     registerCommands();
