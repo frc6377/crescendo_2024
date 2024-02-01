@@ -49,7 +49,6 @@ public class TrapElvSubsystem extends SubsystemBase {
   private final CANSparkMaxSim scoringMotor;
 
   // Offsets
-  private double wristMotorOffset;
   private double baseMotorOffset1;
   private double baseMotorOffset2;
   private double scoringMotorOffset;
@@ -126,8 +125,6 @@ public class TrapElvSubsystem extends SubsystemBase {
   /** Creates a new TrapArm. */
   public TrapElvSubsystem() {
     // Wrist
-    wristMotorOffset = 0.25;
-
     wristMotor = new CANSparkMax(TrapElvConstants.WRIST_MOTOR_ID, MotorType.kBrushless);
     wristMotor.restoreFactoryDefaults();
     wristPIDController =
