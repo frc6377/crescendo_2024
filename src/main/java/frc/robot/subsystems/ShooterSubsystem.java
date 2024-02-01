@@ -3,9 +3,11 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -53,8 +55,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // Checks if shooter is ready. 
   public void isShooterReady(double distance) {
-    double targetSpeedTop = calculateShooterSpeeds(distance)[0];
-    double targetSpeedBottom = calculateShooterSpeeds(distance)[1];
+    Pair<Double, Double> targetSpeeds = calculateShooterSpeeds(distance);
+    double targetSpeedTop = targetSpeeds.getFirst();
+    double targetSpeedBottom = targetSpeeds.getSecond();
 
     double minSpeedToleranceTop = targetSpeedTop * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
     double maxSpeedToleranceTop = targetSpeedTop * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
@@ -71,30 +74,32 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   // Speed in RPM. Top is index 0, bottom is index 1.
-  public void setShooterSpeeds(double[] speeds) {
-    shooterTopMotor.getPIDController().setReference(speeds[0], CANSparkBase.ControlType.kVelocity);
+  public void setShooterSpeeds(Pair<Double, Double> speeds) {
+    shooterTopMotor.getPIDController().setReference(speeds.getFirst(), CANSparkBase.ControlType.kVelocity);
     shooterBottomMotor
         .getPIDController()
-        .setReference(speeds[1], CANSparkBase.ControlType.kVelocity);
+        .setReference(speeds.getSecond(), CANSparkBase.ControlType.kVelocity);
   }
 
   // Top is index 0, bottom is index 1.
-  public static double[] calculateShooterSpeeds(double distance) {
-    double[] speeds = {0, 0};
+  public static Pair<Double, Double> calculateShooterSpeeds(double distance) {
+    Pair<Double, Double> speeds;
+    Double topSpeed = 0d;
+    Double bottomSpeed = 0d;
     double distanceProportion;
 
     // If distance below minimum, set speed to minimum.
     if (distance < speakerConfigList[0].getDistance()) {
-      speeds[0] = speakerConfigList[0].getSpeedTop();
-      speeds[1] = speakerConfigList[0].getSpeedBottom();
+      topSpeed = speakerConfigList[0].getSpeedTop();
+      bottomSpeed = speakerConfigList[0].getSpeedBottom();
     } else {
       // A linear search which determines which points the input distance falls between. May be
       // converted to a binary search if there are many points
       for (int i = 0; i < speakerConfigList.length; i++) {
         // If distance above maximum, set speed to maximum.
         if (i == speakerConfigList.length - 1) {
-          speeds[0] = speakerConfigList[i].getSpeedTop();
-          speeds[1] = speakerConfigList[i].getSpeedBottom();
+          topSpeed = speakerConfigList[i].getSpeedTop();
+          bottomSpeed = speakerConfigList[i].getSpeedBottom();
           break;
         } else if (distance >= speakerConfigList[i].getDistance()
             && distance < speakerConfigList[i + 1].getDistance()) {
@@ -102,12 +107,12 @@ public class ShooterSubsystem extends SubsystemBase {
           distanceProportion =
               (distance - speakerConfigList[i].getDistance())
                   / (speakerConfigList[i + 1].getDistance() - speakerConfigList[i].getDistance());
-          speeds[0] =
+          topSpeed =
               (distanceProportion
                       * (speakerConfigList[i + 1].getSpeedTop()
                           - speakerConfigList[i].getSpeedTop()))
                   + speakerConfigList[i].getSpeedTop();
-          speeds[1] =
+          bottomSpeed =
               (distanceProportion
                       * (speakerConfigList[i + 1].getSpeedBottom()
                           - speakerConfigList[i].getSpeedBottom()))
@@ -116,6 +121,8 @@ public class ShooterSubsystem extends SubsystemBase {
         }
       }
     }
+
+    speeds = new Pair(topSpeed, bottomSpeed);
     return speeds;
   }
 
