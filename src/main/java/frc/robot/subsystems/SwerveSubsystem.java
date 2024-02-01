@@ -65,22 +65,6 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     }
     kinematics = new SwerveDriveKinematics(kinematicsTranslations);
 
-    AutoBuilder.configureHolonomic(
-        () -> super.getState().Pose,
-        (a) -> super.seedFieldRelative(a),
-        () -> getChassisSpeeds(),
-        (a) ->
-            this.setControl(
-                new SwerveRequest.RobotCentric()
-                    .withVelocityX(a.vxMetersPerSecond)
-                    .withVelocityY(a.vyMetersPerSecond)
-                    .withRotationalRate(a.omegaRadiansPerSecond)),
-        new HolonomicPathFollowerConfig(
-            maxSpeed * 0.85, drivetrainRadius, new ReplanningConfig(true, true)),
-        () ->
-            DriverStation.getAlliance().isPresent()
-                && DriverStation.getAlliance().get() == Alliance.Red,
-        this);
     this.registerTelemetry(telemetry::telemeterize);
   }
 
@@ -106,7 +90,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     m_simNotifier.startPeriodic(kSimLoopPeriod);
   }
 
-  private ChassisSpeeds getChassisSpeeds() {
+  public ChassisSpeeds getChassisSpeeds() {
     return kinematics.toChassisSpeeds(super.getState().ModuleStates);
   }
   // xSpeed, ySpeed, rotationSpeed should be axes with range -1<0<1

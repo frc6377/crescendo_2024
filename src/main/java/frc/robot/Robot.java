@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.utilities.RobotPoet;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.NoSuchElementException;
@@ -37,6 +38,9 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotInit() {
+
+    RobotPoet poet = new RobotPoet("SwerveSubsystem");
+
     Logger.recordMetadata("ProjectName", "6377_crescendo_2024");
     Logger.recordMetadata("Repository", BuildConstants.MAVEN_NAME);
     Logger.recordMetadata("Commit ID (GIT_SHA)", BuildConstants.GIT_SHA);
