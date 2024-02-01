@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.Pair;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -29,7 +31,7 @@ public final class Constants {
     public static final double SHOOTER_FF = 0.0;
 
     // Top is index 0, bottom is index 1
-    public static final double[] SHOOTER_IDLE_SPEEDS = {150, 100}; // Placeholder; in RPM
+    public static final Pair<Double, Double> SHOOTER_IDLE_SPEEDS = new Pair(150, 100); // Placeholder; in RPM
     public static final double SHOOTER_SPEED_TOLERANCE =
         0.1; // Placeholder; speed must be within (1-n)v to (1+n)v to fire
   }
