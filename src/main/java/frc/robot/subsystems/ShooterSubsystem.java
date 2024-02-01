@@ -54,20 +54,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // Checks if shooter is ready.
   public boolean isShooterReady(double distance) {
-    boolean shooterReady = false;
-    double minSpeedTolerance =
-        calculateShooterSpeeds(distance)[0]
-            * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
-    double maxSpeedTolerance =
-        calculateShooterSpeeds(distance)[0]
-            * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+    double target = calculateShooterSpeeds(distance)[0];
+    double minSpeedTolerance = target * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+    double maxSpeedTolerance = target * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
 
-    if (minSpeedTolerance < shooterTopMotor.getEncoder().getVelocity()
-        & shooterTopMotor.getEncoder().getVelocity() < maxSpeedTolerance) {
-      shooterReady = true;
-    }
-
-    return shooterReady;
+    double vel = shooterTopMotor.getEncoder().getVelocity();
+    return (minSpeedTolerance < vel && vel < maxSpeedTolerance);
   }
 
   // Speed in RPM. Top is index 0, bottom is index 1.
