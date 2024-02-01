@@ -59,21 +59,21 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeMotor.set(0);
   }
 
-  public Command reverseIntakeCommand() {
+  public Command reverseIntakeCommand() { 
     return new StartEndCommand(this::reverseIntake, this::stopMotors, this);
   }
 
   // Runs the speaker intake or amp intake based on the robot state provided
   public Command getIntakeCommand(PlacementMode mode) {
-    return buildIntakeCommand(mode.equals(PlacementMode.SPEAKER));
+    return buildIntakeCommand(mode.equals(PlacementMode.SPEAKER)).withName("getIntakeCommand");
   }
 
   public Command getSpeakerIntakeCommand() {
-    return buildIntakeCommand(true);
+    return buildIntakeCommand(true).withName("getSpeakerIntakeCommnad");
   }
 
   public Command getAmpIntakeCommand() {
-    return buildIntakeCommand(false);
+    return buildIntakeCommand(false).withName("getAmpIntakeCommand");
   }
 
   private Command buildIntakeCommand(boolean isSpeaker) {
