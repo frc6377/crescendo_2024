@@ -99,8 +99,8 @@ public class RobotContainer {
     OI.getTrigger(OI.Driver.intakeTrigger).whileTrue(intakeSubsystem.getIntakeCommand());
     OI.getButton(OI.Driver.outtakeButton).whileTrue(intakeSubsystem.getOuttakeCommand());
     // Swerve config
-    turretSubsystem.setDefaultCommand(
-        new InstantCommand(turretSubsystem::holdPosition, turretSubsystem));
+    // turretSubsystem.setDefaultCommand(
+    //   new InstantCommand(turretSubsystem::holdPosition, turretSubsystem));
     /* drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(
             () ->

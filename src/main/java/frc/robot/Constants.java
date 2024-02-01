@@ -25,8 +25,8 @@ public final class Constants {
     public static final int CANcoder_ID = 17; // replace with actual CANcoder ID
 
     // PID coefficients
-    public static final double KP = 5;
-    public static final double KI = 1;
+    public static final double KP = 5e-3;
+    public static final double KI = 1e-4;
     public static final double KD = 0;
     public static final double KIZ = 0;
     public static final double KFF = 0.000156;
