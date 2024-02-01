@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -33,15 +34,13 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterBottomMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
   }
 
-  // Fires the shooter.
-  public Command shooterFire(double distance) {
-    return startEnd(
-        () -> {
-          if (isShooterReady(distance)) {
-            setShooterSpeeds(calculateShooterSpeeds(distance));
-          }
-        },
-        () -> {});
+  // Spins up the shooter, and requests feeding it when the rollers are within parameters.
+  // Receives distance-to-target from Limelight, or other sensor.
+  // DOES NOT WORK CURRENTLY!
+  public ParallelCommandGroup shooterFire() {
+    addCommands(
+      setShooterSpeeds(calculateShooterSpeeds(LimelightGetDistance())),
+      isShooterReady(LimelightGetDistance())).withName("Shooter fire command");
   }
 
   // Idle shooter command; for default command purposes
@@ -49,17 +48,26 @@ public class ShooterSubsystem extends SubsystemBase {
     return run(
         () -> {
           setShooterSpeeds(Constants.ShooterConstants.SHOOTER_IDLE_SPEEDS);
-        });
+        }).withName("Idle shooter command");
   }
 
-  // Checks if shooter is ready.
-  public boolean isShooterReady(double distance) {
-    double target = calculateShooterSpeeds(distance)[0];
-    double minSpeedTolerance = target * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
-    double maxSpeedTolerance = target * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+  // Checks if shooter is ready. 
+  public void isShooterReady(double distance) {
+    double targetSpeedTop = calculateShooterSpeeds(distance)[0];
+    double targetSpeedBottom = calculateShooterSpeeds(distance)[1];
 
-    double vel = shooterTopMotor.getEncoder().getVelocity();
-    return (minSpeedTolerance < vel && vel < maxSpeedTolerance);
+    double minSpeedToleranceTop = targetSpeedTop * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+    double maxSpeedToleranceTop = targetSpeedTop * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+    double minSpeedToleranceBottom = targetSpeedBottom * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+    double maxSpeedToleranceBottom = targetSpeedBottom * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+
+    double speedTop = shooterTopMotor.getEncoder().getVelocity();
+    double speedBottom = shooterBottomMotor.getEncoder().getVelocity();
+
+    if ((minSpeedToleranceTop < speedTop && speedTop < maxSpeedToleranceTop)
+      && (minSpeedToleranceBottom < speedBottom && speedBottom < maxSpeedToleranceBottom) == true) {
+        // Request note from feeder.
+    }
   }
 
   // Speed in RPM. Top is index 0, bottom is index 1.
