@@ -7,7 +7,6 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -38,12 +37,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // Spins up the shooter, and requests feeding it when the rollers are within parameters.
   // Receives distance-to-target from Limelight, or other sensor.
-  // DOES NOT WORK CURRENTLY!
+  // Required to be called repeatedly; consider pub-sub for LimelightGetDistance() or equivalent
+  // method to save a method call
   public Command shooterFire() {
-    return Commands.parallel(
-        // setShooterSpeeds(calculateShooterSpeeds(LimelightGetDistance())),
-        // isShooterReady(LimelightGetDistance())).withName("Shooter fire command");
-        new WaitCommand(5));
+    return Commands.sequence(
+        new SetShooter(
+            calculateShooterSpeeds(
+                0))); // Replace distance with LimelightGetDistance() or equivalent method
   }
 
   // Idle shooter command; for default command purposes
@@ -55,8 +55,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   // Checks if shooter is ready.
-  public void isShooterReady(double distance) {
-    Pair<Double, Double> targetSpeeds = calculateShooterSpeeds(distance);
+  public void isShooterReady(Pair<Double, Double> targetSpeeds) {
     double targetSpeedTop = targetSpeeds.getFirst();
     double targetSpeedBottom = targetSpeeds.getSecond();
 
@@ -80,13 +79,16 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   // Speed in RPM. Top is index 0, bottom is index 1.
-  public void setShooterSpeeds(Pair<Double, Double> speeds) {
+  public Pair<Double, Double> setShooterSpeeds(Pair<Double, Double> speeds) {
+    Pair<Double, Double> targetSpeeds = speeds;
     shooterTopMotor
         .getPIDController()
         .setReference(speeds.getFirst(), CANSparkBase.ControlType.kVelocity);
     shooterBottomMotor
         .getPIDController()
         .setReference(speeds.getSecond(), CANSparkBase.ControlType.kVelocity);
+
+    return targetSpeeds;
   }
 
   // Top is index 0, bottom is index 1.
@@ -166,4 +168,17 @@ public class ShooterSubsystem extends SubsystemBase {
     new SpeakerConfig(195, 750, 500),
     new SpeakerConfig(290, 1000, 700)
   };
+
+  public class SetShooter extends Command {
+    Pair<Double, Double> shooterSpeeds;
+
+    public SetShooter(Pair<Double, Double> speeds) {
+      this.shooterSpeeds = speeds;
+    }
+
+    public void execute() {
+      setShooterSpeeds(shooterSpeeds);
+      isShooterReady(shooterSpeeds);
+    }
+  }
 }
