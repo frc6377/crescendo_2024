@@ -91,8 +91,10 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    OI.getTrigger(OI.Driver.intakeTrigger).whileTrue(intakeSubsystem.getIntakeCommand());
-    OI.getButton(OI.Driver.outtakeButton).whileTrue(intakeSubsystem.getOuttakeCommand());
+    OI.getButton(OI.Operator.A).onTrue(new InstantCommand(robotStateManager::switchPlacementMode));
+    OI.getTrigger(OI.Driver.intakeTrigger)
+        .whileTrue(intakeSubsystem.getIntakeCommand(robotStateManager.getPlacementMode()));
+    OI.getButton(OI.Driver.outtakeButton).whileTrue(intakeSubsystem.reverseIntakeCommand());
     // Swerve config
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(
@@ -138,6 +140,8 @@ public class RobotContainer {
     HashMap<String, Command> autonCommands = new HashMap<String, Command>();
 
     autonCommands.put("Shoot", autonTest());
+    autonCommands.put("Speaker Intake", intakeSubsystem.getSpeakerIntakeCommand());
+    autonCommands.put("Amp Intake", intakeSubsystem.getAmpIntakeCommand());
 
     NamedCommands.registerCommands(autonCommands);
   }
