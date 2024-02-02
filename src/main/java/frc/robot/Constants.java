@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.util.Units;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -14,8 +16,11 @@ package frc.robot;
  */
 public final class Constants {
   public static class IntakeConstants {
+    // TODO: Get real CAN IDs
     public static final int INTAKE_MOTOR_ID = 6;
+    public static final int INTAKE_CHOOSER_ID = 7;
     public static final double INTAKE_PERCENTAGE = -0.75;
+    public static final double CHOOSER_PERCENTAGE = -0.75;
   }
 
   public static class TriggerConstants {
@@ -30,6 +35,43 @@ public final class Constants {
 
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
+  }
+
+  public static class TrapElvConstants {
+    // IDs | TODO: get real device IDs
+    public static final int WRIST_MOTOR_ID = 1;
+    public static final int ROLLER_MOTOR_ID = 2;
+    public static final int BASE_MOTOR1_ID = 3;
+    public static final int BASE_MOTOR2_ID = 4;
+    public static final int SCORING_MOTOR_ID = 5;
+    public static final int WRIST_ENCODER_ID = 6;
+    public static final int SOURCE_BREAK_ID = 1;
+    public static final int GROUND_BREAK_ID = 2;
+    public static final int BASE_BREAK_ID = 3;
+    public static final int SCORING_BREAK_ID = 4;
+
+    // Speeds
+    public static final double ROLLER_INTAKE_SPEED = 0.25;
+    public static final double ROLLER_SCORING_SPEED = 0.4;
+    public static final double ELV_ZEROING_SPEED = 0.1; // Percent Power
+
+    // PIDs
+    // P, I, D, Iz, FF
+    public static final double[] BASE_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
+    public static final double[] SCORING_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
+    public static final double[] WRIST_PID = {36e-2, 5e-5, 1e-4, 0.0, 0};
+
+    // Simulation
+    public static final int ELV_GEAR_RATIO = 70;
+    public static final int WRIST_GEAR_RATIO = 70;
+    public static final double ELV_LIFT_MASS = 5.4; // kg
+    public static final double DRUM_RADIUS = Units.inchesToMeters(1);
+    public static final double ELV_MIN_HEIGHT = Units.inchesToMeters(12);
+    public static final double ELV_MAX_HEIGHT = Units.inchesToMeters(30);
+
+    public static final double WRIST_MIN_ANGLE = Units.degreesToRadians(-359); // RADS
+    public static final double WRIST_MAX_ANGLE = Units.degreesToRadians(359); // RADS
+    public static final double WRIST_LENGTH = Units.inchesToMeters(12.5);
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
