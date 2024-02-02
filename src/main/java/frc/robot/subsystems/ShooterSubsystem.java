@@ -6,7 +6,6 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
@@ -42,9 +41,9 @@ public class ShooterSubsystem extends SubsystemBase {
   // DOES NOT WORK CURRENTLY!
   public Command shooterFire() {
     return Commands.parallel(
-      //setShooterSpeeds(calculateShooterSpeeds(LimelightGetDistance())),
-      //isShooterReady(LimelightGetDistance())).withName("Shooter fire command");
-      new WaitCommand(5));
+        // setShooterSpeeds(calculateShooterSpeeds(LimelightGetDistance())),
+        // isShooterReady(LimelightGetDistance())).withName("Shooter fire command");
+        new WaitCommand(5));
   }
 
   // Idle shooter command; for default command purposes
