@@ -85,11 +85,11 @@ public class TurretSubsystem extends SubsystemBase {
 
     this.robotStateManager = robotStateManager;
 
-    turretMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, 2);
     turretMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, -2);
+    turretMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, 2);
 
-    turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
     turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
+    turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
 
     // initialze PID controller and encoder objects
     turretPIDController =
@@ -116,17 +116,13 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public void setTurretPos(double setpoint) {
-    System.out.println(turretPosition);
     turretMotor.set(
-        MathUtil.clamp(
-            turretPIDController.calculate(
-                turretPosition,
-                MathUtil.clamp(
-                    setpoint,
-                    Math.toRadians(-Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES),
-                    Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES))),
-            -1,
-            1));
+        -turretPIDController.calculate(
+            turretPosition,
+            MathUtil.clamp(
+                setpoint,
+                Math.toRadians(-Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES),
+                Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES))));
   }
 
   public void holdPosition() {
@@ -163,7 +159,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public Command testTurretCommand() {
-    return runEnd(() -> setTurretPos(Math.toRadians(60)), this::stopTurret);
+    return runEnd(() -> setTurretPos(Math.toRadians(-60)), this::stopTurret);
   }
 
   public void LockTurret() {
