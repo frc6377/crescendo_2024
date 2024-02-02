@@ -28,6 +28,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.TrapElvSubsystem;
 import frc.robot.subsystems.signaling.SignalingSubsystem;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,6 +56,8 @@ public class RobotContainer {
 
   private final SignalingSubsystem signalingSubsystem =
       new SignalingSubsystem(1, OI.Driver::setRumble, robotStateManager);
+
+  private final TrapElvSubsystem trapElvSubsystem = new TrapElvSubsystem();
 
   private final DynamicRobotConfig dynamicRobotConfig;
 
@@ -114,8 +117,22 @@ public class RobotContainer {
         .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
+    // Shooter commands
     shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
     OI.getTrigger(OI.Operator.shooterTrigger).onTrue(shooterSubsystem.shooterFire());
+    
+    // Trap Elv Intaking
+    OI.getButton(OI.Driver.groundIntakeButton)
+        .whileTrue(trapElvSubsystem.intakeGround().onlyWhile(trapElvSubsystem.getGroundBreak()));
+    OI.getButton(OI.Driver.sourceIntakeButton)
+        .whileTrue(trapElvSubsystem.intakeSource().onlyWhile(trapElvSubsystem.getSourceBreak()));
+
+    // Trap Elv Scoring
+    OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapElvSubsystem.scoreAMP());
+    OI.getButton(OI.Driver.trapScoreButton).whileTrue(trapElvSubsystem.scoreTrap());
+
+    // Trap Elv zeroing button
+    OI.getButton(OI.Driver.zeroArm).whileTrue(trapElvSubsystem.zeroArm());
 
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
