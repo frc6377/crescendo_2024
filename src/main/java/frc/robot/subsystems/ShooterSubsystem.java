@@ -8,11 +8,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.utilities.DebugEntry;
 
 public class ShooterSubsystem extends SubsystemBase {
 
   private final CANSparkMax shooterTopMotor;
   private final CANSparkMax shooterBottomMotor;
+
+  private DebugEntry<Double> topMotorSpeedEntry;
+  private DebugEntry<Double> bottomMotorSpeedEntry;
+  private DebugEntry<Double> topMotorTargetSpeedEntry;
+  private DebugEntry<Double> bottomMotorTargetSpeedEntry;
 
   public ShooterSubsystem() {
     shooterTopMotor =
@@ -59,6 +65,9 @@ public class ShooterSubsystem extends SubsystemBase {
     double targetSpeedTop = targetSpeeds.getFirst();
     double targetSpeedBottom = targetSpeeds.getSecond();
 
+    topMotorTargetSpeedEntry.log(targetSpeedTop);
+    bottomMotorTargetSpeedEntry.log(targetSpeedBottom);
+
     double minSpeedToleranceTop =
         targetSpeedTop * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
     double maxSpeedToleranceTop =
@@ -71,6 +80,9 @@ public class ShooterSubsystem extends SubsystemBase {
     double speedTop = shooterTopMotor.getEncoder().getVelocity();
     double speedBottom = shooterBottomMotor.getEncoder().getVelocity();
 
+    topMotorSpeedEntry.log(speedTop);
+    bottomMotorSpeedEntry.log(speedBottom);
+
     if ((minSpeedToleranceTop < speedTop && speedTop < maxSpeedToleranceTop)
         && (minSpeedToleranceBottom < speedBottom && speedBottom < maxSpeedToleranceBottom)
             == true) {
@@ -81,6 +93,7 @@ public class ShooterSubsystem extends SubsystemBase {
   // Speed in RPM. Top is index 0, bottom is index 1.
   public Pair<Double, Double> setShooterSpeeds(Pair<Double, Double> speeds) {
     Pair<Double, Double> targetSpeeds = speeds;
+
     shooterTopMotor
         .getPIDController()
         .setReference(speeds.getFirst(), CANSparkBase.ControlType.kVelocity);
