@@ -21,15 +21,15 @@ public class TriggerSubsystem extends SubsystemBase {
   }
 
   public Command getLoadCommand() {
-    return buildCommand(TriggerConstants.LOAD_PERCENTAGE);
+    return buildCommand(TriggerConstants.LOAD_PERCENTAGE).withName("getLoadCommand");
   }
 
   public Command getHoldCommand() {
-    return buildCommand(TriggerConstants.HOLD_PERCENTAGE);
+    return buildCommand(TriggerConstants.HOLD_PERCENTAGE).withName("getHoldCommand");
   }
 
   public Command getShootCommand() {
-    return buildCommand(TriggerConstants.SHOOT_PERCENTAGE);
+    return buildCommand(TriggerConstants.SHOOT_PERCENTAGE).withName("getShootCommand");
   }
 
   private Command buildCommand(double speed) {
