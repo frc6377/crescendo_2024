@@ -4,7 +4,12 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
@@ -195,5 +200,14 @@ public class SignalingSubsystem extends SubsystemBase {
 
   public void displayCriticalError() {
     // gamePieceCandle.setLEDs(255, 0, 0);
+  }
+
+  public Command getContinuousStrobeCommand(double time) {
+    return new RepeatCommand(
+        new SequentialCommandGroup(
+            new InstantCommand(() -> setFullStrip(RGB.WHITE)),
+            new WaitCommand(time),
+            new InstantCommand(() -> clearLEDs()),
+            new WaitCommand(time)));
   }
 }

@@ -5,7 +5,6 @@
 package frc.robot;
 
 import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -101,19 +100,13 @@ public class RobotContainer {
                     OI.getAxisSupplier(OI.Driver.xTranslationAxis).get(),
                     OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
                     OI.getAxisSupplier(OI.Driver.rotationAxis).get())));
-    OI.getButton(OI.Driver.brakeButton)
-        .whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
-    OI.getButton(OI.Driver.resetRotationButton)
-        .onTrue(
-            drivetrain.runOnce(
-                () ->
-                    drivetrain.seedFieldRelative(
-                        new Pose2d(
-                            drivetrain.getState().Pose.getTranslation(),
-                            Rotation2d.fromDegrees(180)))));
+    OI.getButton(OI.Driver.resetRotationButton).onTrue(drivetrain.getResetRotationCommand());
     OI.getButton(OI.Driver.orientationButton)
-        .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
-    // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
+        .onTrue(drivetrain.getToggleOrientationCommand())
+        .whileTrue(
+            signalingSubsystem
+                .getContinuousStrobeCommand(Constants.STROBE_DELAY)
+                .onlyIf(drivetrain::getIsFieldOriented));
 
     // Trap Elv Intaking
     OI.getButton(OI.Driver.groundIntakeButton)

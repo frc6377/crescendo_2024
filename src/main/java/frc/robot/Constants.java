@@ -69,4 +69,5 @@ public final class Constants {
 
   // Lights
   public static final int LED_COUNT = 20;
+  public static final double STROBE_DELAY = 0.1;
 }

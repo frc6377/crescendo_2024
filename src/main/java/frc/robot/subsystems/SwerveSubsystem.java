@@ -155,10 +155,6 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     return (t, u) -> addVisionMeasurement(t, u);
   }
 
-  public SwerveRequest getBrakeRequest() {
-    return new SwerveRequest.SwerveDriveBrake();
-  }
-
   public SwerveRequest getAlignRequest(Rotation2d rotation) {
     return new SwerveRequest.FieldCentricFacingAngle().withTargetDirection(rotation);
   }
@@ -171,6 +167,10 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     }
   }
 
+  public boolean getIsFieldOriented() {
+    return isFieldOriented;
+  }
+
   public void setAlignment(Rotation2d rotation) {
     alignmentRotation = rotation;
   }
@@ -181,5 +181,16 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
 
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
     return run(() -> this.setControl(requestSupplier.get()));
+  }
+
+  public Command getResetRotationCommand() {
+    return this.runOnce(
+        () ->
+            this.seedFieldRelative(
+                new Pose2d(this.getState().Pose.getTranslation(), Rotation2d.fromDegrees(180))));
+  }
+
+  public Command getToggleOrientationCommand() {
+    return this.runOnce(() -> this.toggleOrientation());
   }
 }
