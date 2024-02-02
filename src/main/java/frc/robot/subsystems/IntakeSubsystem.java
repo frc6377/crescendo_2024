@@ -59,7 +59,7 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeMotor.set(0);
   }
 
-  public Command reverseIntakeCommand() { 
+  public Command reverseIntakeCommand() {
     return new StartEndCommand(this::reverseIntake, this::stopMotors, this);
   }
 
