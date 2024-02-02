@@ -5,16 +5,23 @@
 package frc.robot;
 
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TrapElvSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.signaling.SignalingSubsystem;
@@ -37,9 +44,8 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final TurretSubsystem turretSubsystem = new TurretSubsystem(robotStateManager);
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  // private final SwerveSubsystem drivetrain;
-  // private final LimelightSubsystem limelightSubsystem;
+  private final SwerveSubsystem drivetrain;
+  private final LimelightSubsystem limelightSubsystem;
 
   private final SignalingSubsystem signalingSubsystem =
       new SignalingSubsystem(1, OI.Driver::setRumble, robotStateManager);
@@ -60,8 +66,8 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     dynamicRobotConfig = new DynamicRobotConfig();
-    // drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
-    // limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
+    drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
+    limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
     // Configure the trigger bindings
     configureBindings();
     registerCommands();
@@ -87,9 +93,9 @@ public class RobotContainer {
     OI.getTrigger(OI.Driver.intakeTrigger).whileTrue(intakeSubsystem.getIntakeCommand());
     OI.getButton(OI.Driver.outtakeButton).whileTrue(intakeSubsystem.getOuttakeCommand());
     // Swerve config
-    // turretSubsystem.setDefaultCommand(
-    //   new InstantCommand(turretSubsystem::holdPosition, turretSubsystem));
-    /* drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
+    turretSubsystem.setDefaultCommand(
+        new InstantCommand(turretSubsystem::holdPosition, turretSubsystem));
+    drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(
             () ->
                 drivetrain.getDriveRequest(
@@ -107,8 +113,9 @@ public class RobotContainer {
                             drivetrain.getState().Pose.getTranslation(),
                             Rotation2d.fromDegrees(180)))));
     OI.getButton(OI.Driver.orientationButton)
-        .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation())); */
-    // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
+        .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
+    OI.getButton(OI.Driver.resetRotationButton)
+        .onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
     // Trap Elv Intaking
     OI.getButton(OI.Driver.groundIntakeButton)
@@ -124,7 +131,7 @@ public class RobotContainer {
     OI.getButton(OI.Driver.zeroArm).whileTrue(trapElvSubsystem.zeroArm());
 
     if (Utils.isSimulation()) {
-      // drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
+      drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     }
   }
 
