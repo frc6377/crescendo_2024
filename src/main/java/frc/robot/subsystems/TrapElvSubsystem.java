@@ -268,22 +268,14 @@ public class TrapElvSubsystem extends SubsystemBase {
     return run(() -> {
           rollerMotor.set(s);
         })
-<<<<<<< HEAD
         .withName("Set Roller");
-=======
-        .withName("setRoller");
->>>>>>> 83fd539c96d9c5e6fa0cb47faeefc3e25e835300
   }
 
   public Command stopRoller() {
     return run(() -> {
           rollerMotor.stopMotor();
         })
-<<<<<<< HEAD
         .withName("Stop Roller");
-=======
-        .withName("stopRoller");
->>>>>>> 83fd539c96d9c5e6fa0cb47faeefc3e25e835300
   }
 
   public Command intakeSource() {
@@ -295,11 +287,7 @@ public class TrapElvSubsystem extends SubsystemBase {
             () -> {
               stowTrapElv();
             })
-<<<<<<< HEAD
         .withName("Intake From Source");
-=======
-        .withName("intakeSource");
->>>>>>> 83fd539c96d9c5e6fa0cb47faeefc3e25e835300
   }
 
   public Command intakeGround() {
@@ -311,11 +299,7 @@ public class TrapElvSubsystem extends SubsystemBase {
             () -> {
               stowTrapElv();
             })
-<<<<<<< HEAD
         .withName("Intake from Ground");
-=======
-        .withName("intakeGround");
->>>>>>> 83fd539c96d9c5e6fa0cb47faeefc3e25e835300
   }
 
   public Command scoreAMP() {
@@ -327,11 +311,7 @@ public class TrapElvSubsystem extends SubsystemBase {
             () -> {
               stowTrapElv();
             })
-<<<<<<< HEAD
         .withName("Score Amp");
-=======
-        .withName("scoreAMP");
->>>>>>> 83fd539c96d9c5e6fa0cb47faeefc3e25e835300
   }
 
   public Command scoreTrap() {
@@ -343,11 +323,7 @@ public class TrapElvSubsystem extends SubsystemBase {
             () -> {
               stowTrapElv();
             })
-<<<<<<< HEAD
         .withName("Score Trap");
-=======
-        .withName("scoreTrap");
->>>>>>> 83fd539c96d9c5e6fa0cb47faeefc3e25e835300
   }
 
   public void stowTrapElv() {
