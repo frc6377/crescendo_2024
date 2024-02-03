@@ -47,9 +47,11 @@ public class ShooterSubsystem extends SubsystemBase {
   // method to save a method call
   public Command shooterFire() {
     return Commands.sequence(
+        // Only runs if the exit code from the limelight status function returns 0!
         new SetShooter(
-            calculateShooterSpeeds(
-                0))); // Replace distance with LimelightGetDistance() or equivalent method
+            calculateShooterSpeeds(0),
+            0)); // Replace distance and exit code with LimelightGetDistance() and
+    // CheckLimelightStatus() respectively
   }
 
   // Idle shooter command; for default command purposes
@@ -184,14 +186,19 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public class SetShooter extends Command {
     Pair<Double, Double> shooterSpeeds;
+    int exitCode;
 
-    public SetShooter(Pair<Double, Double> speeds) {
+    public SetShooter(Pair<Double, Double> speeds, int exitCode) {
       this.shooterSpeeds = speeds;
+      this.exitCode = exitCode;
     }
 
     public void execute() {
-      setShooterSpeeds(shooterSpeeds);
-      isShooterReady(shooterSpeeds);
+      // Only runs if the exit code from the limelight distance function returns 0!
+      if (exitCode == 0) {
+        setShooterSpeeds(shooterSpeeds);
+        isShooterReady(shooterSpeeds);
+      }
     }
   }
 }
