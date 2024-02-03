@@ -3,6 +3,7 @@ package frc.robot.subsystems.signaling;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -11,8 +12,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
-import frc.robot.stateManagement.AllianceColor;
-import frc.robot.stateManagement.RobotStateManager;
+import frc.robot.RobotStateManager;
 import frc.robot.subsystems.signaling.patterns.FireFlyPattern;
 import frc.robot.subsystems.signaling.patterns.PatternNode;
 import frc.robot.subsystems.signaling.patterns.RainbowPattern;
@@ -75,10 +75,10 @@ public class SignalingSubsystem extends SubsystemBase {
     setFullStrip(RGB.BLACK);
   }
 
-  private RGB getColorFromAlliance(AllianceColor alliance) {
-    if (alliance == AllianceColor.RED) {
+  private RGB getColorFromAlliance(Alliance alliance) {
+    if (alliance == Alliance.Red) {
       return RGB.RED;
-    } else if (alliance == AllianceColor.BLUE) {
+    } else if (alliance == Alliance.Blue) {
       return RGB.BLUE;
     }
     return RGB.PURPLE;
