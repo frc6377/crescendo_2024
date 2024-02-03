@@ -4,8 +4,6 @@ import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -65,15 +63,15 @@ public class ShooterSubsystem extends SubsystemBase {
   // Idle shooter command; for default command purposes
   public Command shooterIdle() {
     return run(() -> {
-          setShooterSpeeds(Constants.ShooterConstants.SHOOTER_IDLE_SPEEDS);
+          setShooterSpeeds(speakerConfigIdle);
         })
         .withName("Idle shooter command");
   }
 
   // Checks if shooter is ready.
-  public void isShooterReady(Pair<Double, Double> targetSpeeds) {
-    double targetSpeedTop = targetSpeeds.getFirst();
-    double targetSpeedBottom = targetSpeeds.getSecond();
+  public void isShooterReady(SpeakerConfig targetSpeeds) {
+    double targetSpeedTop = targetSpeeds.getSpeedTopInRPM();
+    double targetSpeedBottom = targetSpeeds.getSpeedBottomInRPM();
 
     topMotorTargetSpeedEntry.log(targetSpeedTop);
     bottomMotorTargetSpeedEntry.log(targetSpeedBottom);
@@ -101,22 +99,22 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   // Speed in RPM. Top is index 0, bottom is index 1.
-  public Pair<Double, Double> setShooterSpeeds(Pair<Double, Double> speeds) {
-    Pair<Double, Double> targetSpeeds = speeds;
+  public SpeakerConfig setShooterSpeeds(SpeakerConfig speeds) {
+    SpeakerConfig targetSpeeds = speeds;
 
     shooterTopMotor
         .getPIDController()
-        .setReference(speeds.getFirst(), CANSparkBase.ControlType.kVelocity);
+        .setReference(speeds.getSpeedTopInRPM(), CANSparkBase.ControlType.kVelocity);
     shooterBottomMotor
         .getPIDController()
-        .setReference(speeds.getSecond(), CANSparkBase.ControlType.kVelocity);
+        .setReference(speeds.getSpeedBottomInRPM(), CANSparkBase.ControlType.kVelocity);
 
     return targetSpeeds;
   }
 
   // Top is index 0, bottom is index 1.
-  public static Pair<Double, Double> calculateShooterSpeeds(double distance) {
-    Pair<Double, Double> speeds;
+  public static SpeakerConfig calculateShooterSpeeds(double distance) {
+    SpeakerConfig speeds;
     Double topSpeed = 0d;
     Double bottomSpeed = 0d;
     double distanceProportion;
@@ -125,16 +123,15 @@ public class ShooterSubsystem extends SubsystemBase {
     if (distance < speakerConfigList[0].getDistanceInInches()) {
       topSpeed = speakerConfigList[0].getSpeedTopInRPM();
       bottomSpeed = speakerConfigList[0].getSpeedBottomInRPM();
-    } else {
+      speeds = new SpeakerConfig(distance, topSpeed, bottomSpeed);
+      return speeds;
+    } else if (distance >= speakerConfigList[0].getDistanceInInches()
+        && distance <= speakerConfigList[speakerConfigList.length - 1].getDistanceInInches()) {
       // A linear search which determines which points the input distance falls between. May be
       // converted to a binary search if there are many points
-      for (int i = 0; i < speakerConfigList.length; i++) {
+      for (int i = 0; i < speakerConfigList.length - 1; i++) {
         // If distance above maximum, set speed to maximum.
-        if (i == speakerConfigList.length - 1) {
-          topSpeed = speakerConfigList[i].getSpeedTopInRPM();
-          bottomSpeed = speakerConfigList[i].getSpeedBottomInRPM();
-          break;
-        } else if (distance >= speakerConfigList[i].getDistanceInInches()
+        if (distance >= speakerConfigList[i].getDistanceInInches()
             && distance < speakerConfigList[i + 1].getDistanceInInches()) {
           // Math to linearly interpolate the speed.
           distanceProportion =
@@ -151,17 +148,21 @@ public class ShooterSubsystem extends SubsystemBase {
                       * (speakerConfigList[i + 1].getSpeedBottomInRPM()
                           - speakerConfigList[i].getSpeedBottomInRPM()))
                   + speakerConfigList[i].getSpeedBottomInRPM();
-          break;
+          speeds = new SpeakerConfig(distance, topSpeed, bottomSpeed);
+          System.out.println(i + " " + distance);
+          return speeds;
         }
       }
     }
 
-    speeds = new Pair(topSpeed, bottomSpeed);
+    topSpeed = speakerConfigList[speakerConfigList.length - 1].getSpeedTopInRPM();
+    bottomSpeed = speakerConfigList[speakerConfigList.length - 1].getSpeedBottomInRPM();
+    speeds = new SpeakerConfig(distance, topSpeed, bottomSpeed);
     return speeds;
   }
 
   // Distance and speed in inches and RPM respectively.
-  private static class SpeakerConfig {
+  public static class SpeakerConfig {
     private double distanceInInches;
     private double speedTopInRPM;
     private double speedBottomInRPM;
@@ -192,11 +193,17 @@ public class ShooterSubsystem extends SubsystemBase {
     new SpeakerConfig(290, 1000, 700)
   };
 
+  private static SpeakerConfig speakerConfigIdle =
+      new SpeakerConfig(
+          -1,
+          Constants.ShooterConstants.SHOOTER_IDLE_SPEED_TOP,
+          Constants.ShooterConstants.SHOOTER_IDLE_SPEED_BOTTOM);
+
   public class SetShooter extends Command {
-    Pair<Double, Double> shooterSpeeds;
+    SpeakerConfig shooterSpeeds;
     int exitCode;
 
-    public SetShooter(Pair<Double, Double> speeds, int exitCode) {
+    public SetShooter(SpeakerConfig speeds, int exitCode) {
       this.shooterSpeeds = speeds;
       this.exitCode = exitCode;
     }

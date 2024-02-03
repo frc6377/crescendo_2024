@@ -1,5 +1,5 @@
-import edu.wpi.first.math.Pair;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.ShooterSubsystem.SpeakerConfig;
 import java.util.Arrays;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +18,7 @@ public class TestShooterSubsystem {
   // TODO: Make more sensible
   @Test
   public void TestSpeakerConfig() {
-    Pair<Double, Double> speedsPair;
+    SpeakerConfig speedsPair;
     double[] speedsArray = {0, 0};
     double[][] speakerConfigListTest = {
       {-100, 450, 250},
@@ -32,8 +32,8 @@ public class TestShooterSubsystem {
 
     for (int i = 0; i < speakerConfigListTest.length; i++) {
       speedsPair = ShooterSubsystem.calculateShooterSpeeds(speakerConfigListTest[i][0]);
-      speedsArray[0] = speedsPair.getFirst();
-      speedsArray[1] = speedsPair.getSecond();
+      speedsArray[0] = speedsPair.getSpeedTopInRPM();
+      speedsArray[1] = speedsPair.getSpeedBottomInRPM();
       configSpeeds = arraySlice(speakerConfigListTest[i], 1, 2);
       Assertions.assertArrayEquals(configSpeeds, speedsArray);
     }
