@@ -181,6 +181,7 @@ ctre_sim/
 simgui*
 networktables.json
 networktables.json.bck
+outlineviewer.json
 *.code-workspace
 .idea
 local.properties
