@@ -59,7 +59,7 @@ public final class Constants {
     // P, I, D, Iz, FF
     public static final double[] BASE_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
     public static final double[] SCORING_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
-    public static final double[] WRIST_PID = {36e-2, 5e-5, 1e-4, 0.0, 0};
+    public static final double[] WRIST_PID = {7, .1, .6, 0.0, 2e-6};
 
     // Simulation
     public static final int ELV_GEAR_RATIO = 70;
@@ -75,7 +75,7 @@ public final class Constants {
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
-
+  public static final double TELEMETRY_LOG_NUMBER = .2;
   // Rumble
   public static final double AMPLIFICATION_RUMBLE_TIME = 0.5;
   public static final double AMPLIFICATION_RUMBLE_INTENSITY = 0.5;
