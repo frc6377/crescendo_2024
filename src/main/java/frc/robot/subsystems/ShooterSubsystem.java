@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -14,6 +16,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private final CANSparkMax shooterTopMotor;
   private final CANSparkMax shooterBottomMotor;
+
+  private final RelativeEncoder shooterTopMotorEncoder;
+  private final RelativeEncoder shooterBottomMotorEncoder;
 
   private DebugEntry<Double> topMotorSpeedEntry;
   private DebugEntry<Double> bottomMotorSpeedEntry;
@@ -39,6 +44,9 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterBottomMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_I);
     shooterBottomMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_D);
     shooterBottomMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
+
+    shooterTopMotorEncoder = shooterTopMotor.getEncoder();
+    shooterBottomMotorEncoder = shooterBottomMotor.getEncoder();
   }
 
   // Spins up the shooter, and requests feeding it when the rollers are within parameters.
@@ -79,8 +87,8 @@ public class ShooterSubsystem extends SubsystemBase {
     double maxSpeedToleranceBottom =
         targetSpeedBottom * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
 
-    double speedTop = shooterTopMotor.getEncoder().getVelocity();
-    double speedBottom = shooterBottomMotor.getEncoder().getVelocity();
+    double speedTop = shooterTopMotorEncoder.getVelocity();
+    double speedBottom = shooterBottomMotorEncoder.getVelocity();
 
     topMotorSpeedEntry.log(speedTop);
     bottomMotorSpeedEntry.log(speedBottom);
