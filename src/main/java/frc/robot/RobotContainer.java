@@ -150,7 +150,8 @@ public class RobotContainer {
     HashMap<String, Command> autonCommands = new HashMap<String, Command>();
 
     autonCommands.put("Shoot", autonTest().withName("Shoot"));
-    autonCommands.put("Speaker Intake", intakeSubsystem.getSpeakerIntakeCommand().withName("Speaker Intake"));
+    autonCommands.put(
+        "Speaker Intake", intakeSubsystem.getSpeakerIntakeCommand().withName("Speaker Intake"));
     autonCommands.put("Amp Intake", intakeSubsystem.getAmpIntakeCommand().withName("Amp Intake"));
 
     NamedCommands.registerCommands(autonCommands);
@@ -174,6 +175,8 @@ public class RobotContainer {
    * @return the command to run in autonomous(including the delay)
    */
   public Command getAutonomousCommand() {
-    return new WaitCommand(autoDelay.getDouble(0)).andThen(autoChooser.getSelected()).withName("Get Auto Command");
+    return new WaitCommand(autoDelay.getDouble(0))
+        .andThen(autoChooser.getSelected())
+        .withName("Get Auto Command");
   }
 }
