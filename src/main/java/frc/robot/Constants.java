@@ -75,7 +75,7 @@ public final class Constants {
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
-  public static final double Telemetry_Log_Number = .2;
+  public static final double TELEMETRY_LOG_NUMBER = .2;
   // Rumble
   public static final double AMPLIFICATION_RUMBLE_TIME = 0.5;
   public static final double AMPLIFICATION_RUMBLE_INTENSITY = 0.5;
