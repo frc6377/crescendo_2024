@@ -118,36 +118,34 @@ public class ShooterSubsystem extends SubsystemBase {
       bottomSpeed = speakerConfigList[0].getSpeedBottomInRPM();
       speeds = new SpeakerConfig(distance, topSpeed, bottomSpeed);
       return speeds;
-    } else if (distance >= speakerConfigList[0].getDistanceInInches()
-        && distance <= speakerConfigList[speakerConfigList.length - 1].getDistanceInInches()) {
-      // A linear search which determines which points the input distance falls between. May be
-      // converted to a binary search if there are many points
-      for (int i = 0; i < speakerConfigList.length - 1; i++) {
-        // If distance above maximum, set speed to maximum.
-        if (distance >= speakerConfigList[i].getDistanceInInches()
-            && distance < speakerConfigList[i + 1].getDistanceInInches()) {
-          // Math to linearly interpolate the speed.
-          distanceProportion =
-              (distance - speakerConfigList[i].getDistanceInInches())
-                  / (speakerConfigList[i + 1].getDistanceInInches()
-                      - speakerConfigList[i].getDistanceInInches());
-          topSpeed =
-              (distanceProportion
-                      * (speakerConfigList[i + 1].getSpeedTopInRPM()
-                          - speakerConfigList[i].getSpeedTopInRPM()))
-                  + speakerConfigList[i].getSpeedTopInRPM();
-          bottomSpeed =
-              (distanceProportion
-                      * (speakerConfigList[i + 1].getSpeedBottomInRPM()
-                          - speakerConfigList[i].getSpeedBottomInRPM()))
-                  + speakerConfigList[i].getSpeedBottomInRPM();
-          speeds = new SpeakerConfig(distance, topSpeed, bottomSpeed);
-          System.out.println(i + " " + distance);
-          return speeds;
-        }
+    }
+    // A linear search which determines which points the input distance falls between. May be
+    // converted to a binary search if there are many points
+    for (int i = 0; i < speakerConfigList.length - 1; i++) {
+      if (distance >= speakerConfigList[i].getDistanceInInches()
+          && distance < speakerConfigList[i + 1].getDistanceInInches()) {
+        // Math to linearly interpolate the speed.
+        distanceProportion =
+            (distance - speakerConfigList[i].getDistanceInInches())
+                / (speakerConfigList[i + 1].getDistanceInInches()
+                    - speakerConfigList[i].getDistanceInInches());
+        topSpeed =
+            (distanceProportion
+                    * (speakerConfigList[i + 1].getSpeedTopInRPM()
+                        - speakerConfigList[i].getSpeedTopInRPM()))
+                + speakerConfigList[i].getSpeedTopInRPM();
+        bottomSpeed =
+            (distanceProportion
+                    * (speakerConfigList[i + 1].getSpeedBottomInRPM()
+                        - speakerConfigList[i].getSpeedBottomInRPM()))
+                + speakerConfigList[i].getSpeedBottomInRPM();
+        speeds = new SpeakerConfig(distance, topSpeed, bottomSpeed);
+        System.out.println(i + " " + distance);
+        return speeds;
       }
     }
 
+    // If distance above maximum, set speed to maximum.
     topSpeed = speakerConfigList[speakerConfigList.length - 1].getSpeedTopInRPM();
     bottomSpeed = speakerConfigList[speakerConfigList.length - 1].getSpeedBottomInRPM();
     speeds = new SpeakerConfig(distance, topSpeed, bottomSpeed);
