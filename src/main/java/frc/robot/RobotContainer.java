@@ -99,8 +99,9 @@ public class RobotContainer {
         .whileTrue(
             intakeSubsystem
                 .getIntakeCommand(robotStateManager.getPlacementMode())
-                .alongWith(trapElvSubsystem.intakeGround()));
+                .alongWith(trapElvSubsystem.intake(robotStateManager.getPlacementMode())));
     OI.getButton(OI.Driver.outtakeButton).whileTrue(intakeSubsystem.reverseIntakeCommand());
+
     // Swerve config
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(
@@ -123,16 +124,8 @@ public class RobotContainer {
         .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
-    // Trap Elv Intaking
-    OI.getButton(OI.Driver.sourceIntakeButton)
-        .whileTrue(trapElvSubsystem.intakeSource().onlyWhile(trapElvSubsystem.getSourceBreak()));
-
-    // Trap Elv Scoring
-    OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapElvSubsystem.scoreAMP());
-    OI.getButton(OI.Driver.trapScoreButton).whileTrue(trapElvSubsystem.scoreTrap());
-
     // Trap Elv zeroing button
-    OI.getButton(OI.Driver.zeroArm).whileTrue(trapElvSubsystem.zeroArm());
+    OI.getButton(OI.Driver.zeroArm).whileTrue(trapElvSubsystem.zeroElv());
 
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));

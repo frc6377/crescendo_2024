@@ -29,9 +29,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TrapElvConstants;
 import frc.robot.Robot;
+import frc.robot.stateManagement.PlacementMode;
 import frc.robot.utilities.DebugEntry;
 import java.util.function.BooleanSupplier;
 
@@ -264,74 +266,68 @@ public class TrapElvSubsystem extends SubsystemBase {
   }
 
   // Commands
-  public Command setRoller(double s) {
-    return run(() -> {
-          rollerMotor.set(s);
-        })
-        .withName("setRoller");
+  public void setRoller(double s) {
+    rollerMotor.set(s);
   }
 
-  public Command stopRoller() {
-    return run(() -> {
-          rollerMotor.stopMotor();
-        })
-        .withName("stopRoller");
-  }
-
-  public Command intakeSource() {
-    return startEnd(
-            () -> {
-              setTrapArm(TrapElvState.FROM_SOURCE);
-              rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
-            },
-            () -> {
-              stowTrapElv();
-            })
-        .withName("intakeSource");
-  }
-
-  public Command intakeGround() {
-    return startEnd(
-            () -> {
-              setTrapArm(TrapElvState.FROM_INTAKE);
-              rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
-            },
-            () -> {
-              stowTrapElv();
-            })
-        .withName("intakeGround");
-  }
-
-  public Command scoreAMP() {
-    return startEnd(
-            () -> {
-              setTrapArm(TrapElvState.AMP_SCORE);
-              setRoller(-TrapElvConstants.ROLLER_SCORING_SPEED);
-            },
-            () -> {
-              stowTrapElv();
-            })
-        .withName("scoreAMP");
-  }
-
-  public Command scoreTrap() {
-    return startEnd(
-            () -> {
-              setTrapArm(TrapElvState.TRAP_SCORE);
-              rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
-            },
-            () -> {
-              stowTrapElv();
-            })
-        .withName("scoreTrap");
-  }
-
-  public void stowTrapElv() {
-    setTrapArm(TrapElvState.STOWED);
+  public void stopRoller() {
     rollerMotor.stopMotor();
   }
 
-  public Command zeroArm() {
+  public void intakeSource() {
+    setElv(TrapElvState.FROM_SOURCE);
+    rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
+  }
+
+  public void intakeGround() {
+    setElv(TrapElvState.FROM_INTAKE);
+    rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
+  }
+
+  public void scoreAMP() {
+    setElv(TrapElvState.AMP_SCORE);
+    setRoller(-TrapElvConstants.ROLLER_SCORING_SPEED);
+  }
+
+  public void scoreTrap() {
+    setElv(TrapElvState.TRAP_SCORE);
+    rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
+  }
+
+  public void stowTrapElv() {
+    setElv(TrapElvState.STOWED);
+    rollerMotor.stopMotor();
+  }
+
+  public void setElv(TrapElvState state) {
+    baseGoal.setDouble(Units.metersToInches(TrapElvConstants.ELV_MIN_HEIGHT) + state.basePose);
+    SmartDashboard.putNumber("Wrist Goal", state.wristPose);
+    wristState = state.getWristPose();
+    baseMotor1
+        .getPIDController()
+        .setReference(state.getBasePose() - baseMotorOffset1, ControlType.kPosition);
+    baseMotor2
+        .getPIDController()
+        .setReference(state.getBasePose() - baseMotorOffset2, ControlType.kPosition);
+    scoringMotor
+        .getPIDController()
+        .setReference(state.getScoringPose() - scoringMotorOffset, ControlType.kPosition);
+  }
+
+  public Command intake(PlacementMode mode) {
+    if (mode.equals(PlacementMode.AMP)) {
+      return new StartEndCommand(this::intakeGround, this::stowTrapElv);
+    } else if (mode.equals(PlacementMode.SOURCE)) {
+      return new StartEndCommand(this::intakeSource, this::stowTrapElv);
+    } else {
+      return run(
+          () -> {
+            stowTrapElv();
+          });
+    }
+  }
+
+  public Command zeroElv() {
     return startEnd(
         () -> {
           // Command for zeroing elevator if elevator happens to be not at zero
@@ -359,25 +355,6 @@ public class TrapElvSubsystem extends SubsystemBase {
         });
   }
 
-  public void setTrapArm(TrapElvState state) {
-    baseGoal.setDouble(Units.metersToInches(TrapElvConstants.ELV_MIN_HEIGHT) + state.basePose);
-    SmartDashboard.putNumber("Wrist Goal", state.wristPose);
-    SmartDashboard.putNumber(
-        "Wrist PID Control Output",
-        wristPIDController.calculate(
-            wristEncoder.getPosition().getValueAsDouble(), state.getWristPose()));
-    wristState = state.getWristPose();
-    baseMotor1
-        .getPIDController()
-        .setReference(state.getBasePose() - baseMotorOffset1, ControlType.kPosition);
-    baseMotor2
-        .getPIDController()
-        .setReference(state.getBasePose() - baseMotorOffset2, ControlType.kPosition);
-    scoringMotor
-        .getPIDController()
-        .setReference(state.getScoringPose() - scoringMotorOffset, ControlType.kPosition);
-  }
-
   @Override
   public void periodic() {
     sourceLog.log(sourceBreak.get());
@@ -389,6 +366,7 @@ public class TrapElvSubsystem extends SubsystemBase {
             wristPIDController.calculate(wristEncoder.getPosition().getValueAsDouble(), wristState),
             -1,
             1));
+    SmartDashboard.putNumber("wristMotor Output", wristMotor.get());
   }
 
   @Override

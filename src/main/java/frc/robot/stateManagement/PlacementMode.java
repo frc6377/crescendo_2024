@@ -4,7 +4,8 @@ import java.util.Arrays;
 
 public enum PlacementMode {
   SPEAKER(0),
-  AMP(10);
+  AMP(10),
+  SOURCE(20);
 
   private final int integerValue;
 
