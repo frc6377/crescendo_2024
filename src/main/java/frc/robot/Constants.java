@@ -70,6 +70,11 @@ public final class Constants {
     public static final double maximumAngularAccelaration =
         0; // Maximum angular acceleration in rad/s^2
 
+    public static final Pose2d redSpeakerPose =
+        new Pose2d(0, 0, new Rotation2d(0)); // Pose of the middle of the speaker opening
+    public static final Pose2d blueSpeakerPose =
+        new Pose2d(0, 0, new Rotation2d(0)); // Pose of the middle of the speaker opening
+
     public static final Pose2d redAmpPose =
         new Pose2d(
             0, 0, new Rotation2d(0)); // Final pose for a RED robot to score in a RED-marked amp

@@ -22,8 +22,8 @@ public class OI {
     private static final XboxController controller = new XboxController(driverJoystickPort);
 
     // A B Y X Buttons
-    public static final Control brakeButton =
-        new Control(XboxController.Button.kA, "Brake", controller);
+    public static final Control speakerRotateButton =
+        new Control(XboxController.Button.kA, "Rotate to speaker", controller);
     public static final Control trapScoreButton =
         new Control(XboxController.Button.kB, "Score Trap", controller);
     public static final Control sourceIntakeButton =

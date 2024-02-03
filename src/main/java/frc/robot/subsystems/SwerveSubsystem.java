@@ -120,12 +120,23 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     autorotateSetpoint = setpoint;
   }
 
+  public void setSpeakerAutorotate() {
+    Pose2d speakerPose =
+        RobotStateManager.getIsAllianceRed()
+            ? PathfindingConstants.redAmpPose
+            : PathfindingConstants.blueAmpPose;
+    double x = Math.abs(speakerPose.getX() - getState().Pose.getX());
+    double y = Math.abs(speakerPose.getY() - getState().Pose.getY());
+    autorotateSetpoint = new Rotation2d(Math.atan2(y, x));
+  }
+
   public void endAutorotate() {
     autorotateSetpoint = null;
   }
 
   // xSpeed, ySpeed, rotationSpeed should be axes with range -1<0<1
   public SwerveRequest getDriveRequest(double xSpeed, double ySpeed, double rotationSpeed) {
+    // Convert to vector
     double magnitude = OI.Driver.translationMagnitudeCurve.calculate(Math.hypot(xSpeed, ySpeed));
     Rotation2d rotation = new Rotation2d(xSpeed, ySpeed);
     xSpeed = magnitude * Math.cos(rotation.getRadians());

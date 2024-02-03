@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -118,6 +119,10 @@ public class RobotContainer {
     OI.getPOVButton(OI.Driver.ampGuidanceRightButton)
         .whileTrue(drivetrain.handleAmpGuidance())
         .onTrue(new InstantCommand(() -> RobotStateManager.setPlacementMode(PlacementMode.AMP)));
+    OI.getButton(OI.Driver.speakerRotateButton)
+        .whileTrue(
+            new RepeatCommand(new InstantCommand(() -> drivetrain.setSpeakerAutorotate()))
+                .andThen(new InstantCommand(() -> drivetrain.endAutorotate())));
 
     OI.getPOVButton(OI.Operator.toggleSourceAutopilotButton)
         .onTrue(new InstantCommand(() -> drivetrain.toggleSourceAutopilot()));
