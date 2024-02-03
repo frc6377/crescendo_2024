@@ -112,9 +112,9 @@ public class RobotContainer {
                 drivetrain.getDriveRequest(
                     OI.getAxisSupplier(OI.Driver.xTranslationAxis).get(),
                     OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
-                    OI.getAxisSupplier(OI.Driver.rotationAxis).get())));
+                    OI.getAxisSupplier(OI.Driver.rotationAxis).get())).withName("Get Axis Suppliers"));
     OI.getButton(OI.Driver.brakeButton)
-        .whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
+        .whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()).withName("Brake Swerve"));
     OI.getButton(OI.Driver.resetRotationButton)
         .onTrue(
             drivetrain.runOnce(
@@ -122,9 +122,9 @@ public class RobotContainer {
                     drivetrain.seedFieldRelative(
                         new Pose2d(
                             drivetrain.getState().Pose.getTranslation(),
-                            Rotation2d.fromDegrees(180)))));
+                            Rotation2d.fromDegrees(180)))).withName("Put Pose & Rotation on Field"));
     OI.getButton(OI.Driver.orientationButton)
-        .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
+        .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()).withName("Toggle Orientation"));
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
     // Trap Elv Intaking
@@ -166,7 +166,7 @@ public class RobotContainer {
   }
 
   private Command autonTest() {
-    return new InstantCommand(() -> SmartDashboard.putBoolean("NamedCommand test", true));
+    return new InstantCommand(() -> SmartDashboard.putBoolean("NamedCommand test", true)).withName("Test NamedCommand");
   }
 
   /**
