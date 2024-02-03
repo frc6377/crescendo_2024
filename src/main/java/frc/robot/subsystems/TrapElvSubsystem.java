@@ -248,61 +248,65 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   // Commands
   public Command setRoller(double s) {
-    return run(
-        () -> {
+    return run(() -> {
           rollerMotor.set(s);
-        });
+        })
+        .withName("Set Roller");
   }
 
   public Command stopRoller() {
-    return run(
-        () -> {
+    return run(() -> {
           rollerMotor.stopMotor();
-        });
+        })
+        .withName("Stop Roller");
   }
 
   public Command intakeSource() {
     return startEnd(
-        () -> {
-          setTrapArm(TrapElvState.FROM_SOURCE);
-          rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
-        },
-        () -> {
-          stowTrapElv();
-        });
+            () -> {
+              setTrapArm(TrapElvState.FROM_SOURCE);
+              rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
+            },
+            () -> {
+              stowTrapElv();
+            })
+        .withName("Intake From Source");
   }
 
   public Command intakeGround() {
     return startEnd(
-        () -> {
-          setTrapArm(TrapElvState.FROM_INTAKE);
-          rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
-        },
-        () -> {
-          stowTrapElv();
-        });
+            () -> {
+              setTrapArm(TrapElvState.FROM_INTAKE);
+              rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
+            },
+            () -> {
+              stowTrapElv();
+            })
+        .withName("Intake from Ground");
   }
 
   public Command scoreAMP() {
     return startEnd(
-        () -> {
-          setTrapArm(TrapElvState.AMP_SCORE);
-          setRoller(-TrapElvConstants.ROLLER_SCORING_SPEED);
-        },
-        () -> {
-          stowTrapElv();
-        });
+            () -> {
+              setTrapArm(TrapElvState.AMP_SCORE);
+              setRoller(-TrapElvConstants.ROLLER_SCORING_SPEED);
+            },
+            () -> {
+              stowTrapElv();
+            })
+        .withName("Score Amp");
   }
 
   public Command scoreTrap() {
     return startEnd(
-        () -> {
-          setTrapArm(TrapElvState.TRAP_SCORE);
-          rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
-        },
-        () -> {
-          stowTrapElv();
-        });
+            () -> {
+              setTrapArm(TrapElvState.TRAP_SCORE);
+              rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
+            },
+            () -> {
+              stowTrapElv();
+            })
+        .withName("Score Trap");
   }
 
   public void stowTrapElv() {
@@ -312,30 +316,31 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   public Command zeroArm() {
     return startEnd(
-        () -> {
-          // Command for zeroing elevator if elevator happens to be not at zero
-          // Runs elevator motors until there limit switches are pressed
-          if (!baseLimit.get()) {
-            baseMotor1.set(TrapElvConstants.ELV_ZEROING_SPEED);
-            baseMotor2.set(TrapElvConstants.ELV_ZEROING_SPEED);
-          } else {
-            baseMotor1.stopMotor();
-            baseMotor2.stopMotor();
-            baseMotorOffset1 = baseMotor1.getEncoder().getPosition();
-            baseMotorOffset2 = baseMotor2.getEncoder().getPosition();
-          }
-          if (!scoringLimit.get()) {
-            scoringMotor.set(TrapElvConstants.ELV_ZEROING_SPEED);
-          } else {
-            scoringMotor.stopMotor();
-            scoringMotorOffset = scoringMotor.getEncoder().getPosition();
-          }
-        },
-        () -> {
-          baseMotor1.stopMotor();
-          baseMotor2.stopMotor();
-          scoringMotor.stopMotor();
-        });
+            () -> {
+              // Command for zeroing elevator if elevator happens to be not at zero
+              // Runs elevator motors until there limit switches are pressed
+              if (!baseLimit.get()) {
+                baseMotor1.set(TrapElvConstants.ELV_ZEROING_SPEED);
+                baseMotor2.set(TrapElvConstants.ELV_ZEROING_SPEED);
+              } else {
+                baseMotor1.stopMotor();
+                baseMotor2.stopMotor();
+                baseMotorOffset1 = baseMotor1.getEncoder().getPosition();
+                baseMotorOffset2 = baseMotor2.getEncoder().getPosition();
+              }
+              if (!scoringLimit.get()) {
+                scoringMotor.set(TrapElvConstants.ELV_ZEROING_SPEED);
+              } else {
+                scoringMotor.stopMotor();
+                scoringMotorOffset = scoringMotor.getEncoder().getPosition();
+              }
+            },
+            () -> {
+              baseMotor1.stopMotor();
+              baseMotor2.stopMotor();
+              scoringMotor.stopMotor();
+            })
+        .withName("Zero Arm");
   }
 
   public void setTrapArm(TrapElvState state) {

@@ -94,10 +94,17 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    OI.getButton(OI.Operator.A).onTrue(new InstantCommand(robotStateManager::switchPlacementMode));
+    OI.getButton(OI.Operator.A)
+        .onTrue(
+            new InstantCommand(robotStateManager::switchPlacementMode)
+                .withName("Switch Placement Mode Command"));
     OI.getTrigger(OI.Driver.intakeTrigger)
-        .whileTrue(intakeSubsystem.getIntakeCommand(robotStateManager.getPlacementMode()));
-    OI.getButton(OI.Driver.outtakeButton).whileTrue(intakeSubsystem.reverseIntakeCommand());
+        .whileTrue(
+            intakeSubsystem
+                .getIntakeCommand(robotStateManager.getPlacementMode())
+                .withName("Get Placement Mode Command"));
+    OI.getButton(OI.Driver.outtakeButton)
+        .whileTrue(intakeSubsystem.reverseIntakeCommand().withName("Reverse Intake Command"));
     // Swerve config
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(
@@ -142,9 +149,9 @@ public class RobotContainer {
   public void registerCommands() {
     HashMap<String, Command> autonCommands = new HashMap<String, Command>();
 
-    autonCommands.put("Shoot", autonTest());
-    autonCommands.put("Speaker Intake", intakeSubsystem.getSpeakerIntakeCommand());
-    autonCommands.put("Amp Intake", intakeSubsystem.getAmpIntakeCommand());
+    autonCommands.put("Shoot", autonTest().withName("Shoot"));
+    autonCommands.put("Speaker Intake", intakeSubsystem.getSpeakerIntakeCommand().withName("Speaker Intake"));
+    autonCommands.put("Amp Intake", intakeSubsystem.getAmpIntakeCommand().withName("Amp Intake"));
 
     NamedCommands.registerCommands(autonCommands);
   }
@@ -167,6 +174,6 @@ public class RobotContainer {
    * @return the command to run in autonomous(including the delay)
    */
   public Command getAutonomousCommand() {
-    return new WaitCommand(autoDelay.getDouble(0)).andThen(autoChooser.getSelected());
+    return new WaitCommand(autoDelay.getDouble(0)).andThen(autoChooser.getSelected()).withName("Get Auto Command");
   }
 }

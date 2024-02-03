@@ -60,7 +60,8 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public Command reverseIntakeCommand() {
-    return new StartEndCommand(this::reverseIntake, this::stopMotors, this);
+    return new StartEndCommand(this::reverseIntake, this::stopMotors, this)
+        .withName("Reverse Intake");
   }
 
   // Runs the speaker intake or amp intake based on the robot state provided
@@ -78,7 +79,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private Command buildIntakeCommand(boolean isSpeaker) {
     return new StartEndCommand(
-        isSpeaker ? this::speakerIntake : this::ampIntake, this::stopMotors, this);
+            isSpeaker ? this::speakerIntake : this::ampIntake, this::stopMotors, this)
+        .withName("Build Intake Command");
   }
 
   @Override
