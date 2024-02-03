@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -32,8 +31,8 @@ public final class Constants {
     public static final double SHOOTER_FF = 0.0;
 
     // Top is index 0, bottom is index 1
-    public static final Pair<Double, Double> SHOOTER_IDLE_SPEEDS =
-        new Pair(150, 100); // Placeholder; in RPM
+    public static final double SHOOTER_IDLE_SPEED_TOP = 150; // Placeholder; in RPM
+    public static final double SHOOTER_IDLE_SPEED_BOTTOM = 100; // Placeholder; in RPM
     public static final double SHOOTER_SPEED_TOLERANCE =
         0.1; // Placeholder; speed must be within (1-n)v to (1+n)v to fire
   }
