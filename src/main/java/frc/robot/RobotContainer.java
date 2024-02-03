@@ -94,34 +94,47 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    OI.getButton(OI.Operator.A).onTrue(new InstantCommand(robotStateManager::switchPlacementMode));
+    OI.getButton(OI.Operator.A)
+        .onTrue(
+            new InstantCommand(robotStateManager::switchPlacementMode)
+                .withName("Switch Placement Mode Command"));
     OI.getTrigger(OI.Driver.intakeTrigger)
         .whileTrue(
             intakeSubsystem
                 .getIntakeCommand(robotStateManager.getPlacementMode())
-                .alongWith(trapElvSubsystem.intake(robotStateManager.getPlacementMode())));
-    OI.getButton(OI.Driver.outtakeButton).whileTrue(intakeSubsystem.reverseIntakeCommand());
-
+                .withName("Get Placement Mode Command"));
+    OI.getButton(OI.Driver.outtakeButton)
+        .whileTrue(intakeSubsystem.reverseIntakeCommand().withName("Reverse Intake Command"));
     // Swerve config
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-        drivetrain.applyRequest(
-            () ->
-                drivetrain.getDriveRequest(
-                    OI.getAxisSupplier(OI.Driver.xTranslationAxis).get(),
-                    OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
-                    OI.getAxisSupplier(OI.Driver.rotationAxis).get())));
+        drivetrain
+            .applyRequest(
+                () ->
+                    drivetrain.getDriveRequest(
+                        OI.getAxisSupplier(OI.Driver.xTranslationAxis).get(),
+                        OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
+                        OI.getAxisSupplier(OI.Driver.rotationAxis).get()))
+            .withName("Get Axis Suppliers"));
     OI.getButton(OI.Driver.brakeButton)
-        .whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
+        .whileTrue(
+            drivetrain
+                .applyRequest(() -> new SwerveRequest.SwerveDriveBrake())
+                .withName("Brake Swerve"));
     OI.getButton(OI.Driver.resetRotationButton)
         .onTrue(
-            drivetrain.runOnce(
-                () ->
-                    drivetrain.seedFieldRelative(
-                        new Pose2d(
-                            drivetrain.getState().Pose.getTranslation(),
-                            Rotation2d.fromDegrees(180)))));
+            drivetrain
+                .runOnce(
+                    () ->
+                        drivetrain.seedFieldRelative(
+                            new Pose2d(
+                                drivetrain.getState().Pose.getTranslation(),
+                                Rotation2d.fromDegrees(180))))
+                .withName("Put Pose & Rotation on Field"));
     OI.getButton(OI.Driver.orientationButton)
-        .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
+        .onTrue(
+            drivetrain
+                .runOnce(() -> drivetrain.toggleOrientation())
+                .withName("Toggle Orientation"));
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
     // Trap Elv zeroing button
@@ -136,9 +149,10 @@ public class RobotContainer {
   public void registerCommands() {
     HashMap<String, Command> autonCommands = new HashMap<String, Command>();
 
-    autonCommands.put("Shoot", autonTest());
-    autonCommands.put("Speaker Intake", intakeSubsystem.getSpeakerIntakeCommand());
-    autonCommands.put("Amp Intake", intakeSubsystem.getAmpIntakeCommand());
+    autonCommands.put("Shoot", autonTest().withName("Shoot"));
+    autonCommands.put(
+        "Speaker Intake", intakeSubsystem.getSpeakerIntakeCommand().withName("Speaker Intake"));
+    autonCommands.put("Amp Intake", intakeSubsystem.getAmpIntakeCommand().withName("Amp Intake"));
 
     NamedCommands.registerCommands(autonCommands);
   }
@@ -152,7 +166,8 @@ public class RobotContainer {
   }
 
   private Command autonTest() {
-    return new InstantCommand(() -> SmartDashboard.putBoolean("NamedCommand test", true));
+    return new InstantCommand(() -> SmartDashboard.putBoolean("NamedCommand test", true))
+        .withName("Test NamedCommand");
   }
 
   /**
@@ -161,6 +176,8 @@ public class RobotContainer {
    * @return the command to run in autonomous(including the delay)
    */
   public Command getAutonomousCommand() {
-    return new WaitCommand(autoDelay.getDouble(0)).andThen(autoChooser.getSelected());
+    return new WaitCommand(autoDelay.getDouble(0))
+        .andThen(autoChooser.getSelected())
+        .withName("Get Auto Command");
   }
 }

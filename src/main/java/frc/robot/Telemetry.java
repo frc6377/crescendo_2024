@@ -114,4 +114,14 @@ public class Telemetry {
       SmartDashboard.putData("Module " + i, m_moduleMechanisms[i]);
     }
   }
+
+  public void realTelemetry(SwerveDriveState state) {
+    double currentTime = Utils.getCurrentTimeSeconds();
+    if (currentTime - lastTime > Constants.TELEMETRY_LOG_NUMBER) {
+      lastTime = currentTime;
+      Pose2d pose = state.Pose;
+      fieldTypePub.set("Field2d");
+      fieldPub.set(new double[] {pose.getX(), pose.getY(), pose.getRotation().getDegrees()});
+    }
+  }
 }

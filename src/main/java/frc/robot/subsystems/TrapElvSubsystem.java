@@ -329,30 +329,31 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   public Command zeroElv() {
     return startEnd(
-        () -> {
-          // Command for zeroing elevator if elevator happens to be not at zero
-          // Runs elevator motors until there limit switches are pressed
-          if (!baseLimit.get()) {
-            baseMotor1.set(TrapElvConstants.ELV_ZEROING_SPEED);
-            baseMotor2.set(TrapElvConstants.ELV_ZEROING_SPEED);
-          } else {
-            baseMotor1.stopMotor();
-            baseMotor2.stopMotor();
-            baseMotorOffset1 = baseMotor1.getEncoder().getPosition();
-            baseMotorOffset2 = baseMotor2.getEncoder().getPosition();
-          }
-          if (!scoringLimit.get()) {
-            scoringMotor.set(TrapElvConstants.ELV_ZEROING_SPEED);
-          } else {
-            scoringMotor.stopMotor();
-            scoringMotorOffset = scoringMotor.getEncoder().getPosition();
-          }
-        },
-        () -> {
-          baseMotor1.stopMotor();
-          baseMotor2.stopMotor();
-          scoringMotor.stopMotor();
-        });
+            () -> {
+              // Command for zeroing elevator if elevator happens to be not at zero
+              // Runs elevator motors until there limit switches are pressed
+              if (!baseLimit.get()) {
+                baseMotor1.set(TrapElvConstants.ELV_ZEROING_SPEED);
+                baseMotor2.set(TrapElvConstants.ELV_ZEROING_SPEED);
+              } else {
+                baseMotor1.stopMotor();
+                baseMotor2.stopMotor();
+                baseMotorOffset1 = baseMotor1.getEncoder().getPosition();
+                baseMotorOffset2 = baseMotor2.getEncoder().getPosition();
+              }
+              if (!scoringLimit.get()) {
+                scoringMotor.set(TrapElvConstants.ELV_ZEROING_SPEED);
+              } else {
+                scoringMotor.stopMotor();
+                scoringMotorOffset = scoringMotor.getEncoder().getPosition();
+              }
+            },
+            () -> {
+              baseMotor1.stopMotor();
+              baseMotor2.stopMotor();
+              scoringMotor.stopMotor();
+            })
+        .withName("Zero Arm");
   }
 
   @Override
