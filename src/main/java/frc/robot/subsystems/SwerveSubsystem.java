@@ -8,6 +8,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -21,8 +22,11 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.Constants.PathfindingConstants;
 import frc.robot.OI;
+import frc.robot.RobotStateManager;
 import frc.robot.Telemetry;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -40,7 +44,9 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   private final Telemetry telemetry = new Telemetry(maxSpeed);
 
   private static boolean isFieldOriented = true;
-  private static Rotation2d alignmentRotation = null;
+  private static Rotation2d autorotateSetpoint = null;
+  private static boolean isAmpAutopilotEnabled = true;
+  private static boolean isSourceAutopilotEnabled = true;
 
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
@@ -109,6 +115,15 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   private ChassisSpeeds getChassisSpeeds() {
     return kinematics.toChassisSpeeds(super.getState().ModuleStates);
   }
+
+  public void setAutorotate(Rotation2d setpoint) {
+    autorotateSetpoint = setpoint;
+  }
+
+  public void endAutorotate() {
+    autorotateSetpoint = null;
+  }
+
   // xSpeed, ySpeed, rotationSpeed should be axes with range -1<0<1
   public SwerveRequest getDriveRequest(double xSpeed, double ySpeed, double rotationSpeed) {
     double magnitude = OI.Driver.translationMagnitudeCurve.calculate(Math.hypot(xSpeed, ySpeed));
@@ -122,9 +137,9 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     ySpeed *= maxSpeed;
     rotationSpeed *= maxAngularRate;
     if (isFieldOriented) {
-      if (alignmentRotation != null) {
+      if (autorotateSetpoint != null) {
         return new SwerveRequest.FieldCentricFacingAngle()
-            .withTargetDirection(alignmentRotation)
+            .withTargetDirection(autorotateSetpoint)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
             .withSteerRequestType(SteerRequestType.MotionMagicExpo)
             // Mixup is intentional, WPI has its coordinate plane from the perspective of the
@@ -151,6 +166,49 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
         .withRotationalRate(rotationSpeed);
   }
 
+  private Command getAutopilotCommand(Pose2d pose) {
+    return AutoBuilder.pathfindToPose(
+        pose,
+        new PathConstraints(
+            PathfindingConstants.maximumVelocity,
+            PathfindingConstants.maximumAcceleration,
+            PathfindingConstants.maximumAngularVelocity,
+            PathfindingConstants.maximumAngularAccelaration));
+  }
+
+  private Pose2d getAutopilotSourcePose() {
+    return RobotStateManager.getIsAllianceRed()
+        ? PathfindingConstants.redSourcePose
+        : PathfindingConstants.blueSourcePose;
+  }
+
+  private Pose2d getAutopilotAmpPose() {
+    return RobotStateManager.getIsAllianceRed()
+        ? PathfindingConstants.redAmpPose
+        : PathfindingConstants.blueAmpPose;
+  }
+
+  private Command startGuidance(boolean autopilot, Pose2d pose) {
+    setAutorotate(pose.getRotation());
+    return autopilot ? getAutopilotCommand(pose) : new InstantCommand();
+  }
+
+  public Command handleSourceGuidance() {
+    return startGuidance(isSourceAutopilotEnabled, getAutopilotSourcePose());
+  }
+
+  public Command handleAmpGuidance() {
+    return startGuidance(isAmpAutopilotEnabled, getAutopilotAmpPose());
+  }
+
+  public void toggleSourceAutopilot() {
+    isSourceAutopilotEnabled = !isSourceAutopilotEnabled;
+  }
+
+  public void toggleAmpAutopilot() {
+    isAmpAutopilotEnabled = !isAmpAutopilotEnabled;
+  }
+
   public BiConsumer<Pose2d, Double> getVisionMeasurementConsumer() {
     return (t, u) -> addVisionMeasurement(t, u);
   }
@@ -163,20 +221,12 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     isFieldOriented = !isFieldOriented;
     if (!isFieldOriented) {
       // robot oriented drive means we can't hold a field oriented heading
-      endAlignment();
+      endAutorotate();
     }
   }
 
   public boolean getIsFieldOriented() {
     return isFieldOriented;
-  }
-
-  public void setAlignment(Rotation2d rotation) {
-    alignmentRotation = rotation;
-  }
-
-  public void endAlignment() {
-    alignmentRotation = null;
   }
 
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {

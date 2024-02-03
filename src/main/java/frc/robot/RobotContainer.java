@@ -21,8 +21,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.RobotStateManager.PlacementMode;
 import frc.robot.config.DynamicRobotConfig;
-import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -107,6 +107,24 @@ public class RobotContainer {
             signalingSubsystem
                 .getContinuousStrobeCommand(Constants.STROBE_DELAY)
                 .onlyIf(drivetrain::getIsFieldOriented));
+
+    // Guidance
+    OI.getPOVButton(OI.Driver.sourceGuidanceButton)
+        .whileTrue(drivetrain.handleSourceGuidance())
+        .onTrue(new InstantCommand(() -> RobotStateManager.setPlacementMode(PlacementMode.SOURCE)));
+    OI.getPOVButton(OI.Driver.ampGuidanceLeftButton)
+        .whileTrue(drivetrain.handleAmpGuidance())
+        .onTrue(new InstantCommand(() -> RobotStateManager.setPlacementMode(PlacementMode.AMP)));
+    OI.getPOVButton(OI.Driver.ampGuidanceRightButton)
+        .whileTrue(drivetrain.handleAmpGuidance())
+        .onTrue(new InstantCommand(() -> RobotStateManager.setPlacementMode(PlacementMode.AMP)));
+
+    OI.getPOVButton(OI.Operator.toggleSourceAutopilotButton)
+        .onTrue(new InstantCommand(() -> drivetrain.toggleSourceAutopilot()));
+    OI.getPOVButton(OI.Operator.toggleAmpAutopilotLeftButton)
+        .onTrue(new InstantCommand(() -> drivetrain.toggleAmpAutopilot()));
+    OI.getPOVButton(OI.Operator.toggleAmpAutopilotRightButton)
+        .onTrue(new InstantCommand(() -> drivetrain.toggleAmpAutopilot()));
 
     // Trap Elv Intaking
     OI.getButton(OI.Driver.groundIntakeButton)

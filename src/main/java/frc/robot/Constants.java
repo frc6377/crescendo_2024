@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -59,6 +61,32 @@ public final class Constants {
     public static final double WRIST_MIN_ANGLE = Units.degreesToRadians(-359); // RADS
     public static final double WRIST_MAX_ANGLE = Units.degreesToRadians(359); // RADS
     public static final double WRIST_LENGTH = Units.inchesToMeters(12.5);
+  }
+
+  public static class PathfindingConstants {
+    public static final double maximumVelocity = 0; // Maximum linear velocity in m/s
+    public static final double maximumAcceleration = 0; // Maximum linear acceleration in m/s^2
+    public static final double maximumAngularVelocity = 0; // Maximum angular velocity in rad/s
+    public static final double maximumAngularAccelaration =
+        0; // Maximum angular acceleration in rad/s^2
+
+    public static final Pose2d redAmpPose =
+        new Pose2d(
+            0, 0, new Rotation2d(0)); // Final pose for a RED robot to score in a RED-marked amp
+    public static final Pose2d blueAmpPose =
+        new Pose2d(
+            0, 0, new Rotation2d(0)); // Final pose for a BLUE robot to score in the BLUE-marked amp
+
+    public static final Pose2d redSourcePose =
+        new Pose2d(
+            0,
+            0,
+            new Rotation2d(0)); // Final pose for a RED robot to intake from a RED-marked source
+    public static final Pose2d blueSourcePose =
+        new Pose2d(
+            0,
+            0,
+            new Rotation2d(0)); // Final pose for a BLUE robot to intake from a BLUE-marked source
   }
 
   public static final int END_GAME_WARNING_TIME = 20;

@@ -51,6 +51,14 @@ public class OI {
     public static final Control orientationButton =
         new Control(XboxController.Button.kBack, "Toggle swerve orientation", controller);
 
+    // Directional Pad
+    public static final Control sourceGuidanceButton =
+        new Control(0, "Guide to Source", controller);
+    public static final Control ampGuidanceLeftButton =
+        new Control(270, "Guide to Amp", controller);
+    public static final Control ampGuidanceRightButton =
+        new Control(90, "Guide to Amp", controller);
+
     // Control Curves
     private static final ControlCurve xTranslationCurve = new ControlCurve(1, 0, 0, 0.0);
     private static final ControlCurve yTranslationCurve = new ControlCurve(1, 0, 0, 0.0);
@@ -98,6 +106,14 @@ public class OI {
         new Control(XboxController.Button.kLeftStick, null, controller);
     public static final Control RSB =
         new Control(XboxController.Button.kRightStick, null, controller);
+
+    // Directional Pad
+    public static final Control toggleSourceAutopilotButton =
+        new Control(0, "Toggle source autopilot", controller);
+    public static final Control toggleAmpAutopilotLeftButton =
+        new Control(270, "Toggle amp autopilot", controller);
+    public static final Control toggleAmpAutopilotRightButton =
+        new Control(90, "Toggle amp autopilot", controller);
 
     // Control Curves
     private static final ControlCurve xTranslationCurve = new ControlCurve(1, 0, 0, 0.0, true);
