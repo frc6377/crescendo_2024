@@ -419,7 +419,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
     baseMech.setLength(m_baseElevatorSim.getPositionMeters());
     scoringMech.setLength(m_scoringElevatorSim.getPositionMeters());
-      // Offest added so that gravity is simulated in the right direction
+    // Offest added so that gravity is simulated in the right direction
     wristMech.setAngle(Units.radiansToDegrees(m_wristMotorSim.getAngleRads()) - 90);
 
     SmartDashboard.putNumber(
