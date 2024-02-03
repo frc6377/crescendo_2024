@@ -91,7 +91,6 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    OI.getTrigger(OI.Driver.intakeTrigger).whileTrue(intakeSubsystem.getIntakeCommand());
     OI.getButton(OI.Driver.outtakeButton).whileTrue(intakeSubsystem.getOuttakeCommand());
     // Swerve config
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
@@ -117,7 +116,11 @@ public class RobotContainer {
 
     // Trap Elv Intaking
     OI.getButton(OI.Driver.groundIntakeButton)
-        .whileTrue(trapElvSubsystem.intakeGround().onlyWhile(trapElvSubsystem.getGroundBreak()));
+        .whileTrue(
+            trapElvSubsystem
+                .intakeGround()
+                .alongWith(intakeSubsystem.getIntakeCommand())
+                .onlyWhile(trapElvSubsystem.getGroundBreak()));
     OI.getButton(OI.Driver.sourceIntakeButton)
         .whileTrue(trapElvSubsystem.intakeSource().onlyWhile(trapElvSubsystem.getSourceBreak()));
 
