@@ -117,16 +117,15 @@ public class ShooterSubsystem extends SubsystemBase {
     if (distance < speakerConfigList[0].getDistanceInInches()) {
       topSpeed = speakerConfigList[0].getSpeedTopInRPM();
       bottomSpeed = speakerConfigList[0].getSpeedBottomInRPM();
-    } else {
+      speeds = new Pair(topSpeed, bottomSpeed);
+      return speeds;
+    } else if (distance >= speakerConfigList[0].getDistanceInInches()
+        && distance <= speakerConfigList[speakerConfigList.length - 1].getDistanceInInches()) {
       // A linear search which determines which points the input distance falls between. May be
       // converted to a binary search if there are many points
-      for (int i = 0; i < speakerConfigList.length; i++) {
+      for (int i = 0; i < speakerConfigList.length - 1; i++) {
         // If distance above maximum, set speed to maximum.
-        if (i == speakerConfigList.length - 1) {
-          topSpeed = speakerConfigList[i].getSpeedTopInRPM();
-          bottomSpeed = speakerConfigList[i].getSpeedBottomInRPM();
-          break;
-        } else if (distance >= speakerConfigList[i].getDistanceInInches()
+        if (distance >= speakerConfigList[i].getDistanceInInches()
             && distance < speakerConfigList[i + 1].getDistanceInInches()) {
           // Math to linearly interpolate the speed.
           distanceProportion =
@@ -143,11 +142,15 @@ public class ShooterSubsystem extends SubsystemBase {
                       * (speakerConfigList[i + 1].getSpeedBottomInRPM()
                           - speakerConfigList[i].getSpeedBottomInRPM()))
                   + speakerConfigList[i].getSpeedBottomInRPM();
-          break;
+          speeds = new Pair(topSpeed, bottomSpeed);
+          System.out.println(i + " " + distance);
+          return speeds;
         }
       }
     }
 
+    topSpeed = speakerConfigList[speakerConfigList.length - 1].getSpeedTopInRPM();
+    bottomSpeed = speakerConfigList[speakerConfigList.length - 1].getSpeedBottomInRPM();
     speeds = new Pair(topSpeed, bottomSpeed);
     return speeds;
   }
