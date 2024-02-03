@@ -10,40 +10,75 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.stateManagement.PlacementMode;
 
 public class IntakeSubsystem extends SubsystemBase {
-
   private CANSparkMax intakeMotor;
+  private CANSparkMax chooserMotor;
 
   public IntakeSubsystem() {
     intakeMotor = new CANSparkMax(Constants.IntakeConstants.INTAKE_MOTOR_ID, MotorType.kBrushless);
+    chooserMotor =
+        new CANSparkMax(Constants.IntakeConstants.INTAKE_CHOOSER_ID, MotorType.kBrushless);
     intakeMotor.restoreFactoryDefaults();
+    chooserMotor.restoreFactoryDefaults();
     intakeMotor.setSmartCurrentLimit(40);
+    chooserMotor.setSmartCurrentLimit(20);
   }
 
-  public Command intakeCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-    return runOnce(
-        () -> {
-          /* one-time action goes here */
-        });
+  // TODO: Add check to make sure turret is below 45 degrees before running & add photogate when
+  // implemented.
+  public void runIntake() {
+    intakeMotor.set(Constants.IntakeConstants.INTAKE_PERCENTAGE);
   }
 
-  public void setIntakeSpeed(double speed) {
-    intakeMotor.set(speed);
+  public void reverseIntake() {
+    intakeMotor.set(-Constants.IntakeConstants.INTAKE_PERCENTAGE);
   }
 
-  public Command getIntakeCommand() {
-    return buildCommand(Constants.IntakeConstants.INTAKE_PERCENTAGE);
+  public void speakerChooser() {
+    chooserMotor.set(Constants.IntakeConstants.CHOOSER_PERCENTAGE);
   }
 
-  public Command getOuttakeCommand() {
-    return buildCommand(-Constants.IntakeConstants.INTAKE_PERCENTAGE);
+  public void ampChooser() {
+    chooserMotor.set(-Constants.IntakeConstants.CHOOSER_PERCENTAGE);
   }
 
-  private Command buildCommand(double speed) {
-    return new StartEndCommand(() -> setIntakeSpeed(speed), () -> setIntakeSpeed(0), this);
+  public void speakerIntake() {
+    runIntake();
+    speakerChooser();
+  }
+
+  public void ampIntake() {
+    runIntake();
+    ampChooser();
+  }
+
+  public void stopMotors() {
+    chooserMotor.set(0);
+    intakeMotor.set(0);
+  }
+
+  public Command reverseIntakeCommand() {
+    return new StartEndCommand(this::reverseIntake, this::stopMotors, this);
+  }
+
+  // Runs the speaker intake or amp intake based on the robot state provided
+  public Command getIntakeCommand(PlacementMode mode) {
+    return buildIntakeCommand(mode.equals(PlacementMode.SPEAKER)).withName("getIntakeCommand");
+  }
+
+  public Command getSpeakerIntakeCommand() {
+    return buildIntakeCommand(true).withName("getSpeakerIntakeCommnad");
+  }
+
+  public Command getAmpIntakeCommand() {
+    return buildIntakeCommand(false).withName("getAmpIntakeCommand");
+  }
+
+  private Command buildIntakeCommand(boolean isSpeaker) {
+    return new StartEndCommand(
+        isSpeaker ? this::speakerIntake : this::ampIntake, this::stopMotors, this);
   }
 
   @Override

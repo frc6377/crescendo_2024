@@ -28,6 +28,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TrapElvSubsystem;
+import frc.robot.subsystems.TriggerSubsystem;
 import frc.robot.subsystems.signaling.SignalingSubsystem;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,6 +48,7 @@ public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+  private final TriggerSubsystem triggerSubsystem;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final SwerveSubsystem drivetrain;
@@ -72,6 +74,7 @@ public class RobotContainer {
   public RobotContainer() {
     dynamicRobotConfig = new DynamicRobotConfig();
     drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
+    triggerSubsystem = new TriggerSubsystem();
     limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
     // Configure the trigger bindings
     configureBindings();
@@ -91,7 +94,10 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    OI.getButton(OI.Driver.outtakeButton).whileTrue(intakeSubsystem.getOuttakeCommand());
+    OI.getButton(OI.Operator.A).onTrue(new InstantCommand(robotStateManager::switchPlacementMode));
+    OI.getTrigger(OI.Driver.intakeTrigger)
+        .whileTrue(intakeSubsystem.getIntakeCommand(robotStateManager.getPlacementMode()));
+    OI.getButton(OI.Driver.outtakeButton).whileTrue(intakeSubsystem.reverseIntakeCommand());
     // Swerve config
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(
@@ -141,6 +147,8 @@ public class RobotContainer {
     HashMap<String, Command> autonCommands = new HashMap<String, Command>();
 
     autonCommands.put("Shoot", autonTest());
+    autonCommands.put("Speaker Intake", intakeSubsystem.getSpeakerIntakeCommand());
+    autonCommands.put("Amp Intake", intakeSubsystem.getAmpIntakeCommand());
 
     NamedCommands.registerCommands(autonCommands);
   }

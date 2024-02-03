@@ -16,8 +16,21 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   public static class IntakeConstants {
+    // TODO: Get real CAN IDs
     public static final int INTAKE_MOTOR_ID = 6;
+    public static final int INTAKE_CHOOSER_ID = 7;
     public static final double INTAKE_PERCENTAGE = -0.75;
+    public static final double CHOOSER_PERCENTAGE = -0.75;
+  }
+
+  public static class TriggerConstants {
+    public static final int MOTOR_ID = 9; // edit all constants when testing
+    public static final double LOAD_PERCENTAGE = 0.5; // used when intaking into the turret
+    public static final double HOLD_PERCENTAGE =
+        0.05; // very slow motor speed in case note slips out of trigger
+    public static final double SHOOT_PERCENTAGE =
+        -0.5; // used when feeding note into turret to fire (should be negative value because it
+    // outtakes)
   }
 
   public static class OperatorConstants {
