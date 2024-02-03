@@ -96,7 +96,10 @@ public class RobotContainer {
   private void configureBindings() {
     OI.getButton(OI.Operator.A).onTrue(new InstantCommand(robotStateManager::switchPlacementMode));
     OI.getTrigger(OI.Driver.intakeTrigger)
-        .whileTrue(intakeSubsystem.getIntakeCommand(robotStateManager.getPlacementMode()));
+        .whileTrue(
+            intakeSubsystem
+                .getIntakeCommand(robotStateManager.getPlacementMode())
+                .alongWith(trapElvSubsystem.intakeGround()));
     OI.getButton(OI.Driver.outtakeButton).whileTrue(intakeSubsystem.reverseIntakeCommand());
     // Swerve config
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
@@ -121,12 +124,6 @@ public class RobotContainer {
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
     // Trap Elv Intaking
-    OI.getButton(OI.Driver.groundIntakeButton)
-        .whileTrue(
-            trapElvSubsystem
-                .intakeGround()
-                .alongWith(intakeSubsystem.getIntakeCommand())
-                .onlyWhile(trapElvSubsystem.getGroundBreak()));
     OI.getButton(OI.Driver.sourceIntakeButton)
         .whileTrue(trapElvSubsystem.intakeSource().onlyWhile(trapElvSubsystem.getSourceBreak()));
 

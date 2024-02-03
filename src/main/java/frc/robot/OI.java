@@ -28,8 +28,7 @@ public class OI {
         new Control(XboxController.Button.kB, "Score Trap", controller);
     public static final Control sourceIntakeButton =
         new Control(XboxController.Button.kX, "Intake Source", controller);
-    public static final Control groundIntakeButton =
-        new Control(XboxController.Button.kY, "Intake Ground", controller);
+    public static final Control Y = new Control(XboxController.Button.kY, null, controller);
 
     // Bumpers & Triggers
     public static final Control intakeTrigger =
