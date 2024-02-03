@@ -117,7 +117,7 @@ public class Telemetry {
 
   public void realTelemetry(SwerveDriveState state) {
     double currentTime = Utils.getCurrentTimeSeconds();
-    if (currentTime - lastTime > 0.2) {
+    if (currentTime - lastTime > Constants.Telemetry_Log_Number) {
       Pose2d pose = state.Pose;
       fieldTypePub.set("Field2d");
       fieldPub.set(new double[] {pose.getX(), pose.getY(), pose.getRotation().getDegrees()});
