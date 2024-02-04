@@ -25,11 +25,11 @@ public final class Constants {
     public static final int CANcoder_ID = 17; // replace with actual CANcoder ID
 
     // PID coefficients
-    public static final double KP = 2e-1;
-    public static final double KI = 1e-3;
+    public static final double KP = 0.25;
+    public static final double KI = 0.001;
     public static final double KD = 0;
     public static final double KIZ = 0;
-    public static final double KFF = 0.000156;
+    public static final double KFF = 0;
     public static final double KMAXOUTPUT = 1;
     public static final double KMINOUTPUT = -1;
     public static final int MAX_TURRET_ANGLE_DEGREES = 110;

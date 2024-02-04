@@ -14,6 +14,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -51,8 +52,14 @@ public class TurretSubsystem extends SubsystemBase {
   private double turretPosition;
   private double turretVelocity;
   private Consumer<Double> testPosition;
+  private ShuffleboardTab configTab = Shuffleboard.getTab("Config");
+  private GenericEntry kP = configTab.add("Turret KP", Constants.TurretConstants.KP).getEntry();
+  private GenericEntry kI = configTab.add("Turret KI", Constants.TurretConstants.KI).getEntry();
+  private GenericEntry kD = configTab.add("Turret KD", Constants.TurretConstants.KD).getEntry();
   private DebugEntry<Double> turretPositionEntry =
       new DebugEntry<Double>(turretPosition, "Position", this);
+  private DebugEntry<Double> turretGoalPositionEntry =
+      new DebugEntry<Double>(0.0, "Goal Position", this);
   private DebugEntry<Double> turretVelocityEntry =
       new DebugEntry<Double>(turretVelocity, "Velocity", this);
 
@@ -116,6 +123,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public void setTurretPos(double setpoint) {
+    turretGoalPositionEntry.log(setpoint);
     turretMotor.set(
         -turretPIDController.calculate(
             turretPosition,
@@ -146,10 +154,6 @@ public class TurretSubsystem extends SubsystemBase {
         "Soft limit enabled reverse", turretMotor.isSoftLimitEnabled(SoftLimitDirection.kReverse));
   }
 
-  public void lockOntoTag(double rotationFromTag) {
-    turretMotor.set(turretPIDController.calculate(rotationFromTag, 0.0));
-  }
-
   public double getTurretPos() {
     return turretPosition; // returns the absolute encoder position in radians
   }
@@ -162,22 +166,34 @@ public class TurretSubsystem extends SubsystemBase {
     return runEnd(() -> setTurretPos(Math.toRadians(-60)), this::stopTurret);
   }
 
-  public void LockTurret() {
-    lockOntoTag(Math.toRadians(LimelightHelpers.getTX("")));
+  public void AimTurret() {
+    double limelightTX = LimelightHelpers.getTX("limelight");
+    if (limelightTX == 0) {
+      // TODO: Make turret default to using odometry
+      setTurretPos(turretPosition);
+    } else {
+      setTurretPos(Math.toRadians(limelightTX) + turretPosition);
+
+      if (Math.abs(Math.toRadians(limelightTX) + turretPosition)
+          > Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES)) {
+        // TODO: Make turret rotate the drivebase if necessary and driver thinks it's a good idea
+      }
+    }
   }
 
-  public void TurretOdomCommand(Pose2d robotPos, Pose2d targetPos) {
+  public void AimTurretOdometry(Pose2d robotPos, Pose2d targetPos) {
     setTurretPos(getTurretRotationFromOdometry(robotPos, targetPos));
   }
 
-  public Command buildTurretCommand(boolean limelightVisible, Pose2d robotPos, Pose2d targetPos) {
-    return limelightVisible
-        ? run(this::LockTurret)
-        : runEnd(() -> TurretOdomCommand(robotPos, targetPos), this::stopTurret);
+  public Command getAimTurretCommand() {
+    return run(() -> AimTurret()).withName("AimTurretCommand");
   }
 
   @Override
   public void periodic() {
+    turretPIDController.setP(kP.getDouble(turretPosition));
+    turretPIDController.setI(kI.getDouble(turretPosition));
+    turretPIDController.setD(kD.getDouble(turretPosition));
     updateTurretPosition();
     turretVelocity =
         (m_encoder.getVelocity().getValueAsDouble())
@@ -199,8 +215,7 @@ public class TurretSubsystem extends SubsystemBase {
     // turretMotor.set(1);
   }
 
-  public double getTurretRotationFromOdometry(
-      Pose2d robotPos, Pose2d targetPos) { // Doesn't work right now but will be used later
+  public double getTurretRotationFromOdometry(Pose2d robotPos, Pose2d targetPos) {
     return Math.atan2(robotPos.getY() - targetPos.getY(), robotPos.getX() - targetPos.getX())
         + robotPos.getRotation().getRadians();
   }
