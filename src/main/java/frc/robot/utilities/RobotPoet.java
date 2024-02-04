@@ -78,12 +78,6 @@ public class RobotPoet {
 
   private static class DeleteVisitor extends ModifierVisitor<String> {
 
-    @Override
-    public Visitable visit(final CompilationUnit n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
     /* DECLARATORS */
 
     @Override
@@ -106,11 +100,6 @@ public class RobotPoet {
       return ret;
     }
 
-    @Override
-    public Visitable visit(final RecordDeclaration n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
 
     @Override
     public Visitable visit(final ConstructorDeclaration n, final String arg) {
@@ -123,178 +112,12 @@ public class RobotPoet {
     }
 
     @Override
-    public Visitable visit(final CompactConstructorDeclaration n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    // TODO Uncommon use case
-    @Override
-    public Visitable visit(final EnumConstantDeclaration n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    // TODO Uncommon use case
-    @Override
-    public Visitable visit(final EnumDeclaration n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final FieldDeclaration n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final InitializerDeclaration n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final MethodDeclaration n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final PackageDeclaration n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    /* STATEMENTS */
-
-    @Override
-    public Visitable visit(ExpressionStmt stmt, String args) {
-      Visitable ret = super.visit(stmt, args);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final AssertStmt n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final BlockStmt n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final BreakStmt n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final ContinueStmt n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final DoStmt n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final EmptyStmt n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final ExplicitConstructorInvocationStmt n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final ForEachStmt n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final ForStmt n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final IfStmt n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final LabeledStmt n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
     public Visitable visit(final ReturnStmt n, final String arg) {
       ReturnStmt cpy = n.clone();
       Visitable ret = super.visit(n, arg);
       if (ret == null || n.getExpression().isEmpty()) {
         return cpy.setExpression(new NullLiteralExpr());
       }
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final SwitchStmt n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final SynchronizedStmt n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final ThrowStmt n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final TryStmt n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final LocalClassDeclarationStmt n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final LocalRecordDeclarationStmt n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final WhileStmt n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final YieldStmt n, final String arg) {
-      Visitable ret = super.visit(n, arg);
       return ret;
     }
 
@@ -311,102 +134,6 @@ public class RobotPoet {
     }
 
     @Override
-    public Visitable visit(final ArrayAccessExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final ArrayCreationExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final ArrayInitializerExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final BinaryExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final BooleanLiteralExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final CastExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final CharLiteralExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final ClassExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final ConditionalExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final DoubleLiteralExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final EnclosedExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final FieldAccessExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final InstanceOfExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final IntegerLiteralExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final LongLiteralExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final MarkerAnnotationExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
     public Visitable visit(final MethodCallExpr n, final String arg) {
       MethodCallExpr cpy = n.clone();
       Visitable ret = super.visit(n, arg);
@@ -415,24 +142,6 @@ public class RobotPoet {
           || (n.getArguments().size() != cpy.getArguments().size())) {
         return null;
       }
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final NameExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final NormalAnnotationExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final NullLiteralExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
       return ret;
     }
 
@@ -446,192 +155,13 @@ public class RobotPoet {
       return ret;
     }
 
-    @Override
-    public Visitable visit(final SingleMemberAnnotationExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final StringLiteralExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final SuperExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final ThisExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final UnaryExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final VariableDeclarationExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final LambdaExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final MethodReferenceExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final TypeExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final SwitchExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final TextBlockLiteralExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final PatternExpr n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    /* MISC */
-    @Override
-    public Visitable visit(final CatchClause n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final MemberValuePair n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final ArrayCreationLevel n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final SwitchEntry n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    /* TYPES */
-
-    @Override
-    public Visitable visit(final ClassOrInterfaceType n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final PrimitiveType n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final ArrayType n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final IntersectionType n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final UnionType n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final UnknownType n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final VoidType n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final WildcardType n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final VarType n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    /* PARAMETERS */
-
-    @Override
-    public Visitable visit(final Parameter n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final TypeParameter n, final String arg) {
-      return n;
-    }
-
     /* NAMES */
-
-    @Override
-    public Visitable visit(final Name n, final String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-
     @Override
     public Visitable visit(final SimpleName n, final String arg) {
       Visitable ret = super.visit(n, arg);
       if (clazzes.contains(n.asString()) || instances.contains(n.asString())) {
         return null;
       }
-      return ret;
-    }
-
-    @Override
-    public Visitable visit(final Modifier n, final String arg) {
-      Visitable ret = super.visit(n, arg);
       return ret;
     }
 
@@ -662,14 +192,6 @@ public class RobotPoet {
     public Visitable visit(final ReceiverParameter n, final String arg) {
       return n;
     }
-
-    /* Covering individual types covers this case as well. Don't Override
-    @Override
-    public Visitable visit(NodeList n, String arg) {
-      Visitable ret = super.visit(n, arg);
-      return ret;
-    }
-    */
 
     // No need to process imports, bypass recursive walk
     @Override
