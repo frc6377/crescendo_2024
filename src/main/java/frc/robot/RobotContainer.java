@@ -4,10 +4,14 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -47,17 +51,16 @@ public class RobotContainer {
   private final RobotStateManager robotStateManager = new RobotStateManager();
 
   // The robot's subsystems and commands are defined here...
-  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+  private final IntakeSubsystem intakeSubsystem;
   private final TriggerSubsystem triggerSubsystem;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final SwerveSubsystem drivetrain;
   private final LimelightSubsystem limelightSubsystem;
 
-  private final SignalingSubsystem signalingSubsystem =
-      new SignalingSubsystem(1, OI.Driver::setRumble, robotStateManager);
+  private final SignalingSubsystem signalingSubsystem;
 
-  private final TrapElvSubsystem trapElvSubsystem = new TrapElvSubsystem();
+  private final TrapElvSubsystem trapElvSubsystem;
 
   private final DynamicRobotConfig dynamicRobotConfig;
 
@@ -72,10 +75,33 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    if (Constants.enabledSubsystems.signalEnabled){
+      signalingSubsystem = new SignalingSubsystem(1, OI.Driver::setRumble, robotStateManager);
+    } else {
+      signalingSubsystem = null;
+    }
     dynamicRobotConfig = new DynamicRobotConfig();
-    drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
+    if (Constants.enabledSubsystems.drivetrainEnabled){
+      drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
+    } else {
+      drivetrain = null;
+    }
+    if (Constants.enabledSubsystems.intakeEnabled){
+      intakeSubsystem = new IntakeSubsystem();
+    } else {
+      intakeSubsystem = null;
+    }
     triggerSubsystem = new TriggerSubsystem();
-    limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
+    if (Constants.enabledSubsystems.limeLightEnabled){
+      limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
+    } else {
+      limelightSubsystem = null;
+    }
+    if (Constants.enabledSubsystems.elvEnabled) {
+      trapElvSubsystem = new TrapElvSubsystem();
+    } else {
+      trapElvSubsystem = null;
+    }
     // Configure the trigger bindings
     configureBindings();
     registerCommands();

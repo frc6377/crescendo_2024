@@ -73,7 +73,13 @@ public final class Constants {
     public static final double WRIST_MAX_ANGLE = Units.degreesToRadians(359); // RADS
     public static final double WRIST_LENGTH = Units.inchesToMeters(12.5);
   }
-
+  public static class enabledSubsystems {
+    public static final boolean intakeEnabled = true;
+    public static final boolean drivetrainEnabled = true;
+    public static final boolean limeLightEnabled = true;
+    public static final boolean elvEnabled = true;
+    public static final boolean signalEnabled = true;
+  }
   public static final int END_GAME_WARNING_TIME = 20;
 
   // Rumble
