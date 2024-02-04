@@ -96,6 +96,9 @@ public class RobotContainer {
                     OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
                     OI.getAxisSupplier(OI.Driver.rotationAxis).get())));
     OI.getButton(OI.Driver.highGearButton).whileTrue(drivetrain.getHighGearCommand());
+    OI.getButton(OI.Driver.pointDriveLeftButton)
+        .or(OI.getButton(OI.Driver.pointDriveRightButton))
+        .whileTrue(drivetrain.getPointDriveCommand());
     OI.getButton(OI.Driver.resetRotationButton).onTrue(drivetrain.getResetRotationCommand());
     OI.getButton(OI.Driver.orientationButton)
         .onTrue(drivetrain.getToggleOrientationCommand())
@@ -109,9 +112,7 @@ public class RobotContainer {
         .whileTrue(drivetrain.handleSourceGuidance())
         .onTrue(new InstantCommand(() -> RobotStateManager.setPlacementMode(PlacementMode.SOURCE)));
     OI.getPOVButton(OI.Driver.ampGuidanceLeftButton)
-        .whileTrue(drivetrain.handleAmpGuidance())
-        .onTrue(new InstantCommand(() -> RobotStateManager.setPlacementMode(PlacementMode.AMP)));
-    OI.getPOVButton(OI.Driver.ampGuidanceRightButton)
+        .or(OI.getPOVButton(OI.Driver.ampGuidanceRightButton))
         .whileTrue(drivetrain.handleAmpGuidance())
         .onTrue(new InstantCommand(() -> RobotStateManager.setPlacementMode(PlacementMode.AMP)));
     OI.getButton(OI.Driver.speakerRotateButton)
@@ -122,8 +123,7 @@ public class RobotContainer {
     OI.getPOVButton(OI.Operator.toggleSourceAutopilotButton)
         .onTrue(new InstantCommand(() -> drivetrain.toggleSourceAutopilot()));
     OI.getPOVButton(OI.Operator.toggleAmpAutopilotLeftButton)
-        .onTrue(new InstantCommand(() -> drivetrain.toggleAmpAutopilot()));
-    OI.getPOVButton(OI.Operator.toggleAmpAutopilotRightButton)
+        .or(OI.getPOVButton(OI.Operator.toggleAmpAutopilotRightButton))
         .onTrue(new InstantCommand(() -> drivetrain.toggleAmpAutopilot()));
 
     // Trap Elv Intaking
@@ -137,7 +137,7 @@ public class RobotContainer {
     OI.getButton(OI.Driver.trapScoreButton).whileTrue(trapElvSubsystem.scoreTrap());
 
     // Trap Elv zeroing button
-    OI.getButton(OI.Driver.zeroArm).whileTrue(trapElvSubsystem.zeroArm());
+    OI.getButton(OI.Operator.zeroArmButton).whileTrue(trapElvSubsystem.zeroArm());
 
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));

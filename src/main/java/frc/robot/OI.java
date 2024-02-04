@@ -44,10 +44,10 @@ public class OI {
     // Start, End & Left/Right stick buttons
     public static final Control resetRotationButton =
         new Control(XboxController.Button.kStart, "Reset field rotation", controller);
-    public static final Control leftStick =
-        new Control(XboxController.Button.kLeftStick, null, controller);
-    public static final Control zeroArm =
-        new Control(XboxController.Button.kRightStick, "Zero Arm", controller);
+    public static final Control pointDriveLeftButton =
+        new Control(XboxController.Button.kLeftStick, "Point drive", controller);
+    public static final Control pointDriveRightButton =
+        new Control(XboxController.Button.kRightStick, "Point drive", controller);
     public static final Control orientationButton =
         new Control(XboxController.Button.kBack, "Toggle swerve orientation", controller);
 
@@ -85,7 +85,8 @@ public class OI {
 
     // A B Y X Buttons
     public static final Control A = new Control(XboxController.Button.kA, null, controller);
-    public static final Control B = new Control(XboxController.Button.kB, null, controller);
+    public static final Control zeroArmButton =
+        new Control(XboxController.Button.kB, "Zero arm", controller);
     public static final Control Y = new Control(XboxController.Button.kY, null, controller);
     public static final Control X = new Control(XboxController.Button.kX, null, controller);
 
