@@ -106,7 +106,7 @@ public class RobotContainer {
                 .withName("Get Placement Mode Command"));
     OI.getButton(OI.Driver.outtakeButton)
         .whileTrue(intakeSubsystem.reverseIntakeCommand().withName("Reverse Intake Command"));
-        
+
     // Swerve config
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain

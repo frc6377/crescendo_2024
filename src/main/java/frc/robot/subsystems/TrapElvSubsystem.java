@@ -326,7 +326,7 @@ public class TrapElvSubsystem extends SubsystemBase {
           });
     }
   }
-  
+
   public Command setPose() {
     return run(() -> {});
   }
