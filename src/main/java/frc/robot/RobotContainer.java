@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -31,6 +32,7 @@ import frc.robot.subsystems.TrapElvSubsystem;
 import frc.robot.subsystems.signaling.SignalingSubsystem;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -109,11 +111,11 @@ public class RobotContainer {
 
     // Guidance
     OI.getPOVButton(OI.Driver.sourceGuidanceButton)
-        .whileTrue(drivetrain.handleSourceGuidance())
+        .whileTrue(new DeferredCommand(() -> drivetrain.handleSourceGuidance(), Set.of(drivetrain)))
         .onTrue(new InstantCommand(() -> RobotStateManager.setPlacementMode(PlacementMode.SOURCE)));
     OI.getPOVButton(OI.Driver.ampGuidanceLeftButton)
         .or(OI.getPOVButton(OI.Driver.ampGuidanceRightButton))
-        .whileTrue(drivetrain.handleAmpGuidance())
+        .whileTrue(new DeferredCommand(() -> drivetrain.handleAmpGuidance(), Set.of(drivetrain)))
         .onTrue(new InstantCommand(() -> RobotStateManager.setPlacementMode(PlacementMode.AMP)));
     OI.getButton(OI.Driver.speakerRotateButton)
         .whileTrue(

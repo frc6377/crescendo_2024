@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -176,12 +177,15 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
           .withRotationalRate(rotationSpeed);
     }
     // Return FOD with autorotate
-    return new SwerveRequest.FieldCentricFacingAngle()
-        .withTargetDirection(autorotateSetpoint)
-        .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-        .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-        .withVelocityX(ySpeed)
-        .withVelocityY(xSpeed);
+    SwerveRequest.FieldCentricFacingAngle autorotateRequest =
+        new SwerveRequest.FieldCentricFacingAngle()
+            .withTargetDirection(autorotateSetpoint)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+            .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+            .withVelocityX(ySpeed)
+            .withVelocityY(xSpeed);
+    autorotateRequest.HeadingController.setPID(0.8, 0.0025, 0);
+    return autorotateRequest;
   }
 
   public Command getResetRotationCommand() {
@@ -290,5 +294,13 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
 
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
     return run(() -> this.setControl(requestSupplier.get()));
+  }
+
+  public void periodic() {
+    if (autorotateSetpoint != null) {
+      SmartDashboard.putNumber("autorotate", autorotateSetpoint.getDegrees());
+    }
+    SmartDashboard.putBoolean("amp auto enabled", isAmpAutopilotEnabled);
+    SmartDashboard.putBoolean("source auto enabled", isSourceAutopilotEnabled);
   }
 }

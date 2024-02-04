@@ -77,21 +77,28 @@ public final class Constants {
 
     public static final Pose2d redAmpPose =
         new Pose2d(
-            0, 0, new Rotation2d(0)); // Final pose for a RED robot to score in a RED-marked amp
+            0,
+            0,
+            Rotation2d.fromDegrees(-90)); // Final pose for a RED robot to score in a RED-marked amp
     public static final Pose2d blueAmpPose =
         new Pose2d(
-            0, 0, new Rotation2d(0)); // Final pose for a BLUE robot to score in the BLUE-marked amp
+            0,
+            0,
+            Rotation2d.fromDegrees(
+                90)); // Final pose for a BLUE robot to score in the BLUE-marked amp
 
     public static final Pose2d redSourcePose =
         new Pose2d(
             0,
             0,
-            new Rotation2d(0)); // Final pose for a RED robot to intake from a RED-marked source
+            Rotation2d.fromDegrees(
+                45)); // Final pose for a RED robot to intake from a RED-marked source
     public static final Pose2d blueSourcePose =
         new Pose2d(
             0,
             0,
-            new Rotation2d(0)); // Final pose for a BLUE robot to intake from a BLUE-marked source
+            Rotation2d.fromDegrees(
+                -45)); // Final pose for a BLUE robot to intake from a BLUE-marked source
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
