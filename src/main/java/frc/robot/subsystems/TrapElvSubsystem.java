@@ -8,7 +8,6 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxSim;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -16,7 +15,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
@@ -44,9 +42,9 @@ public class TrapElvSubsystem extends SubsystemBase {
   private final CANSparkMax rollerMotor;
 
   // Elevator motors
-  private final CANSparkMaxSim baseMotor1;
+  private final CANSparkMax baseMotor1;
   private final CANSparkMax baseMotor2;
-  private final CANSparkMaxSim scoringMotor;
+  private final CANSparkMax scoringMotor;
 
   // Offsets
   private double baseMotorOffset1;
@@ -132,7 +130,7 @@ public class TrapElvSubsystem extends SubsystemBase {
             TrapElvConstants.WRIST_PID[0],
             TrapElvConstants.WRIST_PID[1],
             TrapElvConstants.WRIST_PID[2]);
-    TrapElvTab.add("Wrist PID", wristPIDController);
+    // TrapElvTab.add("Wrist PID", wristPIDController);
 
     wristEncoder = new CANcoder(6);
 
@@ -149,14 +147,14 @@ public class TrapElvSubsystem extends SubsystemBase {
     baseMotorOffset1 = 0.0;
     baseMotorOffset2 = 0.0;
 
-    baseMotor1 = new CANSparkMaxSim(TrapElvConstants.BASE_MOTOR1_ID, MotorType.kBrushless);
+    baseMotor1 = new CANSparkMax(TrapElvConstants.BASE_MOTOR1_ID, MotorType.kBrushless);
     baseMotor1.restoreFactoryDefaults();
     baseMotor1.getPIDController().setP(TrapElvConstants.BASE_PID[0]);
     baseMotor1.getPIDController().setI(TrapElvConstants.BASE_PID[1]);
     baseMotor1.getPIDController().setD(TrapElvConstants.BASE_PID[2]);
     baseMotor1.getPIDController().setIZone(TrapElvConstants.BASE_PID[3]);
     baseMotor1.getPIDController().setFF(TrapElvConstants.BASE_PID[4]);
-    TrapElvTab.add("Base Elv PID", baseMotor1.getPIDController());
+    // TrapElvTab.add("Base Elv PID", baseMotor1.getPIDController());
 
     baseMotor2 = new CANSparkMax(TrapElvConstants.BASE_MOTOR2_ID, MotorType.kBrushless);
     baseMotor2.restoreFactoryDefaults();
@@ -166,14 +164,14 @@ public class TrapElvSubsystem extends SubsystemBase {
     baseMotor2.getPIDController().setIZone(TrapElvConstants.BASE_PID[3]);
     baseMotor2.getPIDController().setFF(TrapElvConstants.BASE_PID[4]);
 
-    scoringMotor = new CANSparkMaxSim(TrapElvConstants.SCORING_MOTOR_ID, MotorType.kBrushless);
+    scoringMotor = new CANSparkMax(TrapElvConstants.SCORING_MOTOR_ID, MotorType.kBrushless);
     scoringMotor.restoreFactoryDefaults();
     scoringMotor.getPIDController().setP(TrapElvConstants.SCORING_PID[0]);
     scoringMotor.getPIDController().setI(TrapElvConstants.SCORING_PID[1]);
     scoringMotor.getPIDController().setD(TrapElvConstants.SCORING_PID[2]);
     scoringMotor.getPIDController().setIZone(TrapElvConstants.SCORING_PID[3]);
     scoringMotor.getPIDController().setFF(TrapElvConstants.SCORING_PID[4]);
-    TrapElvTab.add("Scoring Elv PID", scoringMotor.getPIDController());
+    // TrapElvTab.add("Scoring Elv PID", scoringMotor.getPIDController());
 
     // SmartDashboard
     sourceLog = new DebugEntry<Boolean>(baseLimit.get(), "Source Beam Break", this);
@@ -394,7 +392,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
-    for (double i = 0; i < Robot.defaultPeriodSecs; i += CANSparkMaxSim.kPeriod) {
+    /*for (double i = 0; i < Robot.defaultPeriodSecs; i += CANSparkMaxSim.kPeriod) {
       m_baseElevatorSim.setInput(baseMotor1.get() * RobotController.getBatteryVoltage());
       m_baseElevatorSim.update(CANSparkMaxSim.kPeriod);
       baseMotor1.update(
@@ -431,5 +429,6 @@ public class TrapElvSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Wrist Motor Sim Output", wristMotor.get());
     SmartDashboard.putNumber(
         "Wrist Sim Angle", Units.radiansToRotations(m_wristMotorSim.getAngleRads()));
+        */
   }
 }
