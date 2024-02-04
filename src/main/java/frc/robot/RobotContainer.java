@@ -4,14 +4,10 @@
 
 package frc.robot;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -75,24 +71,24 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    if (Constants.enabledSubsystems.signalEnabled){
+    if (Constants.enabledSubsystems.signalEnabled) {
       signalingSubsystem = new SignalingSubsystem(1, OI.Driver::setRumble, robotStateManager);
     } else {
       signalingSubsystem = null;
     }
     dynamicRobotConfig = new DynamicRobotConfig();
-    if (Constants.enabledSubsystems.drivetrainEnabled){
+    if (Constants.enabledSubsystems.drivetrainEnabled) {
       drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
     } else {
       drivetrain = null;
     }
-    if (Constants.enabledSubsystems.intakeEnabled){
+    if (Constants.enabledSubsystems.intakeEnabled) {
       intakeSubsystem = new IntakeSubsystem();
     } else {
       intakeSubsystem = null;
     }
     triggerSubsystem = new TriggerSubsystem();
-    if (Constants.enabledSubsystems.limeLightEnabled){
+    if (Constants.enabledSubsystems.limeLightEnabled) {
       limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
     } else {
       limelightSubsystem = null;
