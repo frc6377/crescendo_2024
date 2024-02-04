@@ -73,7 +73,7 @@ public class RobotContainer {
     dynamicRobotConfig = new DynamicRobotConfig();
     drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
     limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
-    testSensor = new TimeOfFlight(3);
+    testSensor = new TimeOfFlight(0);
     // Configure the trigger bindings
     configureBindings();
     registerCommands();
