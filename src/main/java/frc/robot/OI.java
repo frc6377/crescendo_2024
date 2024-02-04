@@ -34,12 +34,12 @@ public class OI {
     // Bumpers & Triggers
     public static final Control intakeTrigger =
         new Control(XboxController.Axis.kLeftTrigger, "Run intake", controller, 0.5);
-    public static final Control RT =
-        new Control(XboxController.Axis.kRightTrigger, null, controller, 0.5);
-    public static final Control ampScoreButton =
-        new Control(XboxController.Button.kLeftBumper, "Score AMP", controller);
+    public static final Control ampScoreTrigger =
+        new Control(XboxController.Axis.kRightTrigger, "Score amp", controller, 0.5);
     public static final Control outtakeButton =
-        new Control(XboxController.Button.kRightBumper, "Run outtake", controller);
+        new Control(XboxController.Button.kLeftBumper, "Run outtake", controller);
+    public static final Control highGearButton =
+        new Control(XboxController.Button.kRightBumper, "High gear", controller);
 
     // Start, End & Left/Right stick buttons
     public static final Control resetRotationButton =

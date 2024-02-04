@@ -39,25 +39,14 @@ import java.util.Map;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private static final double MaxSpeed = 6; // 6 meters per second desired top speed
-  private static final double MaxAngularRate =
-      Math.PI; // Half a rotation per second max angular velocity
-
-  private final RobotStateManager robotStateManager = new RobotStateManager();
-
-  // The robot's subsystems and commands are defined here...
-  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final SwerveSubsystem drivetrain;
-  private final LimelightSubsystem limelightSubsystem;
-
-  private final SignalingSubsystem signalingSubsystem =
-      new SignalingSubsystem(1, OI.Driver::setRumble, robotStateManager);
-
-  private final TrapElvSubsystem trapElvSubsystem = new TrapElvSubsystem();
-
   private final DynamicRobotConfig dynamicRobotConfig;
+
+  private final SwerveSubsystem drivetrain;
+  private final IntakeSubsystem intakeSubsystem;
+  private final LimelightSubsystem limelightSubsystem;
+  private final SignalingSubsystem signalingSubsystem;
+
+  private final TrapElvSubsystem trapElvSubsystem;
 
   private SendableChooser<Command> autoChooser;
   private ShuffleboardTab configTab = Shuffleboard.getTab("Config");
@@ -71,9 +60,14 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     dynamicRobotConfig = new DynamicRobotConfig();
+
     drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
+    intakeSubsystem = new IntakeSubsystem();
     limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
-    // Configure the trigger bindings
+    signalingSubsystem = new SignalingSubsystem(1, OI.Driver::setRumble);
+
+    trapElvSubsystem = new TrapElvSubsystem();
+
     configureBindings();
     registerCommands();
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -101,6 +95,7 @@ public class RobotContainer {
                     OI.getAxisSupplier(OI.Driver.xTranslationAxis).get(),
                     OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
                     OI.getAxisSupplier(OI.Driver.rotationAxis).get())));
+    OI.getButton(OI.Driver.highGearButton).whileTrue(drivetrain.getHighGearCommand());
     OI.getButton(OI.Driver.resetRotationButton).onTrue(drivetrain.getResetRotationCommand());
     OI.getButton(OI.Driver.orientationButton)
         .onTrue(drivetrain.getToggleOrientationCommand())
@@ -138,7 +133,7 @@ public class RobotContainer {
         .whileTrue(trapElvSubsystem.intakeSource().onlyWhile(trapElvSubsystem.getSourceBreak()));
 
     // Trap Elv Scoring
-    OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapElvSubsystem.scoreAMP());
+    OI.getTrigger(OI.Driver.ampScoreTrigger).whileTrue(trapElvSubsystem.scoreAMP());
     OI.getButton(OI.Driver.trapScoreButton).whileTrue(trapElvSubsystem.scoreTrap());
 
     // Trap Elv zeroing button

@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants.PathfindingConstants;
 import frc.robot.OI;
@@ -38,15 +39,18 @@ import java.util.function.Supplier;
 public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   private static final double kSimLoopPeriod = 0.005; // 5 ms
   private static final double maxSpeed = Units.feetToMeters(18.2); // Desired top speed
+  private static final double lowGearCoefficient = 0.7;
   private static final double maxAngularRate =
       Math.PI; // Max angular velocity in radians per second
   private final double drivetrainRadius;
   private final Telemetry telemetry = new Telemetry(maxSpeed);
 
-  private static boolean isFieldOriented = true;
-  private static Rotation2d autorotateSetpoint = null;
-  private static boolean isAmpAutopilotEnabled = true;
-  private static boolean isSourceAutopilotEnabled = true;
+  private boolean isFieldOriented = true;
+  private boolean isHighGear = false;
+  private boolean isPointDrive = false;
+  private Rotation2d autorotateSetpoint = null;
+  private boolean isAmpAutopilotEnabled = true;
+  private boolean isSourceAutopilotEnabled = true;
 
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
@@ -136,45 +140,64 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
 
   // xSpeed, ySpeed, rotationSpeed should be axes with range -1<0<1
   public SwerveRequest getDriveRequest(double xSpeed, double ySpeed, double rotationSpeed) {
-    // Convert to vector
-    double magnitude = OI.Driver.translationMagnitudeCurve.calculate(Math.hypot(xSpeed, ySpeed));
-    Rotation2d rotation = new Rotation2d(xSpeed, ySpeed);
-    xSpeed = magnitude * Math.cos(rotation.getRadians());
-    ySpeed = magnitude * Math.sin(rotation.getRadians());
-    if (xSpeed == 0 && ySpeed == 0 && rotationSpeed == 0) {
+    // Idle if receiving only zero-value inputs & no autorotate
+    if (xSpeed == 0 && ySpeed == 0 && rotationSpeed == 0 && autorotateSetpoint == null) {
       return new SwerveRequest.Idle();
     }
+    // Disable autorotate if rotationSpeed is greater than zero
+    if (rotationSpeed > 0) {
+      endAutorotate();
+    }
+    // Convert inputs to vector
+    double magnitude = OI.Driver.translationMagnitudeCurve.calculate(Math.hypot(xSpeed, ySpeed));
+    Rotation2d rotation = new Rotation2d(xSpeed, ySpeed);
+    // Scale vector based on gearing
+    if (!isHighGear) {
+      magnitude *= lowGearCoefficient;
+    }
+    // Break vector into components
+    xSpeed = magnitude * Math.cos(rotation.getRadians());
+    ySpeed = magnitude * Math.sin(rotation.getRadians());
+    // Scale components based on maximum speed
     xSpeed *= maxSpeed;
     ySpeed *= maxSpeed;
     rotationSpeed *= maxAngularRate;
-    if (isFieldOriented) {
-      if (autorotateSetpoint != null) {
-        return new SwerveRequest.FieldCentricFacingAngle()
-            .withTargetDirection(autorotateSetpoint)
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-            .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-            // Mixup is intentional, WPI has its coordinate plane from the perspective of the
-            // scoring table
-            .withVelocityX(ySpeed)
-            .withVelocityY(xSpeed);
-      }
-      return new SwerveRequest.FieldCentric()
+    // All following y-x mixups are intentional, WPI has its coordinate plane from the perspective
+    // of the scoring table
+    // If not field oriented return ROD
+    if (!isFieldOriented) {
+      return new SwerveRequest.RobotCentric()
           .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
           .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-          // Mixup is intentional, WPI has its coordinate plane from the perspective of the scoring
-          // table
           .withVelocityX(ySpeed)
           .withVelocityY(xSpeed)
           .withRotationalRate(rotationSpeed);
     }
-    return new SwerveRequest.RobotCentric()
+    // If point drive return FOD with point drive
+    if (isPointDrive) {
+      return new SwerveRequest.FieldCentricFacingAngle()
+          .withTargetDirection(rotation)
+          .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+          .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+          .withVelocityX(ySpeed)
+          .withVelocityY(xSpeed);
+    }
+    // If no autorotate setpoint return FOD
+    if (autorotateSetpoint == null) {
+      return new SwerveRequest.FieldCentric()
+          .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+          .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+          .withVelocityX(ySpeed)
+          .withVelocityY(xSpeed)
+          .withRotationalRate(rotationSpeed);
+    }
+    // Return FOD with autorotate
+    return new SwerveRequest.FieldCentricFacingAngle()
+        .withTargetDirection(autorotateSetpoint)
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
         .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-        // Mixup is intentional, WPI has its coordinate plane from the perspective of the scoring
-        // table
         .withVelocityX(ySpeed)
-        .withVelocityY(xSpeed)
-        .withRotationalRate(rotationSpeed);
+        .withVelocityY(xSpeed);
   }
 
   private Command getAutopilotCommand(Pose2d pose) {
@@ -218,6 +241,22 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
 
   public void toggleAmpAutopilot() {
     isAmpAutopilotEnabled = !isAmpAutopilotEnabled;
+  }
+
+  public void setHighGear(boolean isHighGear) {
+    this.isHighGear = isHighGear;
+  }
+
+  public Command getHighGearCommand() {
+    return new StartEndCommand(() -> setHighGear(true), () -> setHighGear(false));
+  }
+
+  public void setPointDrive(boolean isPointDrive) {
+    this.isPointDrive = isPointDrive;
+  }
+
+  public Command getPointDriveCommand() {
+    return new StartEndCommand(() -> setPointDrive(true), () -> setPointDrive(false));
   }
 
   public BiConsumer<Pose2d, Double> getVisionMeasurementConsumer() {

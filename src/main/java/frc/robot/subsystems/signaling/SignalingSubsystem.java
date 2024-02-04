@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
-import frc.robot.RobotStateManager;
 import frc.robot.subsystems.signaling.patterns.FireFlyPattern;
 import frc.robot.subsystems.signaling.patterns.PatternNode;
 import frc.robot.subsystems.signaling.patterns.RainbowPattern;
@@ -37,14 +36,8 @@ public class SignalingSubsystem extends SubsystemBase {
 
   private final Consumer<Double> driverRumbleConsumer;
 
-  private final RobotStateManager robotStateManager;
-
-  public SignalingSubsystem(
-      final int ID,
-      final Consumer<Double> driverRumbleConsumer,
-      final RobotStateManager robotStateManager) {
+  public SignalingSubsystem(final int ID, final Consumer<Double> driverRumbleConsumer) {
     this.driverRumbleConsumer = driverRumbleConsumer;
-    this.robotStateManager = robotStateManager;
 
     tick = 0;
     patternTick = 0;
