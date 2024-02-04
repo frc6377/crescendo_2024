@@ -23,14 +23,25 @@ import java.util.ArrayList;
 
 /** Add your docs here. */
 public class RobotPoet {
-  private CompilationUnit cu;
-
+  private static CompilationUnit cu;
+  private static String fileSuffix = new String();
   private static ArrayList<String> clazzes = new ArrayList<String>();
   private static ArrayList<String> instances = new ArrayList<String>();
 
-  public RobotPoet(String... subsystemsToRemove) {
+  private RobotPoet() {}
+
+  public static void generateRobotContainerWithout(String... subsystemsToRemove) {
+    clazzes.clear();
+    instances.clear();
     for (String s : subsystemsToRemove) {
       clazzes.add(s);
+      fileSuffix += s.charAt(0);
+      for (int i = 1; i < s.length(); i++) {
+        if (s.charAt(i) >= 'A' && s.charAt(i) <= 'Z') {
+          break;
+        }
+        fileSuffix += s.charAt(i);
+      }
     }
     try {
       cu = StaticJavaParser.parse(Path.of("src/main/java/frc/robot/RobotContainer.java"));
@@ -42,7 +53,8 @@ public class RobotPoet {
         new DeleteVisitor().visit(cu, null);
       } while (clazzesSize != clazzes.size() || instancesSize != instances.size());
 
-      try (FileWriter fileWriter = new FileWriter("src/main/java/frc/robot/RobotContainer.java");
+      try (FileWriter fileWriter =
+              new FileWriter("src/main/java/frc/robot/RobotContainerNo" + fileSuffix + ".java");
           PrintWriter printWriter = new PrintWriter(fileWriter)) {
         printWriter.print(cu.toString());
       }
@@ -53,7 +65,7 @@ public class RobotPoet {
     }
   }
 
-  public void printAstAsGraph() {
+  public static void printAstAsGraph() {
     DotPrinter printer = new DotPrinter(true);
     try (FileWriter fileWriter = new FileWriter("ast.dot");
         PrintWriter printWriter = new PrintWriter(fileWriter)) {
@@ -64,7 +76,7 @@ public class RobotPoet {
     }
   }
 
-  private class DeleteVisitor extends ModifierVisitor<String> {
+  private static class DeleteVisitor extends ModifierVisitor<String> {
 
     @Override
     public Visitable visit(final CompilationUnit n, final String arg) {
@@ -87,6 +99,10 @@ public class RobotPoet {
     @Override
     public Visitable visit(final ClassOrInterfaceDeclaration n, final String arg) {
       Visitable ret = super.visit(n, arg);
+      if (n != null && n.getName().asString().equals("RobotContainer")) {
+        n.setName("RobotContainerNo" + fileSuffix);
+        return n;
+      }
       return ret;
     }
 
@@ -99,6 +115,10 @@ public class RobotPoet {
     @Override
     public Visitable visit(final ConstructorDeclaration n, final String arg) {
       Visitable ret = super.visit(n, arg);
+      if (n != null && n.getName().asString().equals("RobotContainer")) {
+        n.setName("RobotContainerNo" + fileSuffix);
+        return n;
+      }
       return ret;
     }
 
