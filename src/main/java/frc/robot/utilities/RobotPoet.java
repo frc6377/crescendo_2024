@@ -11,7 +11,6 @@ import com.github.javaparser.ast.comments.*;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.modules.*;
 import com.github.javaparser.ast.stmt.*;
-import com.github.javaparser.ast.type.*;
 import com.github.javaparser.ast.visitor.*;
 import com.github.javaparser.printer.*;
 import java.io.FileWriter;
@@ -31,6 +30,7 @@ public class RobotPoet {
   private RobotPoet() {}
 
   public static void generateRobotContainerWithout(String... subsystemsToRemove) {
+    fileSuffix = "";
     clazzes.clear();
     instances.clear();
     for (String s : subsystemsToRemove) {
@@ -42,6 +42,10 @@ public class RobotPoet {
         }
         fileSuffix += s.charAt(i);
       }
+    }
+    if (clazzes.contains("SwerveSubsystem")) {
+      // AutoBuilder requires config setup in the SwerveSubsystem instance. Add for removal.
+      clazzes.add("AutoBuilder");
     }
     try {
       cu = StaticJavaParser.parse(Path.of("src/main/java/frc/robot/RobotContainer.java"));
@@ -99,7 +103,6 @@ public class RobotPoet {
       }
       return ret;
     }
-
 
     @Override
     public Visitable visit(final ConstructorDeclaration n, final String arg) {

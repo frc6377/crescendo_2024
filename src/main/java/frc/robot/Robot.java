@@ -39,7 +39,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotInit() {
 
-    RobotPoet.generateRobotContainerWithout("SwerveSubsystem", "AutoBuilder");
+    RobotPoet.generateRobotContainerWithout("SwerveSubsystem");
 
     Logger.recordMetadata("ProjectName", "6377_crescendo_2024");
     Logger.recordMetadata("Repository", BuildConstants.MAVEN_NAME);
