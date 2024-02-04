@@ -35,6 +35,9 @@ public class RobotPoet {
     instances.clear();
     for (String s : subsystemsToRemove) {
       clazzes.add(s);
+
+      // Take the first word of the subsystem name
+      // so the output file name doesn't get too long
       fileSuffix += s.charAt(0);
       for (int i = 1; i < s.length(); i++) {
         if (s.charAt(i) >= 'A' && s.charAt(i) <= 'Z') {
@@ -43,12 +46,19 @@ public class RobotPoet {
         fileSuffix += s.charAt(i);
       }
     }
+
+    // AutoBuilder requires config setup in the SwerveSubsystem instance.
+    // Add for removal since we don't have a better way to detect.
     if (clazzes.contains("SwerveSubsystem")) {
-      // AutoBuilder requires config setup in the SwerveSubsystem instance. Add for removal.
       clazzes.add("AutoBuilder");
     }
+
     try {
+      // Generate the Abstract Syntax Tree (AST) from RobotContainer
       cu = StaticJavaParser.parse(Path.of("src/main/java/frc/robot/RobotContainer.java"));
+
+      // Dependencies to remove are added as they are found.
+      // Re-traverse the AST until the list of items to remove stops growing
       int clazzesSize;
       int instancesSize;
       do {
@@ -57,6 +67,7 @@ public class RobotPoet {
         new DeleteVisitor().visit(cu, null);
       } while (clazzesSize != clazzes.size() || instancesSize != instances.size());
 
+      // Create a new file with the result
       try (FileWriter fileWriter =
               new FileWriter("src/main/java/frc/robot/RobotContainerNo" + fileSuffix + ".java");
           PrintWriter printWriter = new PrintWriter(fileWriter)) {
@@ -69,6 +80,8 @@ public class RobotPoet {
     }
   }
 
+  // Creates a new .dot file that can be converted to .svg using Graphiz program
+  // The SVG is a web browser viewable image of the AST.
   public static void printAstAsGraph() {
     DotPrinter printer = new DotPrinter(true);
     try (FileWriter fileWriter = new FileWriter("ast.dot");
@@ -83,12 +96,13 @@ public class RobotPoet {
   private static class DeleteVisitor extends ModifierVisitor<String> {
 
     /* DECLARATORS */
-
     @Override
     public Visitable visit(VariableDeclarator varDec, String args) {
       VariableDeclarator cpy = varDec.clone();
       Visitable ret = super.visit(varDec, args);
       if (ret == null && !instances.contains(cpy.getNameAsString())) {
+        // Found a variable declaration that needs to be removed.
+        // Add it to the list
         instances.add(cpy.getNameAsString());
       }
       return ret;
@@ -98,6 +112,7 @@ public class RobotPoet {
     public Visitable visit(final ClassOrInterfaceDeclaration n, final String arg) {
       Visitable ret = super.visit(n, arg);
       if (n != null && n.getName().asString().equals("RobotContainer")) {
+        // Rename the Class to match the new file getting written
         n.setName("RobotContainerNo" + fileSuffix);
         return n;
       }
@@ -108,6 +123,7 @@ public class RobotPoet {
     public Visitable visit(final ConstructorDeclaration n, final String arg) {
       Visitable ret = super.visit(n, arg);
       if (n != null && n.getName().asString().equals("RobotContainer")) {
+        // Rename the Constructor to match the new file getting written
         n.setName("RobotContainerNo" + fileSuffix);
         return n;
       }
@@ -119,6 +135,9 @@ public class RobotPoet {
       ReturnStmt cpy = n.clone();
       Visitable ret = super.visit(n, arg);
       if (ret == null || n.getExpression().isEmpty()) {
+        // The return expression got removed.
+        // Can't just remove because then a method would be missing
+        // a return value. Return null instead
         return cpy.setExpression(new NullLiteralExpr());
       }
       return ret;
@@ -131,6 +150,8 @@ public class RobotPoet {
       AssignExpr cpy = n.clone();
       Visitable ret = super.visit(n, args);
       if (ret == null && !instances.contains(cpy.getTarget().toString())) {
+        // The assignment is being removed, meaning that the
+        // thing we were assigning must also get removed. Add it to the list.
         instances.add(cpy.getTarget().toString());
       }
       return ret;
@@ -143,6 +164,9 @@ public class RobotPoet {
       if (n == null
           || (n.getScope().isEmpty() && cpy.getScope().isPresent())
           || (n.getArguments().size() != cpy.getArguments().size())) {
+        // The scope (class instance or name calling the method) went away
+        // or one or more parameters got removed. So this is no longer valid
+        // and needs to be removed as well.
         return null;
       }
       return ret;
@@ -153,6 +177,8 @@ public class RobotPoet {
       ObjectCreationExpr cpy = n.clone();
       Visitable ret = super.visit(n, arg);
       if (n == null || (n.getArguments().size() != cpy.getArguments().size())) {
+        // One or more of the Constructor parameters got removed. Assuming that means
+        // this the Constructor is no longer valid and needs to be removed as well.
         return null;
       }
       return ret;
@@ -162,6 +188,9 @@ public class RobotPoet {
     @Override
     public Visitable visit(final SimpleName n, final String arg) {
       Visitable ret = super.visit(n, arg);
+      // Base case for when to propogate an item's removal upward
+      // Returning null removes the item from the AST and parent will also be removed (in most
+      // cases)
       if (clazzes.contains(n.asString()) || instances.contains(n.asString())) {
         return null;
       }
