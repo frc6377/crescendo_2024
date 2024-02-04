@@ -326,6 +326,14 @@ public class TrapElvSubsystem extends SubsystemBase {
           });
     }
   }
+  
+  public Command setPose() {
+    return run(() -> {});
+  }
+
+  public Command score() {
+    return run(() -> {});
+  }
 
   public Command zeroElv() {
     return startEnd(

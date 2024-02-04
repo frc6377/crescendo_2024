@@ -94,7 +94,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    OI.getButton(OI.Operator.A)
+    OI.getButton(OI.Operator.switchPlacement)
         .onTrue(
             new InstantCommand(robotStateManager::switchPlacementMode)
                 .withName("Switch Placement Mode Command"));
@@ -102,9 +102,11 @@ public class RobotContainer {
         .whileTrue(
             intakeSubsystem
                 .getIntakeCommand(robotStateManager.getPlacementMode())
+                .alongWith(trapElvSubsystem.intake(robotStateManager.getPlacementMode()))
                 .withName("Get Placement Mode Command"));
     OI.getButton(OI.Driver.outtakeButton)
         .whileTrue(intakeSubsystem.reverseIntakeCommand().withName("Reverse Intake Command"));
+        
     // Swerve config
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain

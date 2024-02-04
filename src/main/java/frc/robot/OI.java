@@ -75,7 +75,7 @@ public class OI {
     private static final XboxController controller = new XboxController(operatorJoystickPort);
 
     // A B Y X Buttons
-    public static final Control A =
+    public static final Control switchPlacement =
         new Control(XboxController.Button.kA, "Switch placement", controller);
     public static final Control B = new Control(XboxController.Button.kB, null, controller);
     public static final Control Y = new Control(XboxController.Button.kY, null, controller);
