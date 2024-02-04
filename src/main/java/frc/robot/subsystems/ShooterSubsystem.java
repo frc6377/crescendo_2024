@@ -149,7 +149,6 @@ public class ShooterSubsystem extends SubsystemBase {
                         - speakerConfigList[i].getSpeedBottomInRPM()))
                 + speakerConfigList[i].getSpeedBottomInRPM();
         speeds = new SpeakerConfig(distance, topSpeed, bottomSpeed);
-        System.out.println(i + " " + distance);
         return speeds;
       }
     }
