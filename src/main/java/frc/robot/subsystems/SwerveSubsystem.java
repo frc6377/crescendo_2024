@@ -37,24 +37,26 @@ import java.util.function.Supplier;
  * in command-based projects easily.
  */
 public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
-  private static final double kSimLoopPeriod = 0.005; // 5 ms
-  private static final double maxSpeed = Units.feetToMeters(18.2); // Desired top speed
-  private static final double lowGearCoefficient = 0.7;
-  private static final double maxAngularRate =
-      Math.PI; // Max angular velocity in radians per second
-  private final double drivetrainRadius;
-  private final Telemetry telemetry = new Telemetry(maxSpeed);
+  private final double kSimLoopPeriod = 0.005; // 5 ms
+  private Notifier m_simNotifier = null;
+  private double m_lastSimTime;
 
+  private final double maxSpeed =
+      Units.feetToMeters(18.2); // Max angular linear velocity in radians per second
+  private final double maxAngularSpeed = Math.PI; // Max angular velocity in radians per second
+  private final SwerveDriveKinematics kinematics;
+  private final Telemetry telemetry = new Telemetry(maxSpeed);
+  private final double drivetrainRadius;
+
+  private final double lowGearCoefficient = 0.7;
+
+  // State handling
   private boolean isFieldOriented = true;
   private boolean isHighGear = false;
   private boolean isPointDrive = false;
-  private Rotation2d autorotateSetpoint = null;
-  private boolean isAmpAutopilotEnabled = true;
   private boolean isSourceAutopilotEnabled = true;
-
-  private Notifier m_simNotifier = null;
-  private double m_lastSimTime;
-  private SwerveDriveKinematics kinematics;
+  private boolean isAmpAutopilotEnabled = true;
+  private Rotation2d autorotateSetpoint = null;
 
   public SwerveSubsystem(
       SwerveDrivetrainConstants driveTrainConstants,
@@ -120,24 +122,6 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     return kinematics.toChassisSpeeds(super.getState().ModuleStates);
   }
 
-  public void setAutorotate(Rotation2d setpoint) {
-    autorotateSetpoint = setpoint;
-  }
-
-  public void setSpeakerAutorotate() {
-    Pose2d speakerPose =
-        RobotStateManager.getIsAllianceRed()
-            ? PathfindingConstants.redAmpPose
-            : PathfindingConstants.blueAmpPose;
-    double x = Math.abs(speakerPose.getX() - getState().Pose.getX());
-    double y = Math.abs(speakerPose.getY() - getState().Pose.getY());
-    autorotateSetpoint = new Rotation2d(Math.atan2(y, x));
-  }
-
-  public void endAutorotate() {
-    autorotateSetpoint = null;
-  }
-
   // xSpeed, ySpeed, rotationSpeed should be axes with range -1<0<1
   public SwerveRequest getDriveRequest(double xSpeed, double ySpeed, double rotationSpeed) {
     // Idle if receiving only zero-value inputs & no autorotate
@@ -161,7 +145,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     // Scale components based on maximum speed
     xSpeed *= maxSpeed;
     ySpeed *= maxSpeed;
-    rotationSpeed *= maxAngularRate;
+    rotationSpeed *= maxAngularSpeed;
     // All following y-x mixups are intentional, WPI has its coordinate plane from the perspective
     // of the scoring table
     // If not field oriented return ROD
@@ -198,6 +182,45 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
         .withSteerRequestType(SteerRequestType.MotionMagicExpo)
         .withVelocityX(ySpeed)
         .withVelocityY(xSpeed);
+  }
+
+  public Command getResetRotationCommand() {
+    return this.runOnce(
+        () ->
+            this.seedFieldRelative(
+                new Pose2d(this.getState().Pose.getTranslation(), Rotation2d.fromDegrees(180))));
+  }
+
+  public Command getToggleOrientationCommand() {
+    return this.runOnce(() -> this.toggleOrientation());
+  }
+
+  public void toggleOrientation() {
+    isFieldOriented = !isFieldOriented;
+    if (!isFieldOriented) {
+      // robot oriented drive means we can't hold a field oriented heading
+      endAutorotate();
+    }
+  }
+
+  public boolean getIsFieldOriented() {
+    return isFieldOriented;
+  }
+
+  public void setHighGear(boolean isHighGear) {
+    this.isHighGear = isHighGear;
+  }
+
+  public Command getHighGearCommand() {
+    return new StartEndCommand(() -> setHighGear(true), () -> setHighGear(false));
+  }
+
+  public void setPointDrive(boolean isPointDrive) {
+    this.isPointDrive = isPointDrive;
+  }
+
+  public Command getPointDriveCommand() {
+    return new StartEndCommand(() -> setPointDrive(true), () -> setPointDrive(false));
   }
 
   private Command getAutopilotCommand(Pose2d pose) {
@@ -243,54 +266,29 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     isAmpAutopilotEnabled = !isAmpAutopilotEnabled;
   }
 
-  public void setHighGear(boolean isHighGear) {
-    this.isHighGear = isHighGear;
+  public void setAutorotate(Rotation2d setpoint) {
+    autorotateSetpoint = setpoint;
   }
 
-  public Command getHighGearCommand() {
-    return new StartEndCommand(() -> setHighGear(true), () -> setHighGear(false));
+  public void setSpeakerAutorotate() {
+    Pose2d speakerPose =
+        RobotStateManager.getIsAllianceRed()
+            ? PathfindingConstants.redAmpPose
+            : PathfindingConstants.blueAmpPose;
+    double x = Math.abs(speakerPose.getX() - getState().Pose.getX());
+    double y = Math.abs(speakerPose.getY() - getState().Pose.getY());
+    autorotateSetpoint = new Rotation2d(Math.atan2(y, x));
   }
 
-  public void setPointDrive(boolean isPointDrive) {
-    this.isPointDrive = isPointDrive;
-  }
-
-  public Command getPointDriveCommand() {
-    return new StartEndCommand(() -> setPointDrive(true), () -> setPointDrive(false));
+  public void endAutorotate() {
+    autorotateSetpoint = null;
   }
 
   public BiConsumer<Pose2d, Double> getVisionMeasurementConsumer() {
     return (t, u) -> addVisionMeasurement(t, u);
   }
 
-  public SwerveRequest getAlignRequest(Rotation2d rotation) {
-    return new SwerveRequest.FieldCentricFacingAngle().withTargetDirection(rotation);
-  }
-
-  public void toggleOrientation() {
-    isFieldOriented = !isFieldOriented;
-    if (!isFieldOriented) {
-      // robot oriented drive means we can't hold a field oriented heading
-      endAutorotate();
-    }
-  }
-
-  public boolean getIsFieldOriented() {
-    return isFieldOriented;
-  }
-
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
     return run(() -> this.setControl(requestSupplier.get()));
-  }
-
-  public Command getResetRotationCommand() {
-    return this.runOnce(
-        () ->
-            this.seedFieldRelative(
-                new Pose2d(this.getState().Pose.getTranslation(), Rotation2d.fromDegrees(180))));
-  }
-
-  public Command getToggleOrientationCommand() {
-    return this.runOnce(() -> this.toggleOrientation());
   }
 }
