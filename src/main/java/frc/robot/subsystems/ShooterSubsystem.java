@@ -120,8 +120,9 @@ public class ShooterSubsystem extends SubsystemBase {
       return speeds;
     }
     // A linear search which determines which points the input distance falls between. May be
-    // converted to a binary search if there are many points
-    for (int i = 0; i < speakerConfigList.length - 1; i++) {
+    // converted to a binary search if there are many points.
+    // Loop exits before the last element because interpolation cannot be done on the last element.
+    for (int i = 0; i <= speakerConfigList.length - 2; i++) {
       if (distance >= speakerConfigList[i].getDistanceInInches()
           && distance < speakerConfigList[i + 1].getDistanceInInches()) {
         // Math to linearly interpolate the speed.
