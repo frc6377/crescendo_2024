@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -20,6 +21,8 @@ public class LimelightSubsystem extends SubsystemBase {
 
   private int measurementsUsed = 0;
   private DebugEntry<Integer> measurementEntry = new DebugEntry<Integer>(0, "measurements", this);
+  private DebugEntry<Double> distanceEntryTag3 = new DebugEntry<Double>(0.0, "Tag 3 Distance (m)", this);
+  private DebugEntry<Double> distanceEntryTag4 = new DebugEntry<Double>(0.0, "Tag 4 Distance (m)", this);
 
   private int lastHeartbeat = 0;
 
@@ -38,8 +41,13 @@ public class LimelightSubsystem extends SubsystemBase {
   }
 
   private Pose2d getPose2d() {
-    double[] botpose = LimelightHelpers.getBotPose_wpiBlue("");
-    return new Pose2d(botpose[0], botpose[1], new Rotation2d(Units.degreesToRadians(botpose[5])));
+    Pose3d botpose = LimelightHelpers.getBotPose3d_wpiBlue("");
+    double distanceToTag3 = Math.sqrt(Math.pow(16.579342 - botpose.getX(), 2) + Math.pow(4.982718 - botpose.getY(), 2) + Math.pow(1.451102 - botpose.getZ(), 2));
+    double distanceToTag4 = Math.sqrt(Math.pow(16.579342 - botpose.getX(), 2) + Math.pow(5.547868 - botpose.getY(), 2) + Math.pow(1.451102 - botpose.getZ(), 2));
+    distanceEntryTag3.log(distanceToTag3);
+    distanceEntryTag4.log(distanceToTag4);
+    return botpose.toPose2d();
+    //return new Pose2d(botpose[0], botpose[1], new Rotation2d(Units.degreesToRadians(botpose[5])));
   }
 
   private double getTime() {

@@ -81,7 +81,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
             DriverStation.getAlliance().isPresent()
                 && DriverStation.getAlliance().get() == Alliance.Red,
         this);
-    this.registerTelemetry(telemetry::telemeterize);
+    // this.registerTelemetry(telemetry::telemeterize);
   }
 
   public SwerveSubsystem(
