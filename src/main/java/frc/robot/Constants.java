@@ -24,6 +24,15 @@ public final class Constants {
     public static final int MOTOR_ID = 9;
     public static final int CANcoder_ID = 17; // replace with actual CANcoder ID
 
+    // Limelight
+    public static final double LIMELIGHT_HEIGHT_INCHES = 8.5;
+    public static final double LIMELIGHT_PITCH_RADIANS = Math.toRadians(30);
+
+    public static final double SPEAKER_TAG_CENTER_HEIGHT_INCHES =
+        57.125; // Don't change unless FIRST changes the field layout
+    public static final int SPEAKER_TAG_ID_RED = 4;
+    public static final int SPEAKER_TAG_ID_BLUE = 7;
+
     // PID coefficients
     public static final double KP = 0.25;
     public static final double KI = 0.001;

@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.LimelightHelpers;
@@ -62,6 +63,9 @@ public class TurretSubsystem extends SubsystemBase {
       new DebugEntry<Double>(0.0, "Goal Position", this);
   private DebugEntry<Double> turretVelocityEntry =
       new DebugEntry<Double>(turretVelocity, "Velocity", this);
+
+  private DebugEntry<Double> tagDistanceEntry =
+      new DebugEntry<Double>(0.0, "LastMeasuredTagDistance", this);
 
   private final RobotStateManager robotStateManager;
 
@@ -168,17 +172,29 @@ public class TurretSubsystem extends SubsystemBase {
 
   public void AimTurret() {
     double limelightTX = LimelightHelpers.getTX("limelight");
-    if (limelightTX == 0) {
-      // TODO: Make turret default to using odometry
-      setTurretPos(turretPosition);
-    } else {
+    if (limelightTX != 0
+        && LimelightHelpers.getFiducialID("limelight")
+            == ((robotStateManager.getAllianceColor() == AllianceColor.BLUE)
+                ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
+                : Constants.TurretConstants.SPEAKER_TAG_ID_RED)) {
+      // X & Rotation
       setTurretPos(Math.toRadians(limelightTX) + turretPosition);
+
+      // Y & Tilting
+      double limelightTY = LimelightHelpers.getTY("limelight");
+      double distanceToTag = tyToDistanceFromTag(limelightTY);
+      tagDistanceEntry.log(distanceToTag);
+      // TODO: Add vertical tilt and use distance for it
 
       if (Math.abs(Math.toRadians(limelightTX) + turretPosition)
           > Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES)) {
         // TODO: Make turret rotate the drivebase if necessary and driver thinks it's a good idea
       }
     }
+    else {
+      // TODO: Make turret default to using odometry
+      setTurretPos(turretPosition);
+    } 
   }
 
   public void AimTurretOdometry(Pose2d robotPos, Pose2d targetPos) {
@@ -187,6 +203,15 @@ public class TurretSubsystem extends SubsystemBase {
 
   public Command getAimTurretCommand() {
     return run(() -> AimTurret()).withName("AimTurretCommand");
+  }
+
+  private double tyToDistanceFromTag(double ty) {
+    double tagTheta = Math.toRadians(ty) + Constants.TurretConstants.LIMELIGHT_PITCH_RADIANS;
+    double height =
+        Constants.TurretConstants.SPEAKER_TAG_CENTER_HEIGHT_INCHES
+            - Constants.TurretConstants.LIMELIGHT_HEIGHT_INCHES;
+    double distance = height / Math.tan(tagTheta);
+    return distance;
   }
 
   @Override
