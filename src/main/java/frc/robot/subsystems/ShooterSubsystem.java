@@ -2,7 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxSim;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -12,8 +12,8 @@ import frc.robot.utilities.DebugEntry;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-  private final CANSparkMax shooterTopMotor;
-  private final CANSparkMax shooterBottomMotor;
+  private final CANSparkMaxSim shooterTopMotor;
+  private final CANSparkMaxSim shooterBottomMotor;
 
   private final RelativeEncoder shooterTopMotorEncoder;
   private final RelativeEncoder shooterBottomMotorEncoder;
@@ -25,9 +25,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public ShooterSubsystem() {
     shooterTopMotor =
-        new CANSparkMax(Constants.ShooterConstants.SHOOTER_MOTOR_TOP_ID, MotorType.kBrushless);
+        new CANSparkMaxSim(Constants.ShooterConstants.SHOOTER_MOTOR_TOP_ID, MotorType.kBrushless);
     shooterBottomMotor =
-        new CANSparkMax(Constants.ShooterConstants.SHOOTER_MOTOR_BOTTOM_ID, MotorType.kBrushless);
+        new CANSparkMaxSim(
+            Constants.ShooterConstants.SHOOTER_MOTOR_BOTTOM_ID, MotorType.kBrushless);
 
     shooterTopMotor.restoreFactoryDefaults();
     shooterTopMotor.setSmartCurrentLimit(40);
