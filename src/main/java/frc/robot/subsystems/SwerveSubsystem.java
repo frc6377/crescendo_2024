@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.OI;
+import frc.robot.Robot;
 import frc.robot.Telemetry;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -81,7 +82,12 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
             DriverStation.getAlliance().isPresent()
                 && DriverStation.getAlliance().get() == Alliance.Red,
         this);
-    this.registerTelemetry(telemetry::telemeterize);
+
+    if (Robot.isSimulation()) {
+      this.registerTelemetry(telemetry::telemeterize);
+    } else {
+      this.registerTelemetry(telemetry::realTelemetry);
+    }
   }
 
   public SwerveSubsystem(
@@ -180,6 +186,6 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   }
 
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
-    return run(() -> this.setControl(requestSupplier.get()));
+    return run(() -> this.setControl(requestSupplier.get())).withName("Request Supplier");
   }
 }
