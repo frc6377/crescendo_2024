@@ -26,6 +26,7 @@ import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TrapElvSubsystem;
 import frc.robot.subsystems.TriggerSubsystem;
@@ -48,6 +49,7 @@ public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final TriggerSubsystem triggerSubsystem;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -136,6 +138,10 @@ public class RobotContainer {
                 .runOnce(() -> drivetrain.toggleOrientation())
                 .withName("Toggle Orientation"));
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
+
+    // Shooter commands
+    shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
+    OI.getTrigger(OI.Operator.shooterTrigger).onTrue(shooterSubsystem.shooterFire());
 
     // Trap Elv Intaking
     OI.getButton(OI.Driver.groundIntakeButton)
