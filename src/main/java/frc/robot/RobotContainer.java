@@ -143,6 +143,7 @@ public class RobotContainer {
       OI.getButton(OI.Driver.orientationButton)
           .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
     }
+
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
     // Trap Elv Intaking
@@ -169,12 +170,12 @@ public class RobotContainer {
   // Register commands for auton
   public void registerCommands() {
     HashMap<String, Command> autonCommands = new HashMap<String, Command>();
-
     autonCommands.put("Shoot", autonTest());
     if (Constants.enabledSubsystems.intakeEnabled) {
       autonCommands.put("Speaker Intake", intakeSubsystem.getSpeakerIntakeCommand());
       autonCommands.put("Amp Intake", intakeSubsystem.getAmpIntakeCommand());
     }
+
     NamedCommands.registerCommands(autonCommands);
   }
 
@@ -191,7 +192,8 @@ public class RobotContainer {
   }
 
   private Command autonTest() {
-    return new InstantCommand(() -> SmartDashboard.putBoolean("NamedCommand test", true));
+    return new InstantCommand(() -> SmartDashboard.putBoolean("NamedCommand test", true))
+        .withName("Test NamedCommand");
   }
 
   /**
@@ -200,6 +202,8 @@ public class RobotContainer {
    * @return the command to run in autonomous(including the delay)
    */
   public Command getAutonomousCommand() {
-    return new WaitCommand(autoDelay.getDouble(0)).andThen(autoChooser.getSelected());
+    return new WaitCommand(autoDelay.getDouble(0))
+        .andThen(autoChooser.getSelected())
+        .withName("Get Auto Command");
   }
 }
