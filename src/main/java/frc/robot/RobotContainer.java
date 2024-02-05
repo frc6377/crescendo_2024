@@ -49,7 +49,7 @@ public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+  private final ShooterSubsystem shooterSubsystem;
   private final TriggerSubsystem triggerSubsystem;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -76,6 +76,7 @@ public class RobotContainer {
   public RobotContainer() {
     dynamicRobotConfig = new DynamicRobotConfig();
     drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
+    shooterSubsystem = new ShooterSubsystem();
     triggerSubsystem = new TriggerSubsystem();
     limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
     // Configure the trigger bindings
