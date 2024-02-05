@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -117,45 +116,52 @@ public class RobotContainer {
    */
   private void configureBindings() {
     OI.getButton(OI.Operator.A).onTrue(new InstantCommand(robotStateManager::switchPlacementMode));
-    OI.getTrigger(OI.Driver.intakeTrigger)
-        .whileTrue(intakeSubsystem.getIntakeCommand(robotStateManager.getPlacementMode()));
-    OI.getButton(OI.Driver.outtakeButton).whileTrue(intakeSubsystem.reverseIntakeCommand());
+    if (Constants.enabledSubsystems.intakeEnabled) {
+      OI.getTrigger(OI.Driver.intakeTrigger)
+          .whileTrue(intakeSubsystem.getIntakeCommand(robotStateManager.getPlacementMode()));
+      OI.getButton(OI.Driver.outtakeButton).whileTrue(intakeSubsystem.reverseIntakeCommand());
+    }
     // Swerve config
-    drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-        drivetrain.applyRequest(
-            () ->
-                drivetrain.getDriveRequest(
-                    OI.getAxisSupplier(OI.Driver.xTranslationAxis).get(),
-                    OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
-                    OI.getAxisSupplier(OI.Driver.rotationAxis).get())));
-    OI.getButton(OI.Driver.brakeButton)
-        .whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
-    OI.getButton(OI.Driver.resetRotationButton)
-        .onTrue(
-            drivetrain.runOnce(
-                () ->
-                    drivetrain.seedFieldRelative(
-                        new Pose2d(
-                            drivetrain.getState().Pose.getTranslation(),
-                            Rotation2d.fromDegrees(180)))));
-    OI.getButton(OI.Driver.orientationButton)
-        .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
+    if (Constants.enabledSubsystems.drivetrainEnabled) {
+      drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
+          drivetrain.applyRequest(
+              () ->
+                  drivetrain.getDriveRequest(
+                      OI.getAxisSupplier(OI.Driver.xTranslationAxis).get(),
+                      OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
+                      OI.getAxisSupplier(OI.Driver.rotationAxis).get())));
+      OI.getButton(OI.Driver.brakeButton)
+          .whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
+      OI.getButton(OI.Driver.resetRotationButton)
+          .onTrue(
+              drivetrain.runOnce(
+                  () ->
+                      drivetrain.seedFieldRelative(
+                          new Pose2d(
+                              drivetrain.getState().Pose.getTranslation(),
+                              Rotation2d.fromDegrees(180)))));
+      OI.getButton(OI.Driver.orientationButton)
+          .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
+    }
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
     // Trap Elv Intaking
-    OI.getButton(OI.Driver.groundIntakeButton)
-        .whileTrue(trapElvSubsystem.intakeGround().onlyWhile(trapElvSubsystem.getGroundBreak()));
-    OI.getButton(OI.Driver.sourceIntakeButton)
-        .whileTrue(trapElvSubsystem.intakeSource().onlyWhile(trapElvSubsystem.getSourceBreak()));
+    if (Constants.enabledSubsystems.elvEnabled) {
+      OI.getButton(OI.Driver.groundIntakeButton)
+          .whileTrue(trapElvSubsystem.intakeGround().onlyWhile(trapElvSubsystem.getGroundBreak()));
+      OI.getButton(OI.Driver.sourceIntakeButton)
+          .whileTrue(trapElvSubsystem.intakeSource().onlyWhile(trapElvSubsystem.getSourceBreak()));
 
-    // Trap Elv Scoring
-    OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapElvSubsystem.scoreAMP());
-    OI.getButton(OI.Driver.trapScoreButton).whileTrue(trapElvSubsystem.scoreTrap());
+      // Trap Elv Scoring
 
-    // Trap Elv zeroing button
-    OI.getButton(OI.Driver.zeroArm).whileTrue(trapElvSubsystem.zeroArm());
+      OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapElvSubsystem.scoreAMP());
+      OI.getButton(OI.Driver.trapScoreButton).whileTrue(trapElvSubsystem.scoreTrap());
+      // Trap Elv zeroing button
 
-    if (Utils.isSimulation()) {
+      OI.getButton(OI.Driver.zeroArm).whileTrue(trapElvSubsystem.zeroArm());
+    }
+
+    if (Robot.isSimulation() && Constants.enabledSubsystems.drivetrainEnabled) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     }
   }
@@ -165,18 +171,23 @@ public class RobotContainer {
     HashMap<String, Command> autonCommands = new HashMap<String, Command>();
 
     autonCommands.put("Shoot", autonTest());
-    autonCommands.put("Speaker Intake", intakeSubsystem.getSpeakerIntakeCommand());
-    autonCommands.put("Amp Intake", intakeSubsystem.getAmpIntakeCommand());
-
+    if (Constants.enabledSubsystems.intakeEnabled) {
+      autonCommands.put("Speaker Intake", intakeSubsystem.getSpeakerIntakeCommand());
+      autonCommands.put("Amp Intake", intakeSubsystem.getAmpIntakeCommand());
+    }
     NamedCommands.registerCommands(autonCommands);
   }
 
   public void onDisabled() {
-    signalingSubsystem.randomizePattern();
+    if (Constants.enabledSubsystems.signalEnabled) {
+      signalingSubsystem.randomizePattern();
+    }
   }
 
   public void onExitDisabled() {
-    signalingSubsystem.clearLEDs();
+    if (Constants.enabledSubsystems.signalEnabled) {
+      signalingSubsystem.clearLEDs();
+    }
   }
 
   private Command autonTest() {
