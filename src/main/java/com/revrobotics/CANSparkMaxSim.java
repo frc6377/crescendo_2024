@@ -32,11 +32,17 @@ public class CANSparkMaxSim extends CANSparkMax {
 
   public class SparkPIDControllerSim extends SparkPIDController implements Sendable {
     private static int instances = 0;
+    private double P, I, D, FF, IZone;
 
     SparkPIDControllerSim(CANSparkBase device) {
       super(device);
       instances++;
       SendableRegistry.addLW(this, "PIDController", instances);
+      P = super.getP();
+      I = super.getI();
+      D = super.getD();
+      IZone = super.getIZone();
+      FF = super.getFF();
     }
 
     public double getReference() {
@@ -53,7 +59,82 @@ public class CANSparkMaxSim extends CANSparkMax {
     }
 
     @Override
+    public double getP() {
+      return P;
+    }
+
+    @Override
+    public double getI() {
+      return I;
+    }
+
+    @Override
+    public double getD() {
+      return D;
+    }
+
+    @Override
+    public double getFF() {
+      return FF;
+    }
+
+    @Override
+    public double getIZone() {
+      return IZone;
+    }
+
+    @Override
+    public REVLibError setP(double P) {
+      REVLibError ret = super.setP(P);
+      if (ret == REVLibError.kOk) {
+        this.P = P;
+      }
+      return ret;
+    }
+
+    @Override
+    public REVLibError setI(double I) {
+      REVLibError ret = super.setI(I);
+      if (ret == REVLibError.kOk) {
+        this.I = I;
+      }
+      return ret;
+    }
+
+    @Override
+    public REVLibError setD(double D) {
+      REVLibError ret = super.setD(D);
+      if (ret == REVLibError.kOk) {
+        this.D = D;
+      }
+      return ret;
+    }
+
+    @Override
+    public REVLibError setFF(double FF) {
+      REVLibError ret = super.setFF(FF);
+      if (ret == REVLibError.kOk) {
+        this.FF = FF;
+      }
+      return ret;
+    }
+
+    @Override
+    public REVLibError setIZone(double IZone) {
+      REVLibError ret = super.setIZone(IZone);
+      if (ret == REVLibError.kOk) {
+        this.IZone = IZone;
+      }
+      return ret;
+    }
+
+    @Override
     public void initSendable(SendableBuilder builder) {
+
+      // If there are issues with the SparkMAX, don't build widget
+      if (clearFaults() != REVLibError.kOk) {
+        return;
+      }
       builder.setSmartDashboardType("PIDController");
       builder.addDoubleProperty("p", this::getP, this::setP);
       builder.addDoubleProperty("i", this::getI, this::setI);
