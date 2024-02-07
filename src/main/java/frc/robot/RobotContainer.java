@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -31,6 +32,7 @@ import frc.robot.subsystems.TrapElvSubsystem;
 import frc.robot.subsystems.TriggerSubsystem;
 import frc.robot.subsystems.signaling.SignalingSubsystem;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -50,6 +52,7 @@ public class RobotContainer {
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final TriggerSubsystem triggerSubsystem;
 
+  // Replace with CommandPS4Controller or CommandJoystick if needed
   private final SwerveSubsystem drivetrain;
   private final LimelightSubsystem limelightSubsystem;
 
@@ -62,7 +65,12 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser;
   private ShuffleboardTab configTab = Shuffleboard.getTab("Config");
-  private GenericEntry autoDelay = configTab.add("Auton Start Delay(seconds)", 0).getEntry();
+  private GenericEntry autoDelay =
+      configTab
+          .add("Auton Start Delay(seconds)", 0)
+          .withWidget(BuiltInWidgets.kNumberSlider)
+          .withProperties(Map.of("min", 0, "max", 2))
+          .getEntry();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -135,7 +143,7 @@ public class RobotContainer {
     shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
     OI.getTrigger(OI.Operator.shooterTrigger).onTrue(shooterSubsystem.shooterFire());
 
-    // // Trap Elv Intaking
+    // Trap Elv Intaking
     OI.getButton(OI.Driver.groundIntakeButton)
         .whileTrue(trapElvSubsystem.intakeGround().onlyWhile(trapElvSubsystem.getGroundBreak()));
     OI.getButton(OI.Driver.sourceIntakeButton)
@@ -166,11 +174,11 @@ public class RobotContainer {
   }
 
   public void onDisabled() {
-    // signalingSubsystem.randomizePattern();
+    signalingSubsystem.randomizePattern();
   }
 
   public void onExitDisabled() {
-    // signalingSubsystem.clearLEDs();
+    signalingSubsystem.clearLEDs();
   }
 
   private Command autonTest() {
