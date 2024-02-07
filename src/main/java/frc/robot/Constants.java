@@ -33,6 +33,23 @@ public final class Constants {
     // outtakes)
   }
 
+  public static class ShooterConstants {
+    public static final int SHOOTER_MOTOR_TOP_ID = 55;
+    public static final int SHOOTER_MOTOR_BOTTOM_ID = 56;
+
+    // Placeholder values
+    public static final double SHOOTER_P = 0.0;
+    public static final double SHOOTER_I = 0.0;
+    public static final double SHOOTER_D = 0.0;
+    public static final double SHOOTER_FF = 0.0;
+
+    // Top is index 0, bottom is index 1
+    public static final double SHOOTER_IDLE_SPEED_TOP = 150; // Placeholder; in RPM
+    public static final double SHOOTER_IDLE_SPEED_BOTTOM = 100; // Placeholder; in RPM
+    public static final double SHOOTER_SPEED_TOLERANCE =
+        0.1; // Placeholder; speed must be within (1-n)v to (1+n)v to fire
+  }
+
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
