@@ -118,7 +118,7 @@ public class TurretSubsystem extends SubsystemBase {
     turretPIDController.setIZone(Constants.TurretConstants.KIZ);
   }
 
-  public void stopTurret() {
+  private void stopTurret() {
     turretMotor.stopMotor();
   }
 
@@ -126,7 +126,7 @@ public class TurretSubsystem extends SubsystemBase {
     return new InstantCommand(() -> setTurretPos(Math.toRadians(0))).withName("StowTurretCommand");
   }
 
-  public void setTurretPos(double setpoint) {
+  private void setTurretPos(double setpoint) {
     turretGoalPositionEntry.log(setpoint);
     turretMotor.set(
         -turretPIDController.calculate(
@@ -137,15 +137,15 @@ public class TurretSubsystem extends SubsystemBase {
                 Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES))));
   }
 
-  public void holdPosition() {
+  private void holdPosition() {
     setTurretPos(turretPosition);
   }
 
-  public void zeroTurretEncoder() {
+  private void zeroTurretEncoder() {
     m_encoder.setPosition(0.0);
   }
 
-  public void updateTurretPosition() {
+  private void updateTurretPosition() {
     turretPosition =
         Math.toRadians(
             ((m_encoder.getPosition().getValueAsDouble()) * 360)
@@ -166,11 +166,11 @@ public class TurretSubsystem extends SubsystemBase {
     return turretVelocity;
   }
 
-  public Command testTurretCommand() {
-    return runEnd(() -> setTurretPos(Math.toRadians(-60)), this::stopTurret);
+  public Command testTurretCommand(double degrees) {
+    return runEnd(() -> setTurretPos(Math.toRadians(degrees)), this::stopTurret);
   }
 
-  public void AimTurret() {
+  private void aimTurret() {
     double limelightTX = LimelightHelpers.getTX("limelight");
     if (limelightTX != 0
         && LimelightHelpers.getFiducialID("limelight")
@@ -196,12 +196,12 @@ public class TurretSubsystem extends SubsystemBase {
     }
   }
 
-  public void AimTurretOdometry(Pose2d robotPos, Pose2d targetPos) {
+  private void aimTurretOdometry(Pose2d robotPos, Pose2d targetPos) {
     setTurretPos(getTurretRotationFromOdometry(robotPos, targetPos));
   }
 
   public Command getAimTurretCommand() {
-    return run(() -> AimTurret()).withName("AimTurretCommand");
+    return run(() -> aimTurret()).withName("AimTurretCommand");
   }
 
   private double tyToDistanceFromTag(double ty) {
@@ -239,7 +239,7 @@ public class TurretSubsystem extends SubsystemBase {
     // turretMotor.set(1);
   }
 
-  public double getTurretRotationFromOdometry(Pose2d robotPos, Pose2d targetPos) {
+  private double getTurretRotationFromOdometry(Pose2d robotPos, Pose2d targetPos) {
     return Math.atan2(robotPos.getY() - targetPos.getY(), robotPos.getX() - targetPos.getX())
         + robotPos.getRotation().getRadians();
   }
