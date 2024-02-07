@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TrapElvConstants;
 import frc.robot.Robot;
+import frc.robot.stateManagement.NoteState;
 import frc.robot.stateManagement.PlacementMode;
 import frc.robot.utilities.DebugEntry;
 import java.util.function.BooleanSupplier;
@@ -89,8 +90,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   // States
   public static enum TrapElvState {
     // Degrees, elv height, elv height
-    STOWED(-0.25, 0.0, 0.0),
-    FROM_INTAKE(0.25, 0.0, 0.0),
+    STOWED(-0.25, 0.0, 0.0), // same as taking from ground
     FROM_SOURCE(0.0, 0.0, 12.0),
     TRAP_SCORE(0.0, 12.0, 12.0),
     AMP_SCORE(0.5, 0.0, 12.0);
@@ -279,11 +279,6 @@ public class TrapElvSubsystem extends SubsystemBase {
     rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
   }
 
-  public void intakeGround() {
-    setElv(TrapElvState.FROM_INTAKE);
-    rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
-  }
-
   public void scoreAMP() {
     setElv(TrapElvState.AMP_SCORE);
     setRoller(-TrapElvConstants.ROLLER_SCORING_SPEED);
@@ -314,25 +309,27 @@ public class TrapElvSubsystem extends SubsystemBase {
         .setReference(state.getScoringPose() - scoringMotorOffset, ControlType.kPosition);
   }
 
+  public Command stowCommand() {
+    return run(
+        () -> {
+          stowTrapElv();
+        });
+  }
+
   public Command intake(PlacementMode mode) {
-    if (mode.equals(PlacementMode.AMP)) {
-      return new StartEndCommand(this::intakeGround, this::stowTrapElv);
-    } else if (mode.equals(PlacementMode.SOURCE)) {
+    if (mode.equals(PlacementMode.SOURCE)) {
       return new StartEndCommand(this::intakeSource, this::stowTrapElv);
     } else {
-      return run(
-          () -> {
-            stowTrapElv();
-          });
+      return stowCommand();
     }
   }
 
-  public Command setPose() {
-    return run(() -> {});
-  }
-
-  public Command score() {
-    return run(() -> {});
+  public Command score(NoteState state) {
+    if (state.equals(NoteState.READY_TO_PLACE)) {
+      return new StartEndCommand(this::scoreAMP, this::stowTrapElv);
+    } else {
+      return stowCommand();
+    }
   }
 
   public Command zeroElv() {
