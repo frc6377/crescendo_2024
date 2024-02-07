@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,6 +19,11 @@ public class ShooterSubsystem extends SubsystemBase {
   private DebugEntry<Double> bottomMotorSpeedEntry;
   private DebugEntry<Double> topMotorTargetSpeedEntry;
   private DebugEntry<Double> bottomMotorTargetSpeedEntry;
+
+  private DebugEntry<Double> shooterP;
+  private DebugEntry<Double> shooterI;
+  private DebugEntry<Double> shooterD;
+  private DebugEntry<Double> shooterFF;
 
   public ShooterSubsystem() {
     shooterTopMotor =
@@ -38,6 +44,13 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterBottomMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_I);
     shooterBottomMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_D);
     shooterBottomMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
+
+    if (DriverStation.isTest()) {
+      shooterP.log(Constants.ShooterConstants.SHOOTER_P);
+      shooterI.log(Constants.ShooterConstants.SHOOTER_I);
+      shooterD.log(Constants.ShooterConstants.SHOOTER_D);
+      shooterFF.log(Constants.ShooterConstants.SHOOTER_FF);
+    }
   }
 
   // Spins up the shooter, and requests feeding it when the rollers are within parameters.
