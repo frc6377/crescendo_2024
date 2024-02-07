@@ -190,11 +190,10 @@ public class TurretSubsystem extends SubsystemBase {
           > Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES)) {
         // TODO: Make turret rotate the drivebase if necessary and driver thinks it's a good idea
       }
-    }
-    else {
+    } else {
       // TODO: Make turret default to using odometry
       setTurretPos(turretPosition);
-    } 
+    }
   }
 
   public void AimTurretOdometry(Pose2d robotPos, Pose2d targetPos) {

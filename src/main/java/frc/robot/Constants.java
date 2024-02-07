@@ -25,8 +25,8 @@ public final class Constants {
     public static final int CANcoder_ID = 17; // replace with actual CANcoder ID
 
     // Limelight
-    public static final double LIMELIGHT_HEIGHT_INCHES = 8.5;
-    public static final double LIMELIGHT_PITCH_RADIANS = Math.toRadians(30);
+    public static final double LIMELIGHT_HEIGHT_INCHES = 17.85;
+    public static final double LIMELIGHT_PITCH_RADIANS = Math.toRadians(17.75);
 
     public static final double SPEAKER_TAG_CENTER_HEIGHT_INCHES =
         57.125; // Don't change unless FIRST changes the field layout
