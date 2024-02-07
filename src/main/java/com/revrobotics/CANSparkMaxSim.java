@@ -58,28 +58,23 @@ public class CANSparkMaxSim extends CANSparkMax {
       return ret;
     }
 
-    @Override
-    public double getP() {
+    private double getCachedP() {
       return P;
     }
 
-    @Override
-    public double getI() {
+    private double getCachedI() {
       return I;
     }
 
-    @Override
-    public double getD() {
+    private double getCachedD() {
       return D;
     }
 
-    @Override
-    public double getFF() {
+    private double getCachedFF() {
       return FF;
     }
 
-    @Override
-    public double getIZone() {
+    private double getCachedIZone() {
       return IZone;
     }
 
@@ -136,13 +131,13 @@ public class CANSparkMaxSim extends CANSparkMax {
         return;
       }
       builder.setSmartDashboardType("PIDController");
-      builder.addDoubleProperty("p", this::getP, this::setP);
-      builder.addDoubleProperty("i", this::getI, this::setI);
-      builder.addDoubleProperty("d", this::getD, this::setD);
-      builder.addDoubleProperty("ff", this::getFF, this::setFF);
+      builder.addDoubleProperty("p", this::getCachedP, this::setP);
+      builder.addDoubleProperty("i", this::getCachedI, this::setI);
+      builder.addDoubleProperty("d", this::getCachedD, this::setD);
+      builder.addDoubleProperty("ff", this::getCachedFF, this::setFF);
       builder.addDoubleProperty(
           "izone",
-          this::getIZone,
+          this::getCachedIZone,
           (double toSet) -> {
             try {
               setIZone(toSet);
