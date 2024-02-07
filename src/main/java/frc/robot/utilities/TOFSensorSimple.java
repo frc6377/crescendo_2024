@@ -6,6 +6,9 @@ package frc.robot.utilities;
 
 import com.playingwithfusion.TimeOfFlight;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.function.BooleanSupplier;
 
 /** Add your docs here. */
 public class TOFSensorSimple {
@@ -21,8 +24,12 @@ public class TOFSensorSimple {
     return Sensor.getRange();
   }
 
-  public boolean isBeamBroke() {
-    return getDistance() < threshold;
+  public BooleanSupplier isBeamBroke() {
+    return () -> (getDistance() < threshold);
+  }
+
+  public Trigger getBeamTrigger(Command action) {
+    return new Trigger(isBeamBroke());
   }
 
   public void identify() {
