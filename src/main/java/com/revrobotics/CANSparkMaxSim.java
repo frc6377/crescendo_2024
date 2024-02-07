@@ -251,6 +251,12 @@ public class CANSparkMaxSim extends CANSparkMax {
     return output;
   }
 
+  @Override
+  public void set(double speed) {
+    super.set(speed);
+    output = speed;
+  }
+
   // Algorithm pulled from https://docs.revrobotics.com/sparkmax/operating-modes/closed-loop-control
   private double calculate() {
     if (stopped) {
