@@ -6,15 +6,12 @@ package frc.robot;
 
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
-import com.google.flatbuffers.FlexBuffers.Map;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -33,7 +30,6 @@ import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TrapElvSubsystem;
 import frc.robot.subsystems.TriggerSubsystem;
 import frc.robot.subsystems.signaling.SignalingSubsystem;
-import frc.robot.subsystems.TurretSubsystem;
 import java.util.HashMap;
 
 /**
@@ -66,10 +62,7 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser;
   private ShuffleboardTab configTab = Shuffleboard.getTab("Config");
-  private GenericEntry autoDelay =
-      configTab
-          .add("Auton Start Delay(seconds)", 0)
-          .getEntry();
+  private GenericEntry autoDelay = configTab.add("Auton Start Delay(seconds)", 0).getEntry();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
