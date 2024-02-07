@@ -3,6 +3,9 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+
 import com.revrobotics.CANSparkMaxSim;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,10 +27,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private DebugEntry<Double> topMotorTargetSpeedEntry;
   private DebugEntry<Double> bottomMotorTargetSpeedEntry;
 
-  private DebugEntry<Double> shooterP;
-  private DebugEntry<Double> shooterI;
-  private DebugEntry<Double> shooterD;
-  private DebugEntry<Double> shooterFF;
+  private ShuffleboardTab ShooterTab = Shuffleboard.getTab("Shooter Tab");
 
   public ShooterSubsystem() {
     shooterTopMotor =
@@ -41,20 +41,18 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterBottomMotor.restoreFactoryDefaults();
     shooterBottomMotor.setSmartCurrentLimit(40);
 
-    shooterTopMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_P);
-    shooterTopMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_I);
-    shooterTopMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_D);
-    shooterTopMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
-    shooterBottomMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_P);
-    shooterBottomMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_I);
-    shooterBottomMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_D);
-    shooterBottomMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
+    shooterTopMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_TOP_P);
+    shooterTopMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_TOP_I);
+    shooterTopMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_TOP_D);
+    shooterTopMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_TOP_FF);
+    shooterBottomMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_BOTTOM_P);
+    shooterBottomMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_BOTTOM_I);
+    shooterBottomMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_BOTTOM_D);
+    shooterBottomMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_BOTTOM_FF);
 
     if (DriverStation.isTest()) {
-      shooterP.log(Constants.ShooterConstants.SHOOTER_P);
-      shooterI.log(Constants.ShooterConstants.SHOOTER_I);
-      shooterD.log(Constants.ShooterConstants.SHOOTER_D);
-      shooterFF.log(Constants.ShooterConstants.SHOOTER_FF);
+      ShooterTab.add("Shooter Top Motor PID", shooterTopMotor.getPIDController());
+      ShooterTab.add("Shooter Bottom Motor PID", shooterBottomMotor.getPIDController());
     }
     shooterTopMotorEncoder = shooterTopMotor.getEncoder();
     shooterBottomMotorEncoder = shooterBottomMotor.getEncoder();
