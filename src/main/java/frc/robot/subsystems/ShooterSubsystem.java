@@ -35,14 +35,14 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterBottomMotor.restoreFactoryDefaults();
     shooterBottomMotor.setSmartCurrentLimit(40);
 
-    shooterTopMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_P);
-    shooterTopMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_I);
-    shooterTopMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_D);
-    shooterTopMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
-    shooterBottomMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_P);
-    shooterBottomMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_I);
-    shooterBottomMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_D);
-    shooterBottomMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
+    shooterTopMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_TOP_P);
+    shooterTopMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_TOP_I);
+    shooterTopMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_TOP_D);
+    shooterTopMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_TOP_FF);
+    shooterBottomMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_BOTTOM_P);
+    shooterBottomMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_BOTTOM_I);
+    shooterBottomMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_BOTTOM_D);
+    shooterBottomMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_BOTTOM_FF);
 
     shooterTopMotorEncoder = shooterTopMotor.getEncoder();
     shooterBottomMotorEncoder = shooterBottomMotor.getEncoder();
