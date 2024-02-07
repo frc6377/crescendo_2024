@@ -1,9 +1,9 @@
 package frc.robot.config;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Preferences;
 import frc.robot.Robot;
 import java.lang.reflect.Field;
-import java.util.logging.Logger;
 
 /**
  * The DynamicRobotConfig class keeps track of periodically changing constants on the robot
@@ -20,7 +20,6 @@ public class DynamicRobotConfig {
   }
 
   private static TunerConstants tunerConstants;
-  private static Logger logger = Logger.getLogger(DynamicRobotConfig.class.getName());
 
   public DynamicRobotConfig() {
     // This code interacts with ConfigVariables using reflection, essentially using it as a map.
@@ -63,6 +62,6 @@ public class DynamicRobotConfig {
   }
 
   private static void raiseWarning(String warning) {
-    logger.warning(warning);
+    DriverStation.reportWarning(warning, false);
   }
 }

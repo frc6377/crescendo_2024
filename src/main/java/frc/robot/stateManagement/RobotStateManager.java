@@ -39,7 +39,7 @@ public class RobotStateManager extends SubsystemBase {
             alliance.get().equals(Alliance.Red) ? AllianceColor.RED : AllianceColor.BLUE;
       }
     }
-    endGameStart.onTrue(new InstantCommand(() -> isEndGame = true));
+    endGameStart.onTrue(new InstantCommand(() -> isEndGame = true).withName("EndGame Start"));
   }
 
   // Note State
@@ -52,6 +52,11 @@ public class RobotStateManager extends SubsystemBase {
   }
 
   // Placement Mode
+  public void switchPlacementMode() {
+    placementMode =
+        placementMode == PlacementMode.SPEAKER ? PlacementMode.AMP : PlacementMode.SPEAKER;
+  }
+
   public void setPlacementMode(PlacementMode placementMode) {
     this.placementMode = placementMode;
   }

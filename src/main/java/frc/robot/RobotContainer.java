@@ -4,15 +4,35 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.google.flatbuffers.FlexBuffers.Map;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.RobotStateManager;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.TrapElvSubsystem;
+import frc.robot.subsystems.TriggerSubsystem;
+import frc.robot.subsystems.signaling.SignalingSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 import java.util.HashMap;
 
@@ -30,38 +50,38 @@ public class RobotContainer {
   private final RobotStateManager robotStateManager = new RobotStateManager();
 
   // The robot's subsystems and commands are defined here...
-  // private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-  private final TurretSubsystem turretSubsystem = new TurretSubsystem(robotStateManager);
+  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+  private final TriggerSubsystem triggerSubsystem;
 
-  // private final SwerveSubsystem drivetrain;
-  // private final LimelightSubsystem limelightSubsystem;
+  private final SwerveSubsystem drivetrain;
+  private final LimelightSubsystem limelightSubsystem;
 
-  // private final SignalingSubsystem signalingSubsystem =
-  //     new SignalingSubsystem(1, OI.Driver::setRumble, robotStateManager);
+  private final SignalingSubsystem signalingSubsystem =
+      new SignalingSubsystem(1, OI.Driver::setRumble, robotStateManager);
 
-  // private final TrapElvSubsystem trapElvSubsystem = new TrapElvSubsystem();
+  private final TrapElvSubsystem trapElvSubsystem = new TrapElvSubsystem();
 
-  // private final DynamicRobotConfig dynamicRobotConfig;
+  private final DynamicRobotConfig dynamicRobotConfig;
 
-  // private SendableChooser<Command> autoChooser;
+  private SendableChooser<Command> autoChooser;
   private ShuffleboardTab configTab = Shuffleboard.getTab("Config");
-  // private GenericEntry autoDelay =
-  //     configTab
-  //         .add("Auton Start Delay(seconds)", 0)
-  //         .withWidget(BuiltInWidgets.kNumberSlider)
-  //         .withProperties(Map.of("min", 0, "max", 2))
-  //         .getEntry();
+  private GenericEntry autoDelay =
+      configTab
+          .add("Auton Start Delay(seconds)", 0)
+          .getEntry();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    // dynamicRobotConfig = new DynamicRobotConfig();
-    // drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
-    // limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
+    dynamicRobotConfig = new DynamicRobotConfig();
+    drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
+    triggerSubsystem = new TriggerSubsystem();
+    limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
     // Configure the trigger bindings
     configureBindings();
     registerCommands();
-    // autoChooser = AutoBuilder.buildAutoChooser();
-    // configTab.add("Auton Selection", autoChooser).withSize(3, 1);
+    autoChooser = AutoBuilder.buildAutoChooser();
+    configTab.add("Auton Selection", autoChooser).withSize(3, 1);
     SmartDashboard.putBoolean("NamedCommand test", false);
   }
 
@@ -75,59 +95,79 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    OI.getButton(OI.Operator.testTurretButton).whileTrue(turretSubsystem.testTurretCommand());
-    // need to see if limelight visible from limelight subsystem and get the speaker pose
-    OI.getButton(OI.Operator.alignTurretButton).toggleOnTrue(turretSubsystem.getAimTurretCommand());
-    // OI.getTrigger(OI.Driver.intakeTrigger).whileTrue(intakeSubsystem.getIntakeCommand());
-    // OI.getButton(OI.Driver.outtakeButton).whileTrue(intakeSubsystem.getOuttakeCommand());
+    OI.getButton(OI.Operator.A)
+        .onTrue(
+            new InstantCommand(robotStateManager::switchPlacementMode)
+                .withName("Switch Placement Mode Command"));
+    OI.getTrigger(OI.Driver.intakeTrigger)
+        .whileTrue(
+            intakeSubsystem
+                .getIntakeCommand(robotStateManager.getPlacementMode())
+                .withName("Get Placement Mode Command"));
+    OI.getButton(OI.Driver.outtakeButton)
+        .whileTrue(intakeSubsystem.reverseIntakeCommand().withName("Reverse Intake Command"));
     // Swerve config
-    turretSubsystem.setDefaultCommand(
-        new InstantCommand(turretSubsystem::holdPosition, turretSubsystem));
-    // drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-    //     drivetrain.applyRequest(
-    //         () ->
-    //             drivetrain.getDriveRequest(
-    //                 OI.getAxisSupplier(OI.Driver.xTranslationAxis).get(),
-    //                 OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
-    //                 OI.getAxisSupplier(OI.Driver.rotationAxis).get())));
-    // OI.getButton(OI.Driver.brakeButton)
-    //     .whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
-    // OI.getButton(OI.Driver.resetRotationButton)
-    //     .onTrue(
-    //         drivetrain.runOnce(
-    //             () ->
-    //                 drivetrain.seedFieldRelative(
-    //                     new Pose2d(
-    //                         drivetrain.getState().Pose.getTranslation(),
-    //                         Rotation2d.fromDegrees(180)))));
-    // OI.getButton(OI.Driver.orientationButton)
-    //     .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
-    // OI.getButton(OI.Driver.resetRotationButton)
-    //     .onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
+    drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
+        drivetrain
+            .applyRequest(
+                () ->
+                    drivetrain.getDriveRequest(
+                        OI.getAxisSupplier(OI.Driver.xTranslationAxis).get(),
+                        OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
+                        OI.getAxisSupplier(OI.Driver.rotationAxis).get()))
+            .withName("Get Axis Suppliers"));
+    OI.getButton(OI.Driver.brakeButton)
+        .whileTrue(
+            drivetrain
+                .applyRequest(() -> new SwerveRequest.SwerveDriveBrake())
+                .withName("Brake Swerve"));
+    OI.getButton(OI.Driver.resetRotationButton)
+        .onTrue(
+            drivetrain
+                .runOnce(
+                    () ->
+                        drivetrain.seedFieldRelative(
+                            new Pose2d(
+                                drivetrain.getState().Pose.getTranslation(),
+                                Rotation2d.fromDegrees(180))))
+                .withName("Put Pose & Rotation on Field"));
+    OI.getButton(OI.Driver.orientationButton)
+        .onTrue(
+            drivetrain
+                .runOnce(() -> drivetrain.toggleOrientation())
+                .withName("Toggle Orientation"));
+    // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
+
+    // Shooter commands
+    shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
+    OI.getTrigger(OI.Operator.shooterTrigger).onTrue(shooterSubsystem.shooterFire());
 
     // // Trap Elv Intaking
-    // OI.getButton(OI.Driver.groundIntakeButton)
-    //     .whileTrue(trapElvSubsystem.intakeGround().onlyWhile(trapElvSubsystem.getGroundBreak()));
-    // OI.getButton(OI.Driver.sourceIntakeButton)
-    //     .whileTrue(trapElvSubsystem.intakeSource().onlyWhile(trapElvSubsystem.getSourceBreak()));
+    OI.getButton(OI.Driver.groundIntakeButton)
+        .whileTrue(trapElvSubsystem.intakeGround().onlyWhile(trapElvSubsystem.getGroundBreak()));
+    OI.getButton(OI.Driver.sourceIntakeButton)
+        .whileTrue(trapElvSubsystem.intakeSource().onlyWhile(trapElvSubsystem.getSourceBreak()));
 
-    // // Trap Elv Scoring
-    // OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapElvSubsystem.scoreAMP());
-    // OI.getButton(OI.Driver.trapScoreButton).whileTrue(trapElvSubsystem.scoreTrap());
+    // Trap Elv Scoring
+    OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapElvSubsystem.scoreAMP());
+    OI.getButton(OI.Driver.trapScoreButton).whileTrue(trapElvSubsystem.scoreTrap());
 
-    // // Trap Elv zeroing button
-    // OI.getButton(OI.Driver.zeroArm).whileTrue(trapElvSubsystem.zeroArm());
+    // Trap Elv zeroing button
+    OI.getButton(OI.Driver.zeroArm).whileTrue(trapElvSubsystem.zeroArm());
 
-    // if (Utils.isSimulation()) {
-    //   drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
-    // }
+    if (Utils.isSimulation()) {
+      drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
+    }
   }
 
   // Register commands for auton
   public void registerCommands() {
     HashMap<String, Command> autonCommands = new HashMap<String, Command>();
 
-    // autonCommands.put("Shoot", autonTest());
+    autonCommands.put("Shoot", autonTest().withName("Shoot"));
+    autonCommands.put(
+        "Speaker Intake", intakeSubsystem.getSpeakerIntakeCommand().withName("Speaker Intake"));
+    autonCommands.put("Amp Intake", intakeSubsystem.getAmpIntakeCommand().withName("Amp Intake"));
 
     NamedCommands.registerCommands(autonCommands);
   }
@@ -140,16 +180,19 @@ public class RobotContainer {
     // signalingSubsystem.clearLEDs();
   }
 
-  // private Command autonTest() {
-  // return new InstantCommand(() -> SmartDashboard.putBoolean("NamedCommand test", true));
-  // }
+  private Command autonTest() {
+    return new InstantCommand(() -> SmartDashboard.putBoolean("NamedCommand test", true))
+        .withName("Test NamedCommand");
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous(including the delay)
    */
-  // public Command getAutonomousCommand() {
-  // return new WaitCommand(autoDelay.getDouble(0)).andThen(autoChooser.getSelected());
-  // }
+  public Command getAutonomousCommand() {
+    return new WaitCommand(autoDelay.getDouble(0))
+        .andThen(autoChooser.getSelected())
+        .withName("Get Auto Command");
+  }
 }

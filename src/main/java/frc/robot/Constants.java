@@ -16,8 +16,38 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   public static class IntakeConstants {
+    // TODO: Get real CAN IDs
     public static final int INTAKE_MOTOR_ID = 6;
+    public static final int INTAKE_CHOOSER_ID = 7;
     public static final double INTAKE_PERCENTAGE = -0.75;
+    public static final double CHOOSER_PERCENTAGE = -0.75;
+  }
+
+  public static class TriggerConstants {
+    public static final int MOTOR_ID = 9; // edit all constants when testing
+    public static final double LOAD_PERCENTAGE = 0.5; // used when intaking into the turret
+    public static final double HOLD_PERCENTAGE =
+        0.05; // very slow motor speed in case note slips out of trigger
+    public static final double SHOOT_PERCENTAGE =
+        -0.5; // used when feeding note into turret to fire (should be negative value because it
+    // outtakes)
+  }
+
+  public static class ShooterConstants {
+    public static final int SHOOTER_MOTOR_TOP_ID = 55;
+    public static final int SHOOTER_MOTOR_BOTTOM_ID = 56;
+
+    // Placeholder values
+    public static final double SHOOTER_P = 0.0;
+    public static final double SHOOTER_I = 0.0;
+    public static final double SHOOTER_D = 0.0;
+    public static final double SHOOTER_FF = 0.0;
+
+    // Top is index 0, bottom is index 1
+    public static final double SHOOTER_IDLE_SPEED_TOP = 150; // Placeholder; in RPM
+    public static final double SHOOTER_IDLE_SPEED_BOTTOM = 100; // Placeholder; in RPM
+    public static final double SHOOTER_SPEED_TOLERANCE =
+        0.1; // Placeholder; speed must be within (1-n)v to (1+n)v to fire
   }
 
   public static class TurretConstants {
@@ -72,7 +102,7 @@ public final class Constants {
     // P, I, D, Iz, FF
     public static final double[] BASE_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
     public static final double[] SCORING_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
-    public static final double[] WRIST_PID = {36e-2, 5e-5, 1e-4, 0.0, 0};
+    public static final double[] WRIST_PID = {7, .1, .6, 0.0, 2e-6};
 
     // Simulation
     public static final int ELV_GEAR_RATIO = 70;
@@ -88,7 +118,7 @@ public final class Constants {
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
-
+  public static final double TELEMETRY_LOG_NUMBER = .2;
   // Rumble
   public static final double AMPLIFICATION_RUMBLE_TIME = 0.5;
   public static final double AMPLIFICATION_RUMBLE_INTENSITY = 0.5;
