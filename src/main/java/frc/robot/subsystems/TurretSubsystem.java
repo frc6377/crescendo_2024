@@ -141,7 +141,7 @@ public class TurretSubsystem extends SubsystemBase {
     setTurretPos(turretPosition);
   }
 
-  public Command idleTurret(){
+  public Command idleTurret() {
     return run(() -> holdPosition()).withName("idleTurret");
   }
 
@@ -171,7 +171,8 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public Command testTurretCommand(double degrees) {
-    return runEnd(() -> setTurretPos(Math.toRadians(degrees)), this::stopTurret).withName("TestTurret");
+    return runEnd(() -> setTurretPos(Math.toRadians(degrees)), this::stopTurret)
+        .withName("TestTurret");
   }
 
   private void aimTurret() {
