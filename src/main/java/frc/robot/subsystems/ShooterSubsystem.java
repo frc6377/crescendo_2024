@@ -3,9 +3,12 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.utilities.DebugEntry;
 
@@ -18,6 +21,11 @@ public class ShooterSubsystem extends SubsystemBase {
   private DebugEntry<Double> bottomMotorSpeedEntry;
   private DebugEntry<Double> topMotorTargetSpeedEntry;
   private DebugEntry<Double> bottomMotorTargetSpeedEntry;
+
+  private ShuffleboardTab shooterFire = Shuffleboard.getTab("Shooter fire");
+  private GenericEntry baseGoal = shooterFire.add("Base Goal", 0).getEntry();
+
+  private SpeakerConfig targetSpeeds;
 
   public ShooterSubsystem() {
     shooterTopMotor =
@@ -38,6 +46,7 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterBottomMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_I);
     shooterBottomMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_D);
     shooterBottomMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
+    targetSpeeds = new SpeakerConfig(0, 0, 0);
   }
 
   // Spins up the shooter, and requests feeding it when the rollers are within parameters.
@@ -45,11 +54,11 @@ public class ShooterSubsystem extends SubsystemBase {
   // Required to be called repeatedly; consider pub-sub for LimelightGetDistance() or equivalent
   // method to save a method call
   public Command shooterFire() {
-    return Commands.sequence(
-        // Only runs if the exit code from the limelight status function returns 0!
-        new SetShooter(
-            calculateShooterSpeeds(0),
-            0)); // Replace distance and exit code with LimelightGetDistance() and
+
+    // Only runs if the exit code from the limelight status function returns 0!
+    return new SetShooter(
+        calculateShooterSpeeds(baseGoal.getDouble(0)),
+        0); // Replace distance and exit code with LimelightGetDistance() and
     // CheckLimelightStatus() respectively
   }
 
@@ -61,8 +70,11 @@ public class ShooterSubsystem extends SubsystemBase {
         .withName("Idle shooter command");
   }
 
+  public Trigger shooterReady() {
+    return new Trigger(this::isShooterReady);
+  }
   // Checks if shooter is ready.
-  public void isShooterReady(SpeakerConfig targetSpeeds) {
+  public boolean isShooterReady() {
     double targetSpeedTop = targetSpeeds.getSpeedTopInRPM();
     double targetSpeedBottom = targetSpeeds.getSpeedBottomInRPM();
 
@@ -87,13 +99,15 @@ public class ShooterSubsystem extends SubsystemBase {
     if ((minSpeedToleranceTop < speedTop && speedTop < maxSpeedToleranceTop)
         && (minSpeedToleranceBottom < speedBottom && speedBottom < maxSpeedToleranceBottom)
             == true) {
-      // Request note from feeder.
+      return true;
+    } else {
+      return false;
     }
   }
 
   // Speed in RPM. Top is index 0, bottom is index 1.
   public SpeakerConfig setShooterSpeeds(SpeakerConfig speeds) {
-    SpeakerConfig targetSpeeds = speeds;
+    targetSpeeds = speeds;
 
     shooterTopMotor
         .getPIDController()
@@ -204,7 +218,6 @@ public class ShooterSubsystem extends SubsystemBase {
       // Only runs if the exit code from the limelight distance function returns 0!
       if (exitCode == 0) {
         setShooterSpeeds(shooterSpeeds);
-        isShooterReady(shooterSpeeds);
       }
     }
   }
