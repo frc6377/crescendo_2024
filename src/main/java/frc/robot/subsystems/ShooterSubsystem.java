@@ -21,6 +21,8 @@ public class ShooterSubsystem extends SubsystemBase {
   private final RelativeEncoder shooterTopMotorEncoder;
   private final RelativeEncoder shooterBottomMotorEncoder;
 
+  private ShuffleboardTab ShooterTab = Shuffleboard.getTab("Shooter Tab");
+
   private DebugEntry<Double> topMotorSpeedEntry;
   private DebugEntry<Double> topMotorTargetSpeedEntry;
   private DebugEntry<Double> topMotorTemperatureEntry;
@@ -29,7 +31,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private DebugEntry<Double> bottomMotorTargetSpeedEntry;
   private DebugEntry<Double> bottomMotorTemperatureEntry;
 
-  private ShuffleboardTab ShooterTab = Shuffleboard.getTab("Shooter Tab");
+  private DebugEntry<Boolean> shooterReadyEntry;
 
   public ShooterSubsystem() {
     shooterTopMotor =
@@ -107,7 +109,11 @@ public class ShooterSubsystem extends SubsystemBase {
     if ((minSpeedToleranceTop < speedTop && speedTop < maxSpeedToleranceTop)
         && (minSpeedToleranceBottom < speedBottom && speedBottom < maxSpeedToleranceBottom)
             == true) {
+      shooterReadyEntry.log(true);
       // Request note from feeder.
+    }
+    else {
+      shooterReadyEntry.log(false);
     }
   }
 
