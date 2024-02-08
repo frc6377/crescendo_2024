@@ -17,7 +17,7 @@ public class TestShooterSubsystem {
   // should be part of speakerConfigList! Changes to one should change the other.
   // TODO: Make more sensible
   @Test
-  public void TestSpeakerConfig() {
+  public void testSpeakerConfig() {
     SpeakerConfig speedsPair;
     double[] speedsArray = {0, 0};
     double[][] speakerConfigListTest = {

@@ -2,12 +2,11 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMaxSim;
+import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-
-import com.revrobotics.CANSparkMaxSim;
-import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -23,9 +22,12 @@ public class ShooterSubsystem extends SubsystemBase {
   private final RelativeEncoder shooterBottomMotorEncoder;
 
   private DebugEntry<Double> topMotorSpeedEntry;
-  private DebugEntry<Double> bottomMotorSpeedEntry;
   private DebugEntry<Double> topMotorTargetSpeedEntry;
+  private DebugEntry<Double> topMotorTemperatureEntry;
+
+  private DebugEntry<Double> bottomMotorSpeedEntry;
   private DebugEntry<Double> bottomMotorTargetSpeedEntry;
+  private DebugEntry<Double> bottomMotorTemperatureEntry;
 
   private ShuffleboardTab ShooterTab = Shuffleboard.getTab("Shooter Tab");
 
@@ -119,6 +121,9 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterBottomMotor
         .getPIDController()
         .setReference(speeds.getSpeedBottomInRPM(), CANSparkBase.ControlType.kVelocity);
+
+    topMotorTemperatureEntry.log(shooterTopMotor.getMotorTemperature());
+    bottomMotorTemperatureEntry.log(shooterBottomMotor.getMotorTemperature());
 
     return targetSpeeds;
   }
