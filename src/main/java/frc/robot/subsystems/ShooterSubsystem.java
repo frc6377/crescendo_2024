@@ -22,8 +22,8 @@ public class ShooterSubsystem extends SubsystemBase {
   private DebugEntry<Double> topMotorTargetSpeedEntry;
   private DebugEntry<Double> bottomMotorTargetSpeedEntry;
 
-  private ShuffleboardTab shooterFire = Shuffleboard.getTab("Shooter fire");
-  private GenericEntry baseGoal = shooterFire.add("Base Goal", 0).getEntry();
+  private ShuffleboardTab shooterTab = Shuffleboard.getTab("Shooter fire");
+  private GenericEntry targetRPM = shooterTab.add("Target RPM", 0).getEntry();
 
   private SpeakerConfig targetSpeeds;
 
@@ -57,7 +57,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     // Only runs if the exit code from the limelight status function returns 0!
     return new SetShooter(
-        calculateShooterSpeeds(baseGoal.getDouble(0)),
+        calculateShooterSpeeds(targetRPM.getDouble(0)),
         0); // Replace distance and exit code with LimelightGetDistance() and
     // CheckLimelightStatus() respectively
   }
