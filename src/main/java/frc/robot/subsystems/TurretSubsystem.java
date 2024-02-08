@@ -141,6 +141,10 @@ public class TurretSubsystem extends SubsystemBase {
     setTurretPos(turretPosition);
   }
 
+  public Command idleTurret(){
+    return run(() -> holdPosition()).withName("idleTurret");
+  }
+
   private void zeroTurretEncoder() {
     m_encoder.setPosition(0.0);
   }
@@ -167,7 +171,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public Command testTurretCommand(double degrees) {
-    return runEnd(() -> setTurretPos(Math.toRadians(degrees)), this::stopTurret);
+    return runEnd(() -> setTurretPos(Math.toRadians(degrees)), this::stopTurret).withName("TestTurret");
   }
 
   private void aimTurret() {
@@ -228,7 +232,6 @@ public class TurretSubsystem extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
-    // System.out.println(Math.toDegrees(turretMotor.get()));
     turretSim.setInput(turretMotor.get() * RobotController.getBatteryVoltage());
     turretSim.update(Robot.defaultPeriodSecs);
     turretAngleSim.setAngle(Math.toDegrees(turretSim.getAngleRads()));
@@ -236,7 +239,6 @@ public class TurretSubsystem extends SubsystemBase {
     simTurretPos.set(
         Units.radiansToRotations(
             turretSim.getAngleRads() / Constants.TurretConstants.CONVERSION_FACTOR));
-    // turretMotor.set(1);
   }
 
   private double getTurretRotationFromOdometry(Pose2d robotPos, Pose2d targetPos) {

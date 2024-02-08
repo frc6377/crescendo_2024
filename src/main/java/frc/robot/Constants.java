@@ -73,7 +73,6 @@ public final class Constants {
     public static final double KMINOUTPUT = -1;
     public static final int MAX_TURRET_ANGLE_DEGREES = 110;
     public static final double CONVERSION_FACTOR = 0.25; // for the revbot prototype turret
-    public static final int MAXRPM = 5700;
   }
 
   public static class OperatorConstants {

@@ -30,6 +30,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TrapElvSubsystem;
 import frc.robot.subsystems.TriggerSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.signaling.SignalingSubsystem;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,6 +52,7 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final TriggerSubsystem triggerSubsystem;
+  private final TurretSubsystem turretSubsystem = new TurretSubsystem(robotStateManager);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final SwerveSubsystem drivetrain;
@@ -142,6 +144,10 @@ public class RobotContainer {
     // Shooter commands
     shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
     OI.getTrigger(OI.Operator.shooterTrigger).onTrue(shooterSubsystem.shooterFire());
+
+    // Turret commands
+    turretSubsystem.setDefaultCommand(turretSubsystem.idleTurret());
+    OI.getTrigger(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
 
     // Trap Elv Intaking
     OI.getButton(OI.Driver.groundIntakeButton)
