@@ -223,26 +223,25 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
             switch (quadrent) {
               case 0:
                 DynamicRobotConfig.ConfigVariables.backLeftOffset =
-                    getCancoderAbsolutePosition(canCoders[i]);
+                    -getCancoderAbsolutePosition(canCoders[i]);
                 break;
               case 1:
                 DynamicRobotConfig.ConfigVariables.backRightOffset =
-                    getCancoderAbsolutePosition(canCoders[i]);
+                    -getCancoderAbsolutePosition(canCoders[i]);
                 break;
               case 2:
                 DynamicRobotConfig.ConfigVariables.frontLeftOffset =
-                    getCancoderAbsolutePosition(canCoders[i]);
+                    -getCancoderAbsolutePosition(canCoders[i]);
                 break;
               case 3:
                 DynamicRobotConfig.ConfigVariables.frontRightOffset =
-                    getCancoderAbsolutePosition(canCoders[i]);
+                    -getCancoderAbsolutePosition(canCoders[i]);
                 break;
               default:
                 break;
             }
-
-            DynamicRobotConfig.saveConfig();
           }
+          DynamicRobotConfig.saveConfig();
         },
         this);
   }
