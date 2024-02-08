@@ -146,8 +146,8 @@ public class RobotContainer {
             shooterSubsystem
                 .shooterFire()
                 .until(shooterSubsystem.shooterReady())
-                .andThen(triggerSubsystem.getShootCommand()));
-
+                .andThen(triggerSubsystem.getShootCommand())
+                .onlyWhile(OI.getTrigger(OI.Operator.shooterTrigger)));
     // Trap Elv Intaking
     OI.getButton(OI.Driver.groundIntakeButton)
         .whileTrue(trapElvSubsystem.intakeGround().onlyWhile(trapElvSubsystem.getGroundBreak()));

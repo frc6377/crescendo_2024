@@ -47,6 +47,10 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterBottomMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_D);
     shooterBottomMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
     targetSpeeds = new SpeakerConfig(0, 0, 0);
+    topMotorSpeedEntry = new DebugEntry<Double>(0.0, "Top Motor Speed", this);
+    bottomMotorSpeedEntry = new DebugEntry<Double>(0.0, "Bottom Motor Speed", this);
+    topMotorTargetSpeedEntry = new DebugEntry<Double>(0.0, "Top Motor Target Speed", this);
+    bottomMotorTargetSpeedEntry = new DebugEntry<Double>(0.0, "Bottom Motor Target Speed", this);
   }
 
   // Spins up the shooter, and requests feeding it when the rollers are within parameters.
@@ -108,7 +112,8 @@ public class ShooterSubsystem extends SubsystemBase {
   // Speed in RPM. Top is index 0, bottom is index 1.
   public SpeakerConfig setShooterSpeeds(SpeakerConfig speeds) {
     targetSpeeds = speeds;
-
+    topMotorTargetSpeedEntry.log(targetSpeeds.getSpeedTopInRPM());
+    bottomMotorTargetSpeedEntry.log(targetSpeeds.getSpeedBottomInRPM());
     shooterTopMotor
         .getPIDController()
         .setReference(speeds.getSpeedTopInRPM(), CANSparkBase.ControlType.kVelocity);
@@ -199,7 +204,7 @@ public class ShooterSubsystem extends SubsystemBase {
     new SpeakerConfig(290, 1000, 700)
   };
 
-  private static SpeakerConfig speakerConfigIdle =
+  private static final SpeakerConfig speakerConfigIdle =
       new SpeakerConfig(
           -1,
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_TOP,
