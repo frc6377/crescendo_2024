@@ -142,13 +142,15 @@ public class RobotContainer {
 
     // Shooter commands
     shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
-    OI.getTrigger(OI.Operator.shooterTrigger)
+    OI.getTrigger(OI.Operator.shooterRevTrigger).onTrue(shooterSubsystem.revShooter());
+
+    OI.getTrigger(OI.Operator.shooterFireTrigger)
         .onTrue(
-            shooterSubsystem
-                .shooterFire()
-                .until(shooterSubsystem.shooterReady())
-                .andThen(triggerSubsystem.getShootCommand())
-                .onlyWhile(OI.getTrigger(OI.Operator.shooterTrigger)));
+            triggerSubsystem
+                .getShootCommand()
+                .onlyIf(shooterSubsystem.shooterReady())
+                .onlyWhile(OI.getTrigger(OI.Operator.shooterRevTrigger)));
+                
     // Trap Elv Intaking
     OI.getButton(OI.Driver.groundIntakeButton)
         .whileTrue(trapElvSubsystem.intakeGround().onlyWhile(trapElvSubsystem.getGroundBreak()));
