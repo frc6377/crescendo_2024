@@ -84,20 +84,28 @@ public class TurretSubsystem extends SubsystemBase {
               Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES),
               false,
               0);
+      turretMech = new Mechanism2d(4, 4);
+      root = turretMech.getRoot("Root", 2, 2);
+      turretAngleSim =
+          root.append(new MechanismLigament2d("Turret", 2, 0, 5, new Color8Bit(Color.kRed)));
+      turretTab.add("Turret", turretMech);
     }
-    turretMech = new Mechanism2d(4, 4);
-    root = turretMech.getRoot("Root", 2, 2);
-    turretAngleSim =
-        root.append(new MechanismLigament2d("Turret", 2, 0, 5, new Color8Bit(Color.kRed)));
-    turretTab.add("Turret", turretMech);
 
     turretMotor.restoreFactoryDefaults();
     turretMotor.setSmartCurrentLimit(40);
 
     this.robotStateManager = robotStateManager;
 
-    turretMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float)(-Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES / (360 * Constants.TurretConstants.CONVERSION_FACTOR)));
-    turretMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float)(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES / (360 * Constants.TurretConstants.CONVERSION_FACTOR)));
+    turretMotor.setSoftLimit(
+        CANSparkMax.SoftLimitDirection.kReverse,
+        (float)
+            (-Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES
+                / (360 * Constants.TurretConstants.CONVERSION_FACTOR)));
+    turretMotor.setSoftLimit(
+        CANSparkMax.SoftLimitDirection.kForward,
+        (float)
+            (Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES
+                / (360 * Constants.TurretConstants.CONVERSION_FACTOR)));
 
     turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
     turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
