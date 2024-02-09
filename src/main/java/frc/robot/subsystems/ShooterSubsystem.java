@@ -57,7 +57,7 @@ public class ShooterSubsystem extends SubsystemBase {
   // Receives distance-to-target from Limelight, or other sensor.
   // Required to be called repeatedly; consider pub-sub for LimelightGetDistance() or equivalent
   // method to save a method call
-  public Command shooterFire() {
+  public Command revShooter() {
 
     // Only runs if the exit code from the limelight status function returns 0!
     return new SetShooter(

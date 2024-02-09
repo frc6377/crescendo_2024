@@ -144,7 +144,7 @@ public class RobotContainer {
     OI.getTrigger(OI.Operator.shooterTrigger)
         .onTrue(
             shooterSubsystem
-                .shooterFire()
+                .revShooter()
                 .until(shooterSubsystem.shooterReady())
                 .andThen(triggerSubsystem.getShootCommand())
                 .onlyWhile(OI.getTrigger(OI.Operator.shooterTrigger)));
