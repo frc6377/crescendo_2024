@@ -72,7 +72,14 @@ public final class Constants {
     public static final double KMAXOUTPUT = 1;
     public static final double KMINOUTPUT = -1;
     public static final int MAX_TURRET_ANGLE_DEGREES = 110;
-    public static final double CONVERSION_FACTOR = 0.25; // for the revbot prototype turret
+    public static final double TURRET_MOTOR_TURRET_RATIO = 0.2;
+
+    public static final double highGearCAN_CODER_RATIO =
+        164 / 10d; // Revolutions of the turret, to revolutions of the cancoder
+    public static final double lowGearCAN_CODER_RATIO =
+        164 / 13d; // Revolutions of the turret, to revolutions of the cancoder
+    public static final int highGearCAN_CODER_ID = 0;
+    public static final int lowGearCAN_CODER_ID = 0;
   }
 
   public static class OperatorConstants {

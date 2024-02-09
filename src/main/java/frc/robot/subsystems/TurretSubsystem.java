@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -34,6 +35,7 @@ import frc.robot.Robot;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.utilities.DebugEntry;
+import frc.robot.utilities.HowdyMath;
 import frc.robot.utilities.LimelightHelpers;
 import java.util.function.Consumer;
 
@@ -49,7 +51,8 @@ public class TurretSubsystem extends SubsystemBase {
   private SimDouble simTurretPos;
 
   private PIDController turretPIDController;
-  private CANcoder m_encoder;
+  private CANcoder highGearCANcoder;
+  private CANcoder lowGearCANcoder;
   private double turretPosition;
   private double turretVelocity;
   private Consumer<Double> testPosition;
@@ -100,12 +103,12 @@ public class TurretSubsystem extends SubsystemBase {
         CANSparkMax.SoftLimitDirection.kReverse,
         (float)
             (-Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES
-                / (360 * Constants.TurretConstants.CONVERSION_FACTOR)));
+                / (360 * Constants.TurretConstants.TURRET_MOTOR_TURRET_RATIO)));
     turretMotor.setSoftLimit(
         CANSparkMax.SoftLimitDirection.kForward,
         (float)
             (Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES
-                / (360 * Constants.TurretConstants.CONVERSION_FACTOR)));
+                / (360 * Constants.TurretConstants.TURRET_MOTOR_TURRET_RATIO)));
 
     turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
     turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
@@ -116,14 +119,15 @@ public class TurretSubsystem extends SubsystemBase {
             Constants.TurretConstants.KP,
             Constants.TurretConstants.KI,
             Constants.TurretConstants.KD);
-    m_encoder = new CANcoder(Constants.TurretConstants.CANcoder_ID);
 
     simEncoder =
         new SimDeviceSim("CANEncoder:CANCoder (v6)", Constants.TurretConstants.CANcoder_ID);
     simTurretPos = simEncoder.getDouble("rawPositionInput");
 
-    zeroTurretEncoder();
     turretPIDController.setIZone(Constants.TurretConstants.KIZ);
+
+    highGearCANcoder = new CANcoder(Constants.TurretConstants.highGearCAN_CODER_ID);
+    lowGearCANcoder = new CANcoder(Constants.TurretConstants.lowGearCAN_CODER_ID);
   }
 
   private void stopTurret() {
@@ -132,6 +136,48 @@ public class TurretSubsystem extends SubsystemBase {
 
   public Command stowTurret() {
     return new InstantCommand(() -> setTurretPos(Math.toRadians(0))).withName("StowTurretCommand");
+  }
+
+  public Command zeroTurretCommand() {
+    return Commands.runOnce(() -> this.zeroTurret(), this).withName("ZeroTurretCommand");
+  }
+
+  public void zeroTurret() {
+    // Chinease remandier theorm (CRT) scale value.
+    // Converts from rotations to CRT Space
+    final double crtScl =
+        Constants.TurretConstants.lowGearCAN_CODER_RATIO
+            * Constants.TurretConstants.highGearCAN_CODER_RATIO;
+
+    double lowGearPosition = lowGearCANcoder.getAbsolutePosition().getValue().doubleValue();
+    double highGearPosition = highGearCANcoder.getAbsolutePosition().getValue().doubleValue();
+    double turretRotation = encoderPositionsToTurretRotation(lowGearPosition, highGearPosition);
+
+    lowGearCANcoder.setPosition(turretRotation * Constants.TurretConstants.lowGearCAN_CODER_RATIO);
+    highGearCANcoder.setPosition(
+        turretRotation * Constants.TurretConstants.highGearCAN_CODER_RATIO);
+  }
+
+  public static double encoderPositionsToTurretRotation(
+      double lowGearCANcoderPosition, double highGearCANcoderPosition) {
+    final int scl = 10000;
+    final double crtScl =
+        Constants.TurretConstants.lowGearCAN_CODER_RATIO
+            * Constants.TurretConstants.highGearCAN_CODER_RATIO
+            * scl
+            * scl;
+
+    final int lowGearCRTPosition = (int) (((lowGearCANcoderPosition * crtScl) + 0.5d) % crtScl);
+    final int highGearCRTPosition = (int) (((highGearCANcoderPosition * crtScl) + 0.5d) % crtScl);
+
+    int ppLow = (int) (Constants.TurretConstants.highGearCAN_CODER_RATIO * scl);
+    int ppHigh = (int) (Constants.TurretConstants.lowGearCAN_CODER_RATIO * scl);
+
+    int turretCRTPosition = lowGearCRTPosition * HowdyMath.inverse_modulus(ppLow, 1) * ppLow;
+    turretCRTPosition += highGearCRTPosition * HowdyMath.inverse_modulus(ppHigh, 1) * ppHigh;
+    turretCRTPosition %= crtScl;
+    double turretRotation = (turretCRTPosition - 1) / crtScl;
+    return turretRotation;
   }
 
   private void setTurretPos(double setpoint) {
@@ -153,15 +199,12 @@ public class TurretSubsystem extends SubsystemBase {
     return run(() -> holdPosition()).withName("idleTurret");
   }
 
-  private void zeroTurretEncoder() {
-    m_encoder.setPosition(0.0);
-  }
-
   private void updateTurretPosition() {
     turretPosition =
-        Math.toRadians(
-            ((m_encoder.getPosition().getValueAsDouble()) * 360)
-                * Constants.TurretConstants.CONVERSION_FACTOR);
+        highGearCANcoder.getPosition().getValue()
+            * Math.PI
+            * 2
+            * Constants.TurretConstants.highGearCAN_CODER_RATIO;
     SmartDashboard.putNumber("Turret Position", turretPosition);
     SmartDashboard.putBoolean("Out of Bounds", Math.abs(turretPosition) > 3.14);
     SmartDashboard.putBoolean(
@@ -233,7 +276,8 @@ public class TurretSubsystem extends SubsystemBase {
     turretPIDController.setD(kD.getDouble(turretPosition));
     updateTurretPosition();
     turretVelocity =
-        (m_encoder.getVelocity().getValueAsDouble())
+        (lowGearCANcoder.getVelocity().getValueAsDouble()
+                * Constants.TurretConstants.lowGearCAN_CODER_RATIO)
             * 60; // changing from rotations per second to rotations per minute or rpm
     turretPositionEntry.log(turretPosition);
     turretVelocityEntry.log(turretVelocity);
@@ -247,7 +291,7 @@ public class TurretSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Turret Angle", Math.toDegrees(turretSim.getAngleRads()));
     simTurretPos.set(
         Units.radiansToRotations(
-            turretSim.getAngleRads() / Constants.TurretConstants.CONVERSION_FACTOR));
+            turretSim.getAngleRads() / Constants.TurretConstants.TURRET_MOTOR_TURRET_RATIO));
   }
 
   private double getTurretRotationFromOdometry(Pose2d robotPos, Pose2d targetPos) {
