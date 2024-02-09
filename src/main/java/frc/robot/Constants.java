@@ -24,7 +24,7 @@ public final class Constants {
   }
 
   public static class TriggerConstants {
-    public static final int MOTOR_ID = 9; // edit all constants when testing
+    public static final int MOTOR_ID = 8; // edit all constants when testing
     public static final double LOAD_PERCENTAGE = 0.5; // used when intaking into the turret
     public static final double HOLD_PERCENTAGE =
         0.05; // very slow motor speed in case note slips out of trigger
