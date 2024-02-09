@@ -51,8 +51,40 @@ public final class Constants {
   }
 
   public static class TurretConstants {
-    public static final int MOTOR_ID = 9;
-    public static final int CANcoder_ID = 17; // replace with actual CANcoder ID
+    public static final int TURRET_MOTOR_ID = 9;
+    public static final int TURRET_CANcoder_ID = 17; // replace with actual CANcoder ID
+    public static final int pitch_MOTOR_ID = 10;
+    public static final int pitch_CANcoder_ID = 18; // replace with actual CANcoder ID
+
+    // PID coefficients
+    public static final double TURRET_KP =
+        0.25; // TODO: Change values when there's an actual real functional robot.
+    public static final double TURRET_KI = 0.001;
+    public static final double TURRET_KD = 0;
+    public static final double TURRET_KIZ = 0;
+    public static final double TURRET_KFF = 0;
+    public static final double TURRET_KMAXOUTPUT = 1;
+    public static final double TURRET_KMINOUTPUT = -1;
+    public static final int TURRET_MAX_ANGLE_DEGREES = 110;
+    public static final double TURRET_CONVERSION_FACTOR = 0.25;
+    public static final int TURRET_SMART_CURRENT_LIMIT = 40;
+
+    public static final double PITCH_KP =
+        0.25; // TODO: Change values when there's an actual real functional robot.
+    public static final double PITCH_KI = 0.001;
+    public static final double PITCH_KD = 0;
+    public static final double PITCH_KIZ = 0;
+    public static final double PITCH_KFF = 0;
+    public static final double PITCH_KMAXOUTPUT = 1;
+    public static final double PITCH_KMINOUTPUT = -1;
+    public static final int PITCH_MAX_ANGLE_DEGREES = 50;
+    public static final int PITCH_MIN_ANGLE_DEGREES = 0;
+    public static final double PITCH_CONVERSION_FACTOR = 0.25;
+    public static final int PITCH_SMART_CURRENT_LIMIT = 40;
+
+    public static final double SHOOTER_CENTER_OF_GRAVITY = 1;//TODO: Get real values
+    public static final double SHOOTER_MASS = 1;
+    public static final double PITCH_NEWTONS_TO_MOTOR_POWER = 1;
 
     // Limelight
     public static final double LIMELIGHT_HEIGHT_INCHES = 17.85;
@@ -62,17 +94,6 @@ public final class Constants {
         57.125; // Don't change unless FIRST changes the field layout
     public static final int SPEAKER_TAG_ID_RED = 4;
     public static final int SPEAKER_TAG_ID_BLUE = 7;
-
-    // PID coefficients
-    public static final double KP = 0.25;
-    public static final double KI = 0.001;
-    public static final double KD = 0;
-    public static final double KIZ = 0;
-    public static final double KFF = 0;
-    public static final double KMAXOUTPUT = 1;
-    public static final double KMINOUTPUT = -1;
-    public static final int MAX_TURRET_ANGLE_DEGREES = 110;
-    public static final double CONVERSION_FACTOR = 0.25; // for the revbot prototype turret
   }
 
   public static class OperatorConstants {
