@@ -53,6 +53,12 @@ public final class Constants {
     public static final double SHOOTER_IDLE_SPEED_BOTTOM = 100; // Placeholder; in RPM
     public static final double SHOOTER_SPEED_TOLERANCE =
         0.1; // Placeholder; speed must be within (1-n)v to (1+n)v to fire
+
+    public static final double SHOOTER_TOP_GEARING = 1; // Placeholder; unitless
+    public static final double SHOOTER_TOP_MOMENT = 1; // Placeholder; ??? unit
+
+    public static final double SHOOTER_BOTTOM_GEARING = 1; // Placeholder; unitless
+    public static final double SHOOTER_BOTTOM_MOMENT = 1; // Placeholder; ??? unit
   }
 
   public static class OperatorConstants {

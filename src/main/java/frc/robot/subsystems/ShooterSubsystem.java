@@ -4,14 +4,19 @@ import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxSim;
 import com.revrobotics.RelativeEncoder;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -24,10 +29,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private ShuffleboardTab ShooterTab = Shuffleboard.getTab("Shooter Tab");
 
+  private DebugEntry<Double> topMotorOutputEntry;
   private DebugEntry<Double> topMotorSpeedEntry;
   private DebugEntry<Double> topMotorTargetSpeedEntry;
   private DebugEntry<Double> topMotorTemperatureEntry;
 
+  private DebugEntry<Double> bottomMotorOutputEntry;
   private DebugEntry<Double> bottomMotorSpeedEntry;
   private DebugEntry<Double> bottomMotorTargetSpeedEntry;
   private DebugEntry<Double> bottomMotorTemperatureEntry;
@@ -38,6 +45,9 @@ public class ShooterSubsystem extends SubsystemBase {
   private GenericEntry targetRPM = shooterTab.add("Target RPM", 0).getEntry();
 
   private SpeakerConfig targetSpeeds;
+
+  private FlywheelSim shooterTopSim;
+  private FlywheelSim shooterBottomSim;
 
   public ShooterSubsystem() {
     shooterTopMotor =
@@ -64,15 +74,49 @@ public class ShooterSubsystem extends SubsystemBase {
       ShooterTab.add("Shooter Top Motor PID", shooterTopMotor.getPIDController());
       ShooterTab.add("Shooter Bottom Motor PID", shooterBottomMotor.getPIDController());
     }
+
+    if (Robot.isSimulation()) {
+      shooterTopSim =
+          new FlywheelSim(
+              DCMotor.getNEO(1),
+              Constants.ShooterConstants.SHOOTER_TOP_GEARING,
+              Constants.ShooterConstants.SHOOTER_TOP_MOMENT);
+      shooterBottomSim =
+          new FlywheelSim(
+              DCMotor.getNEO(1),
+              Constants.ShooterConstants.SHOOTER_BOTTOM_GEARING,
+              Constants.ShooterConstants.SHOOTER_BOTTOM_MOMENT);
+    }
+
     shooterTopMotorEncoder = shooterTopMotor.getEncoder();
     shooterBottomMotorEncoder = shooterBottomMotor.getEncoder();
 
     targetSpeeds = new SpeakerConfig(0, 0, 0);
 
+    topMotorOutputEntry = new DebugEntry<Double>(0.0, "Top Motor Output", this);
     topMotorSpeedEntry = new DebugEntry<Double>(0.0, "Top Motor Speed", this);
-    bottomMotorSpeedEntry = new DebugEntry<Double>(0.0, "Bottom Motor Speed", this);
     topMotorTargetSpeedEntry = new DebugEntry<Double>(0.0, "Top Motor Target Speed", this);
+    topMotorTemperatureEntry = new DebugEntry<Double>(0.0, "Top Motor Temperature", this);
+
+    bottomMotorOutputEntry = new DebugEntry<Double>(0.0, "Bottom Motor Output", this);
+    bottomMotorSpeedEntry = new DebugEntry<Double>(0.0, "Bottom Motor Speed", this);
     bottomMotorTargetSpeedEntry = new DebugEntry<Double>(0.0, "Bottom Motor Target Speed", this);
+    bottomMotorTemperatureEntry = new DebugEntry<Double>(0.0, "Bottom Motor Temperature", this);
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    for (double i = 0; i < Robot.defaultPeriodSecs; i += CANSparkMaxSim.kPeriod) {
+      shooterTopSim.setInput(shooterTopMotor.get() * RobotController.getBatteryVoltage());
+      shooterTopSim.update(CANSparkMaxSim.kPeriod);
+      shooterTopMotor.update(
+          Units.rotationsPerMinuteToRadiansPerSecond(shooterTopSim.getAngularVelocityRPM()));
+
+      shooterBottomSim.setInput(shooterBottomMotor.get() * RobotController.getBatteryVoltage());
+      shooterBottomSim.update(CANSparkMaxSim.kPeriod);
+      shooterBottomMotor.update(
+          Units.rotationsPerMinuteToRadiansPerSecond(shooterBottomSim.getAngularVelocityRPM()));
+    }
   }
 
   // Spins up the shooter, and requests feeding it when the rollers are within parameters.
@@ -122,6 +166,9 @@ public class ShooterSubsystem extends SubsystemBase {
     topMotorSpeedEntry.log(speedTop);
     bottomMotorSpeedEntry.log(speedBottom);
 
+    topMotorOutputEntry.log(shooterTopMotor.getAppliedOutput());
+    bottomMotorOutputEntry.log(shooterBottomMotor.getAppliedOutput());
+
     if ((minSpeedToleranceTop < speedTop && speedTop < maxSpeedToleranceTop)
         && (minSpeedToleranceBottom < speedBottom && speedBottom < maxSpeedToleranceBottom)
             == true) {
@@ -136,8 +183,10 @@ public class ShooterSubsystem extends SubsystemBase {
   // Speed in RPM. Top is index 0, bottom is index 1.
   public SpeakerConfig setShooterSpeeds(SpeakerConfig speeds) {
     targetSpeeds = speeds;
+
     topMotorTargetSpeedEntry.log(targetSpeeds.getSpeedTopInRPM());
     bottomMotorTargetSpeedEntry.log(targetSpeeds.getSpeedBottomInRPM());
+
     shooterTopMotor
         .getPIDController()
         .setReference(speeds.getSpeedTopInRPM(), CANSparkBase.ControlType.kVelocity);
