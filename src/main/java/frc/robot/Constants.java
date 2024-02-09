@@ -48,7 +48,7 @@ public final class Constants {
     public static final double SHOOTER_RIGHT_D = 0.0;
     public static final double SHOOTER_RIGHT_FF = 0.0;
 
-    // Left is index 0, right is index 1
+    // Motor RPM, NOT roller RPM
     public static final double SHOOTER_IDLE_SPEED_LEFT = 100; // Placeholder; in RPM
     public static final double SHOOTER_IDLE_SPEED_RIGHT = 100; // Placeholder; in RPM
 

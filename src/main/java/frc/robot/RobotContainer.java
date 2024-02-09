@@ -150,7 +150,7 @@ public class RobotContainer {
                 .getShootCommand()
                 .onlyIf(shooterSubsystem.shooterReady())
                 .onlyWhile(OI.getTrigger(OI.Operator.shooterRevTrigger)));
-                
+
     // Trap Elv Intaking
     OI.getButton(OI.Driver.groundIntakeButton)
         .whileTrue(trapElvSubsystem.intakeGround().onlyWhile(trapElvSubsystem.getGroundBreak()));

@@ -39,6 +39,12 @@ public class ShooterSubsystem extends SubsystemBase {
   private DebugEntry<Double> rightMotorTargetSpeedEntry;
   private DebugEntry<Double> rightMotorTemperatureEntry;
 
+  private DebugEntry<Double> leftFlywheelInputEntry;
+  private DebugEntry<Double> leftFlywheelAngularVelocityEntry;
+
+  private DebugEntry<Double> rightFlywheelInputEntry;
+  private DebugEntry<Double> rightFlywheelAngularVelocityEntry;
+
   private DebugEntry<Boolean> shooterReadyEntry;
 
   private ShuffleboardTab shooterTab = Shuffleboard.getTab("Shooter fire");
@@ -79,12 +85,12 @@ public class ShooterSubsystem extends SubsystemBase {
           new FlywheelSim(
               DCMotor.getNEO(1),
               Constants.ShooterConstants.SHOOTER_LEFT_GEARING,
-              Constants.ShooterConstants.SHOOTER_LEFT_MOMENT);
+              Constants.ShooterConstants.SHOOTER_LEFT_MOMENT * 2); // 2 rollers
       shooterRightSim =
           new FlywheelSim(
               DCMotor.getNEO(1),
               Constants.ShooterConstants.SHOOTER_RIGHT_GEARING,
-              Constants.ShooterConstants.SHOOTER_RIGHT_MOMENT);
+              Constants.ShooterConstants.SHOOTER_RIGHT_MOMENT * 2); // 2 rollers
     }
 
     shooterLeftMotorEncoder = shooterLeftMotor.getEncoder();
@@ -111,12 +117,22 @@ public class ShooterSubsystem extends SubsystemBase {
       shooterLeftSim.setInput(shooterLeftMotor.get() * RobotController.getBatteryVoltage());
       shooterLeftSim.update(CANSparkMaxSim.kPeriod);
       shooterLeftMotor.update(
-          Units.rotationsPerMinuteToRadiansPerSecond(shooterLeftSim.getAngularVelocityRPM()));
+          Units.rotationsPerMinuteToRadiansPerSecond(
+              shooterLeftSim.getAngularVelocityRPM()
+                  / Constants.ShooterConstants.SHOOTER_LEFT_GEARING));
 
       shooterRightSim.setInput(shooterRightMotor.get() * RobotController.getBatteryVoltage());
       shooterRightSim.update(CANSparkMaxSim.kPeriod);
       shooterRightMotor.update(
-          Units.rotationsPerMinuteToRadiansPerSecond(shooterRightSim.getAngularVelocityRPM()));
+          Units.rotationsPerMinuteToRadiansPerSecond(
+              shooterRightSim.getAngularVelocityRPM()
+                  / Constants.ShooterConstants.SHOOTER_RIGHT_GEARING));
+
+      leftFlywheelInputEntry.log(shooterLeftMotor.get() * RobotController.getBatteryVoltage());
+      leftFlywheelAngularVelocityEntry.log(shooterLeftSim.getAngularVelocityRPM());
+
+      rightFlywheelInputEntry.log(shooterRightMotor.get() * RobotController.getBatteryVoltage());
+      rightFlywheelAngularVelocityEntry.log(shooterRightSim.getAngularVelocityRPM());
     }
   }
 
@@ -263,15 +279,18 @@ public class ShooterSubsystem extends SubsystemBase {
       return distanceInInches;
     }
 
+    // Motor RPM, NOT roller RPM
     public double getSpeedLeftInRPM() {
       return speedLeftInRPM;
     }
 
+    // Motor RPM, NOT roller RPM
     public double getSpeedRightInRPM() {
       return speedRightInRPM;
     }
   }
 
+  // Motor RPM, NOT roller RPM
   private static SpeakerConfig[] speakerConfigList = {
     new SpeakerConfig(0, 250, 250),
     new SpeakerConfig(40, 350, 350),
