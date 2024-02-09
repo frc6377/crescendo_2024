@@ -119,14 +119,14 @@ public class ShooterSubsystem extends SubsystemBase {
       shooterLeftMotor.update(
           Units.rotationsPerMinuteToRadiansPerSecond(
               shooterLeftSim.getAngularVelocityRPM()
-                  / Constants.ShooterConstants.SHOOTER_LEFT_GEARING));
+                  * Constants.ShooterConstants.SHOOTER_LEFT_GEARING));
 
       shooterRightSim.setInput(shooterRightMotor.get() * RobotController.getBatteryVoltage());
       shooterRightSim.update(CANSparkMaxSim.kPeriod);
       shooterRightMotor.update(
           Units.rotationsPerMinuteToRadiansPerSecond(
               shooterRightSim.getAngularVelocityRPM()
-                  / Constants.ShooterConstants.SHOOTER_RIGHT_GEARING));
+                  * Constants.ShooterConstants.SHOOTER_RIGHT_GEARING));
 
       leftFlywheelInputEntry.log(shooterLeftMotor.get() * RobotController.getBatteryVoltage());
       leftFlywheelAngularVelocityEntry.log(shooterLeftSim.getAngularVelocityRPM());
