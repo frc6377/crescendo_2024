@@ -336,51 +336,57 @@ public class TrapElvSubsystem extends SubsystemBase {
   }
 
   public Command zeroArm() {
-    return startEnd(
-            () -> {
-              // Command for zeroing elevator if elevator happens to be not at zero
-              // Runs elevator motors until there limit switches are pressed
-              if (!baseLimit.get()) {
-                baseMotor1.set(TrapElvConstants.ELV_ZEROING_SPEED);
-                baseMotor2.set(TrapElvConstants.ELV_ZEROING_SPEED);
-              } else {
+    if (isElv) {
+      return startEnd(
+              () -> {
+                // Command for zeroing elevator if elevator happens to be not at zero
+                // Runs elevator motors until there limit switches are pressed
+                if (!baseLimit.get()) {
+                  baseMotor1.set(TrapElvConstants.ELV_ZEROING_SPEED);
+                  baseMotor2.set(TrapElvConstants.ELV_ZEROING_SPEED);
+                } else {
+                  baseMotor1.stopMotor();
+                  baseMotor2.stopMotor();
+                  baseMotorOffset1 = baseMotor1.getEncoder().getPosition();
+                  baseMotorOffset2 = baseMotor2.getEncoder().getPosition();
+                }
+                if (!scoringLimit.get()) {
+                  scoringMotor.set(TrapElvConstants.ELV_ZEROING_SPEED);
+                } else {
+                  scoringMotor.stopMotor();
+                  scoringMotorOffset = scoringMotor.getEncoder().getPosition();
+                }
+              },
+              () -> {
                 baseMotor1.stopMotor();
                 baseMotor2.stopMotor();
-                baseMotorOffset1 = baseMotor1.getEncoder().getPosition();
-                baseMotorOffset2 = baseMotor2.getEncoder().getPosition();
-              }
-              if (!scoringLimit.get()) {
-                scoringMotor.set(TrapElvConstants.ELV_ZEROING_SPEED);
-              } else {
                 scoringMotor.stopMotor();
-                scoringMotorOffset = scoringMotor.getEncoder().getPosition();
-              }
-            },
-            () -> {
-              baseMotor1.stopMotor();
-              baseMotor2.stopMotor();
-              scoringMotor.stopMotor();
-            })
-        .withName("Zero Arm");
+              })
+          .withName("Zero Arm");
+    } else {
+      return run(() -> {});
+    }
   }
 
   public void setTrapArm(TrapElvState state) {
-    baseGoal.setDouble(Units.metersToInches(TrapElvConstants.ELV_MIN_HEIGHT) + state.basePose);
     SmartDashboard.putNumber("Wrist Goal", state.wristPose);
     SmartDashboard.putNumber(
         "Wrist PID Control Output",
         wristPIDController.calculate(
             wristEncoder.getPosition().getValueAsDouble(), state.getWristPose()));
     wristState = state.getWristPose();
-    baseMotor1
-        .getPIDController()
-        .setReference(state.getBasePose() - baseMotorOffset1, ControlType.kPosition);
-    baseMotor2
-        .getPIDController()
-        .setReference(state.getBasePose() - baseMotorOffset2, ControlType.kPosition);
-    scoringMotor
-        .getPIDController()
-        .setReference(state.getScoringPose() - scoringMotorOffset, ControlType.kPosition);
+    if (isElv) {
+      baseGoal.setDouble(Units.metersToInches(TrapElvConstants.ELV_MIN_HEIGHT) + state.basePose);
+      baseMotor1
+          .getPIDController()
+          .setReference(state.getBasePose() - baseMotorOffset1, ControlType.kPosition);
+      baseMotor2
+          .getPIDController()
+          .setReference(state.getBasePose() - baseMotorOffset2, ControlType.kPosition);
+      scoringMotor
+          .getPIDController()
+          .setReference(state.getScoringPose() - scoringMotorOffset, ControlType.kPosition);
+    }
   }
 
   @Override
