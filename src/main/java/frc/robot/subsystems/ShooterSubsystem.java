@@ -101,6 +101,8 @@ public class ShooterSubsystem extends SubsystemBase {
     rightMotorSpeedEntry = new DebugEntry<Double>(0.0, "Right Motor Speed", this);
     rightMotorTargetSpeedEntry = new DebugEntry<Double>(0.0, "Right Motor Target Speed", this);
     rightMotorTemperatureEntry = new DebugEntry<Double>(0.0, "Right Motor Temperature", this);
+
+    shooterReadyEntry = new DebugEntry<Boolean>(false, "Shooter Ready?", this);
   }
 
   @Override
