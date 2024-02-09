@@ -186,14 +186,11 @@ public class ShooterSubsystem extends SubsystemBase {
     leftMotorOutputEntry.log(shooterLeftMotor.getAppliedOutput());
     rightMotorOutputEntry.log(shooterRightMotor.getAppliedOutput());
 
-    if ((minSpeedToleranceLeft < speedLeft && speedLeft < maxSpeedToleranceLeft)
-        && (minSpeedToleranceRight < speedRight && speedRight < maxSpeedToleranceRight) == true) {
-      shooterReadyEntry.log(true);
-      return true;
-    } else {
-      shooterReadyEntry.log(false);
-      return false;
-    }
+    boolean ready =
+        (minSpeedToleranceLeft < speedLeft && speedLeft < maxSpeedToleranceLeft)
+            && (minSpeedToleranceRight < speedRight && speedRight < maxSpeedToleranceRight);
+    shooterReadyEntry.log(ready);
+    return ready;
   }
 
   // Speed in RPM. Left is index 0, right is index 1.
