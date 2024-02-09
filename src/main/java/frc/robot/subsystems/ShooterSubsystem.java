@@ -21,23 +21,23 @@ import frc.robot.utilities.DebugEntry;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-  private final CANSparkMaxSim shooterTopMotor;
-  private final CANSparkMaxSim shooterBottomMotor;
+  private final CANSparkMaxSim shooterLeftMotor;
+  private final CANSparkMaxSim shooterRightMotor;
 
-  private final RelativeEncoder shooterTopMotorEncoder;
-  private final RelativeEncoder shooterBottomMotorEncoder;
+  private final RelativeEncoder shooterLeftMotorEncoder;
+  private final RelativeEncoder shooterRightMotorEncoder;
 
   private ShuffleboardTab ShooterTab = Shuffleboard.getTab("Shooter Tab");
 
-  private DebugEntry<Double> topMotorOutputEntry;
-  private DebugEntry<Double> topMotorSpeedEntry;
-  private DebugEntry<Double> topMotorTargetSpeedEntry;
-  private DebugEntry<Double> topMotorTemperatureEntry;
+  private DebugEntry<Double> leftMotorOutputEntry;
+  private DebugEntry<Double> leftMotorSpeedEntry;
+  private DebugEntry<Double> leftMotorTargetSpeedEntry;
+  private DebugEntry<Double> leftMotorTemperatureEntry;
 
-  private DebugEntry<Double> bottomMotorOutputEntry;
-  private DebugEntry<Double> bottomMotorSpeedEntry;
-  private DebugEntry<Double> bottomMotorTargetSpeedEntry;
-  private DebugEntry<Double> bottomMotorTemperatureEntry;
+  private DebugEntry<Double> rightMotorOutputEntry;
+  private DebugEntry<Double> rightMotorSpeedEntry;
+  private DebugEntry<Double> rightMotorTargetSpeedEntry;
+  private DebugEntry<Double> rightMotorTemperatureEntry;
 
   private DebugEntry<Boolean> shooterReadyEntry;
 
@@ -46,76 +46,75 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private SpeakerConfig targetSpeeds;
 
-  private FlywheelSim shooterTopSim;
-  private FlywheelSim shooterBottomSim;
+  private FlywheelSim shooterLeftSim;
+  private FlywheelSim shooterRightSim;
 
   public ShooterSubsystem() {
-    shooterTopMotor =
-        new CANSparkMaxSim(Constants.ShooterConstants.SHOOTER_MOTOR_TOP_ID, MotorType.kBrushless);
-    shooterBottomMotor =
-        new CANSparkMaxSim(
-            Constants.ShooterConstants.SHOOTER_MOTOR_BOTTOM_ID, MotorType.kBrushless);
+    shooterLeftMotor =
+        new CANSparkMaxSim(Constants.ShooterConstants.SHOOTER_MOTOR_LEFT_ID, MotorType.kBrushless);
+    shooterRightMotor =
+        new CANSparkMaxSim(Constants.ShooterConstants.SHOOTER_MOTOR_RIGHT_ID, MotorType.kBrushless);
 
-    shooterTopMotor.restoreFactoryDefaults();
-    shooterTopMotor.setSmartCurrentLimit(40);
-    shooterBottomMotor.restoreFactoryDefaults();
-    shooterBottomMotor.setSmartCurrentLimit(40);
+    shooterLeftMotor.restoreFactoryDefaults();
+    shooterLeftMotor.setSmartCurrentLimit(40);
+    shooterRightMotor.restoreFactoryDefaults();
+    shooterRightMotor.setSmartCurrentLimit(40);
 
-    shooterTopMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_TOP_P);
-    shooterTopMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_TOP_I);
-    shooterTopMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_TOP_D);
-    shooterTopMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_TOP_FF);
-    shooterBottomMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_BOTTOM_P);
-    shooterBottomMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_BOTTOM_I);
-    shooterBottomMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_BOTTOM_D);
-    shooterBottomMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_BOTTOM_FF);
+    shooterLeftMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_LEFT_P);
+    shooterLeftMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_LEFT_I);
+    shooterLeftMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_LEFT_D);
+    shooterLeftMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_LEFT_FF);
+    shooterRightMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_RIGHT_P);
+    shooterRightMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_RIGHT_I);
+    shooterRightMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_RIGHT_D);
+    shooterRightMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_RIGHT_FF);
 
     if (DriverStation.isTest()) {
-      ShooterTab.add("Shooter Top Motor PID", shooterTopMotor.getPIDController());
-      ShooterTab.add("Shooter Bottom Motor PID", shooterBottomMotor.getPIDController());
+      ShooterTab.add("Shooter Left Motor PID", shooterLeftMotor.getPIDController());
+      ShooterTab.add("Shooter Right Motor PID", shooterRightMotor.getPIDController());
     }
 
     if (Robot.isSimulation()) {
-      shooterTopSim =
+      shooterLeftSim =
           new FlywheelSim(
               DCMotor.getNEO(1),
-              Constants.ShooterConstants.SHOOTER_TOP_GEARING,
-              Constants.ShooterConstants.SHOOTER_TOP_MOMENT);
-      shooterBottomSim =
+              Constants.ShooterConstants.SHOOTER_LEFT_GEARING,
+              Constants.ShooterConstants.SHOOTER_LEFT_MOMENT);
+      shooterRightSim =
           new FlywheelSim(
               DCMotor.getNEO(1),
-              Constants.ShooterConstants.SHOOTER_BOTTOM_GEARING,
-              Constants.ShooterConstants.SHOOTER_BOTTOM_MOMENT);
+              Constants.ShooterConstants.SHOOTER_RIGHT_GEARING,
+              Constants.ShooterConstants.SHOOTER_RIGHT_MOMENT);
     }
 
-    shooterTopMotorEncoder = shooterTopMotor.getEncoder();
-    shooterBottomMotorEncoder = shooterBottomMotor.getEncoder();
+    shooterLeftMotorEncoder = shooterLeftMotor.getEncoder();
+    shooterRightMotorEncoder = shooterRightMotor.getEncoder();
 
     targetSpeeds = new SpeakerConfig(0, 0, 0);
 
-    topMotorOutputEntry = new DebugEntry<Double>(0.0, "Top Motor Output", this);
-    topMotorSpeedEntry = new DebugEntry<Double>(0.0, "Top Motor Speed", this);
-    topMotorTargetSpeedEntry = new DebugEntry<Double>(0.0, "Top Motor Target Speed", this);
-    topMotorTemperatureEntry = new DebugEntry<Double>(0.0, "Top Motor Temperature", this);
+    leftMotorOutputEntry = new DebugEntry<Double>(0.0, "Left Motor Output", this);
+    leftMotorSpeedEntry = new DebugEntry<Double>(0.0, "Left Motor Speed", this);
+    leftMotorTargetSpeedEntry = new DebugEntry<Double>(0.0, "Left Motor Target Speed", this);
+    leftMotorTemperatureEntry = new DebugEntry<Double>(0.0, "Left Motor Temperature", this);
 
-    bottomMotorOutputEntry = new DebugEntry<Double>(0.0, "Bottom Motor Output", this);
-    bottomMotorSpeedEntry = new DebugEntry<Double>(0.0, "Bottom Motor Speed", this);
-    bottomMotorTargetSpeedEntry = new DebugEntry<Double>(0.0, "Bottom Motor Target Speed", this);
-    bottomMotorTemperatureEntry = new DebugEntry<Double>(0.0, "Bottom Motor Temperature", this);
+    rightMotorOutputEntry = new DebugEntry<Double>(0.0, "Right Motor Output", this);
+    rightMotorSpeedEntry = new DebugEntry<Double>(0.0, "Right Motor Speed", this);
+    rightMotorTargetSpeedEntry = new DebugEntry<Double>(0.0, "Right Motor Target Speed", this);
+    rightMotorTemperatureEntry = new DebugEntry<Double>(0.0, "Right Motor Temperature", this);
   }
 
   @Override
   public void simulationPeriodic() {
     for (double i = 0; i < Robot.defaultPeriodSecs; i += CANSparkMaxSim.kPeriod) {
-      shooterTopSim.setInput(shooterTopMotor.get() * RobotController.getBatteryVoltage());
-      shooterTopSim.update(CANSparkMaxSim.kPeriod);
-      shooterTopMotor.update(
-          Units.rotationsPerMinuteToRadiansPerSecond(shooterTopSim.getAngularVelocityRPM()));
+      shooterLeftSim.setInput(shooterLeftMotor.get() * RobotController.getBatteryVoltage());
+      shooterLeftSim.update(CANSparkMaxSim.kPeriod);
+      shooterLeftMotor.update(
+          Units.rotationsPerMinuteToRadiansPerSecond(shooterLeftSim.getAngularVelocityRPM()));
 
-      shooterBottomSim.setInput(shooterBottomMotor.get() * RobotController.getBatteryVoltage());
-      shooterBottomSim.update(CANSparkMaxSim.kPeriod);
-      shooterBottomMotor.update(
-          Units.rotationsPerMinuteToRadiansPerSecond(shooterBottomSim.getAngularVelocityRPM()));
+      shooterRightSim.setInput(shooterRightMotor.get() * RobotController.getBatteryVoltage());
+      shooterRightSim.update(CANSparkMaxSim.kPeriod);
+      shooterRightMotor.update(
+          Units.rotationsPerMinuteToRadiansPerSecond(shooterRightSim.getAngularVelocityRPM()));
     }
   }
 
@@ -145,33 +144,32 @@ public class ShooterSubsystem extends SubsystemBase {
   }
   // Checks if shooter is ready.
   public boolean isShooterReady() {
-    double targetSpeedTop = targetSpeeds.getSpeedTopInRPM();
-    double targetSpeedBottom = targetSpeeds.getSpeedBottomInRPM();
+    double targetSpeedLeft = targetSpeeds.getSpeedLeftInRPM();
+    double targetSpeedRight = targetSpeeds.getSpeedRightInRPM();
 
-    topMotorTargetSpeedEntry.log(targetSpeedTop);
-    bottomMotorTargetSpeedEntry.log(targetSpeedBottom);
+    leftMotorTargetSpeedEntry.log(targetSpeedLeft);
+    rightMotorTargetSpeedEntry.log(targetSpeedRight);
 
-    double minSpeedToleranceTop =
-        targetSpeedTop * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
-    double maxSpeedToleranceTop =
-        targetSpeedTop * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
-    double minSpeedToleranceBottom =
-        targetSpeedBottom * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
-    double maxSpeedToleranceBottom =
-        targetSpeedBottom * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+    double minSpeedToleranceLeft =
+        targetSpeedLeft * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+    double maxSpeedToleranceLeft =
+        targetSpeedLeft * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+    double minSpeedToleranceRight =
+        targetSpeedRight * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+    double maxSpeedToleranceRight =
+        targetSpeedRight * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
 
-    double speedTop = shooterTopMotorEncoder.getVelocity();
-    double speedBottom = shooterBottomMotorEncoder.getVelocity();
+    double speedLeft = shooterLeftMotorEncoder.getVelocity();
+    double speedRight = shooterRightMotorEncoder.getVelocity();
 
-    topMotorSpeedEntry.log(speedTop);
-    bottomMotorSpeedEntry.log(speedBottom);
+    leftMotorSpeedEntry.log(speedLeft);
+    rightMotorSpeedEntry.log(speedRight);
 
-    topMotorOutputEntry.log(shooterTopMotor.getAppliedOutput());
-    bottomMotorOutputEntry.log(shooterBottomMotor.getAppliedOutput());
+    leftMotorOutputEntry.log(shooterLeftMotor.getAppliedOutput());
+    rightMotorOutputEntry.log(shooterRightMotor.getAppliedOutput());
 
-    if ((minSpeedToleranceTop < speedTop && speedTop < maxSpeedToleranceTop)
-        && (minSpeedToleranceBottom < speedBottom && speedBottom < maxSpeedToleranceBottom)
-            == true) {
+    if ((minSpeedToleranceLeft < speedLeft && speedLeft < maxSpeedToleranceLeft)
+        && (minSpeedToleranceRight < speedRight && speedRight < maxSpeedToleranceRight) == true) {
       shooterReadyEntry.log(true);
       return true;
     } else {
@@ -180,38 +178,38 @@ public class ShooterSubsystem extends SubsystemBase {
     }
   }
 
-  // Speed in RPM. Top is index 0, bottom is index 1.
+  // Speed in RPM. Left is index 0, right is index 1.
   public SpeakerConfig setShooterSpeeds(SpeakerConfig speeds) {
     targetSpeeds = speeds;
 
-    topMotorTargetSpeedEntry.log(targetSpeeds.getSpeedTopInRPM());
-    bottomMotorTargetSpeedEntry.log(targetSpeeds.getSpeedBottomInRPM());
+    leftMotorTargetSpeedEntry.log(targetSpeeds.getSpeedLeftInRPM());
+    rightMotorTargetSpeedEntry.log(targetSpeeds.getSpeedRightInRPM());
 
-    shooterTopMotor
+    shooterLeftMotor
         .getPIDController()
-        .setReference(speeds.getSpeedTopInRPM(), CANSparkBase.ControlType.kVelocity);
-    shooterBottomMotor
+        .setReference(speeds.getSpeedLeftInRPM(), CANSparkBase.ControlType.kVelocity);
+    shooterRightMotor
         .getPIDController()
-        .setReference(speeds.getSpeedBottomInRPM(), CANSparkBase.ControlType.kVelocity);
+        .setReference(speeds.getSpeedRightInRPM(), CANSparkBase.ControlType.kVelocity);
 
-    topMotorTemperatureEntry.log(shooterTopMotor.getMotorTemperature());
-    bottomMotorTemperatureEntry.log(shooterBottomMotor.getMotorTemperature());
+    leftMotorTemperatureEntry.log(shooterLeftMotor.getMotorTemperature());
+    rightMotorTemperatureEntry.log(shooterRightMotor.getMotorTemperature());
 
     return targetSpeeds;
   }
 
-  // Top is index 0, bottom is index 1.
+  // Left is index 0, right is index 1.
   public static SpeakerConfig calculateShooterSpeeds(double distance) {
     SpeakerConfig speeds;
-    Double topSpeed = 0d;
-    Double bottomSpeed = 0d;
+    Double leftSpeed = 0d;
+    Double rightSpeed = 0d;
     double distanceProportion;
 
     // If distance below minimum, set speed to minimum.
     if (distance < speakerConfigList[0].getDistanceInInches()) {
-      topSpeed = speakerConfigList[0].getSpeedTopInRPM();
-      bottomSpeed = speakerConfigList[0].getSpeedBottomInRPM();
-      speeds = new SpeakerConfig(distance, topSpeed, bottomSpeed);
+      leftSpeed = speakerConfigList[0].getSpeedLeftInRPM();
+      rightSpeed = speakerConfigList[0].getSpeedRightInRPM();
+      speeds = new SpeakerConfig(distance, leftSpeed, rightSpeed);
       return speeds;
     }
     // A linear search which determines which points the input distance falls between. May be
@@ -225,65 +223,65 @@ public class ShooterSubsystem extends SubsystemBase {
             (distance - speakerConfigList[i].getDistanceInInches())
                 / (speakerConfigList[i + 1].getDistanceInInches()
                     - speakerConfigList[i].getDistanceInInches());
-        topSpeed =
+        leftSpeed =
             (distanceProportion
-                    * (speakerConfigList[i + 1].getSpeedTopInRPM()
-                        - speakerConfigList[i].getSpeedTopInRPM()))
-                + speakerConfigList[i].getSpeedTopInRPM();
-        bottomSpeed =
+                    * (speakerConfigList[i + 1].getSpeedLeftInRPM()
+                        - speakerConfigList[i].getSpeedLeftInRPM()))
+                + speakerConfigList[i].getSpeedLeftInRPM();
+        rightSpeed =
             (distanceProportion
-                    * (speakerConfigList[i + 1].getSpeedBottomInRPM()
-                        - speakerConfigList[i].getSpeedBottomInRPM()))
-                + speakerConfigList[i].getSpeedBottomInRPM();
-        speeds = new SpeakerConfig(distance, topSpeed, bottomSpeed);
+                    * (speakerConfigList[i + 1].getSpeedRightInRPM()
+                        - speakerConfigList[i].getSpeedRightInRPM()))
+                + speakerConfigList[i].getSpeedRightInRPM();
+        speeds = new SpeakerConfig(distance, leftSpeed, rightSpeed);
         return speeds;
       }
     }
 
     // If distance above maximum, set speed to maximum.
-    topSpeed = speakerConfigList[speakerConfigList.length - 1].getSpeedTopInRPM();
-    bottomSpeed = speakerConfigList[speakerConfigList.length - 1].getSpeedBottomInRPM();
-    speeds = new SpeakerConfig(distance, topSpeed, bottomSpeed);
+    leftSpeed = speakerConfigList[speakerConfigList.length - 1].getSpeedLeftInRPM();
+    rightSpeed = speakerConfigList[speakerConfigList.length - 1].getSpeedRightInRPM();
+    speeds = new SpeakerConfig(distance, leftSpeed, rightSpeed);
     return speeds;
   }
 
   // Distance and speed in inches and RPM respectively.
   public static class SpeakerConfig {
     private double distanceInInches;
-    private double speedTopInRPM;
-    private double speedBottomInRPM;
+    private double speedLeftInRPM;
+    private double speedRightInRPM;
 
-    public SpeakerConfig(double distance, double speedTop, double speedBottom) {
+    public SpeakerConfig(double distance, double speedLeft, double speedRight) {
       this.distanceInInches = distance;
-      this.speedTopInRPM = speedTop;
-      this.speedBottomInRPM = speedBottom;
+      this.speedLeftInRPM = speedLeft;
+      this.speedRightInRPM = speedRight;
     }
 
     public double getDistanceInInches() {
       return distanceInInches;
     }
 
-    public double getSpeedTopInRPM() {
-      return speedTopInRPM;
+    public double getSpeedLeftInRPM() {
+      return speedLeftInRPM;
     }
 
-    public double getSpeedBottomInRPM() {
-      return speedBottomInRPM;
+    public double getSpeedRightInRPM() {
+      return speedRightInRPM;
     }
   }
 
   private static SpeakerConfig[] speakerConfigList = {
-    new SpeakerConfig(0, 450, 250),
-    new SpeakerConfig(40, 550, 350),
-    new SpeakerConfig(195, 750, 500),
-    new SpeakerConfig(290, 1000, 700)
+    new SpeakerConfig(0, 250, 250),
+    new SpeakerConfig(40, 350, 350),
+    new SpeakerConfig(195, 500, 500),
+    new SpeakerConfig(290, 700, 700)
   };
 
   private static final SpeakerConfig speakerConfigIdle =
       new SpeakerConfig(
           -1,
-          Constants.ShooterConstants.SHOOTER_IDLE_SPEED_TOP,
-          Constants.ShooterConstants.SHOOTER_IDLE_SPEED_BOTTOM);
+          Constants.ShooterConstants.SHOOTER_IDLE_SPEED_LEFT,
+          Constants.ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT);
 
   public class SetShooter extends Command {
     SpeakerConfig shooterSpeeds;

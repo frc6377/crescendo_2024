@@ -34,31 +34,32 @@ public final class Constants {
   }
 
   public static class ShooterConstants {
-    public static final int SHOOTER_MOTOR_TOP_ID = 55;
-    public static final int SHOOTER_MOTOR_BOTTOM_ID = 56;
+    public static final int SHOOTER_MOTOR_LEFT_ID = 55;
+    public static final int SHOOTER_MOTOR_RIGHT_ID = 56;
 
     // Placeholder values
-    public static final double SHOOTER_TOP_P = 0.0;
-    public static final double SHOOTER_TOP_I = 0.0;
-    public static final double SHOOTER_TOP_D = 0.0;
-    public static final double SHOOTER_TOP_FF = 0.0;
+    public static final double SHOOTER_LEFT_P = 0.0;
+    public static final double SHOOTER_LEFT_I = 0.0;
+    public static final double SHOOTER_LEFT_D = 0.0;
+    public static final double SHOOTER_LEFT_FF = 0.0;
 
-    public static final double SHOOTER_BOTTOM_P = 0.0;
-    public static final double SHOOTER_BOTTOM_I = 0.0;
-    public static final double SHOOTER_BOTTOM_D = 0.0;
-    public static final double SHOOTER_BOTTOM_FF = 0.0;
+    public static final double SHOOTER_RIGHT_P = 0.0;
+    public static final double SHOOTER_RIGHT_I = 0.0;
+    public static final double SHOOTER_RIGHT_D = 0.0;
+    public static final double SHOOTER_RIGHT_FF = 0.0;
 
-    // Top is index 0, bottom is index 1
-    public static final double SHOOTER_IDLE_SPEED_TOP = 150; // Placeholder; in RPM
-    public static final double SHOOTER_IDLE_SPEED_BOTTOM = 100; // Placeholder; in RPM
+    // Left is index 0, right is index 1
+    public static final double SHOOTER_IDLE_SPEED_LEFT = 100; // Placeholder; in RPM
+    public static final double SHOOTER_IDLE_SPEED_RIGHT = 100; // Placeholder; in RPM
+
     public static final double SHOOTER_SPEED_TOLERANCE =
         0.1; // Placeholder; speed must be within (1-n)v to (1+n)v to fire
 
-    public static final double SHOOTER_TOP_GEARING = 1; // Placeholder; unitless
-    public static final double SHOOTER_TOP_MOMENT = 1; // Placeholder; ??? unit
+    public static final double SHOOTER_LEFT_GEARING = 2.5; // Unitless
+    public static final double SHOOTER_LEFT_MOMENT = 0.000848475500006; // Placeholder; in kg*m^2
 
-    public static final double SHOOTER_BOTTOM_GEARING = 1; // Placeholder; unitless
-    public static final double SHOOTER_BOTTOM_MOMENT = 1; // Placeholder; ??? unit
+    public static final double SHOOTER_RIGHT_GEARING = 2.5; // Unitless
+    public static final double SHOOTER_RIGHT_MOMENT = 0.000848475500006; // Placeholder; in kg*m^2
   }
 
   public static class OperatorConstants {
