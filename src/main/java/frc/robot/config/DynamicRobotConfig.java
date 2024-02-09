@@ -51,6 +51,7 @@ public class DynamicRobotConfig {
   }
 
   public static void saveConfig() {
+    System.out.println("-------- SAVE!!!! --------");
     for (Field variable : ConfigVariables.class.getFields()) {
       // For each field, its name is stored as a string, so it can be used as a preference key
       String key = variable.getName();

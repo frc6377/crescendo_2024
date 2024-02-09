@@ -18,6 +18,7 @@ public class LimelightSubsystem extends SubsystemBase {
   private LimelightHelpers.LimelightResults results;
 
   private int measurementsUsed = 0;
+  private boolean exists = false;
   private DebugEntry<Integer> measurementEntry = new DebugEntry<Integer>(0, "measurements", this);
 
   private final BiConsumer<Pose2d, Double> measurementConsumer;
@@ -49,7 +50,7 @@ public class LimelightSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (Robot.isReal()) {
+    if (Robot.isReal() && exists) {
       results = LimelightHelpers.getLatestResults("");
 
       if (getTagCount() > 1) {
