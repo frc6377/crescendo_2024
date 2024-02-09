@@ -4,6 +4,9 @@ import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxSim;
 import com.revrobotics.RelativeEncoder;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,10 +21,17 @@ public class ShooterSubsystem extends SubsystemBase {
   private final RelativeEncoder shooterTopMotorEncoder;
   private final RelativeEncoder shooterBottomMotorEncoder;
 
+  private ShuffleboardTab ShooterTab = Shuffleboard.getTab("Shooter Tab");
+
   private DebugEntry<Double> topMotorSpeedEntry;
-  private DebugEntry<Double> bottomMotorSpeedEntry;
   private DebugEntry<Double> topMotorTargetSpeedEntry;
+  private DebugEntry<Double> topMotorTemperatureEntry;
+
+  private DebugEntry<Double> bottomMotorSpeedEntry;
   private DebugEntry<Double> bottomMotorTargetSpeedEntry;
+  private DebugEntry<Double> bottomMotorTemperatureEntry;
+
+  private DebugEntry<Boolean> shooterReadyEntry;
 
   public ShooterSubsystem() {
     shooterTopMotor =
@@ -44,6 +54,10 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterBottomMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_BOTTOM_D);
     shooterBottomMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_BOTTOM_FF);
 
+    if (DriverStation.isTest()) {
+      ShooterTab.add("Shooter Top Motor PID", shooterTopMotor.getPIDController());
+      ShooterTab.add("Shooter Bottom Motor PID", shooterBottomMotor.getPIDController());
+    }
     shooterTopMotorEncoder = shooterTopMotor.getEncoder();
     shooterBottomMotorEncoder = shooterBottomMotor.getEncoder();
   }
@@ -95,7 +109,11 @@ public class ShooterSubsystem extends SubsystemBase {
     if ((minSpeedToleranceTop < speedTop && speedTop < maxSpeedToleranceTop)
         && (minSpeedToleranceBottom < speedBottom && speedBottom < maxSpeedToleranceBottom)
             == true) {
+      shooterReadyEntry.log(true);
       // Request note from feeder.
+    }
+    else {
+      shooterReadyEntry.log(false);
     }
   }
 
@@ -109,6 +127,9 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterBottomMotor
         .getPIDController()
         .setReference(speeds.getSpeedBottomInRPM(), CANSparkBase.ControlType.kVelocity);
+
+    topMotorTemperatureEntry.log(shooterTopMotor.getMotorTemperature());
+    bottomMotorTemperatureEntry.log(shooterBottomMotor.getMotorTemperature());
 
     return targetSpeeds;
   }
