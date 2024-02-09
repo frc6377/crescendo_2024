@@ -15,15 +15,15 @@ public class TOFSensorSimple {
 
   public TOFSensorSimple(int ID, double threshold) {
     sensor = new TimeOfFlight(ID);
-    this.threshold = threshold;
+    this.threshold = threshold; // in mm
   }
 
-  public double getDistance() {
+  public double getMillameters() {
     return sensor.getRange();
   }
 
   public boolean isBeamBroke() {
-    return getDistance() < threshold;
+    return getMillameters() < threshold;
   }
 
   public Trigger beamBroken(Command action) {
