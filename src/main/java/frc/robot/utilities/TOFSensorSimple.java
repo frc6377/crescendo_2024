@@ -23,7 +23,7 @@ public class TOFSensorSimple {
   }
 
   public boolean isBeamBroke() {
-    return getMillameters() < threshold;
+    return getMilliMeters() < threshold;
   }
 
   public Trigger beamBroken(Command action) {
