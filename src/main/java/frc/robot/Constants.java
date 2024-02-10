@@ -105,7 +105,8 @@ public final class Constants {
 
     // Simulation
     public static final int ELV_GEAR_RATIO = 70;
-    public static final int WRIST_GEAR_RATIO = 70;
+    public static final double WRIST_GEAR_RATIO = 1.63636363636363636;
+    public static final double WRIST_MOI = 0.073159; // Moment of Inertia
     public static final double ELV_LIFT_MASS = 5.4; // kg
     public static final double DRUM_RADIUS = Units.inchesToMeters(1);
     public static final double ELV_MIN_HEIGHT = Units.inchesToMeters(12);
@@ -113,7 +114,7 @@ public final class Constants {
 
     public static final double WRIST_MIN_ANGLE = Units.degreesToRadians(-359); // RADS
     public static final double WRIST_MAX_ANGLE = Units.degreesToRadians(359); // RADS
-    public static final double WRIST_LENGTH = Units.inchesToMeters(12.5);
+    public static final double WRIST_LENGTH = Units.inchesToMeters(11.877934);
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
