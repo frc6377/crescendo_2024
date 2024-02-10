@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -47,6 +48,8 @@ public class TurretSubsystem extends SubsystemBase {
   private ShuffleboardTab turretTab = Shuffleboard.getTab("Turret Tab");
   private SimDeviceSim simEncoder;
   private SimDouble simTurretPos;
+  private DigitalInput topLimitSwitch;
+  private DigitalInput bottomLimitSwitch;
 
   private PIDController turretPIDController;
   private CANcoder m_encoder;
@@ -96,6 +99,12 @@ public class TurretSubsystem extends SubsystemBase {
 
     this.robotStateManager = robotStateManager;
 
+    topLimitSwitch =
+        new DigitalInput(
+            Constants.TriggerConstants
+                .TURRET_TOP_LIMIT_SWITCH_ID); // TODO: Find actual Limit Switch IDs
+    bottomLimitSwitch = new DigitalInput(Constants.TriggerConstants.TURRET_BOTTOM_LIMIT_SWITCH_ID);
+
     turretMotor.setSoftLimit(
         CANSparkMax.SoftLimitDirection.kReverse,
         (float)
@@ -135,14 +144,18 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   private void setTurretPos(double setpoint) {
-    turretGoalPositionEntry.log(setpoint);
-    turretMotor.set(
-        -turretPIDController.calculate(
-            turretPosition,
-            MathUtil.clamp(
-                setpoint,
-                Math.toRadians(-Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES),
-                Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES))));
+    if (topLimitSwitch.get() || bottomLimitSwitch.get()) {
+      turretMotor.set(0);
+    } else {
+      turretGoalPositionEntry.log(setpoint);
+      turretMotor.set(
+          -turretPIDController.calculate(
+              turretPosition,
+              MathUtil.clamp(
+                  setpoint,
+                  Math.toRadians(-Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES),
+                  Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES))));
+    }
   }
 
   private void holdPosition() {

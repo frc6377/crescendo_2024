@@ -31,6 +31,8 @@ public final class Constants {
     public static final double SHOOT_PERCENTAGE =
         -0.5; // used when feeding note into turret to fire (should be negative value because it
     // outtakes)
+    public static final int TURRET_TOP_LIMIT_SWITCH_ID = 0;
+    public static final int TURRET_BOTTOM_LIMIT_SWITCH_ID = 1;
   }
 
   public static class ShooterConstants {
