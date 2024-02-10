@@ -66,6 +66,8 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterRightMotor.restoreFactoryDefaults();
     shooterRightMotor.setSmartCurrentLimit(40);
 
+    shooterLeftMotor.setInverted(true);
+
     shooterLeftMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_LEFT_P);
     shooterLeftMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_LEFT_I);
     shooterLeftMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_LEFT_D);
@@ -164,7 +166,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public Trigger shooterReady() {
-    return new Trigger(this::isShooterReady);
+    return new Trigger(this::isShooterReady).debounce(0.05);
   }
   // Checks if shooter is ready.
   public boolean isShooterReady() {
