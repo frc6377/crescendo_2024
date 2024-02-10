@@ -18,7 +18,7 @@ public class TOFSensorSimple {
     this.threshold = threshold; // in mm
   }
 
-  public double getMillameters() {
+  public double getMilliMeters() {
     return sensor.getRange();
   }
 
