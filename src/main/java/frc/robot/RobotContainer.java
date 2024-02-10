@@ -151,6 +151,7 @@ public class RobotContainer {
       OI.getButton(OI.Driver.orientationButton)
           .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()).withName("Toggle Orientation"));
     }
+
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
     // Shooter commands
@@ -188,6 +189,7 @@ public class RobotContainer {
       autonCommands.put("Speaker Intake", intakeSubsystem.getSpeakerIntakeCommand());
       autonCommands.put("Amp Intake", intakeSubsystem.getAmpIntakeCommand());
     }
+
     NamedCommands.registerCommands(autonCommands);
   }
 
