@@ -55,10 +55,10 @@ public final class Constants {
     public static final double SHOOTER_SPEED_TOLERANCE =
         0.1; // Placeholder; speed must be within (1-n)v to (1+n)v to fire
 
-    public static final double SHOOTER_LEFT_GEARING = 2.5; // Unitless
+    public static final double SHOOTER_LEFT_GEARING = 0.4; // Unitless
     public static final double SHOOTER_LEFT_MOMENT = 0.000848475500006; // Placeholder; in kg*m^2
 
-    public static final double SHOOTER_RIGHT_GEARING = 2.5; // Unitless
+    public static final double SHOOTER_RIGHT_GEARING = 0.4; // Unitless
     public static final double SHOOTER_RIGHT_MOMENT = 0.000848475500006; // Placeholder; in kg*m^2
   }
 

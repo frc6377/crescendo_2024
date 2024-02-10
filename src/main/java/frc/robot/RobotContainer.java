@@ -142,7 +142,7 @@ public class RobotContainer {
 
     // Shooter commands
     shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
-    OI.getTrigger(OI.Operator.shooterRevTrigger).onTrue(shooterSubsystem.revShooter());
+    OI.getTrigger(OI.Operator.shooterRevTrigger).whileTrue(shooterSubsystem.revShooter());
 
     OI.getTrigger(OI.Operator.shooterFireTrigger)
         .onTrue(

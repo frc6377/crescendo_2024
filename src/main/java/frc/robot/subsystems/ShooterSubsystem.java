@@ -108,6 +108,12 @@ public class ShooterSubsystem extends SubsystemBase {
     rightMotorTargetSpeedEntry = new DebugEntry<Double>(0.0, "Right Motor Target Speed", this);
     rightMotorTemperatureEntry = new DebugEntry<Double>(0.0, "Right Motor Temperature", this);
 
+    leftFlywheelInputEntry = new DebugEntry<Double>(0.0, "Left Flywheel Input", this);
+    leftFlywheelAngularVelocityEntry = new DebugEntry<Double>(0.0, "Left Flywheel RPM", this);
+
+    rightFlywheelInputEntry = new DebugEntry<Double>(0.0, "Right Flywheel Input", this);
+    rightFlywheelAngularVelocityEntry = new DebugEntry<Double>(0.0, "Right Flywheel RPM", this);
+
     shooterReadyEntry = new DebugEntry<Boolean>(false, "Shooter Ready?", this);
   }
 
