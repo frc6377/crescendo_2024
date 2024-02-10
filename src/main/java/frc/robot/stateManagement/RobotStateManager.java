@@ -39,7 +39,7 @@ public class RobotStateManager extends SubsystemBase {
             alliance.get().equals(Alliance.Red) ? AllianceColor.RED : AllianceColor.BLUE;
       }
     }
-    endGameStart.onTrue(new InstantCommand(() -> isEndGame = true));
+    endGameStart.onTrue(new InstantCommand(() -> isEndGame = true).withName("EndGame Start"));
   }
 
   // Note State

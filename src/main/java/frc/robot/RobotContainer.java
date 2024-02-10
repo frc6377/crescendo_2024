@@ -25,6 +25,7 @@ import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TrapElvSubsystem;
 import frc.robot.subsystems.TriggerSubsystem;
@@ -47,6 +48,7 @@ public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   private final IntakeSubsystem intakeSubsystem;
+  private final ShooterSubsystem shooterSubsystem;
   private final TriggerSubsystem triggerSubsystem;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -70,6 +72,11 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    if (Constants.enabledSubsystems.shooterEnabled) {
+      shooterSubsystem = new ShooterSubsystem();
+    } else {
+      shooterSubsystem = null;
+    }
     if (Constants.enabledSubsystems.signalEnabled) {
       signalingSubsystem = new SignalingSubsystem(1, OI.Driver::setRumble, robotStateManager);
     } else {
@@ -115,11 +122,11 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    OI.getButton(OI.Operator.A).onTrue(new InstantCommand(robotStateManager::switchPlacementMode));
+    OI.getButton(OI.Operator.A).onTrue(new InstantCommand(robotStateManager::switchPlacementMode).withName("Switch Placement Mode Command"));
     if (Constants.enabledSubsystems.intakeEnabled) {
       OI.getTrigger(OI.Driver.intakeTrigger)
-          .whileTrue(intakeSubsystem.getIntakeCommand(robotStateManager.getPlacementMode()));
-      OI.getButton(OI.Driver.outtakeButton).whileTrue(intakeSubsystem.reverseIntakeCommand());
+          .whileTrue(intakeSubsystem.getIntakeCommand(robotStateManager.getPlacementMode()).withName("Get Placement Mode Command"));
+      OI.getButton(OI.Driver.outtakeButton).whileTrue(intakeSubsystem.reverseIntakeCommand().withName("Reverse Intake Command"));
     }
     // Swerve config
     if (Constants.enabledSubsystems.drivetrainEnabled) {
@@ -129,9 +136,9 @@ public class RobotContainer {
                   drivetrain.getDriveRequest(
                       OI.getAxisSupplier(OI.Driver.xTranslationAxis).get(),
                       OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
-                      OI.getAxisSupplier(OI.Driver.rotationAxis).get())));
+                      OI.getAxisSupplier(OI.Driver.rotationAxis).get())).withName("Get Axis Suppliers"));
       OI.getButton(OI.Driver.brakeButton)
-          .whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
+          .whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()).withName("Brake Swerve"));
       OI.getButton(OI.Driver.resetRotationButton)
           .onTrue(
               drivetrain.runOnce(
@@ -139,12 +146,18 @@ public class RobotContainer {
                       drivetrain.seedFieldRelative(
                           new Pose2d(
                               drivetrain.getState().Pose.getTranslation(),
-                              Rotation2d.fromDegrees(180)))));
+                              Rotation2d.fromDegrees(180))))
+                              .withName("Put Pose & Rotation on Field"));
       OI.getButton(OI.Driver.orientationButton)
-          .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()));
+          .onTrue(drivetrain.runOnce(() -> drivetrain.toggleOrientation()).withName("Toggle Orientation"));
     }
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
+    // Shooter commands
+    if (Constants.enabledSubsystems.shooterEnabled) {
+      shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
+      OI.getTrigger(OI.Operator.shooterTrigger).onTrue(shooterSubsystem.shooterFire());
+    }
     // Trap Elv Intaking
     if (Constants.enabledSubsystems.elvEnabled) {
       OI.getButton(OI.Driver.groundIntakeButton)
@@ -170,7 +183,7 @@ public class RobotContainer {
   public void registerCommands() {
     HashMap<String, Command> autonCommands = new HashMap<String, Command>();
 
-    autonCommands.put("Shoot", autonTest());
+    autonCommands.put("Shoot", autonTest().withName("Shoot"));
     if (Constants.enabledSubsystems.intakeEnabled) {
       autonCommands.put("Speaker Intake", intakeSubsystem.getSpeakerIntakeCommand());
       autonCommands.put("Amp Intake", intakeSubsystem.getAmpIntakeCommand());
@@ -191,7 +204,8 @@ public class RobotContainer {
   }
 
   private Command autonTest() {
-    return new InstantCommand(() -> SmartDashboard.putBoolean("NamedCommand test", true));
+    return new InstantCommand(() -> SmartDashboard.putBoolean("NamedCommand test", true))
+        .withName("Test NamedCommand");
   }
 
   /**
@@ -200,6 +214,8 @@ public class RobotContainer {
    * @return the command to run in autonomous(including the delay)
    */
   public Command getAutonomousCommand() {
-    return new WaitCommand(autoDelay.getDouble(0)).andThen(autoChooser.getSelected());
+    return new WaitCommand(autoDelay.getDouble(0))
+        .andThen(autoChooser.getSelected())
+        .withName("Get Auto Command");
   }
 }
