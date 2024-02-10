@@ -166,12 +166,13 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public Command SetShooterIfReady(SpeakerConfig speeds, int exitCode) {
-    return runOnce(
+    return startEnd(
         () -> {
           if (exitCode == 0) {
             setShooterSpeeds(speeds);
           }
-        });
+        },
+        () -> {});
   }
 
   public Trigger shooterReady() {
