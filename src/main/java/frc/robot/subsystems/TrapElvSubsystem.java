@@ -132,6 +132,7 @@ public class TrapElvSubsystem extends SubsystemBase {
             TrapElvConstants.WRIST_PID[0],
             TrapElvConstants.WRIST_PID[1],
             TrapElvConstants.WRIST_PID[2]);
+    wristPIDController.setIZone(TrapElvConstants.WRIST_PID[3]);
     TrapElvTab.add("Wrist PID", wristPIDController);
 
     wristEncoder = new CANcoder(6);
@@ -233,7 +234,7 @@ public class TrapElvSubsystem extends SubsystemBase {
               TrapElvConstants.WRIST_LENGTH,
               TrapElvConstants.WRIST_MIN_ANGLE, // min rotation
               TrapElvConstants.WRIST_MAX_ANGLE, // max rotation
-              true,
+              false,
               0);
 
       TrapElvTab.add("Trap Arm Mech", elvMechanism);

@@ -101,7 +101,7 @@ public final class Constants {
     // P, I, D, Iz, FF
     public static final double[] BASE_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
     public static final double[] SCORING_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
-    public static final double[] WRIST_PID = {7, .1, .6, 0.0, 2e-6};
+    public static final double[] WRIST_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
 
     // Simulation
     public static final int ELV_GEAR_RATIO = 70;
