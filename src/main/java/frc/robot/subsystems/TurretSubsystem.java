@@ -99,7 +99,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   public TurretSubsystem(RobotStateManager robotStateManager) {
     turretMotor = new CANSparkMax(Constants.TurretConstants.TURRET_MOTOR_ID, MotorType.kBrushless);
-    pitchMotor = new CANSparkMax(Constants.TurretConstants.pitch_MOTOR_ID, MotorType.kBrushless);
+    pitchMotor = new CANSparkMax(Constants.TurretConstants.PITCH_MOTOR_ID, MotorType.kBrushless);
 
     // Simulation
     if (Robot.isSimulation()) {
@@ -196,10 +196,10 @@ public class TurretSubsystem extends SubsystemBase {
             Constants.TurretConstants.PITCH_KP,
             Constants.TurretConstants.PITCH_KI,
             Constants.TurretConstants.PITCH_KD);
-    m_pitchEncoder = new CANcoder(Constants.TurretConstants.pitch_CANcoder_ID);
+    m_pitchEncoder = new CANcoder(Constants.TurretConstants.PITCH_CANcoder_ID);
 
     simPitchEncoder =
-        new SimDeviceSim("CANEncoder:CANCoder (v6)", Constants.TurretConstants.pitch_CANcoder_ID);
+        new SimDeviceSim("CANEncoder:CANCoder (v6)", Constants.TurretConstants.PITCH_CANcoder_ID);
     simPitchPos = simPitchEncoder.getDouble("rawPositionInput");
 
     zeroTurretEncoder();
@@ -235,11 +235,12 @@ public class TurretSubsystem extends SubsystemBase {
     pitchGoalPositionEntry.log(setpoint);
     pitchMotor.set(
         pitchPIDController.calculate(
-            pitchPosition,
-            MathUtil.clamp(
-                setpoint,
-                Math.toRadians(-Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES),
-                Math.toRadians(Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES))) + calculateArbitraryFeedForward(pitchPosition));
+                pitchPosition,
+                MathUtil.clamp(
+                    setpoint,
+                    Math.toRadians(-Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES),
+                    Math.toRadians(Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES)))
+            + calculateArbitraryFeedForward(pitchPosition));
   }
 
   private void holdPosition() {
@@ -288,7 +289,9 @@ public class TurretSubsystem extends SubsystemBase {
     double limelightTX = LimelightHelpers.getTX("limelight");
     if (limelightTX != 0
         && LimelightHelpers.getFiducialID("limelight")
-            == ((robotStateManager.getAllianceColor() == AllianceColor.BLUE)
+            == ((robotStateManager.getAllianceColor()
+                    == AllianceColor
+                        .BLUE) // Default to red because that's the color on our test field
                 ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
                 : Constants.TurretConstants.SPEAKER_TAG_ID_RED)) {
       // X & Rotation
@@ -298,11 +301,12 @@ public class TurretSubsystem extends SubsystemBase {
       double limelightTY = LimelightHelpers.getTY("limelight");
       double distanceToTag = tyToDistanceFromTag(limelightTY);
       tagDistanceEntry.log(distanceToTag);
-      // TODO: Add pitch control and use distance for it
+      setPitchPos(distanceToShootingPitch(distanceToTag));
 
       if (Math.abs(Math.toRadians(limelightTX) + turretPosition)
           > Math.toRadians(Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES)) {
-        // TODO: Make turret rotate the drivebase if necessary and driver thinks it's a good idea
+        // TODO: Make turret rotate the drivebase if necessary and the driver thinks it's a good
+        // idea
       }
     } else {
       // TODO: Make turret default to using odometry
@@ -327,9 +331,16 @@ public class TurretSubsystem extends SubsystemBase {
     return distance;
   }
 
-  private double calculateArbitraryFeedForward(double angle){
+  private double distanceToShootingPitch(double distance) {
+    return distance; // TODO: Make and use a real formula(use testing, not physics)
+  }
+
+  private double calculateArbitraryFeedForward(double angle) {
     double centerOfGravity = Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY * Math.sin(angle);
-    return centerOfGravity * Constants.TurretConstants.SHOOTER_MASS * 9.8 * Constants.TurretConstants.PITCH_NEWTONS_TO_MOTOR_POWER;
+    return centerOfGravity
+        * Constants.TurretConstants.SHOOTER_MASS
+        * 9.8
+        * Constants.TurretConstants.PITCH_NEWTONS_TO_MOTOR_POWER;
   }
 
   @Override

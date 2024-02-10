@@ -53,8 +53,8 @@ public final class Constants {
   public static class TurretConstants {
     public static final int TURRET_MOTOR_ID = 9;
     public static final int TURRET_CANcoder_ID = 17; // replace with actual CANcoder ID
-    public static final int pitch_MOTOR_ID = 10;
-    public static final int pitch_CANcoder_ID = 18; // replace with actual CANcoder ID
+    public static final int PITCH_MOTOR_ID = 10;
+    public static final int PITCH_CANcoder_ID = 18; // replace with actual CANcoder ID
 
     // PID coefficients
     public static final double TURRET_KP =
@@ -82,7 +82,7 @@ public final class Constants {
     public static final double PITCH_CONVERSION_FACTOR = 0.25;
     public static final int PITCH_SMART_CURRENT_LIMIT = 40;
 
-    public static final double SHOOTER_CENTER_OF_GRAVITY = 1;//TODO: Get real values
+    public static final double SHOOTER_CENTER_OF_GRAVITY = 1; // TODO: Get real values
     public static final double SHOOTER_MASS = 1;
     public static final double PITCH_NEWTONS_TO_MOTOR_POWER = 1;
 
