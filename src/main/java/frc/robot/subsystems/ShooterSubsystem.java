@@ -151,7 +151,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command revShooter() {
 
     // Only runs if the exit code from the limelight status function returns 0!
-    return new SetShooter(
+    return SetShooterIfReady(
         calculateShooterSpeeds(targetRPM.getDouble(0)),
         0); // Replace distance and exit code with LimelightGetDistance() and
     // CheckLimelightStatus() respectively
@@ -163,6 +163,14 @@ public class ShooterSubsystem extends SubsystemBase {
           setShooterSpeeds(speakerConfigIdle);
         })
         .withName("Idle shooter command");
+  }
+
+  public Command SetShooterIfReady(SpeakerConfig speeds, int exitCode) {
+    return runOnce(() -> {
+      if (exitCode == 0) {
+        setShooterSpeeds(speeds);
+      }
+    });
   }
 
   public Trigger shooterReady() {
@@ -308,21 +316,4 @@ public class ShooterSubsystem extends SubsystemBase {
           -1,
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_LEFT,
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT);
-
-  public class SetShooter extends Command {
-    SpeakerConfig shooterSpeeds;
-    int exitCode;
-
-    public SetShooter(SpeakerConfig speeds, int exitCode) {
-      this.shooterSpeeds = speeds;
-      this.exitCode = exitCode;
-    }
-
-    public void execute() {
-      // Only runs if the exit code from the limelight distance function returns 0!
-      if (exitCode == 0) {
-        setShooterSpeeds(shooterSpeeds);
-      }
-    }
-  }
 }
