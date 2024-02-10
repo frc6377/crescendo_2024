@@ -12,6 +12,7 @@ import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
@@ -145,20 +146,17 @@ public class TurretSubsystem extends SubsystemBase {
   public void zeroTurret() {
     // Chinease remandier theorm (CRT) scale value.
     // Converts from rotations to CRT Space
-    final double crtScl =
-        Constants.TurretConstants.lowGearCAN_CODER_RATIO
-            * Constants.TurretConstants.highGearCAN_CODER_RATIO;
-
     double lowGearPosition = lowGearCANcoder.getAbsolutePosition().getValue().doubleValue();
     double highGearPosition = highGearCANcoder.getAbsolutePosition().getValue().doubleValue();
-    double turretRotation = encoderPositionsToTurretRotation(lowGearPosition, highGearPosition);
+    Rotation2d turretRotation = encoderPositionsToTurretRotation(lowGearPosition, highGearPosition);
 
-    lowGearCANcoder.setPosition(turretRotation * Constants.TurretConstants.lowGearCAN_CODER_RATIO);
+    lowGearCANcoder.setPosition(
+        turretRotation.getRotations() * Constants.TurretConstants.lowGearCAN_CODER_RATIO);
     highGearCANcoder.setPosition(
-        turretRotation * Constants.TurretConstants.highGearCAN_CODER_RATIO);
+        turretRotation.getRotations() * Constants.TurretConstants.highGearCAN_CODER_RATIO);
   }
 
-  public static double encoderPositionsToTurretRotation(
+  public static Rotation2d encoderPositionsToTurretRotation(
       double lowGearCANcoderPosition, double highGearCANcoderPosition) {
     final int scl = 10000;
     final double crtScl =
@@ -177,7 +175,7 @@ public class TurretSubsystem extends SubsystemBase {
     turretCRTPosition += highGearCRTPosition * HowdyMath.inverse_modulus(ppHigh, 1) * ppHigh;
     turretCRTPosition %= crtScl;
     double turretRotation = (turretCRTPosition - 1) / crtScl;
-    return turretRotation;
+    return Rotation2d.fromRotations(turretRotation);
   }
 
   private void setTurretPos(double setpoint) {
