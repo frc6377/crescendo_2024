@@ -254,7 +254,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   private void moveUp() {
     setTurretPos(turretPosition);
-    setPitchPos(pitchPosition+0.1);
+    setPitchPos(pitchPosition + 0.5);
   }
 
   public Command moveUpwards() {

@@ -83,7 +83,7 @@ public final class Constants {
     public static final int PITCH_SMART_CURRENT_LIMIT = 40;
 
     public static final double SHOOTER_CENTER_OF_GRAVITY = 1; // TODO: Get real values
-    public static final double SHOOTER_MASS = 1;
+    public static final double SHOOTER_MASS = 0;
     public static final double PITCH_NEWTONS_TO_MOTOR_POWER = 1;
 
     // Limelight
