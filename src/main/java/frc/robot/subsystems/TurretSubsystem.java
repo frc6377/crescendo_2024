@@ -101,9 +101,9 @@ public class TurretSubsystem extends SubsystemBase {
 
     topLimitSwitch =
         new DigitalInput(
-            Constants.TriggerConstants
+            Constants.TurretConstants
                 .TURRET_TOP_LIMIT_SWITCH_ID); // TODO: Find actual Limit Switch IDs
-    bottomLimitSwitch = new DigitalInput(Constants.TriggerConstants.TURRET_BOTTOM_LIMIT_SWITCH_ID);
+    bottomLimitSwitch = new DigitalInput(Constants.TurretConstants.TURRET_BOTTOM_LIMIT_SWITCH_ID);
 
     turretMotor.setSoftLimit(
         CANSparkMax.SoftLimitDirection.kReverse,
