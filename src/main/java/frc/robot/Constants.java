@@ -72,7 +72,11 @@ public final class Constants {
     public static final double KMAXOUTPUT = 1;
     public static final double KMINOUTPUT = -1;
     public static final int MAX_TURRET_ANGLE_DEGREES = 110;
-    public static final double CONVERSION_FACTOR = 0.25; // for the revbot prototype turret
+    public static final double GEAR_RATIO = 6.8333; // 0.25 for the revbot prototype turret
+
+    // Simulation Vals
+    public static final double TURRET_MOI = 0; // Moment of Inertia
+    public static final double TURRET_RADIUS = 0;
   }
 
   public static class OperatorConstants {
@@ -109,8 +113,7 @@ public final class Constants {
     public static final double ELV_LIFT_MASS = 5.4; // kg
     public static final double ELV_MIN_HEIGHT = Units.inchesToMeters(12);
     public static final double ELV_MAX_HEIGHT = Units.inchesToMeters(30);
-        public static final double DRUM_RADIUS = Units.inchesToMeters(1);
-
+    public static final double DRUM_RADIUS = Units.inchesToMeters(1);
 
     public static final double WRIST_MIN_ANGLE = Units.degreesToRadians(-359); // RADS
     public static final double WRIST_MAX_ANGLE = Units.degreesToRadians(359); // RADS
