@@ -24,7 +24,7 @@ public final class Constants {
   }
 
   public static class TriggerConstants {
-    public static final int MOTOR_ID = 9; // edit all constants when testing
+    public static final int MOTOR_ID = 8; // edit all constants when testing
     public static final double LOAD_PERCENTAGE = 0.5; // used when intaking into the turret
     public static final double HOLD_PERCENTAGE =
         0.05; // very slow motor speed in case note slips out of trigger
@@ -60,6 +60,31 @@ public final class Constants {
 
     public static final double SHOOTER_RIGHT_GEARING = 0.4; // Unitless
     public static final double SHOOTER_RIGHT_MOMENT = 0.000848475500006; // Placeholder; in kg*m^2
+  }
+
+  public static class TurretConstants {
+    public static final int MOTOR_ID = 9;
+    public static final int CANcoder_ID = 17; // replace with actual CANcoder ID
+
+    // Limelight
+    public static final double LIMELIGHT_HEIGHT_INCHES = 17.85;
+    public static final double LIMELIGHT_PITCH_RADIANS = Math.toRadians(17.75);
+
+    public static final double SPEAKER_TAG_CENTER_HEIGHT_INCHES =
+        57.125; // Don't change unless FIRST changes the field layout
+    public static final int SPEAKER_TAG_ID_RED = 4;
+    public static final int SPEAKER_TAG_ID_BLUE = 7;
+
+    // PID coefficients
+    public static final double KP = 0.25;
+    public static final double KI = 0.001;
+    public static final double KD = 0;
+    public static final double KIZ = 0;
+    public static final double KFF = 0;
+    public static final double KMAXOUTPUT = 1;
+    public static final double KMINOUTPUT = -1;
+    public static final int MAX_TURRET_ANGLE_DEGREES = 110;
+    public static final double CONVERSION_FACTOR = 0.25; // for the revbot prototype turret
   }
 
   public static class OperatorConstants {
@@ -101,6 +126,15 @@ public final class Constants {
     public static final double WRIST_MIN_ANGLE = Units.degreesToRadians(-359); // RADS
     public static final double WRIST_MAX_ANGLE = Units.degreesToRadians(359); // RADS
     public static final double WRIST_LENGTH = Units.inchesToMeters(12.5);
+  }
+
+  public static class enabledSubsystems {
+    public static final boolean intakeEnabled = true;
+    public static final boolean drivetrainEnabled = true;
+    public static final boolean limeLightEnabled = true;
+    public static final boolean elvEnabled = true;
+    public static final boolean signalEnabled = true;
+    public static final boolean shooterEnabled = true;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
