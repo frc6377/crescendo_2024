@@ -51,7 +51,7 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem;
   private final ShooterSubsystem shooterSubsystem;
   private final TriggerSubsystem triggerSubsystem;
-  private final TurretSubsystem turretSubsystem = new TurretSubsystem(robotStateManager);
+  private final TurretSubsystem turretSubsystem;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final SwerveSubsystem drivetrain;
@@ -74,6 +74,11 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    if (Constants.enabledSubsystems.turretEnabled) {
+      turretSubsystem = new TurretSubsystem(robotStateManager);
+    } else {
+      turretSubsystem = null;
+    }
     if (Constants.enabledSubsystems.shooterEnabled) {
       shooterSubsystem = new ShooterSubsystem();
     } else {
@@ -178,9 +183,10 @@ public class RobotContainer {
       OI.getTrigger(OI.Operator.shooterTrigger).onTrue(shooterSubsystem.shooterFire());
     }
     // Turret commands
-    turretSubsystem.setDefaultCommand(turretSubsystem.idleTurret());
-    OI.getTrigger(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
-
+    if (Constants.enabledSubsystems.turretEnabled) {
+      turretSubsystem.setDefaultCommand(turretSubsystem.idleTurret());
+      OI.getTrigger(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
+    }
     // Trap Elv Intaking
     if (Constants.enabledSubsystems.elvEnabled) {
       OI.getButton(OI.Driver.groundIntakeButton)
