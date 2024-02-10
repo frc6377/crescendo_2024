@@ -174,15 +174,15 @@ public class RobotContainer {
 
     // Shooter commands
     if (Constants.enabledSubsystems.shooterEnabled) {
-    shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
-    OI.getTrigger(OI.Operator.shooterRevTrigger).whileTrue(shooterSubsystem.revShooter());
+      shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
+      OI.getTrigger(OI.Operator.shooterRevTrigger).whileTrue(shooterSubsystem.revShooter());
 
-    OI.getTrigger(OI.Operator.shooterFireTrigger)
-        .onTrue(
-            triggerSubsystem
-                .getShootCommand()
-                .onlyIf(shooterSubsystem.shooterReady())
-                .onlyWhile(OI.getTrigger(OI.Operator.shooterRevTrigger)));
+      OI.getTrigger(OI.Operator.shooterFireTrigger)
+          .onTrue(
+              triggerSubsystem
+                  .getShootCommand()
+                  .onlyIf(shooterSubsystem.shooterReady())
+                  .onlyWhile(OI.getTrigger(OI.Operator.shooterRevTrigger)));
     }
     // Turret commands
     turretSubsystem.setDefaultCommand(turretSubsystem.idleTurret());
