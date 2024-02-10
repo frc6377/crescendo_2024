@@ -129,7 +129,7 @@ public class TurretSubsystem extends SubsystemBase {
               0.1016,
               -Math.toRadians(Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES),
               Math.toRadians(Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES),
-              false,
+              true,
               0);
       pitchMech = new Mechanism2d(4, 4);
       pitchRoot = pitchMech.getRoot("Root", 2, 2);
@@ -252,6 +252,15 @@ public class TurretSubsystem extends SubsystemBase {
     return run(() -> holdPosition()).withName("idleTurret");
   }
 
+  private void moveUp() {
+    setTurretPos(turretPosition);
+    setPitchPos(pitchPosition+0.1);
+  }
+
+  public Command moveUpwards() {
+    return run(() -> moveUp()).withName("moveShooterUp");
+  }
+
   private void zeroTurretEncoder() {
     m_turretEncoder.setPosition(0.0);
   }
@@ -336,8 +345,8 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   private double calculateArbitraryFeedForward(double angle) {
-    double centerOfGravity = Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY * Math.sin(angle);
-    return centerOfGravity
+    double tourque = Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY * Math.cos(angle);
+    return tourque
         * Constants.TurretConstants.SHOOTER_MASS
         * 9.8
         * Constants.TurretConstants.PITCH_NEWTONS_TO_MOTOR_POWER;
@@ -365,6 +374,14 @@ public class TurretSubsystem extends SubsystemBase {
     simTurretPos.set(
         Units.radiansToRotations(
             turretSim.getAngleRads() / Constants.TurretConstants.TURRET_CONVERSION_FACTOR));
+
+    pitchSim.setInput(pitchMotor.get() * RobotController.getBatteryVoltage());
+    pitchSim.update(Robot.defaultPeriodSecs);
+    pitchAngleSim.setAngle(Math.toDegrees(pitchSim.getAngleRads()));
+    SmartDashboard.putNumber("Turret Angle", Math.toDegrees(pitchSim.getAngleRads()));
+    simPitchPos.set(
+        Units.radiansToRotations(
+            pitchSim.getAngleRads() / Constants.TurretConstants.PITCH_CONVERSION_FACTOR));
   }
 
   private double getTurretRotationFromOdometry(Pose2d robotPos, Pose2d targetPos) {
