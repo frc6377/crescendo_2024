@@ -158,24 +158,31 @@ public class TurretSubsystem extends SubsystemBase {
 
   public static Rotation2d encoderPositionsToTurretRotation(
       double lowGearCANcoderPosition, double highGearCANcoderPosition) {
-    final int scl = 10000;
-    final double crtScl =
+    final int scl = (int) 1;
+
+    final double lowGearCRTPosition =
+        ((lowGearCANcoderPosition * Constants.TurretConstants.lowGearCAN_CODER_RATIO * scl));
+    final double highGearCRTPosition =
+        ((highGearCANcoderPosition * Constants.TurretConstants.highGearCAN_CODER_RATIO * scl));
+
+    final double highGearNum = (Constants.TurretConstants.highGearCAN_CODER_RATIO * scl);
+    final double lowGearNum = (Constants.TurretConstants.lowGearCAN_CODER_RATIO * scl);
+
+    double result = 0;
+
+    double pp1 = lowGearNum;
+    result += highGearCRTPosition * HowdyMath.inverse_modulus(pp1, highGearNum) * pp1;
+
+    double pp2 = highGearNum;
+    result += lowGearCRTPosition * HowdyMath.inverse_modulus(pp2, lowGearNum) * pp2;
+
+    result %=
         Constants.TurretConstants.lowGearCAN_CODER_RATIO
-            * Constants.TurretConstants.highGearCAN_CODER_RATIO
-            * scl
-            * scl;
+            * Constants.TurretConstants.highGearCAN_CODER_RATIO;
 
-    final int lowGearCRTPosition = (int) (((lowGearCANcoderPosition * crtScl) + 0.5d) % crtScl);
-    final int highGearCRTPosition = (int) (((highGearCANcoderPosition * crtScl) + 0.5d) % crtScl);
+    result /= scl;
 
-    int ppLow = (int) (Constants.TurretConstants.highGearCAN_CODER_RATIO * scl);
-    int ppHigh = (int) (Constants.TurretConstants.lowGearCAN_CODER_RATIO * scl);
-
-    int turretCRTPosition = lowGearCRTPosition * HowdyMath.inverse_modulus(ppLow, 1) * ppLow;
-    turretCRTPosition += highGearCRTPosition * HowdyMath.inverse_modulus(ppHigh, 1) * ppHigh;
-    turretCRTPosition %= crtScl;
-    double turretRotation = (turretCRTPosition - 1) / crtScl;
-    return Rotation2d.fromRotations(turretRotation);
+    return Rotation2d.fromRotations(result % 1);
   }
 
   private void setTurretPos(double setpoint) {

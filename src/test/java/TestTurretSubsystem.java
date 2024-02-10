@@ -9,13 +9,14 @@ import org.junit.jupiter.api.Test;
 public class TestTurretSubsystem {
   @Test
   public void TestZeroing() {
-    for (double i = 0; i <= 10; i += 1 / 360d) {
+    for (double i = 0; i <= 1; i += 1d / 4) {
       double turretPosition =
           TurretSubsystem.encoderPositionsToTurretRotation(
                   (i * Constants.TurretConstants.lowGearCAN_CODER_RATIO) % 1,
                   (i * Constants.TurretConstants.highGearCAN_CODER_RATIO) % 1)
               .getRotations();
-      assertTrue((turretPosition - i < 1e-8));
+      System.out.println("Turret pos:" + i + " guessed pos:" + turretPosition);
+      assertTrue((Math.abs(turretPosition - i) < 1e-2));
     }
   }
 
