@@ -105,7 +105,7 @@ public final class Constants {
     // P, I, D, Iz, FF
     public static final double[] BASE_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
     public static final double[] SCORING_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
-    public static final double[] WRIST_PID = {7, .1, .1, 0.0};
+    public static final double[] WRIST_PID = {3, .1, .1, 0.0};
     public static final double[] WRIST_FF = {100, 0.29, 0.64}; // Ks, Kg, Kv
 
     // Simulation
