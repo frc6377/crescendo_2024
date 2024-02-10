@@ -158,31 +158,12 @@ public class TurretSubsystem extends SubsystemBase {
 
   public static Rotation2d encoderPositionsToTurretRotation(
       double lowGearCANcoderPosition, double highGearCANcoderPosition) {
-    final int scl = (int) 1;
 
-    final double lowGearCRTPosition =
-        ((lowGearCANcoderPosition * Constants.TurretConstants.lowGearCAN_CODER_RATIO * scl));
-    final double highGearCRTPosition =
-        ((highGearCANcoderPosition * Constants.TurretConstants.highGearCAN_CODER_RATIO * scl));
-
-    final double highGearNum = (Constants.TurretConstants.highGearCAN_CODER_RATIO * scl);
-    final double lowGearNum = (Constants.TurretConstants.lowGearCAN_CODER_RATIO * scl);
-
-    double result = 0;
-
-    double pp1 = lowGearNum;
-    result += highGearCRTPosition * HowdyMath.inverse_modulus(pp1, highGearNum) * pp1;
-
-    double pp2 = highGearNum;
-    result += lowGearCRTPosition * HowdyMath.inverse_modulus(pp2, lowGearNum) * pp2;
-
-    result %=
-        Constants.TurretConstants.lowGearCAN_CODER_RATIO
-            * Constants.TurretConstants.highGearCAN_CODER_RATIO;
-
-    result /= scl;
-
-    return Rotation2d.fromRotations(result % 1);
+    int gearToothPosition =
+        ((int) (lowGearCANcoderPosition * 13) * HowdyMath.inverse_modulus(10, 13) * 10
+                + (int) (highGearCANcoderPosition * 10) * HowdyMath.inverse_modulus(13, 10) * 13)
+            % 130;
+    return Rotation2d.fromRotations(gearToothPosition / 164d);
   }
 
   private void setTurretPos(double setpoint) {
