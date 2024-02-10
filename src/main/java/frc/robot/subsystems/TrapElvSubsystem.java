@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxSim;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -40,6 +41,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   private final CANSparkMax wristMotor;
   private double wristState;
   private final PIDController wristPIDController;
+  private final ArmFeedforward wristFeedforward;
 
   private final CANSparkMax rollerMotor;
 
@@ -88,10 +90,10 @@ public class TrapElvSubsystem extends SubsystemBase {
   public static enum TrapElvState {
     // Degrees, elv height, elv height
     STOWED(-0.25, 0.0, 0.0),
-    FROM_INTAKE(0.25, 0.0, 0.0),
-    FROM_SOURCE(0.0, 0.0, 12.0),
+    FROM_INTAKE(-0.25, 0.0, 0.0),
+    FROM_SOURCE(-0.1, 0.0, 12.0),
     TRAP_SCORE(0.0, 12.0, 12.0),
-    AMP_SCORE(0.5, 0.0, 12.0);
+    AMP_SCORE(0.7, 0.0, 12.0);
 
     private double wristPose;
     private double basePose;
@@ -133,6 +135,11 @@ public class TrapElvSubsystem extends SubsystemBase {
             TrapElvConstants.WRIST_PID[1],
             TrapElvConstants.WRIST_PID[2]);
     wristPIDController.setIZone(TrapElvConstants.WRIST_PID[3]);
+    wristFeedforward =
+        new ArmFeedforward(
+            TrapElvConstants.WRIST_FF[0],
+            TrapElvConstants.WRIST_FF[1],
+            TrapElvConstants.WRIST_FF[2]);
     TrapElvTab.add("Wrist PID", wristPIDController);
 
     wristEncoder = new CANcoder(6);
@@ -386,7 +393,10 @@ public class TrapElvSubsystem extends SubsystemBase {
     scoringLog.log(sourceBreak.get());
     wristMotor.set(
         MathUtil.clamp(
-            wristPIDController.calculate(wristEncoder.getPosition().getValueAsDouble(), wristState),
+            wristPIDController.calculate(wristEncoder.getPosition().getValueAsDouble(), wristState)
+                + wristFeedforward.calculate(
+                        Units.rotationsToRadians(wristEncoder.getPosition().getValueAsDouble()), 0)
+                    / RobotController.getBatteryVoltage(),
             -1,
             1));
   }
