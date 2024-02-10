@@ -144,7 +144,7 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    if (!isCompetition){
+    if (!isCompetition) {
       SmartDashboard.putData(CommandScheduler.getInstance());
     }
   }
