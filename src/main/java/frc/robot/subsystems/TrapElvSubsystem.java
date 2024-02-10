@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxSim;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -40,6 +41,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   private final CANSparkMax wristMotor;
   private double wristState;
   private final PIDController wristPIDController;
+  private final ArmFeedforward wristFeedforward;
 
   private final CANSparkMax rollerMotor;
 

@@ -102,19 +102,21 @@ public final class Constants {
     public static final double[] BASE_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
     public static final double[] SCORING_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
     public static final double[] WRIST_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
+    public static final double[] WRIST_FF = {0, 0.29, 0.64}; // Ks, Kg, Kv
 
     // Simulation
     public static final int ELV_GEAR_RATIO = 70;
-    public static final double WRIST_GEAR_RATIO = 1.63636363636363636;
-    public static final double WRIST_MOI = 0.073159; // Moment of Inertia
     public static final double ELV_LIFT_MASS = 5.4; // kg
-    public static final double DRUM_RADIUS = Units.inchesToMeters(1);
     public static final double ELV_MIN_HEIGHT = Units.inchesToMeters(12);
     public static final double ELV_MAX_HEIGHT = Units.inchesToMeters(30);
+        public static final double DRUM_RADIUS = Units.inchesToMeters(1);
+
 
     public static final double WRIST_MIN_ANGLE = Units.degreesToRadians(-359); // RADS
     public static final double WRIST_MAX_ANGLE = Units.degreesToRadians(359); // RADS
     public static final double WRIST_LENGTH = Units.inchesToMeters(11.877934);
+    public static final double WRIST_MOI = 0.073159; // Moment of Inertia
+    public static final double WRIST_GEAR_RATIO = 32.727272727272727272;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
