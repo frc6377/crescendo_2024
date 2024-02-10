@@ -107,9 +107,9 @@ public class TurretSubsystem extends SubsystemBase {
       turretSim =
           new SingleJointedArmSim(
               DCMotor.getNEO(1),
-              4,
-              3.5 * 0.1016 * 0.1016 / 3,
-              0.1016,
+              Constants.TurretConstants.TURRET_CONVERSION_FACTOR,
+              0.01204298666, // Approximate guess of how heavy the turret is.
+              0.1016, // Length of the "turret" in simulation
               -Math.toRadians(Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES),
               Math.toRadians(Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES),
               false,
@@ -124,10 +124,13 @@ public class TurretSubsystem extends SubsystemBase {
       pitchSim =
           new SingleJointedArmSim(
               DCMotor.getNEO(1),
-              4,
-              3.5 * 0.1016 * 0.1016 / 3,
-              0.1016,
-              -Math.toRadians(Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES),
+              Constants.TurretConstants.PITCH_CONVERSION_FACTOR,
+              Constants.TurretConstants.SHOOTER_MASS
+                  * Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY
+                  * Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY
+                  / 3,
+              Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY,
+              Math.toRadians(Constants.TurretConstants.PITCH_MIN_ANGLE_DEGREES),
               Math.toRadians(Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES),
               true,
               0);
@@ -270,15 +273,13 @@ public class TurretSubsystem extends SubsystemBase {
         Math.toRadians(
             ((m_turretEncoder.getPosition().getValueAsDouble()) * 360)
                 * Constants.TurretConstants.TURRET_CONVERSION_FACTOR);
-    SmartDashboard.putNumber("Turret Position", turretPosition);
   }
 
-  private void updatepitchPosition() {
+  private void updatePitchPosition() {
     pitchPosition =
         Math.toRadians(
             ((m_pitchEncoder.getPosition().getValueAsDouble()) * 360)
                 * Constants.TurretConstants.PITCH_CONVERSION_FACTOR);
-    SmartDashboard.putNumber("Pitch Position", pitchPosition);
   }
 
   public double getTurretPos() {
@@ -348,7 +349,7 @@ public class TurretSubsystem extends SubsystemBase {
     double tourque = Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY * Math.cos(angle);
     return tourque
         * Constants.TurretConstants.SHOOTER_MASS
-        * 9.8
+        * Constants.GRAVITY
         * Constants.TurretConstants.PITCH_NEWTONS_TO_MOTOR_POWER;
   }
 
@@ -357,12 +358,20 @@ public class TurretSubsystem extends SubsystemBase {
     turretPIDController.setP(turretKP.getDouble(turretPosition));
     turretPIDController.setI(turretKI.getDouble(turretPosition));
     turretPIDController.setD(turretKD.getDouble(turretPosition));
+
     updateTurretPosition();
     turretVelocity =
         (m_turretEncoder.getVelocity().getValueAsDouble())
             * 60; // changing from rotations per second to rotations per minute or rpm
     turretPositionEntry.log(turretPosition);
     turretVelocityEntry.log(turretVelocity);
+
+    updatePitchPosition();
+    pitchVelocity =
+        (m_pitchEncoder.getVelocity().getValueAsDouble())
+            * 60; // changing from rotations per second to rotations per minute or rpm
+    pitchPositionEntry.log(pitchPosition);
+    pitchVelocityEntry.log(pitchVelocity);
   }
 
   @Override

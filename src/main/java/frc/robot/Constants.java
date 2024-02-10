@@ -15,6 +15,9 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static final double GRAVITY =
+      9.807; // Measured in m/s^2. Do not change unless you have a game on the moon
+
   public static class IntakeConstants {
     // TODO: Get real CAN IDs
     public static final int INTAKE_MOTOR_ID = 6;
@@ -83,7 +86,7 @@ public final class Constants {
     public static final int PITCH_SMART_CURRENT_LIMIT = 40;
 
     public static final double SHOOTER_CENTER_OF_GRAVITY = 1; // TODO: Get real values
-    public static final double SHOOTER_MASS = 0;
+    public static final double SHOOTER_MASS = 1;
     public static final double PITCH_NEWTONS_TO_MOTOR_POWER = 1;
 
     // Limelight
