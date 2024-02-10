@@ -78,15 +78,15 @@ public class OI {
     // A B Y X Buttons
     public static final Control A =
         new Control(XboxController.Button.kA, "Switch placement", controller);
-    public static final Control B = new Control(XboxController.Button.kB, null, controller);
+    public static final Control B = new Control(XboxController.Button.kB, "Aim Turret", controller);
     public static final Control Y = new Control(XboxController.Button.kY, null, controller);
     public static final Control X = new Control(XboxController.Button.kX, null, controller);
 
     // Bumpers & Triggers
     public static final Control LT =
         new Control(XboxController.Axis.kLeftTrigger, null, controller, 0.5);
-    public static final Control RT =
-        new Control(XboxController.Axis.kRightTrigger, null, controller, 0.5);
+    public static final Control shooterTrigger =
+        new Control(XboxController.Axis.kRightTrigger, "Fire Shooter", controller, 0.5);
     public static final Control LB =
         new Control(XboxController.Button.kLeftBumper, null, controller);
     public static final Control RB =

@@ -25,9 +25,11 @@ import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TrapElvSubsystem;
 import frc.robot.subsystems.TriggerSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.signaling.SignalingSubsystem;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,7 +49,9 @@ public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   private final IntakeSubsystem intakeSubsystem;
+  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final TriggerSubsystem triggerSubsystem;
+  private final TurretSubsystem turretSubsystem = new TurretSubsystem(robotStateManager);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final SwerveSubsystem drivetrain;
@@ -145,6 +149,14 @@ public class RobotContainer {
     }
 
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
+
+    // Shooter commands
+    shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
+    OI.getTrigger(OI.Operator.shooterTrigger).onTrue(shooterSubsystem.shooterFire());
+
+    // Turret commands
+    turretSubsystem.setDefaultCommand(turretSubsystem.idleTurret());
+    OI.getTrigger(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
 
     // Trap Elv Intaking
     if (Constants.enabledSubsystems.elvEnabled) {
