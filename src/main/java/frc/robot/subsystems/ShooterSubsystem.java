@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
@@ -49,7 +50,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private ShuffleboardTab shooterTab = Shuffleboard.getTab("Shooter fire");
   private GenericEntry targetRPM = shooterTab.add("Target RPM", 0).getEntry();
-
+  private GenericEntry rightTargetRPM = shooterTab.add("right RPM", 0).getEntry();
   private SpeakerConfig targetSpeeds;
 
   private FlywheelSim shooterLeftSim;
@@ -160,9 +161,15 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command revShooter() {
 
     // Only runs if the exit code from the limelight status function returns 0!
-    return SetShooterIfReady(
-        calculateShooterSpeeds(targetRPM.getDouble(0)),
-        0); // Replace distance and exit code with LimelightGetDistance() and
+    return Commands.startEnd(
+        () ->
+            this.setShooterSpeeds(
+                new SpeakerConfig(-1, targetRPM.getDouble(0), rightTargetRPM.getDouble(0))),
+        () -> {
+          shooterLeftMotor.stopMotor();
+          shooterRightMotor.stopMotor();
+        },
+        this); // Replace distance and exit code with LimelightGetDistance() and
     // CheckLimelightStatus() respectively
   }
 
@@ -214,9 +221,7 @@ public class ShooterSubsystem extends SubsystemBase {
     leftMotorSpeedEntry.log(speedLeft);
     rightMotorSpeedEntry.log(speedRight);
 
-    boolean ready =
-        (minSpeedToleranceLeft < speedLeft && speedLeft < maxSpeedToleranceLeft)
-            && (minSpeedToleranceRight < speedRight && speedRight < maxSpeedToleranceRight);
+    boolean ready = (minSpeedToleranceLeft < speedLeft) && (minSpeedToleranceRight < speedRight);
     shooterReadyEntry.log(ready);
     return ready;
   }
