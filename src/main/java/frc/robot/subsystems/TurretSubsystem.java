@@ -159,11 +159,59 @@ public class TurretSubsystem extends SubsystemBase {
   public static Rotation2d encoderPositionsToTurretRotation(
       double lowGearCANcoderPosition, double highGearCANcoderPosition) {
 
+    // This equation is based off of
+    // https://www.geeksforgeeks.org/implementation-of-chinese-remainder-theorem-inverse-modulo-based-implementation/
+    // It is accurate to with in 3.6 deg
     int gearToothPosition =
-        ((int) (lowGearCANcoderPosition * 13) * HowdyMath.inverse_modulus(10, 13) * 10
-                + (int) (highGearCANcoderPosition * 10) * HowdyMath.inverse_modulus(13, 10) * 13)
-            % 130;
-    return Rotation2d.fromRotations(gearToothPosition / 164d);
+        ((int) (lowGearCANcoderPosition * Constants.TurretConstants.LOW_GEAR_CANCODER_TEETH + 0.5)
+                    * HowdyMath.inverse_modulus(
+                        Constants.TurretConstants.HIGH_GEAR_CANCODER_TEETH,
+                        Constants.TurretConstants.LOW_GEAR_CANCODER_TEETH)
+                    * Constants.TurretConstants.HIGH_GEAR_CANCODER_TEETH
+                + (int)
+                        (highGearCANcoderPosition
+                                * Constants.TurretConstants.HIGH_GEAR_CANCODER_TEETH
+                            + 0.5)
+                    * HowdyMath.inverse_modulus(
+                        Constants.TurretConstants.LOW_GEAR_CANCODER_TEETH,
+                        Constants.TurretConstants.HIGH_GEAR_CANCODER_TEETH)
+                    * Constants.TurretConstants.LOW_GEAR_CANCODER_TEETH)
+            % (Constants.TurretConstants.LOW_GEAR_CANCODER_TEETH
+                * Constants.TurretConstants.HIGH_GEAR_CANCODER_TEETH);
+
+    double roughRotation = gearToothPosition / (Constants.TurretConstants.TURRET_GEAR_TEETH + 0.0);
+    double lowGearCANCoderDivsionSize =
+        (Constants.TurretConstants.LOW_GEAR_CANCODER_TEETH + 0.0)
+            / Constants.TurretConstants.TURRET_GEAR_TEETH;
+    double highGearCANCoderDivsionSize =
+        (Constants.TurretConstants.HIGH_GEAR_CANCODER_TEETH + 0.0)
+            / Constants.TurretConstants.TURRET_GEAR_TEETH;
+
+    double distToLowGearCanCoderDivide =
+        Math.abs(0.5 - (roughRotation / lowGearCANCoderDivsionSize) % 1);
+    double distToHighGearCanCoderDivide =
+        Math.abs(0.5 - (roughRotation / highGearCANCoderDivsionSize) % 1);
+
+    double position;
+    if (distToLowGearCanCoderDivide < distToHighGearCanCoderDivide) {
+      // use low gear CanCoder for fine zeroing
+      position =
+          fineTuneTurretRotation(
+              roughRotation, lowGearCANCoderDivsionSize, lowGearCANcoderPosition);
+    } else {
+      // use high gear CanCoder for fine zeroing
+      position =
+          fineTuneTurretRotation(
+              roughRotation, highGearCANCoderDivsionSize, highGearCANcoderPosition);
+    }
+
+    return Rotation2d.fromRotations(position);
+  }
+
+  private static double fineTuneTurretRotation(
+      double roughPosition, double divisionSize, double CANCoderAngle) {
+    int division = (int) ((roughPosition / divisionSize));
+    return divisionSize * division + CANCoderAngle * divisionSize;
   }
 
   private void setTurretPos(double setpoint) {

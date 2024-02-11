@@ -74,10 +74,18 @@ public final class Constants {
     public static final int MAX_TURRET_ANGLE_DEGREES = 110;
     public static final double TURRET_MOTOR_TURRET_RATIO = 0.2;
 
+    public static final int TURRET_GEAR_TEETH = 164;
+    public static final int LOW_GEAR_CANCODER_TEETH = 13;
+    public static final int HIGH_GEAR_CANCODER_TEETH = 10;
+
     public static final double highGearCAN_CODER_RATIO =
-        164 / 10d; // Revolutions of the turret, to revolutions of the cancoder
+        TURRET_GEAR_TEETH
+            / (HIGH_GEAR_CANCODER_TEETH
+                + 0.0); // Revolutions of the turret, to revolutions of the cancoder
     public static final double lowGearCAN_CODER_RATIO =
-        164 / 13d; // Revolutions of the turret, to revolutions of the cancoder
+        TURRET_GEAR_TEETH
+            / (LOW_GEAR_CANCODER_TEETH
+                + 0.0); // Revolutions of the turret, to revolutions of the cancoder
     public static final int highGearCAN_CODER_ID = 0;
     public static final int lowGearCAN_CODER_ID = 0;
   }
