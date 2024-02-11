@@ -22,9 +22,9 @@ public class LimelightSubsystem extends SubsystemBase implements VisionSubsystem
   private int measurementsUsed = 0;
   private DebugEntry<Integer> measurementEntry = new DebugEntry<Integer>(0, "measurements", this);
   private DebugEntry<Double> distanceEntryTag3 =
-    new DebugEntry<Double>(0.0, "Tag 3 Distance (m)", this);
+      new DebugEntry<Double>(0.0, "Tag 3 Distance (m)", this);
   private DebugEntry<Double> distanceEntryTag4 =
-    new DebugEntry<Double>(0.0, "Tag 4 Distance (m)", this);
+      new DebugEntry<Double>(0.0, "Tag 4 Distance (m)", this);
 
   private int lastHeartbeat = 0;
 
@@ -44,15 +44,15 @@ public class LimelightSubsystem extends SubsystemBase implements VisionSubsystem
   public Pose3d getPose3d() {
     Pose3d botpose = LimelightHelpers.getBotPose3d_wpiBlue("");
     double distanceToTag3 =
-      Math.sqrt(
-          Math.pow(16.579342 - botpose.getX(), 2)
-              + Math.pow(4.982718 - botpose.getY(), 2)
-              + Math.pow(1.451102 - botpose.getZ(), 2));
+        Math.sqrt(
+            Math.pow(16.579342 - botpose.getX(), 2)
+                + Math.pow(4.982718 - botpose.getY(), 2)
+                + Math.pow(1.451102 - botpose.getZ(), 2));
     double distanceToTag4 =
-      Math.sqrt(
-          Math.pow(16.579342 - botpose.getX(), 2)
-              + Math.pow(5.547868 - botpose.getY(), 2)
-              + Math.pow(1.451102 - botpose.getZ(), 2));
+        Math.sqrt(
+            Math.pow(16.579342 - botpose.getX(), 2)
+                + Math.pow(5.547868 - botpose.getY(), 2)
+                + Math.pow(1.451102 - botpose.getZ(), 2));
     distanceEntryTag3.log(distanceToTag3);
     distanceEntryTag4.log(distanceToTag4);
     return botpose;
@@ -74,7 +74,7 @@ public class LimelightSubsystem extends SubsystemBase implements VisionSubsystem
   private int getHeartbeat() {
     // "hb" gets the id of the current network table frame
     return (int)
-      NetworkTableInstance.getDefault().getTable("limelight").getEntry("hb").getInteger(0);
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("hb").getInteger(0);
   }
 
   @Override
