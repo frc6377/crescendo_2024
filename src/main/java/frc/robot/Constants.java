@@ -24,33 +24,33 @@ public final class Constants {
   }
 
   public static class TriggerConstants {
-    public static final int MOTOR_ID = 9; // edit all constants when testing
-    public static final double LOAD_PERCENTAGE = 0.5; // used when intaking into the turret
+    public static final int MOTOR_ID = 2; // edit all constants when testing
+    public static final double LOAD_PERCENTAGE = -0.5; // used when intaking into the turret
     public static final double HOLD_PERCENTAGE =
-        0.05; // very slow motor speed in case note slips out of trigger
+        -0.05; // very slow motor speed in case note slips out of trigger
     public static final double SHOOT_PERCENTAGE =
-        -0.5; // used when feeding note into turret to fire (should be negative value because it
+        0.5; // used when feeding note into turret to fire (should be negative value because it
     // outtakes)
   }
 
   public static class ShooterConstants {
-    public static final int SHOOTER_MOTOR_LEFT_ID = 55;
-    public static final int SHOOTER_MOTOR_RIGHT_ID = 56;
+    public static final int SHOOTER_MOTOR_LEFT_ID = 1;
+    public static final int SHOOTER_MOTOR_RIGHT_ID = 4;
 
     // Placeholder values
-    public static final double SHOOTER_LEFT_P = 0.0;
+    public static final double SHOOTER_LEFT_P = 0.0015;
     public static final double SHOOTER_LEFT_I = 0.0;
-    public static final double SHOOTER_LEFT_D = 0.0;
-    public static final double SHOOTER_LEFT_FF = 0.0;
+    public static final double SHOOTER_LEFT_D = 0.16;
+    public static final double SHOOTER_LEFT_FF = 0.00035;
 
-    public static final double SHOOTER_RIGHT_P = 0.0;
-    public static final double SHOOTER_RIGHT_I = 0.0;
-    public static final double SHOOTER_RIGHT_D = 0.0;
-    public static final double SHOOTER_RIGHT_FF = 0.0;
+    public static final double SHOOTER_RIGHT_P = 0.0015;
+    public static final double SHOOTER_RIGHT_I = 0.0000;
+    public static final double SHOOTER_RIGHT_D = 0.16;
+    public static final double SHOOTER_RIGHT_FF = 0.00042;
 
     // Motor RPM, NOT roller RPM
-    public static final double SHOOTER_IDLE_SPEED_LEFT = 100; // Placeholder; in RPM
-    public static final double SHOOTER_IDLE_SPEED_RIGHT = 100; // Placeholder; in RPM
+    public static final double SHOOTER_IDLE_SPEED_LEFT = 400; // Placeholder; in RPM
+    public static final double SHOOTER_IDLE_SPEED_RIGHT = 400; // Placeholder; in RPM
 
     public static final double SHOOTER_SPEED_TOLERANCE =
         0.1; // Placeholder; speed must be within (1-n)v to (1+n)v to fire
@@ -60,6 +60,31 @@ public final class Constants {
 
     public static final double SHOOTER_RIGHT_GEARING = 0.4; // Unitless
     public static final double SHOOTER_RIGHT_MOMENT = 0.000848475500006; // Placeholder; in kg*m^2
+  }
+
+  public static class TurretConstants {
+    public static final int MOTOR_ID = 9;
+    public static final int CANcoder_ID = 17; // replace with actual CANcoder ID
+
+    // Limelight
+    public static final double LIMELIGHT_HEIGHT_INCHES = 17.85;
+    public static final double LIMELIGHT_PITCH_RADIANS = Math.toRadians(17.75);
+
+    public static final double SPEAKER_TAG_CENTER_HEIGHT_INCHES =
+        57.125; // Don't change unless FIRST changes the field layout
+    public static final int SPEAKER_TAG_ID_RED = 4;
+    public static final int SPEAKER_TAG_ID_BLUE = 7;
+
+    // PID coefficients
+    public static final double KP = 0.25;
+    public static final double KI = 0.001;
+    public static final double KD = 0;
+    public static final double KIZ = 0;
+    public static final double KFF = 0;
+    public static final double KMAXOUTPUT = 1;
+    public static final double KMINOUTPUT = -1;
+    public static final int MAX_TURRET_ANGLE_DEGREES = 110;
+    public static final double CONVERSION_FACTOR = 0.25; // for the revbot prototype turret
   }
 
   public static class OperatorConstants {
@@ -101,6 +126,15 @@ public final class Constants {
     public static final double WRIST_MIN_ANGLE = Units.degreesToRadians(-359); // RADS
     public static final double WRIST_MAX_ANGLE = Units.degreesToRadians(359); // RADS
     public static final double WRIST_LENGTH = Units.inchesToMeters(12.5);
+  }
+
+  public static class enabledSubsystems {
+    public static final boolean intakeEnabled = false;
+    public static final boolean drivetrainEnabled = false;
+    public static final boolean limeLightEnabled = false;
+    public static final boolean elvEnabled = false;
+    public static final boolean signalEnabled = false;
+    public static final boolean shooterEnabled = true;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;

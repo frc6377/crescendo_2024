@@ -1,18 +1,19 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxSim;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
@@ -49,7 +50,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private ShuffleboardTab shooterTab = Shuffleboard.getTab("Shooter fire");
   private GenericEntry targetRPM = shooterTab.add("Target RPM", 0).getEntry();
-
+  private GenericEntry rightTargetRPM = shooterTab.add("right RPM", 0).getEntry();
   private SpeakerConfig targetSpeeds;
 
   private FlywheelSim shooterLeftSim;
@@ -65,6 +66,9 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterLeftMotor.setSmartCurrentLimit(40);
     shooterRightMotor.restoreFactoryDefaults();
     shooterRightMotor.setSmartCurrentLimit(40);
+
+    shooterLeftMotor.setIdleMode(IdleMode.kCoast);
+    shooterRightMotor.setIdleMode(IdleMode.kCoast);
 
     shooterLeftMotor.setInverted(true);
 
@@ -118,6 +122,14 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   @Override
+  public void periodic() {
+    rightFlywheelAngularVelocityEntry.log(shooterRightMotor.getEncoder().getVelocity());
+    leftFlywheelAngularVelocityEntry.log(shooterLeftMotor.getEncoder().getVelocity());
+    leftMotorOutputEntry.log(shooterLeftMotor.getAppliedOutput());
+    rightMotorOutputEntry.log(shooterRightMotor.getAppliedOutput());
+  }
+
+  @Override
   public void simulationPeriodic() {
     for (double i = 0; i < Robot.defaultPeriodSecs; i += CANSparkMaxSim.kPeriod) {
       shooterLeftSim.setInput(shooterLeftMotor.get() * RobotController.getBatteryVoltage());
@@ -135,10 +147,7 @@ public class ShooterSubsystem extends SubsystemBase {
                   * Constants.ShooterConstants.SHOOTER_RIGHT_GEARING));
 
       leftFlywheelInputEntry.log(shooterLeftMotor.get() * RobotController.getBatteryVoltage());
-      leftFlywheelAngularVelocityEntry.log(shooterLeftSim.getAngularVelocityRPM());
-
       rightFlywheelInputEntry.log(shooterRightMotor.get() * RobotController.getBatteryVoltage());
-      rightFlywheelAngularVelocityEntry.log(shooterRightSim.getAngularVelocityRPM());
     }
   }
 
@@ -149,9 +158,16 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command revShooter() {
 
     // Only runs if the exit code from the limelight status function returns 0!
-    return setShooterIfReady(
-        calculateShooterSpeeds(targetRPM.getDouble(0)),
-        0); // Replace distance and exit code with LimelightGetDistance() and
+
+    return Commands.startEnd(
+        () ->
+            this.setShooterSpeeds(
+                new SpeakerConfig(-1, targetRPM.getDouble(0), rightTargetRPM.getDouble(0))),
+        () -> {
+          shooterLeftMotor.stopMotor();
+          shooterRightMotor.stopMotor();
+        },
+        this); // TODO: Replace distance and exit code with LimelightGetDistance() and
     // CheckLimelightStatus() respectively
   }
 
@@ -170,11 +186,16 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public Command setShooterIfReady(SpeakerConfig speeds, int exitCode) {
-    return runOnce(
+    return startEnd(
         () -> {
           if (exitCode == 0) {
             setShooterSpeeds(speeds);
           }
+        },
+        () -> {
+          setShooterSpeeds(new SpeakerConfig(0, 0, 0));
+          shooterLeftMotor.stopMotor();
+          shooterRightMotor.stopMotor();
         });
   }
 
@@ -191,25 +212,16 @@ public class ShooterSubsystem extends SubsystemBase {
 
     double minSpeedToleranceLeft =
         targetSpeedLeft * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
-    double maxSpeedToleranceLeft =
-        targetSpeedLeft * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
     double minSpeedToleranceRight =
         targetSpeedRight * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
-    double maxSpeedToleranceRight =
-        targetSpeedRight * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
-
+ 
     double speedLeft = shooterLeftMotorEncoder.getVelocity();
     double speedRight = shooterRightMotorEncoder.getVelocity();
 
     leftMotorSpeedEntry.log(speedLeft);
     rightMotorSpeedEntry.log(speedRight);
 
-    leftMotorOutputEntry.log(shooterLeftMotor.getAppliedOutput());
-    rightMotorOutputEntry.log(shooterRightMotor.getAppliedOutput());
-
-    boolean ready =
-        (minSpeedToleranceLeft < speedLeft && speedLeft < maxSpeedToleranceLeft)
-            && (minSpeedToleranceRight < speedRight && speedRight < maxSpeedToleranceRight);
+    boolean ready = (minSpeedToleranceLeft < speedLeft) && (minSpeedToleranceRight < speedRight);
     shooterReadyEntry.log(ready);
     return ready;
   }
