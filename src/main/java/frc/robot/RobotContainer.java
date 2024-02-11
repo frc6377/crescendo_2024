@@ -5,7 +5,6 @@
 package frc.robot;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -51,7 +50,7 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem;
   private final ShooterSubsystem shooterSubsystem;
   private final TriggerSubsystem triggerSubsystem;
-  private final TurretSubsystem turretSubsystem = new TurretSubsystem(robotStateManager);
+  private TurretSubsystem turretSubsystem; // = new TurretSubsystem(robotStateManager);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final SwerveSubsystem drivetrain;
@@ -109,8 +108,6 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
     registerCommands();
-    autoChooser = AutoBuilder.buildAutoChooser();
-    configTab.add("Auton Selection", autoChooser).withSize(3, 1);
     SmartDashboard.putBoolean("NamedCommand test", false);
   }
 
@@ -174,19 +171,16 @@ public class RobotContainer {
 
     // Shooter commands
     if (Constants.enabledSubsystems.shooterEnabled) {
-      shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
+      // shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
       OI.getTrigger(OI.Operator.shooterRevTrigger).whileTrue(shooterSubsystem.revShooter());
 
       OI.getTrigger(OI.Operator.shooterFireTrigger)
-          .onTrue(
+          .whileTrue(
               triggerSubsystem
                   .getShootCommand()
                   .onlyIf(shooterSubsystem.shooterReady())
                   .onlyWhile(OI.getTrigger(OI.Operator.shooterRevTrigger)));
     }
-    // Turret commands
-    turretSubsystem.setDefaultCommand(turretSubsystem.idleTurret());
-    OI.getTrigger(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
 
     // Trap Elv Intaking
     if (Constants.enabledSubsystems.elvEnabled) {

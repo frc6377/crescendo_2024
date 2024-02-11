@@ -1,13 +1,13 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxSim;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -66,6 +66,9 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterRightMotor.restoreFactoryDefaults();
     shooterRightMotor.setSmartCurrentLimit(40);
 
+    shooterLeftMotor.setIdleMode(IdleMode.kCoast);
+    shooterRightMotor.setIdleMode(IdleMode.kCoast);
+
     shooterLeftMotor.setInverted(true);
 
     shooterLeftMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_LEFT_P);
@@ -77,10 +80,8 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterRightMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_RIGHT_D);
     shooterRightMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_RIGHT_FF);
 
-    if (DriverStation.isTest()) {
-      ShooterTab.add("Shooter Left Motor PID", shooterLeftMotor.getPIDController());
-      ShooterTab.add("Shooter Right Motor PID", shooterRightMotor.getPIDController());
-    }
+    ShooterTab.add("Shooter Left Motor PID", shooterLeftMotor.getPIDController());
+    ShooterTab.add("Shooter Right Motor PID", shooterRightMotor.getPIDController());
 
     if (Robot.isSimulation()) {
       shooterLeftSim =
@@ -120,6 +121,14 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   @Override
+  public void periodic() {
+    rightFlywheelAngularVelocityEntry.log(shooterRightMotor.getEncoder().getVelocity());
+    leftFlywheelAngularVelocityEntry.log(shooterLeftMotor.getEncoder().getVelocity());
+    leftMotorOutputEntry.log(shooterLeftMotor.getAppliedOutput());
+    rightMotorOutputEntry.log(shooterRightMotor.getAppliedOutput());
+  }
+
+  @Override
   public void simulationPeriodic() {
     for (double i = 0; i < Robot.defaultPeriodSecs; i += CANSparkMaxSim.kPeriod) {
       shooterLeftSim.setInput(shooterLeftMotor.get() * RobotController.getBatteryVoltage());
@@ -137,10 +146,10 @@ public class ShooterSubsystem extends SubsystemBase {
                   * Constants.ShooterConstants.SHOOTER_RIGHT_GEARING));
 
       leftFlywheelInputEntry.log(shooterLeftMotor.get() * RobotController.getBatteryVoltage());
-      leftFlywheelAngularVelocityEntry.log(shooterLeftSim.getAngularVelocityRPM());
+      // leftFlywheelAngularVelocityEntry.log(shooterLeftSim.getAngularVelocityRPM());
 
       rightFlywheelInputEntry.log(shooterRightMotor.get() * RobotController.getBatteryVoltage());
-      rightFlywheelAngularVelocityEntry.log(shooterRightSim.getAngularVelocityRPM());
+      // rightFlywheelAngularVelocityEntry.log(shooterRightSim.getAngularVelocityRPM());
     }
   }
 
@@ -172,7 +181,11 @@ public class ShooterSubsystem extends SubsystemBase {
             setShooterSpeeds(speeds);
           }
         },
-        () -> {});
+        () -> {
+          setShooterSpeeds(new SpeakerConfig(0, 0, 0));
+          shooterLeftMotor.stopMotor();
+          shooterRightMotor.stopMotor();
+        });
   }
 
   public Trigger shooterReady() {
@@ -200,9 +213,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
     leftMotorSpeedEntry.log(speedLeft);
     rightMotorSpeedEntry.log(speedRight);
-
-    leftMotorOutputEntry.log(shooterLeftMotor.getAppliedOutput());
-    rightMotorOutputEntry.log(shooterRightMotor.getAppliedOutput());
 
     boolean ready =
         (minSpeedToleranceLeft < speedLeft && speedLeft < maxSpeedToleranceLeft)

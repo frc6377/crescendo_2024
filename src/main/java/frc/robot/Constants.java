@@ -24,33 +24,33 @@ public final class Constants {
   }
 
   public static class TriggerConstants {
-    public static final int MOTOR_ID = 8; // edit all constants when testing
-    public static final double LOAD_PERCENTAGE = 0.5; // used when intaking into the turret
+    public static final int MOTOR_ID = 2; // edit all constants when testing
+    public static final double LOAD_PERCENTAGE = -0.5; // used when intaking into the turret
     public static final double HOLD_PERCENTAGE =
-        0.05; // very slow motor speed in case note slips out of trigger
+        -0.05; // very slow motor speed in case note slips out of trigger
     public static final double SHOOT_PERCENTAGE =
-        -0.5; // used when feeding note into turret to fire (should be negative value because it
+        0.5; // used when feeding note into turret to fire (should be negative value because it
     // outtakes)
   }
 
   public static class ShooterConstants {
-    public static final int SHOOTER_MOTOR_LEFT_ID = 55;
-    public static final int SHOOTER_MOTOR_RIGHT_ID = 56;
+    public static final int SHOOTER_MOTOR_LEFT_ID = 1;
+    public static final int SHOOTER_MOTOR_RIGHT_ID = 4;
 
     // Placeholder values
-    public static final double SHOOTER_LEFT_P = 0.0;
+    public static final double SHOOTER_LEFT_P = 0.0015;
     public static final double SHOOTER_LEFT_I = 0.0;
-    public static final double SHOOTER_LEFT_D = 0.0;
-    public static final double SHOOTER_LEFT_FF = 0.0;
+    public static final double SHOOTER_LEFT_D = 0.16;
+    public static final double SHOOTER_LEFT_FF = 0.00035;
 
-    public static final double SHOOTER_RIGHT_P = 0.0;
-    public static final double SHOOTER_RIGHT_I = 0.0;
-    public static final double SHOOTER_RIGHT_D = 0.0;
-    public static final double SHOOTER_RIGHT_FF = 0.0;
+    public static final double SHOOTER_RIGHT_P = 0.0015;
+    public static final double SHOOTER_RIGHT_I = 0.0000;
+    public static final double SHOOTER_RIGHT_D = 0.16;
+    public static final double SHOOTER_RIGHT_FF = 0.00035;
 
     // Motor RPM, NOT roller RPM
-    public static final double SHOOTER_IDLE_SPEED_LEFT = 100; // Placeholder; in RPM
-    public static final double SHOOTER_IDLE_SPEED_RIGHT = 100; // Placeholder; in RPM
+    public static final double SHOOTER_IDLE_SPEED_LEFT = 400; // Placeholder; in RPM
+    public static final double SHOOTER_IDLE_SPEED_RIGHT = 400; // Placeholder; in RPM
 
     public static final double SHOOTER_SPEED_TOLERANCE =
         0.1; // Placeholder; speed must be within (1-n)v to (1+n)v to fire
@@ -129,11 +129,11 @@ public final class Constants {
   }
 
   public static class enabledSubsystems {
-    public static final boolean intakeEnabled = true;
-    public static final boolean drivetrainEnabled = true;
-    public static final boolean limeLightEnabled = true;
-    public static final boolean elvEnabled = true;
-    public static final boolean signalEnabled = true;
+    public static final boolean intakeEnabled = false;
+    public static final boolean drivetrainEnabled = false;
+    public static final boolean limeLightEnabled = false;
+    public static final boolean elvEnabled = false;
+    public static final boolean signalEnabled = false;
     public static final boolean shooterEnabled = true;
   }
 
