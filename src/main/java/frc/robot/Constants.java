@@ -123,6 +123,16 @@ public final class Constants {
     public static final double WRIST_GEAR_RATIO = 32.727272727272727272;
   }
 
+  public static class enabledSubsystems {
+    public static final boolean intakeEnabled = true;
+    public static final boolean drivetrainEnabled = true;
+    public static final boolean limeLightEnabled = true;
+    public static final boolean elvEnabled = true;
+    public static final boolean signalEnabled = true;
+    public static final boolean shooterEnabled = true;
+    public static final boolean turretEnabled = true;
+  }
+
   public static final int END_GAME_WARNING_TIME = 20;
   public static final double TELEMETRY_LOG_NUMBER = .2;
   // Rumble
