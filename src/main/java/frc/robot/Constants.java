@@ -72,11 +72,11 @@ public final class Constants {
     public static final double KMAXOUTPUT = 1;
     public static final double KMINOUTPUT = -1;
     public static final int MAX_TURRET_ANGLE_DEGREES = 110;
-    public static final double GEAR_RATIO = 6.8333; // 0.25 for the revbot prototype turret
+    public static final double GEAR_RATIO = 6.8333; // (24:164)  0.25 for the revbot prototype turret
 
     // Simulation Vals
     public static final double TURRET_MOI = 0; // Moment of Inertia
-    public static final double TURRET_RADIUS = 0;
+    public static final double TURRET_RADIUS = Units.inchesToMeters(12);
   }
 
   public static class OperatorConstants {
@@ -118,7 +118,7 @@ public final class Constants {
     public static final double WRIST_MIN_ANGLE = Units.degreesToRadians(-90); // RADS
     public static final double WRIST_MAX_ANGLE = Units.degreesToRadians(270); // RADS
     public static final double WRIST_LENGTH = Units.inchesToMeters(11.877934);
-    public static final double WRIST_MOI = 0.073159; // Moment of Inertia
+    public static final double WRIST_MOI = 0.3175242664; // Moment of Inertia
     public static final double WRIST_GEAR_RATIO = 32.727272727272727272;
   }
 
