@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 public class TestTurretSubsystem {
   @Test
   public void TestZeroing() {
-    double testRange = 284d / 360; // Accurate for 284 deg
+    double testRange = 130d / 164;
     int numberOfTests = (int) 1000;
     for (double i = 0; i <= testRange; i += testRange * (1d / numberOfTests)) { // 130/164 ?
       double turretPosition =
@@ -17,6 +17,8 @@ public class TestTurretSubsystem {
                   (i * Constants.TurretConstants.lowGearCAN_CODER_RATIO) % 1,
                   (i * Constants.TurretConstants.highGearCAN_CODER_RATIO) % 1)
               .getRotations();
+      System.out.println(
+          (Math.abs(turretPosition - i) * 360 < 0.1) ? ("Pass " + i * 360) : ("Fail " + i * 360));
       assertTrue(Math.abs(turretPosition - i) * 360 < 0.1);
     }
   }

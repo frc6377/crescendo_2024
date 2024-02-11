@@ -163,15 +163,14 @@ public class TurretSubsystem extends SubsystemBase {
     // https://www.geeksforgeeks.org/implementation-of-chinese-remainder-theorem-inverse-modulo-based-implementation/
     // It is accurate to with in 3.6 deg
     int gearToothPosition =
-        ((int) (lowGearCANcoderPosition * Constants.TurretConstants.LOW_GEAR_CANCODER_TEETH + 0.5)
+        ((int) (lowGearCANcoderPosition * Constants.TurretConstants.LOW_GEAR_CANCODER_TEETH)
                     * HowdyMath.inverse_modulus(
                         Constants.TurretConstants.HIGH_GEAR_CANCODER_TEETH,
                         Constants.TurretConstants.LOW_GEAR_CANCODER_TEETH)
                     * Constants.TurretConstants.HIGH_GEAR_CANCODER_TEETH
                 + (int)
                         (highGearCANcoderPosition
-                                * Constants.TurretConstants.HIGH_GEAR_CANCODER_TEETH
-                            + 0.5)
+                            * Constants.TurretConstants.HIGH_GEAR_CANCODER_TEETH)
                     * HowdyMath.inverse_modulus(
                         Constants.TurretConstants.LOW_GEAR_CANCODER_TEETH,
                         Constants.TurretConstants.HIGH_GEAR_CANCODER_TEETH)
@@ -193,6 +192,7 @@ public class TurretSubsystem extends SubsystemBase {
         Math.abs(0.5 - (roughRotation / highGearCANCoderDivsionSize) % 1);
 
     double position;
+    System.out.print("rough:" + roughRotation + " ");
     if (distToLowGearCanCoderDivide < distToHighGearCanCoderDivide) {
       // use low gear CanCoder for fine zeroing
       position =
@@ -211,6 +211,7 @@ public class TurretSubsystem extends SubsystemBase {
   private static double fineTuneTurretRotation(
       double roughPosition, double divisionSize, double CANCoderAngle) {
     int division = (int) ((roughPosition / divisionSize));
+    System.out.print("Div:" + division);
     return divisionSize * division + CANCoderAngle * divisionSize;
   }
 
