@@ -241,7 +241,7 @@ public class TrapElvSubsystem extends SubsystemBase {
               TrapElvConstants.WRIST_LENGTH,
               TrapElvConstants.WRIST_MIN_ANGLE, // min rotation
               TrapElvConstants.WRIST_MAX_ANGLE, // max rotation
-              false,
+              true,
               0);
 
       TrapElvTab.add("Trap Arm Mech", elvMechanism);
