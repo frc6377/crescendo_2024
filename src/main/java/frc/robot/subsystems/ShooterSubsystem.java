@@ -151,6 +151,18 @@ public class ShooterSubsystem extends SubsystemBase {
     }
   }
 
+  @Override
+  public void periodic() {
+    leftMotorSpeedEntry.log(shooterLeftMotorEncoder.getVelocity());
+    rightMotorSpeedEntry.log(shooterRightMotorEncoder.getVelocity());
+
+    leftMotorOutputEntry.log(shooterLeftMotor.getAppliedOutput());
+    rightMotorOutputEntry.log(shooterRightMotor.getAppliedOutput());
+
+    leftMotorTemperatureEntry.log(shooterLeftMotor.getMotorTemperature());
+    rightMotorTemperatureEntry.log(shooterRightMotor.getMotorTemperature());
+  }
+
   // Spins up the shooter, and requests feeding it when the rollers are within parameters.
   // Receives distance-to-target from Limelight, or other sensor.
   // Required to be called repeatedly; consider pub-sub for LimelightGetDistance() or equivalent
@@ -217,10 +229,9 @@ public class ShooterSubsystem extends SubsystemBase {
     double speedLeft = shooterLeftMotorEncoder.getVelocity();
     double speedRight = shooterRightMotorEncoder.getVelocity();
 
-    leftMotorSpeedEntry.log(speedLeft);
-    rightMotorSpeedEntry.log(speedRight);
-
-    boolean ready = (minSpeedToleranceLeft < speedLeft) && (minSpeedToleranceRight < speedRight);
+    boolean ready =
+        (minSpeedToleranceLeft < speedLeft && speedLeft < maxSpeedToleranceLeft)
+            && (minSpeedToleranceRight < speedRight && speedRight < maxSpeedToleranceRight);
     shooterReadyEntry.log(ready);
     return ready;
   }
@@ -229,18 +240,12 @@ public class ShooterSubsystem extends SubsystemBase {
   public SpeakerConfig setShooterSpeeds(SpeakerConfig speeds) {
     targetSpeeds = speeds;
 
-    leftMotorTargetSpeedEntry.log(targetSpeeds.getSpeedLeftInRPM());
-    rightMotorTargetSpeedEntry.log(targetSpeeds.getSpeedRightInRPM());
-
     shooterLeftMotor
         .getPIDController()
         .setReference(speeds.getSpeedLeftInRPM(), CANSparkBase.ControlType.kVelocity);
     shooterRightMotor
         .getPIDController()
         .setReference(speeds.getSpeedRightInRPM(), CANSparkBase.ControlType.kVelocity);
-
-    leftMotorTemperatureEntry.log(shooterLeftMotor.getMotorTemperature());
-    rightMotorTemperatureEntry.log(shooterRightMotor.getMotorTemperature());
 
     return targetSpeeds;
   }
