@@ -174,7 +174,8 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command bumperShoot() {
     return run(() -> {
           setShooterSpeeds(speakerConfigList[0]);
-        }).withName("Bumper shoot command");
+        })
+        .withName("Bumper shoot command");
   }
 
   // Idle shooter command; for default command purposes
@@ -214,7 +215,7 @@ public class ShooterSubsystem extends SubsystemBase {
         targetSpeedLeft * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
     double minSpeedToleranceRight =
         targetSpeedRight * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
- 
+
     double speedLeft = shooterLeftMotorEncoder.getVelocity();
     double speedRight = shooterRightMotorEncoder.getVelocity();
 
