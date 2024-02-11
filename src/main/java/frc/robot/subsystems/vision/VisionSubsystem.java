@@ -9,4 +9,10 @@ public interface VisionSubsystem {
   public Pose2d getPose2d();
 
   public double getTime();
+
+  public double getYaw();
+
+  public double getPitch();
+
+  public double getTagNum();
 }

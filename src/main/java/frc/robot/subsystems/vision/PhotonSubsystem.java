@@ -78,6 +78,18 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
     return getPVEstimatedPose().get().timestampSeconds;
   }
 
+  public double getYaw() {
+
+  }
+
+  public double getPitch() {
+
+  }
+
+  public double getTagNum() {
+    
+  }
+
   public void periodic() {
     if (Robot.isReal()) {
       result = camera.getLatestResult();

@@ -71,6 +71,18 @@ public class LimelightSubsystem extends SubsystemBase implements VisionSubsystem
         - (LimelightHelpers.getLatency_Pipeline("") / 1000.0);
   }
 
+  public double getYaw() {
+
+  }
+
+  public double getPitch() {
+
+  }
+
+  public double getTagNum() {
+    
+  }
+
   private int getHeartbeat() {
     // "hb" gets the id of the current network table frame
     return (int)

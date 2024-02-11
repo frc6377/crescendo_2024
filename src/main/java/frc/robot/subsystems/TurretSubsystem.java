@@ -33,6 +33,7 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
+import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.LimelightHelpers;
 import java.util.function.Consumer;
@@ -68,10 +69,10 @@ public class TurretSubsystem extends SubsystemBase {
       new DebugEntry<Double>(0.0, "LastMeasuredTagDistance", this);
 
   private final RobotStateManager robotStateManager;
+  private final VisionSubsystem visionSubsystem;
 
-  public TurretSubsystem(RobotStateManager robotStateManager) {
+  public TurretSubsystem(RobotStateManager robotStateManager, VisionSubsystem visionSubsystem) {
     turretMotor = new CANSparkMax(Constants.TurretConstants.MOTOR_ID, MotorType.kBrushless);
-
     // Simulation
     if (Robot.isSimulation()) {
       turretSim =
@@ -95,6 +96,7 @@ public class TurretSubsystem extends SubsystemBase {
     turretMotor.setSmartCurrentLimit(40);
 
     this.robotStateManager = robotStateManager;
+    this.visionSubsystem = visionSubsystem;
 
     turretMotor.setSoftLimit(
         CANSparkMax.SoftLimitDirection.kReverse,
@@ -184,7 +186,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   private void aimTurret() {
-    double limelightTX = LimelightHelpers.getTX("limelight");
+    double limelightTX = VisionSubsystem.getYaw();
     if (limelightTX != 0
         && LimelightHelpers.getFiducialID("limelight")
             == ((robotStateManager.getAllianceColor() == AllianceColor.BLUE)
@@ -194,7 +196,7 @@ public class TurretSubsystem extends SubsystemBase {
       setTurretPos(Math.toRadians(limelightTX) + turretPosition);
 
       // Y & Tilting
-      double limelightTY = LimelightHelpers.getTY("limelight");
+      double limelightTY = VisionSubsystem.getPitch();
       double distanceToTag = tyToDistanceFromTag(limelightTY);
       tagDistanceEntry.log(distanceToTag);
       // TODO: Add vertical tilt and use distance for it
