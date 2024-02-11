@@ -56,7 +56,7 @@ public final class Constants {
 
     // Limelight
     public static final double LIMELIGHT_HEIGHT_INCHES = 17.85;
-    public static final double LIMELIGHT_PITCH_RADIANS = Math.toRadians(17.75);
+    public static final double LIMELIGHT_PITCH_RADIANS = Math.toRadians(18);
 
     public static final double SPEAKER_TAG_CENTER_HEIGHT_INCHES =
         57.125; // Don't change unless FIRST changes the field layout
@@ -119,7 +119,8 @@ public final class Constants {
   public static class enabledSubsystems {
     public static final boolean intakeEnabled = true;
     public static final boolean drivetrainEnabled = true;
-    public static final boolean limeLightEnabled = true;
+    public static final boolean limeLightEnabled = false;
+    public static final boolean photonEnabled = true;
     public static final boolean elvEnabled = true;
     public static final boolean signalEnabled = true;
     public static final boolean shooterEnabled = true;

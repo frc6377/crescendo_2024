@@ -24,13 +24,15 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TrapElvSubsystem;
 import frc.robot.subsystems.TriggerSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.signaling.SignalingSubsystem;
+import frc.robot.subsystems.vision.LimelightSubsystem;
+import frc.robot.subsystems.vision.PhotonSubsystem;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,6 +58,7 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final SwerveSubsystem drivetrain;
   private final LimelightSubsystem limelightSubsystem;
+  private final PhotonSubsystem photonSubsystem;
 
   private final SignalingSubsystem signalingSubsystem;
 
@@ -100,6 +103,11 @@ public class RobotContainer {
       limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
     } else {
       limelightSubsystem = null;
+    }
+    if (Constants.enabledSubsystems.photonEnabled) {
+      photonSubsystem = new PhotonSubsystem(drivetrain.getVisionMeasurementConsumer());
+    } else {
+      photonSubsystem = null;
     }
     if (Constants.enabledSubsystems.elvEnabled) {
       trapElvSubsystem = new TrapElvSubsystem();
