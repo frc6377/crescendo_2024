@@ -6,13 +6,18 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.LimelightHelpers;
+import java.util.List;
 import java.util.function.BiConsumer;
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class LimelightSubsystem extends SubsystemBase {
   private LimelightHelpers.LimelightResults results;
@@ -22,8 +27,19 @@ public class LimelightSubsystem extends SubsystemBase {
 
   private final BiConsumer<Pose2d, Double> measurementConsumer;
 
+  private PhotonCamera camera = new PhotonCamera("Camera_Module_v1");
+  private PhotonPipelineResult result;
+  private List<PhotonTrackedTarget> targets;
+  private Transform3d targetTransform;
+
+  private DebugEntry<Double> distanceEntryTag3 =
+      new DebugEntry<Double>(0.0, "Distance To Tag 3 (m)", this);
+  private DebugEntry<Double> distanceEntryTag4 =
+      new DebugEntry<Double>(0.0, "Distance To Tag 4 (m)", this);
+
   public LimelightSubsystem(BiConsumer<Pose2d, Double> measurementConsumer) {
     results = LimelightHelpers.getLatestResults("");
+    result = camera.getLatestResult();
 
     this.measurementConsumer = measurementConsumer;
     LimelightHelpers.setLEDMode_ForceOff("");
@@ -50,13 +66,40 @@ public class LimelightSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     if (Robot.isReal()) {
-      results = LimelightHelpers.getLatestResults("");
+      /*results = LimelightHelpers.getLatestResults("");
 
       if (getTagCount() > 1) {
         measurementsUsed++;
         measurementConsumer.accept(getPose2d(), getTime());
         if (measurementsUsed % 100 == 0) {
           measurementEntry.log(measurementsUsed);
+        }
+      } */
+
+      // photonvision stuff
+
+      result = camera.getLatestResult();
+      if (result.hasTargets()) {
+        System.out.println("Target acquired");
+        targets = result.getTargets();
+        for (PhotonTrackedTarget target : targets) {
+          if (target.getFiducialId() == 3) {
+            targetTransform = target.getBestCameraToTarget();
+            double distanceToTag3 =
+                Math.sqrt(
+                    Math.pow(16.579342 - targetTransform.getX(), 2)
+                        + Math.pow(4.982718 - targetTransform.getY(), 2)
+                        + Math.pow(1.451102 - targetTransform.getZ(), 2));
+            distanceEntryTag3.log(distanceToTag3);
+          } else if (target.getFiducialId() == 4) {
+            targetTransform = target.getBestCameraToTarget();
+            double distanceToTag4 =
+                Math.sqrt(
+                    Math.pow(16.579342 - targetTransform.getX(), 2)
+                        + Math.pow(5.547868 - targetTransform.getY(), 2)
+                        + Math.pow(1.451102 - targetTransform.getZ(), 2));
+            distanceEntryTag4.log(distanceToTag4);
+          }
         }
       }
     }
