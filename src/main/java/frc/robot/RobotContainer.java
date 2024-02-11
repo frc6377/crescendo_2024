@@ -126,10 +126,10 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // OI.getButton(OI.Operator.A)
-    //     .onTrue(
-    //         new InstantCommand(robotStateManager::switchPlacementMode)
-    //             .withName("Switch Placement Mode Command"));
+    OI.getButton(OI.Operator.A)
+         .onTrue(
+             new InstantCommand(robotStateManager::switchPlacementMode)
+                 .withName("Switch Placement Mode Command"));
     if (Constants.enabledSubsystems.intakeEnabled) {
       OI.getTrigger(OI.Driver.intakeTrigger)
           .whileTrue(
@@ -176,7 +176,7 @@ public class RobotContainer {
 
     // Shooter commands
     if (Constants.enabledSubsystems.shooterEnabled) {
-      // shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
+      shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
       OI.getTrigger(OI.Operator.shooterRevTrigger).whileTrue(shooterSubsystem.revShooter());
 
       OI.getTrigger(OI.Operator.shooterFireTrigger)

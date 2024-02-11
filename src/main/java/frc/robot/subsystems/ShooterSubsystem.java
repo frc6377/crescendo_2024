@@ -180,10 +180,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // Idle shooter command; for default command purposes
   public Command shooterIdle() {
-    return run(() -> {
-          setShooterSpeeds(speakerConfigIdle);
-        })
-        .withName("Idle shooter command");
+    //TODO: Determine appropriate open loop rate for shooter idle
+    return run(() -> {}).withName("Idle Shooter command");
   }
 
   public Command setShooterIfReady(SpeakerConfig speeds, int exitCode) {
