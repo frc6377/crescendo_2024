@@ -214,12 +214,22 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public Command stowTurret() {
-    return new InstantCommand(() -> setTurretPos(Math.toRadians(0)))
+    return new InstantCommand(() -> setTurretPos(Math.toRadians(Constants.TurretConstants.TURRET_STOWED_ANGLE)))
         .alongWith(
             new InstantCommand(
                 () ->
                     setPitchPos(
-                        Math.toRadians(0 /*TODO: If the stowed positon isn't 0, make it so.*/))))
+                        Math.toRadians(Constants.TurretConstants.PITCH_STOWED_ANGLE))))
+        .withName("StowTurretCommand");
+  }
+
+  public Command pickup() {
+    return new InstantCommand(() -> setTurretPos(Math.toRadians(Constants.TurretConstants.TURRET_PICKUP_ANGLE)))
+        .alongWith(
+            new InstantCommand(
+                () ->
+                    setPitchPos(
+                        Math.toRadians(Constants.TurretConstants.PITCH_PICKUP_ANGLE))))
         .withName("StowTurretCommand");
   }
 

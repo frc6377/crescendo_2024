@@ -66,9 +66,12 @@ public final class Constants {
     public static final double TURRET_KD = 0;
     public static final double TURRET_KIZ = 0;
     public static final double TURRET_KFF = 0;
+
     public static final double TURRET_KMAXOUTPUT = 1;
     public static final double TURRET_KMINOUTPUT = -1;
+
     public static final int TURRET_MAX_ANGLE_DEGREES = 110;
+    
     public static final double TURRET_CONVERSION_FACTOR = 0.25;
     public static final int TURRET_SMART_CURRENT_LIMIT = 40;
 
@@ -78,16 +81,27 @@ public final class Constants {
     public static final double PITCH_KD = 0;
     public static final double PITCH_KIZ = 0;
     public static final double PITCH_KFF = 0;
+
     public static final double PITCH_KMAXOUTPUT = 1;
     public static final double PITCH_KMINOUTPUT = -1;
+
     public static final int PITCH_MAX_ANGLE_DEGREES = 50;
     public static final int PITCH_MIN_ANGLE_DEGREES = 0;
+
     public static final double PITCH_CONVERSION_FACTOR = 0.25;
     public static final int PITCH_SMART_CURRENT_LIMIT = 40;
 
+    //Physics Values
     public static final double SHOOTER_CENTER_OF_GRAVITY = 1; // TODO: Get real values
     public static final double SHOOTER_MASS = 1;
     public static final double PITCH_NEWTONS_TO_MOTOR_POWER = 1;
+
+    //Hardcoded Setpoints
+    public static final double TURRET_STOWED_ANGLE = 0;
+    public static final double PITCH_STOWED_ANGLE = 30;
+
+    public static final double TURRET_PICKUP_ANGLE = 0;
+    public static final double PITCH_PICKUP_ANGLE = 30;
 
     // Limelight
     public static final double LIMELIGHT_HEIGHT_INCHES = 17.85;
