@@ -123,10 +123,14 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    rightFlywheelAngularVelocityEntry.log(shooterRightMotor.getEncoder().getVelocity());
-    leftFlywheelAngularVelocityEntry.log(shooterLeftMotor.getEncoder().getVelocity());
+    leftMotorSpeedEntry.log(shooterLeftMotorEncoder.getVelocity());
+    rightMotorSpeedEntry.log(shooterRightMotorEncoder.getVelocity());
+
     leftMotorOutputEntry.log(shooterLeftMotor.getAppliedOutput());
     rightMotorOutputEntry.log(shooterRightMotor.getAppliedOutput());
+
+    leftMotorTemperatureEntry.log(shooterLeftMotor.getMotorTemperature());
+    rightMotorTemperatureEntry.log(shooterRightMotor.getMotorTemperature());
   }
 
   @Override
@@ -149,18 +153,6 @@ public class ShooterSubsystem extends SubsystemBase {
       leftFlywheelInputEntry.log(shooterLeftMotor.get() * RobotController.getBatteryVoltage());
       rightFlywheelInputEntry.log(shooterRightMotor.get() * RobotController.getBatteryVoltage());
     }
-  }
-
-  @Override
-  public void periodic() {
-    leftMotorSpeedEntry.log(shooterLeftMotorEncoder.getVelocity());
-    rightMotorSpeedEntry.log(shooterRightMotorEncoder.getVelocity());
-
-    leftMotorOutputEntry.log(shooterLeftMotor.getAppliedOutput());
-    rightMotorOutputEntry.log(shooterRightMotor.getAppliedOutput());
-
-    leftMotorTemperatureEntry.log(shooterLeftMotor.getMotorTemperature());
-    rightMotorTemperatureEntry.log(shooterRightMotor.getMotorTemperature());
   }
 
   // Spins up the shooter, and requests feeding it when the rollers are within parameters.
@@ -225,6 +217,11 @@ public class ShooterSubsystem extends SubsystemBase {
         targetSpeedLeft * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
     double minSpeedToleranceRight =
         targetSpeedRight * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+
+    double maxSpeedToleranceLeft =
+        targetSpeedLeft * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
+    double maxSpeedToleranceRight =
+        targetSpeedRight * (1 + Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
 
     double speedLeft = shooterLeftMotorEncoder.getVelocity();
     double speedRight = shooterRightMotorEncoder.getVelocity();
