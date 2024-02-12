@@ -110,7 +110,7 @@ public class TurretSubsystem extends SubsystemBase {
               Constants.TurretConstants.TURRET_CONVERSION_FACTOR,
               0.01204298666, // Approximate guess of how heavy the turret is.
               0.1016, // Length of the "turret" in simulation
-              -Math.toRadians(Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES),
+              Math.toRadians(Constants.TurretConstants.TURRET_MIN_ANGLE_DEGREES),
               Math.toRadians(Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES),
               false,
               0);
@@ -153,7 +153,7 @@ public class TurretSubsystem extends SubsystemBase {
     turretMotor.setSoftLimit(
         CANSparkMax.SoftLimitDirection.kReverse,
         (float)
-            (-Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES
+            (Constants.TurretConstants.TURRET_MIN_ANGLE_DEGREES
                 / (360 * Constants.TurretConstants.TURRET_CONVERSION_FACTOR)));
     turretMotor.setSoftLimit(
         CANSparkMax.SoftLimitDirection.kForward,
@@ -240,7 +240,7 @@ public class TurretSubsystem extends SubsystemBase {
             turretPosition,
             MathUtil.clamp(
                 setpoint,
-                Math.toRadians(-Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES),
+                Math.toRadians(Constants.TurretConstants.TURRET_MIN_ANGLE_DEGREES),
                 Math.toRadians(Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES))));
   }
 
@@ -323,8 +323,9 @@ public class TurretSubsystem extends SubsystemBase {
       tagDistanceEntry.log(distanceToTag);
       setPitchPos(distanceToShootingPitch(distanceToTag));
 
-      if (Math.abs(Math.toRadians(limelightTX) + turretPosition)
-          > Math.toRadians(Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES)) {
+      if (Math.toRadians(limelightTX) + turretPosition
+          > Math.toRadians(Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES) || Math.toRadians(limelightTX) + turretPosition
+          < Math.toRadians(Constants.TurretConstants.TURRET_MIN_ANGLE_DEGREES)) {
         // TODO: Make turret rotate the drivebase if necessary and the driver thinks it's a good
         // idea
       }
