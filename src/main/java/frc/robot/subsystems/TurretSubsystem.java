@@ -214,22 +214,20 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public Command stowTurret() {
-    return new InstantCommand(() -> setTurretPos(Math.toRadians(Constants.TurretConstants.TURRET_STOWED_ANGLE)))
+    return new InstantCommand(
+            () -> setTurretPos(Math.toRadians(Constants.TurretConstants.TURRET_STOWED_ANGLE)))
         .alongWith(
             new InstantCommand(
-                () ->
-                    setPitchPos(
-                        Math.toRadians(Constants.TurretConstants.PITCH_STOWED_ANGLE))))
+                () -> setPitchPos(Math.toRadians(Constants.TurretConstants.PITCH_STOWED_ANGLE))))
         .withName("StowTurretCommand");
   }
 
   public Command pickup() {
-    return new InstantCommand(() -> setTurretPos(Math.toRadians(Constants.TurretConstants.TURRET_PICKUP_ANGLE)))
+    return new InstantCommand(
+            () -> setTurretPos(Math.toRadians(Constants.TurretConstants.TURRET_PICKUP_ANGLE)))
         .alongWith(
             new InstantCommand(
-                () ->
-                    setPitchPos(
-                        Math.toRadians(Constants.TurretConstants.PITCH_PICKUP_ANGLE))))
+                () -> setPitchPos(Math.toRadians(Constants.TurretConstants.PITCH_PICKUP_ANGLE))))
         .withName("StowTurretCommand");
   }
 
@@ -251,14 +249,14 @@ public class TurretSubsystem extends SubsystemBase {
                 pitchPosition,
                 MathUtil.clamp(
                     setpoint,
-                    Math.toRadians(-Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES),
+                    Math.toRadians(Constants.TurretConstants.PITCH_MIN_ANGLE_DEGREES),
                     Math.toRadians(Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES)))
             + calculateArbitraryFeedForward(pitchPosition));
   }
 
   private void holdPosition() {
     setTurretPos(turretPosition);
-    setPitchPos(pitchPosition);
+    setPitchPos(Constants.TurretConstants.PITCH_STOWED_ANGLE);
   }
 
   public Command idleTurret() {
@@ -324,8 +322,9 @@ public class TurretSubsystem extends SubsystemBase {
       setPitchPos(distanceToShootingPitch(distanceToTag));
 
       if (Math.toRadians(limelightTX) + turretPosition
-          > Math.toRadians(Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES) || Math.toRadians(limelightTX) + turretPosition
-          < Math.toRadians(Constants.TurretConstants.TURRET_MIN_ANGLE_DEGREES)) {
+              > Math.toRadians(Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES)
+          || Math.toRadians(limelightTX) + turretPosition
+              < Math.toRadians(Constants.TurretConstants.TURRET_MIN_ANGLE_DEGREES)) {
         // TODO: Make turret rotate the drivebase if necessary and the driver thinks it's a good
         // idea
       }

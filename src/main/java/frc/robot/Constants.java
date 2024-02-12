@@ -72,7 +72,7 @@ public final class Constants {
 
     public static final int TURRET_MIN_ANGLE_DEGREES = -5;
     public static final int TURRET_MAX_ANGLE_DEGREES = 45;
-    
+
     public static final double TURRET_CONVERSION_FACTOR = 0.25;
     public static final int TURRET_SMART_CURRENT_LIMIT = 40;
 
@@ -92,12 +92,12 @@ public final class Constants {
     public static final double PITCH_CONVERSION_FACTOR = 0.25;
     public static final int PITCH_SMART_CURRENT_LIMIT = 40;
 
-    //Physics Values
+    // Physics Values
     public static final double SHOOTER_CENTER_OF_GRAVITY = 1; // TODO: Get real values
     public static final double SHOOTER_MASS = 1;
     public static final double PITCH_NEWTONS_TO_MOTOR_POWER = 1;
 
-    //Hardcoded Setpoints
+    // Hardcoded Setpoints
     public static final double TURRET_STOWED_ANGLE = 0;
     public static final double PITCH_STOWED_ANGLE = 30;
 
