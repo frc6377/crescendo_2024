@@ -146,9 +146,8 @@ public class TurretSubsystem extends SubsystemBase {
     return Commands.runOnce(() -> this.zeroTurret(), this).withName("ZeroTurretCommand");
   }
 
+  /** Will calculate the current turret position and update encoders and motors off of it. */
   public void zeroTurret() {
-    // Chinease remandier theorm (CRT) scale value.
-    // Converts from rotations to CRT Space
     double lowGearPosition = lowGearCANcoder.getAbsolutePosition().getValue().doubleValue();
     double highGearPosition = highGearCANcoder.getAbsolutePosition().getValue().doubleValue();
     Rotation2d turretRotation = encoderPositionsToTurretRotation(lowGearPosition, highGearPosition);
@@ -157,8 +156,21 @@ public class TurretSubsystem extends SubsystemBase {
         turretRotation.getRotations() * Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO);
     highGearCANcoder.setPosition(
         turretRotation.getRotations() * Constants.TurretConstants.HIGH_GEAR_CAN_CODER_RATIO);
+    turretMotor
+        .getEncoder()
+        .setPosition(
+            turretRotation.getRotations() * Constants.TurretConstants.TURRET_MOTOR_TURRET_RATIO);
   }
 
+  /**
+   * Calculates the turret zero off of given encoder rotations.
+   *
+   * @param lowGearCANcoderPosition The low gear encoder position, as in the gear with a lower gear
+   *     ratio
+   * @param highGearCANcoderPosition The high gear encoder position, as in the gear with a higher
+   *     gear ratio
+   * @return the calculated turret rotation
+   */
   public static Rotation2d encoderPositionsToTurretRotation(
       double lowGearCANcoderPosition, double highGearCANcoderPosition) {
 
