@@ -121,14 +121,16 @@ public class TurretSubsystem extends SubsystemBase {
             Constants.TurretConstants.KI,
             Constants.TurretConstants.KD);
 
+    highGearCANcoder = new CANcoder(Constants.TurretConstants.highGearCAN_CODER_ID);
+    lowGearCANcoder = new CANcoder(Constants.TurretConstants.lowGearCAN_CODER_ID);
+
     simEncoder =
-        new SimDeviceSim("CANEncoder:CANCoder (v6)", Constants.TurretConstants.CANcoder_ID);
+        new SimDeviceSim(
+            "CANEncoder:CANCoder (v6)", Constants.TurretConstants.highGearCAN_CODER_ID);
     simTurretPos = simEncoder.getDouble("rawPositionInput");
 
     turretPIDController.setIZone(Constants.TurretConstants.KIZ);
 
-    highGearCANcoder = new CANcoder(Constants.TurretConstants.highGearCAN_CODER_ID);
-    lowGearCANcoder = new CANcoder(Constants.TurretConstants.lowGearCAN_CODER_ID);
     zeroTurret();
   }
 
