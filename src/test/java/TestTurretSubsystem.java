@@ -17,8 +17,6 @@ public class TestTurretSubsystem {
                   (i * Constants.TurretConstants.lowGearCAN_CODER_RATIO) % 1,
                   (i * Constants.TurretConstants.highGearCAN_CODER_RATIO) % 1)
               .getRotations();
-      System.out.println(
-          (Math.abs(turretPosition - i) * 360 < 0.1) ? ("Pass " + i * 360) : ("Fail " + i * 360));
       assertTrue(Math.abs(turretPosition - i) * 360 < 0.1);
     }
   }

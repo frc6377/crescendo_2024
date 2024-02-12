@@ -193,7 +193,6 @@ public class TurretSubsystem extends SubsystemBase {
         Math.abs(0.5 - (roughRotation / highGearCANCoderDivsionSize) % 1);
 
     double position;
-    System.out.print("rough:" + roughRotation + " ");
     if (distToLowGearCanCoderDivide < distToHighGearCanCoderDivide) {
       // use low gear CanCoder for fine zeroing
       position =
@@ -212,7 +211,6 @@ public class TurretSubsystem extends SubsystemBase {
   private static double fineTuneTurretRotation(
       double roughPosition, double divisionSize, double CANCoderAngle) {
     int division = (int) ((roughPosition / divisionSize));
-    System.out.print("Div:" + division);
     return divisionSize * division + CANCoderAngle * divisionSize;
   }
 
