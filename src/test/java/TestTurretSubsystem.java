@@ -14,8 +14,8 @@ public class TestTurretSubsystem {
     for (double i = 0; i <= testRange; i += testRange * (1d / numberOfTests)) { // 130/164 ?
       double turretPosition =
           TurretSubsystem.encoderPositionsToTurretRotation(
-                  (i * Constants.TurretConstants.lowGearCAN_CODER_RATIO) % 1,
-                  (i * Constants.TurretConstants.highGearCAN_CODER_RATIO) % 1)
+                  (i * Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO) % 1,
+                  (i * Constants.TurretConstants.HIGH_GEAR_CAN_CODER_RATIO) % 1)
               .getRotations();
       assertTrue(Math.abs(turretPosition - i) * 360 < 0.1);
     }

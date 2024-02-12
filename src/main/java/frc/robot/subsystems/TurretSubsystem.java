@@ -154,9 +154,9 @@ public class TurretSubsystem extends SubsystemBase {
     Rotation2d turretRotation = encoderPositionsToTurretRotation(lowGearPosition, highGearPosition);
 
     lowGearCANcoder.setPosition(
-        turretRotation.getRotations() * Constants.TurretConstants.lowGearCAN_CODER_RATIO);
+        turretRotation.getRotations() * Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO);
     highGearCANcoder.setPosition(
-        turretRotation.getRotations() * Constants.TurretConstants.highGearCAN_CODER_RATIO);
+        turretRotation.getRotations() * Constants.TurretConstants.HIGH_GEAR_CAN_CODER_RATIO);
   }
 
   public static Rotation2d encoderPositionsToTurretRotation(
@@ -240,7 +240,7 @@ public class TurretSubsystem extends SubsystemBase {
         highGearCANcoder.getPosition().getValue()
             * Math.PI
             * 2
-            * Constants.TurretConstants.highGearCAN_CODER_RATIO;
+            * Constants.TurretConstants.HIGH_GEAR_CAN_CODER_RATIO;
     SmartDashboard.putNumber("Turret Position", turretPosition);
     SmartDashboard.putBoolean("Out of Bounds", Math.abs(turretPosition) > 3.14);
     SmartDashboard.putBoolean(
@@ -313,7 +313,7 @@ public class TurretSubsystem extends SubsystemBase {
     updateTurretPosition();
     turretVelocity =
         (lowGearCANcoder.getVelocity().getValueAsDouble()
-                * Constants.TurretConstants.lowGearCAN_CODER_RATIO)
+                * Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO)
             * 60; // changing from rotations per second to rotations per minute or rpm
     turretPositionEntry.log(turretPosition);
     turretVelocityEntry.log(turretVelocity);

@@ -78,11 +78,11 @@ public final class Constants {
     public static final int LOW_GEAR_CANCODER_TEETH = 13;
     public static final int HIGH_GEAR_CANCODER_TEETH = 10;
 
-    public static final double highGearCAN_CODER_RATIO =
+    public static final double HIGH_GEAR_CAN_CODER_RATIO =
         TURRET_GEAR_TEETH
             / (HIGH_GEAR_CANCODER_TEETH
                 + 0.0); // Revolutions of the turret, to revolutions of the cancoder
-    public static final double lowGearCAN_CODER_RATIO =
+    public static final double LOW_GEAR_CAN_CODER_RATIO =
         TURRET_GEAR_TEETH
             / (LOW_GEAR_CANCODER_TEETH
                 + 0.0); // Revolutions of the turret, to revolutions of the cancoder
