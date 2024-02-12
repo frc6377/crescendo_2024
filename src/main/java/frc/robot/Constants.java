@@ -24,7 +24,7 @@ public final class Constants {
   }
 
   public static class TriggerConstants {
-    public static final int MOTOR_ID = 9; // edit all constants when testing
+    public static final int MOTOR_ID = 8; // edit all constants when testing
     public static final double LOAD_PERCENTAGE = 0.5; // used when intaking into the turret
     public static final double HOLD_PERCENTAGE =
         0.05; // very slow motor speed in case note slips out of trigger
@@ -129,6 +129,16 @@ public final class Constants {
     public static final double WRIST_MIN_ANGLE = Units.degreesToRadians(-359); // RADS
     public static final double WRIST_MAX_ANGLE = Units.degreesToRadians(359); // RADS
     public static final double WRIST_LENGTH = Units.inchesToMeters(12.5);
+  }
+
+  public static class enabledSubsystems {
+    public static final boolean intakeEnabled = true;
+    public static final boolean drivetrainEnabled = true;
+    public static final boolean limeLightEnabled = true;
+    public static final boolean elvEnabled = true;
+    public static final boolean signalEnabled = true;
+    public static final boolean shooterEnabled = true;
+    public static final boolean turretEnabled = true;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
