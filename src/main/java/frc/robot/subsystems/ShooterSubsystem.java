@@ -28,7 +28,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private final RelativeEncoder shooterLeftMotorEncoder;
   private final RelativeEncoder shooterRightMotorEncoder;
 
-  private ShuffleboardTab ShooterTab = Shuffleboard.getTab("Shooter Tab");
+  private ShuffleboardTab shooterTab = Shuffleboard.getTab("Shooter Tab");
 
   private DebugEntry<Double> leftMotorOutputEntry;
   private DebugEntry<Double> leftMotorSpeedEntry;
@@ -48,7 +48,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private DebugEntry<Boolean> shooterReadyEntry;
 
-  private ShuffleboardTab shooterTab = Shuffleboard.getTab("Shooter fire");
   private GenericEntry targetRPM = shooterTab.add("Target RPM", 0).getEntry();
   private GenericEntry rightTargetRPM = shooterTab.add("right RPM", 0).getEntry();
   private SpeakerConfig targetSpeeds;
@@ -81,8 +80,8 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterRightMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_RIGHT_D);
     shooterRightMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_RIGHT_FF);
 
-    ShooterTab.add("Shooter Left Motor PID", shooterLeftMotor.getPIDController());
-    ShooterTab.add("Shooter Right Motor PID", shooterRightMotor.getPIDController());
+    shooterTab.add("Shooter Left Motor PID", shooterLeftMotor.getPIDController());
+    shooterTab.add("Shooter Right Motor PID", shooterRightMotor.getPIDController());
 
     if (Robot.isSimulation()) {
       shooterLeftSim =
@@ -184,7 +183,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // Idle shooter command; for default command purposes
   public Command shooterIdle() {
-    //TODO: Determine appropriate open loop rate for shooter idle
+    // TODO: Determine appropriate open loop rate for shooter idle
     return run(() -> {}).withName("Idle Shooter command");
   }
 

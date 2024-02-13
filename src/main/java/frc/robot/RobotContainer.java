@@ -127,9 +127,9 @@ public class RobotContainer {
    */
   private void configureBindings() {
     OI.getButton(OI.Operator.A)
-         .onTrue(
-             new InstantCommand(robotStateManager::switchPlacementMode)
-                 .withName("Switch Placement Mode Command"));
+        .onTrue(
+            new InstantCommand(robotStateManager::switchPlacementMode)
+                .withName("Switch Placement Mode Command"));
     if (Constants.enabledSubsystems.intakeEnabled) {
       OI.getTrigger(OI.Driver.intakeTrigger)
           .whileTrue(
@@ -175,7 +175,9 @@ public class RobotContainer {
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
     // Shooter commands
-    if (Constants.enabledSubsystems.shooterEnabled) {
+    if (Constants.enabledSubsystems.shooterEnabled
+        && Constants.enabledSubsystems.triggerEnabled
+        && Constants.enabledSubsystems.limeLightEnabled) {
       shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
       OI.getTrigger(OI.Operator.shooterRevTrigger).whileTrue(shooterSubsystem.revShooter());
 
@@ -186,6 +188,10 @@ public class RobotContainer {
                   .onlyIf(shooterSubsystem.shooterReady())
                   .onlyWhile(OI.getTrigger(OI.Operator.shooterRevTrigger)));
       OI.getButton(OI.Operator.A).whileTrue(triggerSubsystem.getLoadCommand());
+    } else if (Constants.enabledSubsystems.shooterEnabled
+        && Constants.enabledSubsystems.triggerEnabled) {
+      shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
+      OI.getTrigger(OI.Operator.shooterFireTrigger).whileTrue(shooterSubsystem.bumperShoot());
     }
 
     // Trap Elv Intaking
