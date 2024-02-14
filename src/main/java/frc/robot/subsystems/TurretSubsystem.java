@@ -274,7 +274,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   private void moveUp() {
     setTurretPos(turretPosition);
-    setPitchPos(pitchPosition + 0.5);
+    setPitchPos(60);
   }
 
   public Command moveUpwards() {
@@ -339,7 +339,7 @@ public class TurretSubsystem extends SubsystemBase {
       }
     } else {
       // TODO: Make turret default to using odometry
-      setTurretPos(turretPosition);
+      setTurretPos(60);
     }
   }
 
