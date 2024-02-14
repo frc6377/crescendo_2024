@@ -78,16 +78,30 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
     return getPVEstimatedPose().get().timestampSeconds;
   }
 
-  public double getYaw() {
-
+  public double getTurretYaw(int id) {
+    result = camera.getLatestResult();
+    if (result.hasTargets()) {
+      targets = result.getTargets();
+      for (PhotonTrackedTarget target : targets) {
+        if (target.getFiducialId() == id) {
+          return target.getYaw();
+        }
+      }
+    }
+    return 0;
   }
 
-  public double getPitch() {
-
-  }
-
-  public double getTagNum() {
-    
+  public double getTurretPitch(int id) {
+    result = camera.getLatestResult();
+    if (result.hasTargets()) {
+      targets = result.getTargets();
+      for (PhotonTrackedTarget target : targets) {
+        if (target.getFiducialId() == id) {
+          return target.getPitch();
+        }
+      }
+    }
+    return 0;
   }
 
   public void periodic() {

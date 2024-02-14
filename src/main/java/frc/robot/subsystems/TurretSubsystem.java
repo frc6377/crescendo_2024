@@ -35,7 +35,6 @@ import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.DebugEntry;
-import frc.robot.utilities.LimelightHelpers;
 import java.util.function.Consumer;
 
 public class TurretSubsystem extends SubsystemBase {
@@ -186,24 +185,25 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   private void aimTurret() {
-    double limelightTX = VisionSubsystem.getYaw();
-    if (limelightTX != 0
-        && LimelightHelpers.getFiducialID("limelight")
-            == ((robotStateManager.getAllianceColor() == AllianceColor.BLUE)
-                ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
-                : Constants.TurretConstants.SPEAKER_TAG_ID_RED)) {
-      // X & Rotation
-      setTurretPos(Math.toRadians(limelightTX) + turretPosition);
+    if (visionSubsystem != null) {
+      int tagID = ((robotStateManager.getAllianceColor() == AllianceColor.BLUE)
+                  ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
+                  : Constants.TurretConstants.SPEAKER_TAG_ID_RED);
+      double limelightTX = visionSubsystem.getTurretYaw(tagID);
+      if (limelightTX != 0) {
+        // X & Rotation
+        setTurretPos(Math.toRadians(limelightTX) + turretPosition);
 
-      // Y & Tilting
-      double limelightTY = VisionSubsystem.getPitch();
-      double distanceToTag = tyToDistanceFromTag(limelightTY);
-      tagDistanceEntry.log(distanceToTag);
-      // TODO: Add vertical tilt and use distance for it
+        // Y & Tilting
+        double limelightTY = visionSubsystem.getTurretPitch(tagID);
+        double distanceToTag = tyToDistanceFromTag(limelightTY);
+        tagDistanceEntry.log(distanceToTag);
+        // TODO: Add vertical tilt and use distance for it
 
-      if (Math.abs(Math.toRadians(limelightTX) + turretPosition)
-          > Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES)) {
-        // TODO: Make turret rotate the drivebase if necessary and driver thinks it's a good idea
+        if (Math.abs(Math.toRadians(limelightTX) + turretPosition)
+            > Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES)) {
+          // TODO: Make turret rotate the drivebase if necessary and driver thinks it's a good idea
+        }
       }
     } else {
       // TODO: Make turret default to using odometry

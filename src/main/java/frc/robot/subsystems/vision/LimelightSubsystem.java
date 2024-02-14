@@ -11,7 +11,10 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.stateManagement.AllianceColor;
+import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.LimelightHelpers;
 import java.util.function.BiConsumer;
@@ -28,11 +31,14 @@ public class LimelightSubsystem extends SubsystemBase implements VisionSubsystem
 
   private int lastHeartbeat = 0;
 
+  private final RobotStateManager robotStateManager;
+
   private final BiConsumer<Pose2d, Double> measurementConsumer;
 
-  public LimelightSubsystem(BiConsumer<Pose2d, Double> measurementConsumer) {
+  public LimelightSubsystem(BiConsumer<Pose2d, Double> measurementConsumer, RobotStateManager robotStateManager) {
     results = LimelightHelpers.getLatestResults("");
     this.measurementConsumer = measurementConsumer;
+    this.robotStateManager = robotStateManager;
     LimelightHelpers.setLEDMode_ForceOff("");
     LimelightHelpers.setStreamMode_PiPMain("");
   }
@@ -71,16 +77,22 @@ public class LimelightSubsystem extends SubsystemBase implements VisionSubsystem
         - (LimelightHelpers.getLatency_Pipeline("") / 1000.0);
   }
 
-  public double getYaw() {
-
+  public double getTurretYaw(int ID) {
+    if (ID == ((robotStateManager.getAllianceColor() == AllianceColor.BLUE)
+                ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
+                : Constants.TurretConstants.SPEAKER_TAG_ID_RED)) {
+      return LimelightHelpers.getTX("limelight");
+    }
+    return 0;
   }
 
-  public double getPitch() {
-
-  }
-
-  public double getTagNum() {
-    
+  public double getTurretPitch(int ID) {
+    if (ID == ((robotStateManager.getAllianceColor() == AllianceColor.BLUE)
+                ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
+                : Constants.TurretConstants.SPEAKER_TAG_ID_RED)) {
+      return LimelightHelpers.getTY("limelight");
+    }
+    return 0;
   }
 
   private int getHeartbeat() {

@@ -10,9 +10,7 @@ public interface VisionSubsystem {
 
   public double getTime();
 
-  public double getYaw();
+  public double getTurretYaw(int id);
 
-  public double getPitch();
-
-  public double getTagNum();
+  public double getTurretPitch(int id);
 }
