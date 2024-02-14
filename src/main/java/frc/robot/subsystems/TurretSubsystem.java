@@ -352,7 +352,9 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   /**
-   * Calculates the distance to the tag centered on the speaker from the angle that the limelight sees it
+   * Calculates the distance to the tag centered on the speaker from the angle that the limelight
+   * sees it
+   *
    * @param ty The ty output by the limelight (degrees)
    * @return The distance from the tag (meters)
    */
