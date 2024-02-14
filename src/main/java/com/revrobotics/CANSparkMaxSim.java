@@ -12,6 +12,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
+import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Robot;
 
 /*
@@ -256,6 +257,12 @@ public class CANSparkMaxSim extends CANSparkMax {
   public void set(double speed) {
     super.set(speed);
     output = MathUtil.clamp(speed, -1, 1);
+  }
+
+  @Override
+  public void setVoltage(double volts) {
+    super.setVoltage(volts);
+    output = MathUtil.clamp(volts / RobotController.getBatteryVoltage(), -1, 1);
   }
 
   // Algorithm pulled from https://docs.revrobotics.com/sparkmax/operating-modes/closed-loop-control
