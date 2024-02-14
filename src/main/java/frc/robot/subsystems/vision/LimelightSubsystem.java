@@ -35,7 +35,8 @@ public class LimelightSubsystem extends SubsystemBase implements VisionSubsystem
 
   private final BiConsumer<Pose2d, Double> measurementConsumer;
 
-  public LimelightSubsystem(BiConsumer<Pose2d, Double> measurementConsumer, RobotStateManager robotStateManager) {
+  public LimelightSubsystem(
+      BiConsumer<Pose2d, Double> measurementConsumer, RobotStateManager robotStateManager) {
     results = LimelightHelpers.getLatestResults("");
     this.measurementConsumer = measurementConsumer;
     this.robotStateManager = robotStateManager;
@@ -78,18 +79,20 @@ public class LimelightSubsystem extends SubsystemBase implements VisionSubsystem
   }
 
   public double getTurretYaw(int ID) {
-    if (ID == ((robotStateManager.getAllianceColor() == AllianceColor.BLUE)
-                ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
-                : Constants.TurretConstants.SPEAKER_TAG_ID_RED)) {
+    if (ID
+        == ((robotStateManager.getAllianceColor() == AllianceColor.BLUE)
+            ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
+            : Constants.TurretConstants.SPEAKER_TAG_ID_RED)) {
       return LimelightHelpers.getTX("limelight");
     }
     return 0;
   }
 
   public double getTurretPitch(int ID) {
-    if (ID == ((robotStateManager.getAllianceColor() == AllianceColor.BLUE)
-                ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
-                : Constants.TurretConstants.SPEAKER_TAG_ID_RED)) {
+    if (ID
+        == ((robotStateManager.getAllianceColor() == AllianceColor.BLUE)
+            ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
+            : Constants.TurretConstants.SPEAKER_TAG_ID_RED)) {
       return LimelightHelpers.getTY("limelight");
     }
     return 0;

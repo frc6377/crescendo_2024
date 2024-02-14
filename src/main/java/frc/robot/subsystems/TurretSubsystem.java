@@ -186,9 +186,10 @@ public class TurretSubsystem extends SubsystemBase {
 
   private void aimTurret() {
     if (visionSubsystem != null) {
-      int tagID = ((robotStateManager.getAllianceColor() == AllianceColor.BLUE)
-                  ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
-                  : Constants.TurretConstants.SPEAKER_TAG_ID_RED);
+      int tagID =
+          ((robotStateManager.getAllianceColor() == AllianceColor.BLUE)
+              ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
+              : Constants.TurretConstants.SPEAKER_TAG_ID_RED);
       double limelightTX = visionSubsystem.getTurretYaw(tagID);
       if (limelightTX != 0) {
         // X & Rotation
