@@ -98,12 +98,14 @@ public class RobotContainer {
       intakeSubsystem = null;
     }
     triggerSubsystem = new TriggerSubsystem();
-    if (Constants.enabledSubsystems.limeLightEnabled) {
+    if (Constants.enabledSubsystems.limeLightEnabled
+        && Constants.enabledSubsystems.drivetrainEnabled) {
       limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer(), robotStateManager);
     } else {
       limelightSubsystem = null;
     }
-    if (Constants.enabledSubsystems.photonEnabled) {
+    if (Constants.enabledSubsystems.photonEnabled
+        && Constants.enabledSubsystems.drivetrainEnabled) {
       photonSubsystem = new PhotonSubsystem(drivetrain.getVisionMeasurementConsumer());
     } else {
       photonSubsystem = null;
@@ -123,11 +125,13 @@ public class RobotContainer {
       }
     }
     // Configure the trigger bindings
-    configureBindings();
-    registerCommands();
-    autoChooser = AutoBuilder.buildAutoChooser();
-    configTab.add("Auton Selection", autoChooser).withSize(3, 1);
-    SmartDashboard.putBoolean("NamedCommand test", false);
+    if (Constants.enabledSubsystems.drivetrainEnabled) {
+      configureBindings();
+      registerCommands();
+      autoChooser = AutoBuilder.buildAutoChooser();
+      configTab.add("Auton Selection", autoChooser).withSize(3, 1);
+      SmartDashboard.putBoolean("NamedCommand test", false);
+    }
   }
 
   /**
@@ -194,9 +198,10 @@ public class RobotContainer {
       OI.getTrigger(OI.Operator.shooterTrigger).onTrue(shooterSubsystem.shooterFire());
     }
     // Turret commands
-    turretSubsystem.setDefaultCommand(turretSubsystem.idleTurret());
-    OI.getTrigger(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
-
+    if (Constants.enabledSubsystems.turretEnabled) {
+      turretSubsystem.setDefaultCommand(turretSubsystem.idleTurret());
+      OI.getTrigger(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
+    }
     // Trap Elv Intaking
     if (Constants.enabledSubsystems.elvEnabled) {
       OI.getButton(OI.Driver.groundIntakeButton)
@@ -254,8 +259,11 @@ public class RobotContainer {
    * @return the command to run in autonomous(including the delay)
    */
   public Command getAutonomousCommand() {
-    return new WaitCommand(autoDelay.getDouble(0))
-        .andThen(autoChooser.getSelected())
-        .withName("Get Auto Command");
+    if (Constants.enabledSubsystems.drivetrainEnabled) {
+      return new WaitCommand(autoDelay.getDouble(0))
+          .andThen(autoChooser.getSelected())
+          .withName("Get Auto Command");
+    }
+    return null;
   }
 }
