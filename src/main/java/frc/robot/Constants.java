@@ -88,7 +88,7 @@ public final class Constants {
                 + 0.0); // Revolutions of the turret, to revolutions of the cancoder
     public static final int highGearCAN_CODER_ID = 0;
     public static final int lowGearCAN_CODER_ID = 0;
-    public static final double ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV = 0; 
+    public static final double ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV = 0;
   }
 
   public static class OperatorConstants {

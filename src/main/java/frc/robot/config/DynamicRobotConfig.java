@@ -63,15 +63,16 @@ public class DynamicRobotConfig {
     return tunerConstants;
   }
 
-  public void saveTurretZero(TurretZeroConfig cfg){
+  public void saveTurretZero(TurretZeroConfig cfg) {
     ConfigVariables.lowGearTurretZero = cfg.lowGearTurretZero;
     ConfigVariables.highGearTurretZero = cfg.highGearTurretZero;
     Preferences.setDouble("lowGearTurretZero", cfg.lowGearTurretZero);
     Preferences.setDouble("highGearTurretZero", cfg.lowGearTurretZero);
   }
 
-  public TurretZeroConfig getTurretZeroConfig(){
-    return new TurretZeroConfig(ConfigVariables.lowGearTurretZero, ConfigVariables.highGearTurretZero);
+  public TurretZeroConfig getTurretZeroConfig() {
+    return new TurretZeroConfig(
+        ConfigVariables.lowGearTurretZero, ConfigVariables.highGearTurretZero);
   }
 
   private static void raiseWarning(String warning) {

@@ -129,13 +129,14 @@ public class TurretSubsystem extends SubsystemBase {
     highGearCANcoder = new CANcoder(Constants.TurretConstants.highGearCAN_CODER_ID);
     lowGearCANcoder = new CANcoder(Constants.TurretConstants.lowGearCAN_CODER_ID);
     TurretZeroConfig zeroConfig = new DynamicRobotConfig().getTurretZeroConfig();
-    MagnetSensorConfigs highGearSensorConfigs = new MagnetSensorConfigs()
-    .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
-    .withMagnetOffset(zeroConfig.highGearTurretZero);
-    MagnetSensorConfigs lowGearSensorConfigs = new MagnetSensorConfigs()
-    .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
-    .withMagnetOffset(zeroConfig.lowGearTurretZero);
-
+    MagnetSensorConfigs highGearSensorConfigs =
+        new MagnetSensorConfigs()
+            .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
+            .withMagnetOffset(zeroConfig.highGearTurretZero);
+    MagnetSensorConfigs lowGearSensorConfigs =
+        new MagnetSensorConfigs()
+            .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
+            .withMagnetOffset(zeroConfig.lowGearTurretZero);
 
     highGearCANcoder.getConfigurator().apply(highGearSensorConfigs);
     lowGearCANcoder.getConfigurator().apply(lowGearSensorConfigs);
@@ -148,7 +149,7 @@ public class TurretSubsystem extends SubsystemBase {
     turretPIDController.setIZone(Constants.TurretConstants.KIZ);
 
     zeroTurret();
-    SmartDashboard.putData("zero turret",zeroZeroing());
+    SmartDashboard.putData("zero turret", zeroZeroing());
   }
 
   private void stopTurret() {
@@ -163,39 +164,44 @@ public class TurretSubsystem extends SubsystemBase {
     return Commands.runOnce(() -> this.zeroTurret(), this).withName("ZeroTurretCommand");
   }
 
-  public double calculateTurretPosition(){
-    double encoderPosition = lowGearCANcoder.getPosition().getValueAsDouble() / Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO;   
+  public double calculateTurretPosition() {
+    double encoderPosition =
+        lowGearCANcoder.getPosition().getValueAsDouble()
+            / Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO;
     return encoderPosition + Constants.TurretConstants.ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV;
   }
 
   /**
    * A command to set the current turret position as encoder zero.
+   *
    * @return a command that sets the current position as encoder zero
    */
-  public Command zeroZeroing(){
-    return Commands.runOnce(() ->{
-      MagnetSensorConfigs cfg = new MagnetSensorConfigs();
-      cfg.withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1);
-      cfg.withMagnetOffset(0);
-      CANcoderConfigurator lowGearCANcoderConfigurator = lowGearCANcoder.getConfigurator();
-      CANcoderConfigurator highGearCANcoderConfigurator = highGearCANcoder.getConfigurator();
-      lowGearCANcoderConfigurator.apply(cfg);
-      highGearCANcoderConfigurator.apply(cfg);
-      
-      double lowGearOffset = lowGearCANcoder.getAbsolutePosition().getValueAsDouble();
-      double highGearOffset = highGearCANcoder.getPosition().getValueAsDouble();
+  public Command zeroZeroing() {
+    return Commands.runOnce(
+        () -> {
+          MagnetSensorConfigs cfg = new MagnetSensorConfigs();
+          cfg.withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1);
+          cfg.withMagnetOffset(0);
+          CANcoderConfigurator lowGearCANcoderConfigurator = lowGearCANcoder.getConfigurator();
+          CANcoderConfigurator highGearCANcoderConfigurator = highGearCANcoder.getConfigurator();
+          lowGearCANcoderConfigurator.apply(cfg);
+          highGearCANcoderConfigurator.apply(cfg);
 
-      MagnetSensorConfigs newCfgLowGear = new MagnetSensorConfigs();
-      newCfgLowGear.withMagnetOffset(lowGearOffset);
-      lowGearCANcoderConfigurator.apply(newCfgLowGear);
+          double lowGearOffset = lowGearCANcoder.getAbsolutePosition().getValueAsDouble();
+          double highGearOffset = highGearCANcoder.getPosition().getValueAsDouble();
 
-      MagnetSensorConfigs newCfgHighGear = new MagnetSensorConfigs();
-      newCfgHighGear.withMagnetOffset(highGearOffset);
-      highGearCANcoderConfigurator.apply(newCfgHighGear);
+          MagnetSensorConfigs newCfgLowGear = new MagnetSensorConfigs();
+          newCfgLowGear.withMagnetOffset(lowGearOffset);
+          lowGearCANcoderConfigurator.apply(newCfgLowGear);
 
-      DynamicRobotConfig dynamicConfig = new DynamicRobotConfig();
-      dynamicConfig.saveTurretZero(new TurretZeroConfig(lowGearOffset, highGearOffset));
-    },this);
+          MagnetSensorConfigs newCfgHighGear = new MagnetSensorConfigs();
+          newCfgHighGear.withMagnetOffset(highGearOffset);
+          highGearCANcoderConfigurator.apply(newCfgHighGear);
+
+          DynamicRobotConfig dynamicConfig = new DynamicRobotConfig();
+          dynamicConfig.saveTurretZero(new TurretZeroConfig(lowGearOffset, highGearOffset));
+        },
+        this);
   }
 
   /** Will calculate the current turret position and update encoders and motors off of it. */
