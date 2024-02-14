@@ -48,8 +48,8 @@ public class TurretSubsystem extends SubsystemBase {
   private ShuffleboardTab turretTab = Shuffleboard.getTab("Turret Tab");
   private SimDeviceSim simEncoder;
   private SimDouble simTurretPos;
-  private DigitalInput topLimitSwitch;
-  private DigitalInput bottomLimitSwitch;
+  private DigitalInput rightLimitSwitch;
+  private DigitalInput leftLimitSwitch;
 
   private PIDController turretPIDController;
   private CANcoder m_encoder;
@@ -99,11 +99,11 @@ public class TurretSubsystem extends SubsystemBase {
 
     this.robotStateManager = robotStateManager;
 
-    topLimitSwitch =
+    rightLimitSwitch =
         new DigitalInput(
             Constants.TurretConstants
                 .TURRET_TOP_LIMIT_SWITCH_ID); // TODO: Find actual Limit Switch IDs
-    bottomLimitSwitch = new DigitalInput(Constants.TurretConstants.TURRET_BOTTOM_LIMIT_SWITCH_ID);
+    leftLimitSwitch = new DigitalInput(Constants.TurretConstants.TURRET_BOTTOM_LIMIT_SWITCH_ID);
 
     turretMotor.setSoftLimit(
         CANSparkMax.SoftLimitDirection.kReverse,
@@ -144,7 +144,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   private void setTurretPos(double setpoint) {
-    if (topLimitSwitch.get() || bottomLimitSwitch.get()) {
+    if (rightLimitSwitch.get() || leftLimitSwitch.get()) {
       turretMotor.set(0);
     } else {
       turretGoalPositionEntry.log(setpoint);
@@ -241,6 +241,12 @@ public class TurretSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    if (turretMotor.get() == 0 && rightLimitSwitch.get()) {
+      turretMotor.set(-.1);
+    }
+    if (turretMotor.get() == 0 && leftLimitSwitch.get()) {
+      turretMotor.set(.1);
+    }
     turretPIDController.setP(kP.getDouble(turretPosition));
     turretPIDController.setI(kI.getDouble(turretPosition));
     turretPIDController.setD(kD.getDouble(turretPosition));
