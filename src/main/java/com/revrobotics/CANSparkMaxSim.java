@@ -8,6 +8,7 @@
 package com.revrobotics;
 
 import edu.wpi.first.math.MathSharedStore;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
@@ -32,11 +33,17 @@ public class CANSparkMaxSim extends CANSparkMax {
 
   public class SparkPIDControllerSim extends SparkPIDController implements Sendable {
     private static int instances = 0;
+    private double P, I, D, FF, IZone;
 
     SparkPIDControllerSim(CANSparkBase device) {
       super(device);
       instances++;
       SendableRegistry.addLW(this, "PIDController", instances);
+      P = super.getP();
+      I = super.getI();
+      D = super.getD();
+      IZone = super.getIZone();
+      FF = super.getFF();
     }
 
     public double getReference() {
@@ -52,16 +59,86 @@ public class CANSparkMaxSim extends CANSparkMax {
       return ret;
     }
 
+    private double getCachedP() {
+      return P;
+    }
+
+    private double getCachedI() {
+      return I;
+    }
+
+    private double getCachedD() {
+      return D;
+    }
+
+    private double getCachedFF() {
+      return FF;
+    }
+
+    private double getCachedIZone() {
+      return IZone;
+    }
+
+    @Override
+    public REVLibError setP(double P) {
+      REVLibError ret = super.setP(P);
+      if (ret == REVLibError.kOk) {
+        this.P = P;
+      }
+      return ret;
+    }
+
+    @Override
+    public REVLibError setI(double I) {
+      REVLibError ret = super.setI(I);
+      if (ret == REVLibError.kOk) {
+        this.I = I;
+      }
+      return ret;
+    }
+
+    @Override
+    public REVLibError setD(double D) {
+      REVLibError ret = super.setD(D);
+      if (ret == REVLibError.kOk) {
+        this.D = D;
+      }
+      return ret;
+    }
+
+    @Override
+    public REVLibError setFF(double FF) {
+      REVLibError ret = super.setFF(FF);
+      if (ret == REVLibError.kOk) {
+        this.FF = FF;
+      }
+      return ret;
+    }
+
+    @Override
+    public REVLibError setIZone(double IZone) {
+      REVLibError ret = super.setIZone(IZone);
+      if (ret == REVLibError.kOk) {
+        this.IZone = IZone;
+      }
+      return ret;
+    }
+
     @Override
     public void initSendable(SendableBuilder builder) {
+
+      // If there are issues with the SparkMAX, don't build widget
+      if (clearFaults() != REVLibError.kOk) {
+        return;
+      }
       builder.setSmartDashboardType("PIDController");
-      builder.addDoubleProperty("p", this::getP, this::setP);
-      builder.addDoubleProperty("i", this::getI, this::setI);
-      builder.addDoubleProperty("d", this::getD, this::setD);
-      builder.addDoubleProperty("ff", this::getFF, this::setFF);
+      builder.addDoubleProperty("p", this::getCachedP, this::setP);
+      builder.addDoubleProperty("i", this::getCachedI, this::setI);
+      builder.addDoubleProperty("d", this::getCachedD, this::setD);
+      builder.addDoubleProperty("ff", this::getCachedFF, this::setFF);
       builder.addDoubleProperty(
           "izone",
-          this::getIZone,
+          this::getCachedIZone,
           (double toSet) -> {
             try {
               setIZone(toSet);
@@ -173,6 +250,12 @@ public class CANSparkMaxSim extends CANSparkMax {
       return super.get();
     }
     return output;
+  }
+
+  @Override
+  public void set(double speed) {
+    super.set(speed);
+    output = MathUtil.clamp(speed, -1, 1);
   }
 
   // Algorithm pulled from https://docs.revrobotics.com/sparkmax/operating-modes/closed-loop-control
