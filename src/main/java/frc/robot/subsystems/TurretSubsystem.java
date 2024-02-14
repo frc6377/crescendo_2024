@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -50,6 +51,8 @@ public class TurretSubsystem extends SubsystemBase {
   private SimDouble simTurretPos;
   private DigitalInput rightLimitSwitch;
   private DigitalInput leftLimitSwitch;
+  DIOSim simLeftLimit;
+  DIOSim simRightLimit;
 
   private PIDController turretPIDController;
   private CANcoder m_encoder;
@@ -104,6 +107,8 @@ public class TurretSubsystem extends SubsystemBase {
             Constants.TurretConstants
                 .TURRET_TOP_LIMIT_SWITCH_ID); // TODO: Find actual Limit Switch IDs
     leftLimitSwitch = new DigitalInput(Constants.TurretConstants.TURRET_BOTTOM_LIMIT_SWITCH_ID);
+    simLeftLimit = new DIOSim(leftLimitSwitch);
+    simRightLimit = new DIOSim(rightLimitSwitch);
 
     turretMotor.setSoftLimit(
         CANSparkMax.SoftLimitDirection.kReverse,
@@ -260,7 +265,13 @@ public class TurretSubsystem extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
-    turretSim.setInput(turretMotor.get() * RobotController.getBatteryVoltage());
+    simLeftLimit.setValue(
+        turretSim.getAngleRads()
+            <= Math.toRadians(-Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES));
+    simRightLimit.setValue(
+        turretSim.getAngleRads()
+            >= Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES));
+    turretSim.setInput(-turretMotor.get() * RobotController.getBatteryVoltage());
     turretSim.update(Robot.defaultPeriodSecs);
     turretAngleSim.setAngle(Math.toDegrees(turretSim.getAngleRads()));
     SmartDashboard.putNumber("Turret Angle", Math.toDegrees(turretSim.getAngleRads()));
