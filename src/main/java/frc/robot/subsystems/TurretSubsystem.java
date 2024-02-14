@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -73,6 +74,7 @@ public class TurretSubsystem extends SubsystemBase {
   private MechanismLigament2d pitchAngleSim;
   private SimDeviceSim simPitchEncoder;
   private SimDouble simPitchPos;
+  private ArmFeedforward pitchFeedForward;
 
   private PIDController pitchPIDController;
   private CANcoder m_pitchEncoder;
@@ -98,8 +100,15 @@ public class TurretSubsystem extends SubsystemBase {
   private final RobotStateManager robotStateManager;
 
   public TurretSubsystem(RobotStateManager robotStateManager) {
+    // Initialize Motors
     turretMotor = new CANSparkMax(Constants.TurretConstants.TURRET_MOTOR_ID, MotorType.kBrushless);
     pitchMotor = new CANSparkMax(Constants.TurretConstants.PITCH_MOTOR_ID, MotorType.kBrushless);
+    pitchFeedForward =
+        new ArmFeedforward(
+            Constants.TurretConstants.PITCH_KS,
+            Constants.TurretConstants.PITCH_KG,
+            Constants.TurretConstants.PITCH_KV,
+            Constants.TurretConstants.PITCH_KA);
 
     // Simulation
     if (Robot.isSimulation()) {
@@ -251,7 +260,7 @@ public class TurretSubsystem extends SubsystemBase {
                     setpoint,
                     Math.toRadians(Constants.TurretConstants.PITCH_MIN_ANGLE_DEGREES),
                     Math.toRadians(Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES)))
-            + calculateArbitraryFeedForward(pitchPosition));
+            + pitchFeedForward.calculate(turretPosition, 0));
   }
 
   private void holdPosition() {
@@ -342,25 +351,28 @@ public class TurretSubsystem extends SubsystemBase {
     return run(() -> aimTurret()).withName("AimTurretCommand");
   }
 
+  /**
+   * Calculates the distance to the tag centered on the speaker from the angle that the limelight sees it
+   * @param ty The ty output by the limelight (degrees)
+   * @return The distance from the tag (meters)
+   */
   private double tyToDistanceFromTag(double ty) {
     double tagTheta = Math.toRadians(ty) + Constants.TurretConstants.LIMELIGHT_PITCH_RADIANS;
     double height =
-        Constants.TurretConstants.SPEAKER_TAG_CENTER_HEIGHT_INCHES
-            - Constants.TurretConstants.LIMELIGHT_HEIGHT_INCHES;
+        Constants.TurretConstants.SPEAKER_TAG_CENTER_HEIGHT_METERS
+            - Constants.TurretConstants.LIMELIGHT_HEIGHT_METERS;
     double distance = height / Math.tan(tagTheta);
     return distance;
   }
 
+  /**
+   * Calculates the pitch the shooter should be angled at to fire a given distance.
+   *
+   * @param distance The distance from the speaker in meters
+   * @return The shooter pitch in degrees
+   */
   private double distanceToShootingPitch(double distance) {
-    return distance; // TODO: Make and use a real formula(use testing, not physics)
-  }
-
-  private double calculateArbitraryFeedForward(double angle) {
-    double tourque = Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY * Math.cos(angle);
-    return tourque
-        * Constants.TurretConstants.SHOOTER_MASS
-        * Constants.GRAVITY
-        * Constants.TurretConstants.PITCH_NEWTONS_TO_MOTOR_POWER;
+    return 4; // TODO: Make and use a real formula(use testing, not physics)
   }
 
   @Override

@@ -82,6 +82,10 @@ public final class Constants {
     public static final double PITCH_KD = 0;
     public static final double PITCH_KIZ = 0;
     public static final double PITCH_KFF = 0;
+    public static final double PITCH_KS = 1;
+    public static final double PITCH_KV = 1;
+    public static final double PITCH_KG = 1;
+    public static final double PITCH_KA = 1;
 
     public static final double PITCH_KMAXOUTPUT = 1;
     public static final double PITCH_KMINOUTPUT = -1;
@@ -105,11 +109,11 @@ public final class Constants {
     public static final double PITCH_PICKUP_ANGLE = 30;
 
     // Limelight
-    public static final double LIMELIGHT_HEIGHT_INCHES = 17.85;
+    public static final double LIMELIGHT_HEIGHT_METERS = 0.45339;
     public static final double LIMELIGHT_PITCH_RADIANS = Math.toRadians(17.75);
 
-    public static final double SPEAKER_TAG_CENTER_HEIGHT_INCHES =
-        57.125; // Don't change unless FIRST changes the field layout
+    public static final double SPEAKER_TAG_CENTER_HEIGHT_METERS =
+        1.450975; // Don't change unless FIRST changes the field layout
     public static final int SPEAKER_TAG_ID_RED = 4;
     public static final int SPEAKER_TAG_ID_BLUE = 7;
   }
