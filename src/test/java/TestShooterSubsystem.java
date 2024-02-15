@@ -9,23 +9,23 @@ public class TestShooterSubsystem {
   // should be part of speakerConfigList! Changes to one should change the other.
   // TODO: Make more sensible
   @Test
-  public void TestSpeakerConfig() {
+  public void testSpeakerConfig() {
     SpeakerConfig speedsPair;
     double[] speedsArray = {0, 0};
     double[][] speakerConfigListTest = {
-      {-100, 450, 250},
-      {0, 450, 250},
-      {40, 550, 350},
-      {195, 750, 500},
-      {290, 1000, 700},
-      {10000, 1000, 700}
+      {-100, 250, 250},
+      {0, 250, 250},
+      {40, 350, 350},
+      {195, 500, 500},
+      {290, 700, 700},
+      {10000, 700, 700}
     };
     double[] configSpeeds;
 
     for (int i = 0; i < speakerConfigListTest.length; i++) {
       speedsPair = ShooterSubsystem.calculateShooterSpeeds(speakerConfigListTest[i][0]);
-      speedsArray[0] = speedsPair.getSpeedTopInRPM();
-      speedsArray[1] = speedsPair.getSpeedBottomInRPM();
+      speedsArray[0] = speedsPair.getSpeedLeftInRPM();
+      speedsArray[1] = speedsPair.getSpeedRightInRPM();
       configSpeeds = arraySlice(speakerConfigListTest[i], 1, 2);
       Assertions.assertArrayEquals(configSpeeds, speedsArray);
     }

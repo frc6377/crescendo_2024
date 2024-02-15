@@ -11,7 +11,7 @@ public class TriggerSubsystem extends SubsystemBase {
   private CANSparkMax motor;
 
   public TriggerSubsystem() {
-    motor = new CANSparkMax(TriggerConstants.MOTOR_ID, MotorType.kBrushless);
+    motor = new CANSparkMax(TriggerConstants.MOTOR_ID, MotorType.kBrushed);
     motor.restoreFactoryDefaults();
     motor.setSmartCurrentLimit(40);
   }
