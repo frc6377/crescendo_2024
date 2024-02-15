@@ -87,7 +87,7 @@ public class TurretSubsystem extends SubsystemBase {
       turretSim =
           new SingleJointedArmSim(
               DCMotor.getNEO(1),
-              Constants.TurretConstants.TURRET_MOTOR_TURRET_RATIO,
+              1/Constants.TurretConstants.TURRET_MOTOR_TURRET_RATIO,
               3.5 * 0.1016 * 0.1016 / 3,
               0.1016,
               -Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES),
