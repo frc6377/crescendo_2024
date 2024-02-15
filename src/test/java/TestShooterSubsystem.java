@@ -2,17 +2,9 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ShooterSubsystem.SpeakerConfig;
 import java.util.Arrays;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class TestShooterSubsystem {
-  private ShooterSubsystem shooterSubsystemTest;
-
-  @BeforeEach
-  public void initialize() {
-    shooterSubsystemTest = new ShooterSubsystem();
-  }
-
   // All distances in this test, aside from the negative distance and the extremely large distance,
   // should be part of speakerConfigList! Changes to one should change the other.
   // TODO: Make more sensible
