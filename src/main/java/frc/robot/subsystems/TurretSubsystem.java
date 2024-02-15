@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.TurretConstants;
 import frc.robot.Robot;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.config.TurretZeroConfig;
@@ -187,8 +188,18 @@ public class TurretSubsystem extends SubsystemBase {
           lowGearCANcoderConfigurator.apply(cfg);
           highGearCANcoderConfigurator.apply(cfg);
 
-          double lowGearOffset = lowGearCANcoder.getAbsolutePosition().getValueAsDouble();
-          double highGearOffset = highGearCANcoder.getPosition().getValueAsDouble();
+          final double trueZeroLowGearOffset =
+              lowGearCANcoder.getAbsolutePosition().getValueAsDouble();
+          final double trueZeroHighGearOffset = highGearCANcoder.getPosition().getValueAsDouble();
+
+          final double lowGearOffset =
+              trueZeroLowGearOffset
+                  - TurretConstants.LOW_GEAR_CAN_CODER_RATIO
+                      * TurretConstants.ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV;
+          final double highGearOffset =
+              trueZeroHighGearOffset
+                  - TurretConstants.HIGH_GEAR_CAN_CODER_RATIO
+                      * TurretConstants.ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV;
 
           MagnetSensorConfigs newCfgLowGear = new MagnetSensorConfigs();
           newCfgLowGear.withMagnetOffset(lowGearOffset);
