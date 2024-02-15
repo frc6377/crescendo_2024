@@ -150,7 +150,7 @@ public class TurretSubsystem extends SubsystemBase {
     turretPIDController.setIZone(Constants.TurretConstants.KIZ);
 
     zeroTurret();
-    SmartDashboard.putData("zero turret", zeroZeroing());
+    turretTab.add("zero turret", zeroZeroing());
   }
 
   private void stopTurret() {
