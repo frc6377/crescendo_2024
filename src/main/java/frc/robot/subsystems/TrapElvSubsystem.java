@@ -233,7 +233,7 @@ public class TrapElvSubsystem extends SubsystemBase {
       rollerRoot2d = rollerMech.getRoot("Root", 1, 1);
       rollerMechLigmt =
           rollerRoot2d.append(
-              new MechanismLigament2d("Roller Ligmt", 10, 0, 20, new Color8Bit(Color.kYellow)));
+              new MechanismLigament2d("Roller Ligmt", 0.5, 0, 20, new Color8Bit(Color.kYellow)));
 
       m_baseElevatorSim =
           new ElevatorSim(
