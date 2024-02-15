@@ -93,16 +93,16 @@ public final class Constants {
 
   public static class TrapElvConstants {
     // IDs | TODO: get real device IDs
-    public static final int WRIST_MOTOR_ID = 30;
-    public static final int ROLLER_MOTOR_ID = 31;
-    public static final int BASE_MOTOR1_ID = 32;
-    public static final int BASE_MOTOR2_ID = 33;
-    public static final int SCORING_MOTOR_ID = 34;
-    public static final int WRIST_ENCODER_ID = 35;
-    public static final int SOURCE_BREAK_ID = 36;
-    public static final int GROUND_BREAK_ID = 37;
-    public static final int BASE_BREAK_ID = 38;
-    public static final int SCORING_BREAK_ID = 39;
+    public static final int WRIST_MOTOR_ID = 20;
+    public static final int ROLLER_MOTOR_ID = 21;
+    public static final int BASE_MOTOR1_ID = 22;
+    public static final int BASE_MOTOR2_ID = 23;
+    public static final int SCORING_MOTOR_ID = 24;
+    public static final int WRIST_ENCODER_ID = 25;
+    public static final int SOURCE_BREAK_ID = 26;
+    public static final int GROUND_BREAK_ID = 27;
+    public static final int BASE_BREAK_ID = 28;
+    public static final int SCORING_BREAK_ID = 29;
 
     // Speeds
     public static final double ROLLER_INTAKE_SPEED = 0.25;
