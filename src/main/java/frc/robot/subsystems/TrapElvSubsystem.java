@@ -34,7 +34,6 @@ import frc.robot.Constants.TrapElvConstants;
 import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.TOFSensorSimple;
-
 import java.util.function.BooleanSupplier;
 
 public class TrapElvSubsystem extends SubsystemBase {
@@ -145,8 +144,10 @@ public class TrapElvSubsystem extends SubsystemBase {
     rollerMotor = new CANSparkMax(TrapElvConstants.ROLLER_MOTOR_ID, MotorType.kBrushless);
     rollerMotor.restoreFactoryDefaults();
 
-    sourceBreak = new TOFSensorSimple(TrapElvConstants.SOURCE_BREAK_ID, TrapElvConstants.WRIST_BREAK_THOLD);
-    groundBreak = new TOFSensorSimple(TrapElvConstants.GROUND_BREAK_ID, TrapElvConstants.WRIST_BREAK_THOLD);
+    sourceBreak =
+        new TOFSensorSimple(TrapElvConstants.SOURCE_BREAK_ID, TrapElvConstants.WRIST_BREAK_THOLD);
+    groundBreak =
+        new TOFSensorSimple(TrapElvConstants.GROUND_BREAK_ID, TrapElvConstants.WRIST_BREAK_THOLD);
 
     // Elv
     if (isElv) {
@@ -190,7 +191,6 @@ public class TrapElvSubsystem extends SubsystemBase {
     sourceBreakDis.setDouble(sourceBreak.getMilliMeters());
     groundLog = new DebugEntry<Boolean>(groundBreak.isBeamBroke(), "Ground Beam Break", this);
     groundBreakDis.setDouble(groundBreak.getMilliMeters());
-
 
     // Simulation
     if (Robot.isSimulation()) {
