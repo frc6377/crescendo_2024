@@ -72,7 +72,12 @@ public final class Constants {
     public static final double KMAXOUTPUT = 1;
     public static final double KMINOUTPUT = -1;
     public static final int MAX_TURRET_ANGLE_DEGREES = 110;
-    public static final double CONVERSION_FACTOR = 0.25; // for the revbot prototype turret
+    public static final double GEAR_RATIO =
+        6.8333; // (24:164)  0.25 for the revbot prototype turret
+
+    // Simulation Vals
+    public static final double TURRET_MOI = 1; // TODO: Get real num // Moment of Inertia
+    public static final double TURRET_RADIUS = Units.inchesToMeters(12);
   }
 
   public static class OperatorConstants {
@@ -97,26 +102,27 @@ public final class Constants {
     public static final double ROLLER_SCORING_SPEED = 0.4;
     public static final double ELV_ZEROING_SPEED = 0.1; // Percent Power
 
+    public static final double WRIST_BREAK_THOLD = 0.1;
+
     // PIDs
     // P, I, D, Iz, FF
     public static final double[] BASE_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
     public static final double[] SCORING_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
-    public static final double[] WRIST_PID = {7, .1, .6, 0.0, 2e-6};
+    public static final double[] WRIST_PID = {3, .1, .1, 0.0};
+    public static final double[] WRIST_FF = {0, 0.29, 0.64}; // Ks, Kg, Kv
 
     // Simulation
     public static final int ELV_GEAR_RATIO = 70;
-    public static final int WRIST_GEAR_RATIO = 70;
     public static final double ELV_LIFT_MASS = 5.4; // kg
-    public static final double DRUM_RADIUS = Units.inchesToMeters(1);
     public static final double ELV_MIN_HEIGHT = Units.inchesToMeters(12);
     public static final double ELV_MAX_HEIGHT = Units.inchesToMeters(30);
+    public static final double DRUM_RADIUS = Units.inchesToMeters(1);
 
     public static final double WRIST_MIN_ANGLE = Units.degreesToRadians(-90); // RADS
     public static final double WRIST_MAX_ANGLE = Units.degreesToRadians(270); // RADS
-    public static final double WRIST_LENGTH = Units.inchesToMeters(12.5);
-
-    // Beam Break
-    public static final double WRIST_BREAK_THOLD = 0.1;
+    public static final double WRIST_LENGTH = Units.inchesToMeters(11.877934);
+    public static final double WRIST_MOI = 0.3175242664; // Moment of Inertia
+    public static final double WRIST_GEAR_RATIO = 32.727272727272727272;
   }
 
   public static class enabledSubsystems {

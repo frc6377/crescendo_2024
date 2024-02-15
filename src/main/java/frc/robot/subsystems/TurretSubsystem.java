@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.TurretConstants;
 import frc.robot.Robot;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
@@ -77,11 +78,11 @@ public class TurretSubsystem extends SubsystemBase {
       turretSim =
           new SingleJointedArmSim(
               DCMotor.getNEO(1),
-              4,
-              3.5 * 0.1016 * 0.1016 / 3,
-              0.1016,
-              -Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES),
-              Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES),
+              TurretConstants.GEAR_RATIO,
+              TurretConstants.TURRET_MOI /*3.5 * 0.1016 * 0.1016 / 3*/,
+              TurretConstants.TURRET_RADIUS,
+              -Math.toRadians(TurretConstants.MAX_TURRET_ANGLE_DEGREES),
+              Math.toRadians(TurretConstants.MAX_TURRET_ANGLE_DEGREES),
               false,
               0);
       turretMech = new Mechanism2d(4, 4);
@@ -100,12 +101,12 @@ public class TurretSubsystem extends SubsystemBase {
         CANSparkMax.SoftLimitDirection.kReverse,
         (float)
             (-Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES
-                / (360 * Constants.TurretConstants.CONVERSION_FACTOR)));
+                / (360 * Constants.TurretConstants.GEAR_RATIO)));
     turretMotor.setSoftLimit(
         CANSparkMax.SoftLimitDirection.kForward,
         (float)
             (Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES
-                / (360 * Constants.TurretConstants.CONVERSION_FACTOR)));
+                / (360 * Constants.TurretConstants.GEAR_RATIO)));
 
     turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
     turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
@@ -161,7 +162,7 @@ public class TurretSubsystem extends SubsystemBase {
     turretPosition =
         Math.toRadians(
             ((m_encoder.getPosition().getValueAsDouble()) * 360)
-                * Constants.TurretConstants.CONVERSION_FACTOR);
+                * Constants.TurretConstants.GEAR_RATIO);
     SmartDashboard.putNumber("Turret Position", turretPosition);
     SmartDashboard.putBoolean("Out of Bounds", Math.abs(turretPosition) > 3.14);
     SmartDashboard.putBoolean(
@@ -246,8 +247,7 @@ public class TurretSubsystem extends SubsystemBase {
     turretAngleSim.setAngle(Math.toDegrees(turretSim.getAngleRads()));
     SmartDashboard.putNumber("Turret Angle", Math.toDegrees(turretSim.getAngleRads()));
     simTurretPos.set(
-        Units.radiansToRotations(
-            turretSim.getAngleRads() / Constants.TurretConstants.CONVERSION_FACTOR));
+        Units.radiansToRotations(turretSim.getAngleRads() / Constants.TurretConstants.GEAR_RATIO));
   }
 
   private double getTurretRotationFromOdometry(Pose2d robotPos, Pose2d targetPos) {

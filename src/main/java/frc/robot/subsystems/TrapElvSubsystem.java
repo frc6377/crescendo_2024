@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxSim;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -43,6 +44,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   private final CANSparkMax wristMotor;
   private double wristState;
   private final PIDController wristPIDController;
+  private final ArmFeedforward wristFeedforward;
 
   private final CANSparkMax rollerMotor;
 
@@ -91,6 +93,9 @@ public class TrapElvSubsystem extends SubsystemBase {
   private GenericEntry baseGoal = TrapElvTab.add("Base Goal", 0).getEntry();
   private GenericEntry sourceBreakDis = TrapElvTab.add("Source Break Distance", 0).getEntry();
   private GenericEntry groundBreakDis = TrapElvTab.add("Ground Break Distance", 0).getEntry();
+  private GenericEntry FFOutput = TrapElvTab.add("FF Output", 0).getEntry();
+
+  private double FF;
 
   // States
   public static enum TrapElvState {
@@ -140,9 +145,15 @@ public class TrapElvSubsystem extends SubsystemBase {
             TrapElvConstants.WRIST_PID[0],
             TrapElvConstants.WRIST_PID[1],
             TrapElvConstants.WRIST_PID[2]);
+    wristPIDController.setIZone(TrapElvConstants.WRIST_PID[3]);
+    wristFeedforward =
+        new ArmFeedforward(
+            TrapElvConstants.WRIST_FF[0],
+            TrapElvConstants.WRIST_FF[1] / 2.0,
+            TrapElvConstants.WRIST_FF[2]);
     TrapElvTab.add("Wrist PID", wristPIDController);
 
-    wristEncoder = new CANcoder(6);
+    wristEncoder = new CANcoder(TrapElvConstants.WRIST_ENCODER_ID);
 
     rollerMotor = new CANSparkMax(TrapElvConstants.ROLLER_MOTOR_ID, MotorType.kBrushless);
     rollerMotor.restoreFactoryDefaults();
@@ -250,9 +261,7 @@ public class TrapElvSubsystem extends SubsystemBase {
           new SingleJointedArmSim(
               DCMotor.getNEO(1),
               TrapElvConstants.WRIST_GEAR_RATIO,
-              (1.0 / 3.0)
-                  * TrapElvConstants.ELV_LIFT_MASS
-                  * Math.pow(TrapElvConstants.WRIST_LENGTH, 2.0),
+              TrapElvConstants.WRIST_MOI,
               TrapElvConstants.WRIST_LENGTH,
               TrapElvConstants.WRIST_MIN_ANGLE, // min rotation
               TrapElvConstants.WRIST_MAX_ANGLE, // max rotation
@@ -399,11 +408,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   }
 
   public void setTrapArm(TrapElvState state) {
-    SmartDashboard.putNumber("Wrist Goal", state.wristPose);
-    SmartDashboard.putNumber(
-        "Wrist PID Control Output",
-        wristPIDController.calculate(
-            wristEncoder.getPosition().getValueAsDouble(), state.getWristPose()));
+    SmartDashboard.putNumber("Wrist Goal", state.getWristPose());
     wristState = state.getWristPose();
     if (isElv) {
       baseGoal.setDouble(Units.metersToInches(TrapElvConstants.ELV_MIN_HEIGHT) + state.basePose);
@@ -430,11 +435,17 @@ public class TrapElvSubsystem extends SubsystemBase {
       baseLog.log(baseLimit.get());
       scoringLog.log(scoringLimit.get());
     }
-    wristMotor.set(
+
+    FF =
+        wristFeedforward.calculate(
+            Units.rotationsToRadians(wristEncoder.getPosition().getValueAsDouble()), 0);
+    wristMotor.setVoltage(
         MathUtil.clamp(
-            wristPIDController.calculate(wristEncoder.getPosition().getValueAsDouble(), wristState),
-            -1,
-            1));
+            wristPIDController.calculate(wristEncoder.getPosition().getValueAsDouble(), wristState)
+                + FF,
+            -12,
+            12));
+    FFOutput.setDouble(FF);
   }
 
   @Override
@@ -458,13 +469,15 @@ public class TrapElvSubsystem extends SubsystemBase {
     }
 
     // Wrist Sim Stuff
-    m_wristMotorSim.setInput(wristMotor.get() * RobotController.getBatteryVoltage());
+    m_wristMotorSim.setInput(wristMotor.getAppliedOutput() * RobotController.getBatteryVoltage());
     m_wristMotorSim.update(Robot.defaultPeriodSecs);
     simWristPos.set(Units.radiansToRotations(m_wristMotorSim.getAngleRads()));
     // Offest added so that gravity is simulated in the right direction
     wristMech.setAngle(Units.radiansToDegrees(m_wristMotorSim.getAngleRads()) - 90);
 
-    SmartDashboard.putNumber("Wrist Motor Output", wristMotor.get());
+    SmartDashboard.putNumber(
+        "Wrist Motor Sim Output",
+        wristMotor.getAppliedOutput() * RobotController.getBatteryVoltage());
     SmartDashboard.putNumber(
         "Wrist Sim Angle", Units.radiansToRotations(m_wristMotorSim.getAngleRads()));
 
