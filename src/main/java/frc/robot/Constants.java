@@ -114,6 +114,9 @@ public final class Constants {
     public static final double WRIST_MIN_ANGLE = Units.degreesToRadians(-359); // RADS
     public static final double WRIST_MAX_ANGLE = Units.degreesToRadians(359); // RADS
     public static final double WRIST_LENGTH = Units.inchesToMeters(12.5);
+
+    // Beam Break
+    public static final double WRIST_BREAK_THOLD = 0.1;
   }
 
   public static class enabledSubsystems {

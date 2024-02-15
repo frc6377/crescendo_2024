@@ -18,12 +18,21 @@ public class TOFSensorSimple {
     this.threshold = threshold; // in mm
   }
 
+  public TOFSensorSimple(int ID) {
+    sensor = new TimeOfFlight(ID);
+    this.threshold = 1; // in mm
+  }
+
   public double getMilliMeters() {
     return sensor.getRange();
   }
 
   public boolean isBeamBroke() {
     return getMilliMeters() < threshold;
+  }
+
+  public boolean isBeamBrokeInverse() {
+    return !(getMilliMeters() < threshold);
   }
 
   public Trigger beamBroken(Command action) {

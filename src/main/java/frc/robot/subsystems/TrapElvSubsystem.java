@@ -33,6 +33,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TrapElvConstants;
 import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
+import frc.robot.utilities.TOFSensorSimple;
+
 import java.util.function.BooleanSupplier;
 
 public class TrapElvSubsystem extends SubsystemBase {
@@ -56,8 +58,8 @@ public class TrapElvSubsystem extends SubsystemBase {
   private double scoringMotorOffset;
 
   // Beam Breaks
-  private final DigitalInput sourceBreak;
-  private final DigitalInput groundBreak;
+  private final TOFSensorSimple sourceBreak;
+  private final TOFSensorSimple groundBreak;
 
   // Limit Switches
   private DigitalInput baseLimit;
@@ -85,6 +87,8 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   private ShuffleboardTab TrapElvTab = Shuffleboard.getTab("Trap Arm Tab");
   private GenericEntry baseGoal = TrapElvTab.add("Base Goal", 0).getEntry();
+  private GenericEntry sourceBreakDis = TrapElvTab.add("Source Break Distance", 0).getEntry();
+  private GenericEntry groundBreakDis = TrapElvTab.add("Ground Break Distance", 0).getEntry();
 
   // States
   public static enum TrapElvState {
@@ -141,8 +145,8 @@ public class TrapElvSubsystem extends SubsystemBase {
     rollerMotor = new CANSparkMax(TrapElvConstants.ROLLER_MOTOR_ID, MotorType.kBrushless);
     rollerMotor.restoreFactoryDefaults();
 
-    sourceBreak = new DigitalInput(TrapElvConstants.SOURCE_BREAK_ID);
-    groundBreak = new DigitalInput(TrapElvConstants.GROUND_BREAK_ID);
+    sourceBreak = new TOFSensorSimple(TrapElvConstants.SOURCE_BREAK_ID, TrapElvConstants.WRIST_BREAK_THOLD);
+    groundBreak = new TOFSensorSimple(TrapElvConstants.GROUND_BREAK_ID, TrapElvConstants.WRIST_BREAK_THOLD);
 
     // Elv
     if (isElv) {
@@ -182,8 +186,11 @@ public class TrapElvSubsystem extends SubsystemBase {
     }
 
     // SmartDashboard
-    sourceLog = new DebugEntry<Boolean>(sourceBreak.get(), "Source Beam Break", this);
-    groundLog = new DebugEntry<Boolean>(groundBreak.get(), "Ground Beam Break", this);
+    sourceLog = new DebugEntry<Boolean>(sourceBreak.isBeamBroke(), "Source Beam Break", this);
+    sourceBreakDis.setDouble(sourceBreak.getMilliMeters());
+    groundLog = new DebugEntry<Boolean>(groundBreak.isBeamBroke(), "Ground Beam Break", this);
+    groundBreakDis.setDouble(groundBreak.getMilliMeters());
+
 
     // Simulation
     if (Robot.isSimulation()) {
@@ -251,12 +258,24 @@ public class TrapElvSubsystem extends SubsystemBase {
   }
 
   // Boolean Suppliers
-  public BooleanSupplier getSourceBreak() {
-    return () -> sourceBreak.get();
+  public BooleanSupplier getSourceBreakBool() {
+    return () -> sourceBreak.isBeamBroke();
   }
 
-  public BooleanSupplier getGroundBreak() {
-    return () -> groundBreak.get();
+  public BooleanSupplier getSourceBreakBoolInverse() {
+    return () -> !sourceBreak.isBeamBroke();
+  }
+
+  public BooleanSupplier getGroundBreakBool() {
+    return () -> groundBreak.isBeamBroke();
+  }
+
+  public BooleanSupplier getGroundBreakBoolInverse() {
+    return () -> !groundBreak.isBeamBroke();
+  }
+
+  public TOFSensorSimple getSourceBreak() {
+    return sourceBreak;
   }
 
   public BooleanSupplier getBaseLimit() {
@@ -391,11 +410,14 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    sourceLog.log(sourceBreak.get());
-    groundLog.log(groundBreak.get());
+    sourceLog.log(sourceBreak.isBeamBroke());
+    groundLog.log(groundBreak.isBeamBroke());
+    sourceBreakDis.setDouble(sourceBreak.getMilliMeters());
+    groundBreakDis.setDouble(groundBreak.getMilliMeters());
+
     if (isElv) {
       baseLog.log(baseLimit.get());
-      scoringLog.log(sourceBreak.get());
+      scoringLog.log(scoringLimit.get());
     }
     wristMotor.set(
         MathUtil.clamp(
@@ -431,7 +453,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     // Offest added so that gravity is simulated in the right direction
     wristMech.setAngle(Units.radiansToDegrees(m_wristMotorSim.getAngleRads()) - 90);
 
-    SmartDashboard.putNumber("Wrist Motor Sim Output", wristMotor.get());
+    SmartDashboard.putNumber("Wrist Motor Output", wristMotor.get());
     SmartDashboard.putNumber(
         "Wrist Sim Angle", Units.radiansToRotations(m_wristMotorSim.getAngleRads()));
 
