@@ -79,6 +79,9 @@ public class TrapElvSubsystem extends SubsystemBase {
   private MechanismLigament2d baseMech;
   private MechanismLigament2d scoringMech;
   private MechanismLigament2d wristMech;
+  private Mechanism2d rollerMech;
+  private MechanismRoot2d rollerRoot2d;
+  private MechanismLigament2d rollerMechLigmt;
 
   private ElevatorSim m_baseElevatorSim;
   private ElevatorSim m_scoringElevatorSim;
@@ -194,7 +197,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
     // Simulation
     if (Robot.isSimulation()) {
-      // 2D Mechanism
+      // 2D Mechanism Wrist
       elvMechanism = new Mechanism2d(2, 2);
       root = elvMechanism.getRoot("Root", 1, 0);
       baseMech =
@@ -213,6 +216,13 @@ public class TrapElvSubsystem extends SubsystemBase {
           scoringMech.append(
               new MechanismLigament2d(
                   "Wrist Mech", TrapElvConstants.WRIST_LENGTH, 0, 10, new Color8Bit(Color.kRed)));
+
+      // Roller Mech2D
+      rollerMech = new Mechanism2d(2, 2);
+      rollerRoot2d = rollerMech.getRoot("Root", 1, 1);
+      rollerMechLigmt =
+          rollerRoot2d.append(
+              new MechanismLigament2d("Roller Ligmt", 10, 0, 20, new Color8Bit(Color.kYellow)));
 
       m_baseElevatorSim =
           new ElevatorSim(
@@ -250,6 +260,7 @@ public class TrapElvSubsystem extends SubsystemBase {
               0);
 
       TrapElvTab.add("Trap Arm Mech", elvMechanism);
+      TrapElvTab.add("Roller Mech", rollerMech);
 
       simWristCoder = new SimDeviceSim("CANEncoder:CANCoder (v6)", wristEncoder.getDeviceID());
       simWristPos = simWristCoder.getDouble("rawPositionInput");
@@ -456,6 +467,8 @@ public class TrapElvSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Wrist Motor Output", wristMotor.get());
     SmartDashboard.putNumber(
         "Wrist Sim Angle", Units.radiansToRotations(m_wristMotorSim.getAngleRads()));
+
+    rollerMechLigmt.setAngle(rollerMotor.get() * 12);
 
     if (isElv) {
       SmartDashboard.putNumber("base CAN Sim", baseMotor1.get());
