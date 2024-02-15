@@ -190,7 +190,8 @@ public class TurretSubsystem extends SubsystemBase {
 
           final double trueZeroLowGearOffset =
               lowGearCANcoder.getAbsolutePosition().getValueAsDouble();
-          final double trueZeroHighGearOffset = highGearCANcoder.getPosition().getValueAsDouble();
+          final double trueZeroHighGearOffset =
+              highGearCANcoder.getAbsolutePosition().getValueAsDouble();
 
           final double lowGearOffset =
               trueZeroLowGearOffset
