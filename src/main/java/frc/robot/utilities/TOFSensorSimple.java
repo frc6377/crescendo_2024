@@ -7,15 +7,18 @@ package frc.robot.utilities;
 import com.playingwithfusion.TimeOfFlight;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Robot;
 
 /** Add your docs here. */
 public class TOFSensorSimple {
   private TimeOfFlight sensor;
   private double threshold;
+  private boolean isBeamBrokeSim;
 
   public TOFSensorSimple(int ID, double threshold) {
     sensor = new TimeOfFlight(ID);
     this.threshold = threshold; // in mm
+    isBeamBrokeSim = false;
   }
 
   public TOFSensorSimple(int ID) {
@@ -23,16 +26,26 @@ public class TOFSensorSimple {
     this.threshold = 1; // in mm
   }
 
+  public void updateSimBool(boolean isBeamBroke) {
+    isBeamBrokeSim = isBeamBroke;
+  }
+
   public double getMilliMeters() {
     return sensor.getRange();
   }
 
   public boolean isBeamBroke() {
-    return getMilliMeters() < threshold;
+    if (Robot.isReal()) {
+      return getMilliMeters() < threshold;
+    }
+    return isBeamBrokeSim;
   }
 
   public boolean isBeamBrokeInverse() {
-    return !(getMilliMeters() < threshold);
+    if (Robot.isReal()) {
+      return !(getMilliMeters() < threshold);
+    }
+    return !isBeamBrokeSim;
   }
 
   public Trigger beamBroken(Command action) {

@@ -96,10 +96,10 @@ public class TrapElvSubsystem extends SubsystemBase {
   public static enum TrapElvState {
     // Degrees, elv height, elv height
     STOWED(-0.25, 0.0, 0.0),
-    FROM_INTAKE(0.25, 0.0, 0.0),
-    FROM_SOURCE(0.0, 0.0, 12.0),
+    FROM_INTAKE(-0.25, 0.0, 0.0),
+    FROM_SOURCE(-0.1, 0.0, 12.0),
     TRAP_SCORE(0.0, 12.0, 12.0),
-    AMP_SCORE(0.5, 0.0, 12.0);
+    AMP_SCORE(0.7, 0.0, 12.0);
 
     private double wristPose;
     private double basePose;
@@ -316,7 +316,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     return startEnd(
             () -> {
               setTrapArm(TrapElvState.FROM_SOURCE);
-              rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
+              rollerMotor.set(-TrapElvConstants.ROLLER_INTAKE_SPEED);
             },
             () -> {
               stowTrapElv();
@@ -468,7 +468,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     SmartDashboard.putNumber(
         "Wrist Sim Angle", Units.radiansToRotations(m_wristMotorSim.getAngleRads()));
 
-    rollerMechLigmt.setAngle(rollerMotor.get() * 12);
+    rollerMechLigmt.setAngle(rollerMechLigmt.getAngle() + (rollerMotor.get() * 12));
 
     if (isElv) {
       SmartDashboard.putNumber("base CAN Sim", baseMotor1.get());

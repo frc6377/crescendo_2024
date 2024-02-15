@@ -111,8 +111,8 @@ public final class Constants {
     public static final double ELV_MIN_HEIGHT = Units.inchesToMeters(12);
     public static final double ELV_MAX_HEIGHT = Units.inchesToMeters(30);
 
-    public static final double WRIST_MIN_ANGLE = Units.degreesToRadians(-359); // RADS
-    public static final double WRIST_MAX_ANGLE = Units.degreesToRadians(359); // RADS
+    public static final double WRIST_MIN_ANGLE = Units.degreesToRadians(-90); // RADS
+    public static final double WRIST_MAX_ANGLE = Units.degreesToRadians(270); // RADS
     public static final double WRIST_LENGTH = Units.inchesToMeters(12.5);
 
     // Beam Break
