@@ -76,7 +76,7 @@ public final class Constants {
         6.8333; // (24:164)  0.25 for the revbot prototype turret
 
     // Simulation Vals
-    public static final double TURRET_MOI = 0; // Moment of Inertia
+    public static final double TURRET_MOI = 1; // TODO: Get real num // Moment of Inertia
     public static final double TURRET_RADIUS = Units.inchesToMeters(12);
   }
 
@@ -106,7 +106,7 @@ public final class Constants {
     // P, I, D, Iz, FF
     public static final double[] BASE_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
     public static final double[] SCORING_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
-    public static final double[] WRIST_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
+    public static final double[] WRIST_PID = {3, .1, .1, 0.0};
     public static final double[] WRIST_FF = {0, 0.29, 0.64}; // Ks, Kg, Kv
 
     // Simulation
@@ -116,11 +116,21 @@ public final class Constants {
     public static final double ELV_MAX_HEIGHT = Units.inchesToMeters(30);
     public static final double DRUM_RADIUS = Units.inchesToMeters(1);
 
-    public static final double WRIST_MIN_ANGLE = Units.degreesToRadians(-359); // RADS
-    public static final double WRIST_MAX_ANGLE = Units.degreesToRadians(359); // RADS
+    public static final double WRIST_MIN_ANGLE = Units.degreesToRadians(-90); // RADS
+    public static final double WRIST_MAX_ANGLE = Units.degreesToRadians(270); // RADS
     public static final double WRIST_LENGTH = Units.inchesToMeters(11.877934);
     public static final double WRIST_MOI = 0.3175242664; // Moment of Inertia
     public static final double WRIST_GEAR_RATIO = 32.727272727272727272;
+  }
+
+  public static class enabledSubsystems {
+    public static final boolean intakeEnabled = true;
+    public static final boolean drivetrainEnabled = true;
+    public static final boolean limeLightEnabled = true;
+    public static final boolean elvEnabled = true;
+    public static final boolean signalEnabled = true;
+    public static final boolean shooterEnabled = true;
+    public static final boolean turretEnabled = true;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
