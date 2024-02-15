@@ -34,6 +34,9 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   private List<PhotonTrackedTarget> targets;
   private AprilTagFieldLayout aprilTagFieldLayout;
   private PhotonPoseEstimator poseEstimator;
+  private EstimatedRobotPose lastPose;
+
+  private double resultLatency;
 
   private DebugEntry<Double> distanceEntryTag3 =
       new DebugEntry<Double>(0.0, "Distance To Tag 3 (m)", this);
@@ -43,6 +46,9 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   public PhotonSubsystem(BiConsumer<Pose2d, Double> measurementConsumer) {
     this.measurementConsumer = measurementConsumer;
     camera = new PhotonCamera("Camera_Module_v1");
+    while (!camera.isConnected()) {
+      camera = new PhotonCamera("Camera_Module_v1");
+    }
     result = camera.getLatestResult();
     aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     poseEstimator =
@@ -58,16 +64,20 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
                     Units.degreesToRadians(180))));
   }
 
-  private Optional<EstimatedRobotPose> getPVEstimatedPose() {
-    return poseEstimator.update();
+  private EstimatedRobotPose getPVEstimatedPose() {
+    final Optional<EstimatedRobotPose> x = poseEstimator.update();
+    // if (x.isEmpty()) {
+    //   return null;
+    // }
+    return x.get();
   }
 
   public Pose3d getPose3d() {
-    return getPVEstimatedPose().get().estimatedPose;
+    return getPVEstimatedPose().estimatedPose;
   }
 
   public Pose2d getPose2d() {
-    Pose3d estimatedPose = getPVEstimatedPose().get().estimatedPose;
+    Pose3d estimatedPose = getPVEstimatedPose().estimatedPose;
     return new Pose2d(
         estimatedPose.getX(),
         estimatedPose.getY(),
@@ -75,7 +85,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   }
 
   public double getTime() {
-    return getPVEstimatedPose().get().timestampSeconds;
+    return getPVEstimatedPose().timestampSeconds;
   }
 
   public double getTurretYaw(int id) {
@@ -107,11 +117,12 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   public void periodic() {
     if (Robot.isReal()) {
       result = camera.getLatestResult();
+      resultLatency = result.getLatencyMillis();
       if (result.hasTargets()) {
         targets = result.getTargets();
         if (targets.size() > 1) {
           measurementsUsed++;
-          measurementConsumer.accept(getPose2d(), getTime());
+          measurementConsumer.accept(getPose2d(), getTime() - (resultLatency / 1000));
           if (measurementsUsed % 100 == 0) {
             measurementEntry.log(measurementsUsed);
           }
