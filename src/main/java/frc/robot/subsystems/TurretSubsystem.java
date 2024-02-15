@@ -61,11 +61,11 @@ public class TurretSubsystem extends SubsystemBase {
   private GenericEntry turretKD =
       configTab.add("Turret KD", Constants.TurretConstants.TURRET_KD).getEntry();
   private DebugEntry<Double> turretPositionEntry =
-      new DebugEntry<Double>(turretPosition, "Position", this);
+      new DebugEntry<Double>(turretPosition, "Turret Position", this);
   private DebugEntry<Double> turretGoalPositionEntry =
-      new DebugEntry<Double>(0.0, "Goal Position", this);
+      new DebugEntry<Double>(0.0, "Turret Goal Position", this);
   private DebugEntry<Double> turretVelocityEntry =
-      new DebugEntry<Double>(turretVelocity, "Velocity", this);
+      new DebugEntry<Double>(turretVelocity, "Turret Velocity", this);
 
   private CANSparkMax pitchMotor;
   private SingleJointedArmSim pitchSim;
@@ -82,17 +82,17 @@ public class TurretSubsystem extends SubsystemBase {
   private double pitchVelocity;
   private Consumer<Double> pitchTestPosition;
   private GenericEntry pitchKP =
-      configTab.add("Pitch KP", Constants.TurretConstants.TURRET_KP).getEntry();
+      configTab.add("Pitch KP", Constants.TurretConstants.PITCH_KP).getEntry();
   private GenericEntry pitchKI =
-      configTab.add("Pitch KI", Constants.TurretConstants.TURRET_KI).getEntry();
+      configTab.add("Pitch KI", Constants.TurretConstants.PITCH_KI).getEntry();
   private GenericEntry pitchKD =
-      configTab.add("Pitch KD", Constants.TurretConstants.TURRET_KD).getEntry();
+      configTab.add("Pitch KD", Constants.TurretConstants.PITCH_KD).getEntry();
   private DebugEntry<Double> pitchPositionEntry =
-      new DebugEntry<Double>(pitchPosition, "Position", this);
+      new DebugEntry<Double>(pitchPosition, "Pitch Position", this);
   private DebugEntry<Double> pitchGoalPositionEntry =
-      new DebugEntry<Double>(0.0, "Goal Position", this);
+      new DebugEntry<Double>(0.0, "Pitch Goal Position", this);
   private DebugEntry<Double> pitchVelocityEntry =
-      new DebugEntry<Double>(pitchVelocity, "Velocity", this);
+      new DebugEntry<Double>(pitchVelocity, "Pitch Velocity", this);
 
   private DebugEntry<Double> tagDistanceEntry =
       new DebugEntry<Double>(0.0, "LastMeasuredTagDistance", this);
@@ -265,7 +265,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   private void holdPosition() {
     setTurretPos(turretPosition);
-    setPitchPos(Constants.TurretConstants.PITCH_STOWED_ANGLE);
+    setPitchPos(Constants.TurretConstants.PITCH_MIN_ANGLE_DEGREES);
   }
 
   public Command idleTurret() {
@@ -339,6 +339,7 @@ public class TurretSubsystem extends SubsystemBase {
       }
     } else {
       // TODO: Make turret default to using odometry
+      System.out.println("HELP");
       setTurretPos(60);
     }
   }

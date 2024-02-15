@@ -132,10 +132,10 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    OI.getButton(OI.Operator.A)
-        .onTrue(
-            new InstantCommand(robotStateManager::switchPlacementMode)
-                .withName("Switch Placement Mode Command"));
+    // OI.getButton(OI.Operator.A)
+    //     .onTrue(
+    //         new InstantCommand(robotStateManager::switchPlacementMode)
+    //             .withName("Switch Placement Mode Command"));
     if (Constants.enabledSubsystems.intakeEnabled) {
       OI.getTrigger(OI.Driver.intakeTrigger)
           .whileTrue(
@@ -183,13 +183,13 @@ public class RobotContainer {
     // Shooter commands
     if (Constants.enabledSubsystems.shooterEnabled) {
       shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
-      OI.getTrigger(OI.Operator.shooterTrigger).onTrue(shooterSubsystem.shooterFire());
+      // OI.getTrigger(OI.Operator.shooterTrigger).onTrue(shooterSubsystem.shooterFire());
     }
     // Turret commands
     if (Constants.enabledSubsystems.turretEnabled) {
       turretSubsystem.setDefaultCommand(turretSubsystem.idleTurret());
-      OI.getTrigger(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
-      OI.getTrigger(OI.Operator.Y).onTrue(turretSubsystem.moveUpwards());
+      OI.getButton(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
+      OI.getButton(OI.Operator.Y).onTrue(turretSubsystem.moveUpwards());
     }
 
     // Trap Elv Intaking

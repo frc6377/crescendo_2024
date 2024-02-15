@@ -77,21 +77,21 @@ public final class Constants {
     public static final int TURRET_SMART_CURRENT_LIMIT = 40;
 
     public static final double PITCH_KP =
-        0.25; // TODO: Change values when there's an actual real functional robot.
+        10; // TODO: Change values when there's an actual real functional robot.
     public static final double PITCH_KI = 0.001;
     public static final double PITCH_KD = 0;
     public static final double PITCH_KIZ = 0;
     public static final double PITCH_KFF = 0;
-    public static final double PITCH_KS = 1;
-    public static final double PITCH_KV = 1;
-    public static final double PITCH_KG = 1;
-    public static final double PITCH_KA = 1;
+    public static final double PITCH_KS = 0;
+    public static final double PITCH_KV = 0.08;
+    public static final double PITCH_KG = 0.1;
+    public static final double PITCH_KA = 0;
 
     public static final double PITCH_KMAXOUTPUT = 1;
     public static final double PITCH_KMINOUTPUT = -1;
 
     public static final int PITCH_MAX_ANGLE_DEGREES = 50;
-    public static final int PITCH_MIN_ANGLE_DEGREES = 0;
+    public static final int PITCH_MIN_ANGLE_DEGREES = -5;
 
     public static final double PITCH_CONVERSION_FACTOR = 0.25;
     public static final int PITCH_SMART_CURRENT_LIMIT = 40;
@@ -99,7 +99,6 @@ public final class Constants {
     // Physics Values
     public static final double SHOOTER_CENTER_OF_GRAVITY = 1; // TODO: Get real values
     public static final double SHOOTER_MASS = 1;
-    public static final double PITCH_NEWTONS_TO_MOTOR_POWER = 1;
 
     // Hardcoded Setpoints
     public static final double TURRET_STOWED_ANGLE = 0;
