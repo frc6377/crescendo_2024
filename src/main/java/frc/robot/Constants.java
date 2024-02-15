@@ -51,6 +51,7 @@ public final class Constants {
   }
 
   public static class TurretConstants {
+    // TODO: Find actual Limit Switch IDs
     public static final int MOTOR_ID = 9;
     public static final int CANcoder_ID = 17; // replace with actual CANcoder ID
 
@@ -65,7 +66,7 @@ public final class Constants {
 
     // PID coefficients
     public static final double KP = 0.25;
-    public static final double KI = 0.001;
+    public static final double KI = 0.0001;
     public static final double KD = 0;
     public static final double KIZ = 0;
     public static final double KFF = 0;

@@ -188,7 +188,8 @@ public class RobotContainer {
     // Turret commands
     if (Constants.enabledSubsystems.turretEnabled) {
       turretSubsystem.setDefaultCommand(turretSubsystem.idleTurret());
-      OI.getTrigger(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
+      OI.getButton(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
+      OI.getButton(OI.Operator.Y).whileTrue(turretSubsystem.testTurretCommand(75));
     }
     // Trap Elv Intaking
     if (Constants.enabledSubsystems.elvEnabled) {

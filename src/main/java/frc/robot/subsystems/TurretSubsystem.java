@@ -51,8 +51,8 @@ public class TurretSubsystem extends SubsystemBase {
   private SimDouble simTurretPos;
   private DigitalInput rightLimitSwitch;
   private DigitalInput leftLimitSwitch;
-  DIOSim simLeftLimit;
-  DIOSim simRightLimit;
+  private DIOSim simLeftLimit;
+  private DIOSim simRightLimit;
 
   private PIDController turretPIDController;
   private CANcoder m_encoder;
@@ -73,6 +73,8 @@ public class TurretSubsystem extends SubsystemBase {
   private DebugEntry<Double> tagDistanceEntry =
       new DebugEntry<Double>(0.0, "LastMeasuredTagDistance", this);
 
+  private DebugEntry<Double> motorOutputEntry = new DebugEntry<Double>(0.0, "MotorOutput", this);
+
   private final RobotStateManager robotStateManager;
 
   public TurretSubsystem(RobotStateManager robotStateManager) {
@@ -86,8 +88,8 @@ public class TurretSubsystem extends SubsystemBase {
               4,
               3.5 * 0.1016 * 0.1016 / 3,
               0.1016,
-              -Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES),
-              Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES),
+              -Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES - 10),
+              Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES + 10),
               false,
               0);
       turretMech = new Mechanism2d(4, 4);
@@ -102,13 +104,12 @@ public class TurretSubsystem extends SubsystemBase {
 
     this.robotStateManager = robotStateManager;
 
-    rightLimitSwitch =
-        new DigitalInput(
-            Constants.TurretConstants
-                .TURRET_TOP_LIMIT_SWITCH_ID); // TODO: Find actual Limit Switch IDs
+    rightLimitSwitch = new DigitalInput(Constants.TurretConstants.TURRET_TOP_LIMIT_SWITCH_ID);
     leftLimitSwitch = new DigitalInput(Constants.TurretConstants.TURRET_BOTTOM_LIMIT_SWITCH_ID);
     simLeftLimit = new DIOSim(leftLimitSwitch);
     simRightLimit = new DIOSim(rightLimitSwitch);
+    simLeftLimit.setValue(false);
+    simRightLimit.setValue(false);
 
     turretMotor.setSoftLimit(
         CANSparkMax.SoftLimitDirection.kReverse,
@@ -149,18 +150,25 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   private void setTurretPos(double setpoint) {
-    if (rightLimitSwitch.get() || leftLimitSwitch.get()) {
-      turretMotor.set(0);
-    } else {
-      turretGoalPositionEntry.log(setpoint);
-      turretMotor.set(
-          -turretPIDController.calculate(
-              turretPosition,
-              MathUtil.clamp(
-                  setpoint,
-                  Math.toRadians(-Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES),
-                  Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES))));
+    double high = 1;
+    double low = -1;
+    if (rightLimitSwitch.get()) {
+      low = 0;
     }
+    if (leftLimitSwitch.get()) {
+      high = 0;
+    }
+    turretGoalPositionEntry.log(setpoint);
+    turretMotor.set(
+        MathUtil.clamp(
+            -turretPIDController.calculate(
+                turretPosition,
+                MathUtil.clamp(
+                    setpoint,
+                    Math.toRadians(-Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES),
+                    Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES))),
+            low,
+            high));
   }
 
   private void holdPosition() {
@@ -173,6 +181,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   private void zeroTurretEncoder() {
     m_encoder.setPosition(0.0);
+    turretPosition = 0;
   }
 
   private void updateTurretPosition() {
@@ -244,14 +253,12 @@ public class TurretSubsystem extends SubsystemBase {
     return distance;
   }
 
+  public boolean hitLimit() {
+    return rightLimitSwitch.get() || leftLimitSwitch.get();
+  }
+
   @Override
   public void periodic() {
-    if (turretMotor.get() == 0 && rightLimitSwitch.get()) {
-      turretMotor.set(-.1);
-    }
-    if (turretMotor.get() == 0 && leftLimitSwitch.get()) {
-      turretMotor.set(.1);
-    }
     turretPIDController.setP(kP.getDouble(turretPosition));
     turretPIDController.setI(kI.getDouble(turretPosition));
     turretPIDController.setD(kD.getDouble(turretPosition));
@@ -261,6 +268,7 @@ public class TurretSubsystem extends SubsystemBase {
             * 60; // changing from rotations per second to rotations per minute or rpm
     turretPositionEntry.log(turretPosition);
     turretVelocityEntry.log(turretVelocity);
+    motorOutputEntry.log(turretMotor.get());
   }
 
   @Override
