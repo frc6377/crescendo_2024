@@ -173,9 +173,9 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   /**
-   * A command to set the current turret position as encoder zero.
+   * A command to set the current turret position as true zero.
    *
-   * @return a command that sets the current position as encoder zero
+   * @return a command that sets the current position as true zero
    */
   public Command zeroZeroing() {
     return Commands.runOnce(
