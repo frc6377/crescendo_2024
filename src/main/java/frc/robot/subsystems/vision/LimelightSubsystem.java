@@ -44,11 +44,11 @@ public class LimelightSubsystem extends SubsystemBase implements VisionSubsystem
     LimelightHelpers.setStreamMode_PiPMain("");
   }
 
-  public double getTagCount() {
+  private double getTagCount() {
     return results.targetingResults.targets_Fiducials.length;
   }
 
-  public Pose3d getPose3d() {
+  private Pose3d getPose3d() {
     Pose3d botpose = LimelightHelpers.getBotPose3d_wpiBlue("");
     double distanceToTag3 =
         Math.sqrt(
@@ -65,12 +65,12 @@ public class LimelightSubsystem extends SubsystemBase implements VisionSubsystem
     return botpose;
   }
 
-  public Pose2d getPose2d() {
+  private Pose2d getPose2d() {
     double[] botpose = LimelightHelpers.getBotPose_wpiBlue("");
     return new Pose2d(botpose[0], botpose[1], new Rotation2d(Units.degreesToRadians(botpose[5])));
   }
 
-  public double getTime() {
+  private double getTime() {
     // Accounts for latency
     // (https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization)
     return Timer.getFPGATimestamp()

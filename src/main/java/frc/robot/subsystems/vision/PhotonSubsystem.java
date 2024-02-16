@@ -36,8 +36,6 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   private PhotonPoseEstimator poseEstimator;
   private EstimatedRobotPose lastPose;
 
-  private double resultLatency;
-
   private DebugEntry<Double> distanceEntryTag3 =
       new DebugEntry<Double>(0.0, "Distance To Tag 3 (m)", this);
   private DebugEntry<Double> distanceEntryTag4 =
@@ -46,9 +44,6 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   public PhotonSubsystem(BiConsumer<Pose2d, Double> measurementConsumer) {
     this.measurementConsumer = measurementConsumer;
     camera = new PhotonCamera("Camera_Module_v1");
-    while (!camera.isConnected()) {
-      camera = new PhotonCamera("Camera_Module_v1");
-    }
     result = camera.getLatestResult();
     aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     poseEstimator =
@@ -57,7 +52,10 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
             PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
             camera,
             new Transform3d( // camera offsets will go here when we have them finalized
-                new Translation3d(0, 0, 0),
+                new Translation3d(
+                    Constants.ALPHABOT_LIMELIGHT_X_INCHES,
+                    0,
+                    Constants.ALPHABOT_LIMELIGHT_HEIGHT_INCHES),
                 new Rotation3d(
                     0,
                     Constants.TurretConstants.LIMELIGHT_PITCH_RADIANS,
@@ -66,26 +64,28 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
 
   private EstimatedRobotPose getPVEstimatedPose() {
     final Optional<EstimatedRobotPose> x = poseEstimator.update();
-    // if (x.isEmpty()) {
-    //   return null;
-    // }
-    return x.get();
+    if (x.isEmpty()) {
+      return lastPose;
+    } else {
+      lastPose = x.get();
+      return lastPose;
+    }
   }
 
-  public Pose3d getPose3d() {
-    return getPVEstimatedPose().estimatedPose;
+  private Pose3d getPose3d() {
+    return lastPose.estimatedPose;
   }
 
-  public Pose2d getPose2d() {
-    Pose3d estimatedPose = getPVEstimatedPose().estimatedPose;
+  private Pose2d getPose2d() {
+    Pose3d estimatedPose = lastPose.estimatedPose;
     return new Pose2d(
         estimatedPose.getX(),
         estimatedPose.getY(),
         new Rotation2d(estimatedPose.getRotation().getZ()));
   }
 
-  public double getTime() {
-    return getPVEstimatedPose().timestampSeconds;
+  private double getTime() {
+    return lastPose.timestampSeconds;
   }
 
   public double getTurretYaw(int id) {
@@ -117,34 +117,36 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   public void periodic() {
     if (Robot.isReal()) {
       result = camera.getLatestResult();
-      resultLatency = result.getLatencyMillis();
       if (result.hasTargets()) {
         targets = result.getTargets();
+        lastPose = getPVEstimatedPose();
         if (targets.size() > 1) {
           measurementsUsed++;
-          measurementConsumer.accept(getPose2d(), getTime() - (resultLatency / 1000));
+          measurementConsumer.accept(getPose2d(), getTime());
           if (measurementsUsed % 100 == 0) {
             measurementEntry.log(measurementsUsed);
           }
         }
         // logging stuff
-        for (PhotonTrackedTarget target : targets) {
-          if (target.getFiducialId() == 3) {
-            Pose3d botpose = this.getPose3d();
-            double distanceToTag3 =
-                Math.sqrt(
-                    Math.pow(16.579342 - botpose.getX(), 2)
-                        + Math.pow(4.982718 - botpose.getY(), 2)
-                        + Math.pow(1.451102 - botpose.getZ(), 2));
-            distanceEntryTag3.log(distanceToTag3);
-          } else if (target.getFiducialId() == 4) {
-            Pose3d botpose = this.getPose3d();
-            double distanceToTag4 =
-                Math.sqrt(
-                    Math.pow(16.579342 - botpose.getX(), 2)
-                        + Math.pow(5.547868 - botpose.getY(), 2)
-                        + Math.pow(1.451102 - botpose.getZ(), 2));
-            distanceEntryTag4.log(distanceToTag4);
+        if (!Robot.isCompetition) {
+          for (PhotonTrackedTarget target : targets) {
+            if (target.getFiducialId() == 3) {
+              Pose3d botpose = this.getPose3d();
+              double distanceToTag3 =
+                  Math.sqrt(
+                      Math.pow(16.579342 - botpose.getX(), 2)
+                          + Math.pow(4.982718 - botpose.getY(), 2)
+                          + Math.pow(1.451102 - botpose.getZ(), 2));
+              distanceEntryTag3.log(distanceToTag3);
+            } else if (target.getFiducialId() == 4) {
+              Pose3d botpose = this.getPose3d();
+              double distanceToTag4 =
+                  Math.sqrt(
+                      Math.pow(16.579342 - botpose.getX(), 2)
+                          + Math.pow(5.547868 - botpose.getY(), 2)
+                          + Math.pow(1.451102 - botpose.getZ(), 2));
+              distanceEntryTag4.log(distanceToTag4);
+            }
           }
         }
       }

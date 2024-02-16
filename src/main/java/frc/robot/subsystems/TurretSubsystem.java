@@ -190,18 +190,18 @@ public class TurretSubsystem extends SubsystemBase {
           ((robotStateManager.getAllianceColor() == AllianceColor.BLUE)
               ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
               : Constants.TurretConstants.SPEAKER_TAG_ID_RED);
-      double limelightTX = visionSubsystem.getTurretYaw(tagID);
-      if (limelightTX != 0) {
+      double visionTX = visionSubsystem.getTurretYaw(tagID);
+      if (visionTX != 0) {
         // X & Rotation
-        setTurretPos(Math.toRadians(limelightTX) + turretPosition);
+        setTurretPos(Math.toRadians(visionTX) + turretPosition);
 
         // Y & Tilting
-        double limelightTY = visionSubsystem.getTurretPitch(tagID);
-        double distanceToTag = tyToDistanceFromTag(limelightTY);
+        double visionTY = visionSubsystem.getTurretPitch(tagID);
+        double distanceToTag = tyToDistanceFromTag(visionTY);
         tagDistanceEntry.log(distanceToTag);
         // TODO: Add vertical tilt and use distance for it
 
-        if (Math.abs(Math.toRadians(limelightTX) + turretPosition)
+        if (Math.abs(Math.toRadians(visionTX) + turretPosition)
             > Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES)) {
           // TODO: Make turret rotate the drivebase if necessary and driver thinks it's a good idea
         }

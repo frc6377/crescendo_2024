@@ -127,6 +127,9 @@ public final class Constants {
     public static final boolean turretEnabled = true;
   }
 
+  public static final double ALPHABOT_LIMELIGHT_HEIGHT_INCHES = 17.28346;
+  public static final double ALPHABOT_LIMELIGHT_X_INCHES = 4.34645669;
+
   public static final int END_GAME_WARNING_TIME = 20;
   public static final double TELEMETRY_LOG_NUMBER = .2;
   // Rumble

@@ -32,6 +32,8 @@ import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.signaling.SignalingSubsystem;
 import frc.robot.subsystems.vision.LimelightSubsystem;
 import frc.robot.subsystems.vision.PhotonSubsystem;
+import frc.robot.subsystems.vision.VisionSubsystem;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,8 +58,7 @@ public class RobotContainer {
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final SwerveSubsystem drivetrain;
-  private final LimelightSubsystem limelightSubsystem;
-  private final PhotonSubsystem photonSubsystem;
+  private final VisionSubsystem visionSubsystem;
 
   private final SignalingSubsystem signalingSubsystem;
 
@@ -100,16 +101,12 @@ public class RobotContainer {
     triggerSubsystem = new TriggerSubsystem();
     if (Constants.enabledSubsystems.limeLightEnabled
         && Constants.enabledSubsystems.drivetrainEnabled) {
-      limelightSubsystem =
-          new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer(), robotStateManager);
-    } else {
-      limelightSubsystem = null;
-    }
-    if (Constants.enabledSubsystems.photonEnabled
+      visionSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer(), robotStateManager);
+    } else if (Constants.enabledSubsystems.photonEnabled
         && Constants.enabledSubsystems.drivetrainEnabled) {
-      photonSubsystem = new PhotonSubsystem(drivetrain.getVisionMeasurementConsumer());
+      visionSubsystem = new PhotonSubsystem(drivetrain.getVisionMeasurementConsumer());
     } else {
-      photonSubsystem = null;
+      visionSubsystem = null;
     }
     if (Constants.enabledSubsystems.elvEnabled) {
       trapElvSubsystem = new TrapElvSubsystem();
@@ -117,10 +114,8 @@ public class RobotContainer {
       trapElvSubsystem = null;
     }
     if (Constants.enabledSubsystems.turretEnabled) {
-      if (Constants.enabledSubsystems.limeLightEnabled) {
-        turretSubsystem = new TurretSubsystem(robotStateManager, limelightSubsystem);
-      } else if (Constants.enabledSubsystems.photonEnabled) {
-        turretSubsystem = new TurretSubsystem(robotStateManager, photonSubsystem);
+      if (Constants.enabledSubsystems.limeLightEnabled || Constants.enabledSubsystems.photonEnabled) {
+        turretSubsystem = new TurretSubsystem(robotStateManager, visionSubsystem);
       } else {
         turretSubsystem = new TurretSubsystem(robotStateManager, null);
       }
