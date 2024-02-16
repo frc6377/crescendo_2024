@@ -54,10 +54,6 @@ public final class Constants {
     public static final int MOTOR_ID = 9;
     public static final int CANcoder_ID = 17; // replace with actual CANcoder ID
 
-    // Limelight
-    public static final double LIMELIGHT_HEIGHT_INCHES = 17.85;
-    public static final double LIMELIGHT_PITCH_RADIANS = Math.toRadians(18);
-
     public static final double SPEAKER_TAG_CENTER_HEIGHT_INCHES =
         57.125; // Don't change unless FIRST changes the field layout
     public static final int SPEAKER_TAG_ID_RED = 4;
@@ -116,6 +112,21 @@ public final class Constants {
     public static final double WRIST_LENGTH = Units.inchesToMeters(12.5);
   }
 
+  public static class VisionConstants {
+    public static final double ALPHABOT_LIMELIGHT_X_INCHES = 4.34645669;
+    public static final double ALPHABOT_LIMELIGHT_Y_INCHES = 0;
+    public static final double ALPHABOT_LIMELIGHT_Z_INCHES = 17.28346;
+    public static final double ALPHABOT_LIMELIGHT_ROLL_RADIANS = Math.toRadians(0);
+    public static final double ALPHABOT_LIMELIGHT_PITCH_RADIANS = Math.toRadians(18);
+    public static final double ALPHABOT_LIMELIGHT_YAW_RADIANS = Math.toRadians(180);
+
+    public static final double TURRET_LIMELIGHT_HEIGHT_INCHES = 17.85;
+
+    public static final String MAIN_CAMERA_NAME = "Camera_Module_v1";
+    public static final String TURRET_CAMERA_NAME =
+        ""; // TODO: Change turret camera's name when both cameras are on the robot
+  }
+
   public static class enabledSubsystems {
     public static final boolean intakeEnabled = true;
     public static final boolean drivetrainEnabled = true;
@@ -126,9 +137,6 @@ public final class Constants {
     public static final boolean shooterEnabled = true;
     public static final boolean turretEnabled = true;
   }
-
-  public static final double ALPHABOT_LIMELIGHT_HEIGHT_INCHES = 17.28346;
-  public static final double ALPHABOT_LIMELIGHT_X_INCHES = 4.34645669;
 
   public static final int END_GAME_WARNING_TIME = 20;
   public static final double TELEMETRY_LOG_NUMBER = .2;

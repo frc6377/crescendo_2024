@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -29,7 +28,8 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
 
   private final BiConsumer<Pose2d, Double> measurementConsumer;
 
-  private PhotonCamera camera;
+  private PhotonCamera mainCamera;
+  private PhotonCamera turretCamera;
   private PhotonPipelineResult result;
   private List<PhotonTrackedTarget> targets;
   private AprilTagFieldLayout aprilTagFieldLayout;
@@ -43,23 +43,24 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
 
   public PhotonSubsystem(BiConsumer<Pose2d, Double> measurementConsumer) {
     this.measurementConsumer = measurementConsumer;
-    camera = new PhotonCamera("Camera_Module_v1");
-    result = camera.getLatestResult();
+    mainCamera = new PhotonCamera("");
+    turretCamera = new PhotonCamera("");
+    result = mainCamera.getLatestResult();
     aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     poseEstimator =
         new PhotonPoseEstimator(
             aprilTagFieldLayout,
             PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-            camera,
-            new Transform3d( // camera offsets will go here when we have them finalized
+            mainCamera,
+            new Transform3d(
                 new Translation3d(
-                    Constants.ALPHABOT_LIMELIGHT_X_INCHES,
-                    0,
-                    Constants.ALPHABOT_LIMELIGHT_HEIGHT_INCHES),
+                    Constants.VisionConstants.ALPHABOT_LIMELIGHT_X_INCHES,
+                    Constants.VisionConstants.ALPHABOT_LIMELIGHT_Y_INCHES,
+                    Constants.VisionConstants.ALPHABOT_LIMELIGHT_Z_INCHES),
                 new Rotation3d(
-                    0,
-                    Constants.TurretConstants.LIMELIGHT_PITCH_RADIANS,
-                    Units.degreesToRadians(180))));
+                    Constants.VisionConstants.ALPHABOT_LIMELIGHT_ROLL_RADIANS,
+                    Constants.VisionConstants.ALPHABOT_LIMELIGHT_PITCH_RADIANS,
+                    Constants.VisionConstants.ALPHABOT_LIMELIGHT_YAW_RADIANS)));
   }
 
   private EstimatedRobotPose getPVEstimatedPose() {
@@ -89,7 +90,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   }
 
   public double getTurretYaw(int id) {
-    result = camera.getLatestResult();
+    result = turretCamera.getLatestResult();
     if (result.hasTargets()) {
       targets = result.getTargets();
       for (PhotonTrackedTarget target : targets) {
@@ -102,7 +103,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   }
 
   public double getTurretPitch(int id) {
-    result = camera.getLatestResult();
+    result = turretCamera.getLatestResult();
     if (result.hasTargets()) {
       targets = result.getTargets();
       for (PhotonTrackedTarget target : targets) {
@@ -116,7 +117,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
 
   public void periodic() {
     if (Robot.isReal()) {
-      result = camera.getLatestResult();
+      result = mainCamera.getLatestResult();
       if (result.hasTargets()) {
         targets = result.getTargets();
         lastPose = getPVEstimatedPose();
