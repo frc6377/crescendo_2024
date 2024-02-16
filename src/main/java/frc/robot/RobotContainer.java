@@ -74,15 +74,15 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    if (Constants.enabledSubsystems.turretEnabled) {
-      turretSubsystem = new TurretSubsystem(robotStateManager);
-    } else {
-      turretSubsystem = null;
-    }
     if (Constants.enabledSubsystems.shooterEnabled) {
       shooterSubsystem = new ShooterSubsystem();
     } else {
       shooterSubsystem = null;
+    }
+    if (Constants.enabledSubsystems.turretEnabled) {
+      turretSubsystem = new TurretSubsystem(robotStateManager);
+    } else {
+      turretSubsystem = null;
     }
     if (Constants.enabledSubsystems.signalEnabled) {
       signalingSubsystem = new SignalingSubsystem(1, OI.Driver::setRumble, robotStateManager);
@@ -181,9 +181,24 @@ public class RobotContainer {
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
     // Shooter commands
-    if (Constants.enabledSubsystems.shooterEnabled) {
+    if (Constants.enabledSubsystems.shooterEnabled
+        && Constants.enabledSubsystems.triggerEnabled
+        && Constants.enabledSubsystems.limeLightEnabled) {
       shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
-      // OI.getTrigger(OI.Operator.shooterTrigger).onTrue(shooterSubsystem.shooterFire());
+      OI.getTrigger(OI.Operator.shooterRevTrigger).whileTrue(shooterSubsystem.revShooter());
+
+      OI.getTrigger(OI.Operator.shooterFireTrigger)
+          .whileTrue(
+              triggerSubsystem
+                  .getShootCommand()
+                  .onlyIf(shooterSubsystem.shooterReady())
+                  .onlyWhile(OI.getTrigger(OI.Operator.shooterRevTrigger)));
+      OI.getButton(OI.Operator.A).whileTrue(triggerSubsystem.getLoadCommand());
+    } else if (Constants.enabledSubsystems.shooterEnabled
+        && Constants.enabledSubsystems.triggerEnabled
+        && !Constants.enabledSubsystems.limeLightEnabled) {
+      shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
+      OI.getTrigger(OI.Operator.shooterFireTrigger).whileTrue(shooterSubsystem.bumperShoot());
     }
     // Turret commands
     if (Constants.enabledSubsystems.turretEnabled) {

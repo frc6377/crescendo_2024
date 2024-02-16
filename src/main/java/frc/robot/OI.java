@@ -83,10 +83,10 @@ public class OI {
         new Control(XboxController.Button.kY, "Test Shooter Pitch Control", controller);
     public static final Control X = new Control(XboxController.Button.kX, null, controller);
 
-    // // Bumpers & Triggers
-    public static final Control LT =
-        new Control(XboxController.Axis.kLeftTrigger, null, controller, 0.5);
-    public static final Control shooterTrigger =
+    // Bumpers & Triggers
+    public static final Control shooterRevTrigger =
+        new Control(XboxController.Axis.kLeftTrigger, "Rev Shooter", controller, 0.5);
+    public static final Control shooterFireTrigger =
         new Control(XboxController.Axis.kRightTrigger, "Fire Shooter", controller, 0.5);
     public static final Control LB =
         new Control(XboxController.Button.kLeftBumper, null, controller);
