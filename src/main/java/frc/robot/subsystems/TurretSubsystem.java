@@ -253,7 +253,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   private void setPitchPos(double setpoint) {
     pitchGoalPositionEntry.log(setpoint);
-    pitchMotor.set(
+    pitchMotor.setVoltage(
         pitchPIDController.calculate(
                 pitchPosition,
                 MathUtil.clamp(
@@ -265,7 +265,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   private void holdPosition() {
     setTurretPos(turretPosition);
-    setPitchPos(Constants.TurretConstants.PITCH_MIN_ANGLE_DEGREES);
+    setPitchPos(0);
   }
 
   public Command idleTurret() {
@@ -274,7 +274,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   private void moveUp() {
     setTurretPos(turretPosition);
-    setPitchPos(60);
+    setPitchPos(30);
   }
 
   public Command moveUpwards() {
@@ -409,7 +409,7 @@ public class TurretSubsystem extends SubsystemBase {
         Units.radiansToRotations(
             turretSim.getAngleRads() / Constants.TurretConstants.TURRET_CONVERSION_FACTOR));
 
-    pitchSim.setInput(pitchMotor.get() * RobotController.getBatteryVoltage());
+    pitchSim.setInput(pitchMotor.getAppliedOutput());
     pitchSim.update(Robot.defaultPeriodSecs);
     pitchAngleSim.setAngle(Math.toDegrees(pitchSim.getAngleRads()));
     SmartDashboard.putNumber("Turret Angle", Math.toDegrees(pitchSim.getAngleRads()));

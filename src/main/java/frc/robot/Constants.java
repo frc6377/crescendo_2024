@@ -77,7 +77,7 @@ public final class Constants {
     public static final int TURRET_SMART_CURRENT_LIMIT = 40;
 
     public static final double PITCH_KP =
-        10; // TODO: Change values when there's an actual real functional robot.
+        175; // TODO: Change values when there's an actual real functional robot.
     public static final double PITCH_KI = 0.001;
     public static final double PITCH_KD = 0;
     public static final double PITCH_KIZ = 0;
