@@ -88,7 +88,7 @@ public class TurretSubsystem extends SubsystemBase {
               4,
               3.5 * 0.1016 * 0.1016 / 3,
               0.1016,
-              -Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES - 10),
+              -Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES + 10),
               Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES + 10),
               false,
               0);
@@ -158,7 +158,7 @@ public class TurretSubsystem extends SubsystemBase {
     if (leftLimitSwitch.get()) {
       high = 0;
     }
-    turretGoalPositionEntry.log(setpoint);
+    turretGoalPositionEntry.log(Math.toDegrees(setpoint));
     turretMotor.set(
         MathUtil.clamp(
             -turretPIDController.calculate(
@@ -266,7 +266,7 @@ public class TurretSubsystem extends SubsystemBase {
     turretVelocity =
         (m_encoder.getVelocity().getValueAsDouble())
             * 60; // changing from rotations per second to rotations per minute or rpm
-    turretPositionEntry.log(turretPosition);
+    turretPositionEntry.log(Math.toDegrees(turretPosition));
     turretVelocityEntry.log(turretVelocity);
     motorOutputEntry.log(turretMotor.get());
   }

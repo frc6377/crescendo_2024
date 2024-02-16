@@ -65,8 +65,8 @@ public final class Constants {
     public static final int SPEAKER_TAG_ID_BLUE = 7;
 
     // PID coefficients
-    public static final double KP = 0.25;
-    public static final double KI = 0.0001;
+    public static final double KP = 0.125;
+    public static final double KI = 0;
     public static final double KD = 0;
     public static final double KIZ = 0;
     public static final double KFF = 0;
