@@ -122,9 +122,8 @@ public final class Constants {
 
     public static final double TURRET_LIMELIGHT_HEIGHT_INCHES = 17.85;
 
-    public static final String MAIN_CAMERA_NAME = "Camera_Module_v1";
-    public static final String TURRET_CAMERA_NAME =
-        ""; // TODO: Change turret camera's name when both cameras are on the robot
+    public static final String MAIN_CAMERA_NAME = "Camera_Module_Main";
+    public static final String TURRET_CAMERA_NAME = "Camera_Module_Turret";
   }
 
   public static class enabledSubsystems {

@@ -30,8 +30,8 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
 
   private PhotonCamera mainCamera;
   private PhotonCamera turretCamera;
-  private PhotonPipelineResult result;
-  private List<PhotonTrackedTarget> targets;
+  private PhotonPipelineResult mainResult;
+  private PhotonPipelineResult turretResult;
   private AprilTagFieldLayout aprilTagFieldLayout;
   private PhotonPoseEstimator poseEstimator;
   private EstimatedRobotPose lastPose;
@@ -43,9 +43,10 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
 
   public PhotonSubsystem(BiConsumer<Pose2d, Double> measurementConsumer) {
     this.measurementConsumer = measurementConsumer;
-    mainCamera = new PhotonCamera("");
-    turretCamera = new PhotonCamera("");
-    result = mainCamera.getLatestResult();
+    mainCamera = new PhotonCamera(Constants.VisionConstants.MAIN_CAMERA_NAME);
+    turretCamera = new PhotonCamera(Constants.VisionConstants.TURRET_CAMERA_NAME);
+    mainResult = mainCamera.getLatestResult();
+    turretResult = turretCamera.getLatestResult();
     aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     poseEstimator =
         new PhotonPoseEstimator(
@@ -90,9 +91,9 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   }
 
   public double getTurretYaw(int id) {
-    result = turretCamera.getLatestResult();
-    if (result.hasTargets()) {
-      targets = result.getTargets();
+    turretResult = turretCamera.getLatestResult();
+    if (turretResult.hasTargets()) {
+      List<PhotonTrackedTarget> targets = turretResult.getTargets();
       for (PhotonTrackedTarget target : targets) {
         if (target.getFiducialId() == id) {
           return target.getYaw();
@@ -103,9 +104,9 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   }
 
   public double getTurretPitch(int id) {
-    result = turretCamera.getLatestResult();
-    if (result.hasTargets()) {
-      targets = result.getTargets();
+    turretResult = turretCamera.getLatestResult();
+    if (turretResult.hasTargets()) {
+      List<PhotonTrackedTarget> targets = turretResult.getTargets();
       for (PhotonTrackedTarget target : targets) {
         if (target.getFiducialId() == id) {
           return target.getPitch();
@@ -117,9 +118,9 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
 
   public void periodic() {
     if (Robot.isReal()) {
-      result = mainCamera.getLatestResult();
-      if (result.hasTargets()) {
-        targets = result.getTargets();
+      mainResult = mainCamera.getLatestResult();
+      if (mainResult.hasTargets()) {
+        List<PhotonTrackedTarget> targets = mainResult.getTargets();
         lastPose = getPVEstimatedPose();
         if (targets.size() > 1) {
           measurementsUsed++;
