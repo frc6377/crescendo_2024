@@ -102,8 +102,6 @@ public final class Constants {
     public static final int highGearCAN_CODER_ID = 0;
     public static final int lowGearCAN_CODER_ID = 0;
     public static final double ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV = 0;
-    public static final double CONVERSION_FACTOR = 0.25; // for the revbot prototype turret
-
     public static final int TURRET_TOP_LIMIT_SWITCH_ID = 8;
     public static final int TURRET_BOTTOM_LIMIT_SWITCH_ID = 9;
   }

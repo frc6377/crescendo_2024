@@ -64,7 +64,6 @@ public class TurretSubsystem extends SubsystemBase {
   private DIOSim simRightLimit;
 
   private PIDController turretPIDController;
-  private CANcoder m_encoder;
   private CANcoder highGearCANcoder;
   private CANcoder lowGearCANcoder;
   private double turretPosition;
@@ -342,11 +341,6 @@ public class TurretSubsystem extends SubsystemBase {
 
   public Command idleTurret() {
     return run(() -> holdPosition()).withName("idleTurret");
-  }
-
-  private void zeroTurretEncoder() {
-    m_encoder.setPosition(0.0);
-    turretPosition = 0;
   }
 
   private void updateTurretPosition() {
