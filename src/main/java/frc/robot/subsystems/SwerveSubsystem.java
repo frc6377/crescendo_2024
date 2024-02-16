@@ -26,7 +26,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
-import frc.robot.OI;
 import frc.robot.Robot;
 import frc.robot.Telemetry;
 import java.util.function.BiConsumer;
@@ -120,47 +119,6 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   private ChassisSpeeds getChassisSpeeds() {
     return kinematics.toChassisSpeeds(super.getState().ModuleStates);
   }
-  // xSpeed, ySpeed, rotationSpeed should be axes with range -1<0<1
-  public SwerveRequest getDriveRequest(double xSpeed, double ySpeed, double rotationSpeed) {
-    double magnitude = OI.Driver.translationMagnitudeCurve.calculate(Math.hypot(xSpeed, ySpeed));
-    Rotation2d rotation = new Rotation2d(xSpeed, ySpeed);
-    xSpeed = magnitude * Math.cos(rotation.getRadians());
-    ySpeed = magnitude * Math.sin(rotation.getRadians());
-    if (xSpeed == 0 && ySpeed == 0 && rotationSpeed == 0) {
-      return new SwerveRequest.Idle();
-    }
-    xSpeed *= maxSpeed;
-    ySpeed *= maxSpeed;
-    rotationSpeed *= maxAngularRate;
-    if (isFieldOriented) {
-      if (alignmentRotation != null) {
-        return new SwerveRequest.FieldCentricFacingAngle()
-            .withTargetDirection(alignmentRotation)
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-            .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-            // Mixup is intentional, WPI has its coordinate plane from the perspective of the
-            // scoring table
-            .withVelocityX(ySpeed)
-            .withVelocityY(xSpeed);
-      }
-      return new SwerveRequest.FieldCentric()
-          .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-          .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-          // Mixup is intentional, WPI has its coordinate plane from the perspective of the scoring
-          // table
-          .withVelocityX(ySpeed)
-          .withVelocityY(xSpeed)
-          .withRotationalRate(rotationSpeed);
-    }
-    return new SwerveRequest.RobotCentric()
-        .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-        .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-        // Mixup is intentional, WPI has its coordinate plane from the perspective of the scoring
-        // table
-        .withVelocityX(ySpeed)
-        .withVelocityY(xSpeed)
-        .withRotationalRate(rotationSpeed);
-  }
 
   public BiConsumer<Pose2d, Double> getVisionMeasurementConsumer() {
     return (t, u) -> addVisionMeasurement(t, u);
@@ -189,32 +147,27 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
    * Request the robot to point in a specified direction
    *
    * @param angleToPoint the angle to point in degrees
-   * @param xDemand the x demand 0-1
-   * @param yDemand the y demant 0-1
+   * @param input the X-Y speeds
    * @return A command that will point in the specified direction until interupted
    */
-  public Command pointInDirection(
-      Rotation2d angleToPoint, DoubleSupplier xDemand, DoubleSupplier yDemand) {
-    return pointDrive(() -> angleToPoint.getDegrees(), xDemand, yDemand)
-        .withName("Pointing in direction");
+  public Command pointInDirection(Rotation2d angleToPoint, Supplier<DriveRequest> input) {
+    return pointDrive(() -> angleToPoint.getDegrees(), input).withName("Pointing in direction");
   }
 
   /**
    * Points a location on the field
    *
    * @param target the location to point at
-   * @param xDemand the x demand 0-1
-   * @param yDemand the y demant 0-1
+   * @param input X-Y speeds
    * @return A command that will point at the specified location until interupted
    */
-  public Command pointAtLocation(
-      Translation2d target, DoubleSupplier xDemand, DoubleSupplier yDemand) {
+  public Command pointAtLocation(Translation2d target, Supplier<DriveRequest> input) {
     DoubleSupplier getAngleToTarget =
         () -> {
           Translation2d delta = this.getState().Pose.getTranslation().minus(target);
           return new Rotation2d(delta.getX(), delta.getY()).getDegrees();
         };
-    return pointDrive(getAngleToTarget, xDemand, yDemand).withName("Pointing at location");
+    return pointDrive(getAngleToTarget, input).withName("Pointing at location");
   }
 
   /**
@@ -222,12 +175,10 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
    * axis
    *
    * @param targetAngleProvider - the target angle provider to point from robot 0 in degreees
-   * @param xDemand the x demand 0-1
-   * @param yDemand the y demant 0-1
+   * @param input the human X-Y request
    * @return A command that will point in the requested direction until interupted
    */
-  public Command pointDrive(
-      DoubleSupplier targetAngleProvider, DoubleSupplier xDemand, DoubleSupplier yDemand) {
+  public Command pointDrive(DoubleSupplier targetAngleProvider, Supplier<DriveRequest> input) {
     ProfiledPIDController pid =
         new ProfiledPIDController(
             Constants.SwerveDriveConstants.TURN_kP,
@@ -238,20 +189,50 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
                 Constants.SwerveDriveConstants.MAX_AUTO_ACCERLATION));
     Runnable command =
         () -> {
+          DriveRequest in = input.get();
           pid.setGoal(targetAngleProvider.getAsDouble());
           double alpha = pid.calculate(getRotation3d().toRotation2d().getDegrees());
           this.setControl(
               new SwerveRequest.FieldCentric()
                   .withRotationalRate(alpha)
-                  .withVelocityX(xDemand.getAsDouble())
-                  .withVelocityY(yDemand.getAsDouble()));
+                  .withVelocityX(in.xSpeed() * maxSpeed)
+                  .withVelocityY(in.ySpeed() * maxSpeed));
+          System.out.println("I'm trying!");
         };
 
     return run(command).withName("Point Drive");
   }
 
-  public Command fieldOrientedDrive() {
-    Runnable command = () -> {};
+  public Command robotOrientedDrive(Supplier<DriveRequest> requestSupplier) {
+    Runnable command =
+        () -> {
+          DriveRequest driveRequest = requestSupplier.get();
+          SwerveRequest swerveRequest =
+              new SwerveRequest.RobotCentric()
+                  .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+                  .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+                  .withVelocityX(driveRequest.xSpeed() * maxSpeed)
+                  .withVelocityY(driveRequest.ySpeed() * maxSpeed)
+                  .withRotationalRate(driveRequest.alpha() * maxAngularRate);
+          setControl(swerveRequest);
+        };
+
+    return run(command);
+  }
+
+  public Command fieldOrientedDrive(Supplier<DriveRequest> requestSupplier) {
+    Runnable command =
+        () -> {
+          DriveRequest driveRequest = requestSupplier.get();
+          SwerveRequest swerveRequest =
+              new SwerveRequest.FieldCentric()
+                  .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+                  .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+                  .withVelocityX(driveRequest.xSpeed() * maxSpeed)
+                  .withVelocityY(driveRequest.ySpeed() * maxSpeed)
+                  .withRotationalRate(driveRequest.alpha() * maxAngularRate);
+          setControl(swerveRequest);
+        };
 
     return run(command);
   }
@@ -264,7 +245,10 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     }
 
     double finalMag = MathUtil.applyDeadband(mag, deadband);
-    return new DriveRequest(input.x() * finalMag / mag, input.y() * finalMag / mag, finalAlpha);
+    // Mixup is intentional, WPI has its coordinate plane from the perspective of the
+    // scoring
+    // table
+    return new DriveRequest(input.y() * finalMag / mag, input.x() * finalMag / mag, finalAlpha);
   }
 
   // Similar to a struct from other languages

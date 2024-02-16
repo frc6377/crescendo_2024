@@ -17,7 +17,7 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
   public static class SwerveDriveConstants {
     public static final double TURN_kP = 0.1;
-    public static final double TURN_kD = 0.1;
+    public static final double TURN_kD = 0;
     public static final double MAX_AUTO_TURN = 10; // deg/s
     public static final double MAX_AUTO_ACCERLATION = 10; // deg/s^2
   }

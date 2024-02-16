@@ -34,8 +34,8 @@ public class OI {
     // Bumpers & Triggers
     public static final Control intakeTrigger =
         new Control(XboxController.Axis.kLeftTrigger, "Run intake", controller, 0.5);
-    public static final Control RT =
-        new Control(XboxController.Axis.kRightTrigger, null, controller, 0.5);
+    public static final Control point_forward =
+        new Control(XboxController.Axis.kRightTrigger, "Lock forward", controller, 0.5);
     public static final Control ampScoreButton =
         new Control(XboxController.Button.kLeftBumper, "Score AMP", controller);
     public static final Control outtakeButton =

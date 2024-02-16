@@ -27,12 +27,15 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.SwerveSubsystem.DriveInput;
+import frc.robot.subsystems.SwerveSubsystem.DriveRequest;
 import frc.robot.subsystems.TrapElvSubsystem;
 import frc.robot.subsystems.TriggerSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.signaling.SignalingSubsystem;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -147,20 +150,24 @@ public class RobotContainer {
     }
     // Swerve config
     if (Constants.enabledSubsystems.drivetrainEnabled) {
+      Supplier<DriveRequest> input =
+          () ->
+              SwerveSubsystem.joystickCondition(
+                  new DriveInput(
+                      OI.getAxisSupplier(OI.Driver.xTranslationAxis).get(),
+                      OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
+                      OI.getAxisSupplier(OI.Driver.rotationAxis).get()),
+                  0.1);
       drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-          drivetrain
-              .applyRequest(
-                  () ->
-                      drivetrain.getDriveRequest(
-                          OI.getAxisSupplier(OI.Driver.xTranslationAxis).get(),
-                          OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
-                          OI.getAxisSupplier(OI.Driver.rotationAxis).get()))
-              .withName("Get Axis Suppliers"));
+          drivetrain.fieldOrientedDrive(input).withName("Get Axis Suppliers"));
+
       OI.getButton(OI.Driver.brakeButton)
           .whileTrue(
               drivetrain
                   .applyRequest(() -> new SwerveRequest.SwerveDriveBrake())
                   .withName("Brake Swerve"));
+      OI.getTrigger(OI.Driver.point_forward)
+          .toggleOnTrue(drivetrain.pointAtLocation(new Translation2d(0, 0), input));
       OI.getButton(OI.Driver.resetRotationButton)
           .onTrue(
               drivetrain
