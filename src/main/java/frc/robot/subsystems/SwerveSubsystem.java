@@ -10,6 +10,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -177,16 +178,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     isFieldOriented = !isFieldOriented;
     if (!isFieldOriented) {
       // robot oriented drive means we can't hold a field oriented heading
-      endAlignment();
     }
-  }
-
-  public void setAlignment(Rotation2d rotation) {
-    alignmentRotation = rotation;
-  }
-
-  public void endAlignment() {
-    alignmentRotation = null;
   }
 
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
@@ -257,4 +249,33 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
 
     return run(command).withName("Point Drive");
   }
+
+  public Command fieldOrientedDrive() {
+    Runnable command = () -> {};
+
+    return run(command);
+  }
+
+  public static DriveRequest joystickCondition(DriveInput input, double deadband) {
+    double mag = Math.sqrt(input.x() * input.x() + input.y() * input.y());
+    double finalAlpha = MathUtil.applyDeadband(input.alpha(), deadband);
+    if (mag < deadband * deadband) {
+      return new DriveRequest(0, 0, finalAlpha);
+    }
+
+    double finalMag = MathUtil.applyDeadband(mag, deadband);
+    return new DriveRequest(input.x() * finalMag / mag, input.y() * finalMag / mag, finalAlpha);
+  }
+
+  // Similar to a struct from other languages
+  // see ref for full explanation
+  // Ref:
+  // https://docs.oracle.com/en/java/javase/17/language/records.html#GUID-6699E26F-4A9B-4393-A08B-1E47D4B2D263
+  public record DriveRequest(double xSpeed, double ySpeed, double alpha) {
+    public double getMagnitude() {
+      return Math.sqrt(xSpeed * xSpeed + ySpeed * ySpeed);
+    }
+  }
+
+  public record DriveInput(double x, double y, double alpha) {}
 }

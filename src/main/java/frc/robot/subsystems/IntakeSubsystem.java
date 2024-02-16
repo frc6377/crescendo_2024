@@ -18,8 +18,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public IntakeSubsystem() {
     intakeMotor = new CANSparkMax(Constants.IntakeConstants.INTAKE_MOTOR_ID, MotorType.kBrushless);
-    chooserMotor =
-        new CANSparkMax(Constants.IntakeConstants.INTAKE_CHOOSER_ID, MotorType.kBrushless);
+    chooserMotor = new CANSparkMax(Constants.IntakeConstants.INTAKE_CHOOSER_ID, MotorType.kBrushed);
     intakeMotor.restoreFactoryDefaults();
     chooserMotor.restoreFactoryDefaults();
     intakeMotor.setSmartCurrentLimit(40);
