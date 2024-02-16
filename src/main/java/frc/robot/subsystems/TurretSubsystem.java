@@ -114,8 +114,8 @@ public class TurretSubsystem extends SubsystemBase {
 
     this.robotStateManager = robotStateManager;
 
-    rightLimitSwitch = new DigitalInput(Constants.TurretConstants.TURRET_TOP_LIMIT_SWITCH_ID);
-    leftLimitSwitch = new DigitalInput(Constants.TurretConstants.TURRET_BOTTOM_LIMIT_SWITCH_ID);
+    rightLimitSwitch = new DigitalInput(Constants.TurretConstants.TURRET_RIGHT_LIMIT_SWITCH_ID);
+    leftLimitSwitch = new DigitalInput(Constants.TurretConstants.TURRET_LEFT_LIMIT_SWITCH_ID);
     simLeftLimit = new DIOSim(leftLimitSwitch);
     simRightLimit = new DIOSim(rightLimitSwitch);
     simLeftLimit.setValue(false);
