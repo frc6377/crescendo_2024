@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.hal.SimDouble;
@@ -87,7 +88,7 @@ public class TurretSubsystem extends SubsystemBase {
   private ArmFeedforward pitchFeedForward;
 
   private PIDController pitchPIDController;
-  private CANcoder m_pitchEncoder;
+  private CANcoder pitchCANcoder;
   private double pitchPosition;
   private double pitchVelocity;
   private Consumer<Double> pitchTestPosition;
@@ -218,17 +219,17 @@ public class TurretSubsystem extends SubsystemBase {
 
     highGearCANcoder.getConfigurator().apply(highGearSensorConfigs);
     lowGearCANcoder.getConfigurator().apply(lowGearSensorConfigs);
-            Constants.TurretConstants.TURRET_KP,
-            Constants.TurretConstants.TURRET_KI,
-            Constants.TurretConstants.TURRET_KD);
-    m_turretEncoder = new CANcoder(Constants.TurretConstants.TURRET_CANcoder_ID);
+    turretPIDController.setPID(
+        Constants.TurretConstants.TURRET_KP,
+        Constants.TurretConstants.TURRET_KI,
+        Constants.TurretConstants.TURRET_KD);
 
     simTurretEncoder =
         new SimDeviceSim(
-            "CANEncoder:CANCoder (v6)", Constants.TurretConstants.TURRET_highGearCAN_CODER_ID);
+            "CANEncoder:CANCoder (v6)", Constants.TurretConstants.highGearCAN_CODER_ID);
     simTurretPos = simTurretEncoder.getDouble("rawPositionInput");
 
-    zeroTurretEncoder();
+    zeroTurret();
     turretPIDController.setIZone(Constants.TurretConstants.TURRET_KIZ);
 
     // Pitch
@@ -237,7 +238,7 @@ public class TurretSubsystem extends SubsystemBase {
             Constants.TurretConstants.PITCH_KP,
             Constants.TurretConstants.PITCH_KI,
             Constants.TurretConstants.PITCH_KD);
-    m_pitchEncoder = new CANcoder(Constants.TurretConstants.PITCH_CANcoder_ID);
+    pitchCANcoder = new CANcoder(Constants.TurretConstants.PITCH_CANcoder_ID);
 
     simPitchEncoder =
         new SimDeviceSim("CANEncoder:CANCoder (v6)", Constants.TurretConstants.PITCH_CANcoder_ID);
@@ -271,15 +272,17 @@ public class TurretSubsystem extends SubsystemBase {
         .withName("StowTurretCommand");
   }
 
-  public Command zeroTurretCommand() {
-    return Commands.runOnce(() -> this.zeroTurret(), this).withName("ZeroTurretCommand");
-  }
-
   public double calculateTurretPosition() {
     double encoderPosition =
         lowGearCANcoder.getPosition().getValueAsDouble()
             / Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO;
     return encoderPosition + Constants.TurretConstants.ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV;
+  }
+
+  private double calculatePitchPosition() {
+    return Math.toRadians(
+        ((pitchCANcoder.getPosition().getValueAsDouble()) * 360)
+            * Constants.TurretConstants.PITCH_CONVERSION_FACTOR);
   }
 
   /**
@@ -410,139 +413,6 @@ public class TurretSubsystem extends SubsystemBase {
 
   public Command zeroTurretCommand() {
     return Commands.runOnce(() -> this.zeroTurret(), this).withName("ZeroTurretCommand");
-  }
-
-  public double calculateTurretPosition() {
-    double encoderPosition =
-        lowGearCANcoder.getPosition().getValueAsDouble()
-            / Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO;
-    return encoderPosition + Constants.TurretConstants.ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV;
-  }
-
-  /**
-   * A command to set the current turret position as true zero.
-   *
-   * @return a command that sets the current position as true zero
-   */
-  public Command zeroZeroing() {
-    return Commands.runOnce(
-        () -> {
-          MagnetSensorConfigs cfg = new MagnetSensorConfigs();
-          cfg.withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1);
-          cfg.withMagnetOffset(0);
-          CANcoderConfigurator lowGearCANcoderConfigurator = lowGearCANcoder.getConfigurator();
-          CANcoderConfigurator highGearCANcoderConfigurator = highGearCANcoder.getConfigurator();
-          lowGearCANcoderConfigurator.apply(cfg);
-          highGearCANcoderConfigurator.apply(cfg);
-
-          final double trueZeroLowGearOffset =
-              lowGearCANcoder.getAbsolutePosition().getValueAsDouble();
-          final double trueZeroHighGearOffset =
-              highGearCANcoder.getAbsolutePosition().getValueAsDouble();
-
-          final double lowGearOffset =
-              trueZeroLowGearOffset
-                  - TurretConstants.LOW_GEAR_CAN_CODER_RATIO
-                      * TurretConstants.ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV;
-          final double highGearOffset =
-              trueZeroHighGearOffset
-                  - TurretConstants.HIGH_GEAR_CAN_CODER_RATIO
-                      * TurretConstants.ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV;
-
-          MagnetSensorConfigs newCfgLowGear = new MagnetSensorConfigs();
-          newCfgLowGear.withMagnetOffset(lowGearOffset);
-          lowGearCANcoderConfigurator.apply(newCfgLowGear);
-
-          MagnetSensorConfigs newCfgHighGear = new MagnetSensorConfigs();
-          newCfgHighGear.withMagnetOffset(highGearOffset);
-          highGearCANcoderConfigurator.apply(newCfgHighGear);
-
-          DynamicRobotConfig dynamicConfig = new DynamicRobotConfig();
-          dynamicConfig.saveTurretZero(new TurretZeroConfig(lowGearOffset, highGearOffset));
-        },
-        this);
-  }
-
-  /** Will calculate the current turret position and update encoders and motors off of it. */
-  public void zeroTurret() {
-    double lowGearPosition = lowGearCANcoder.getAbsolutePosition().getValue().doubleValue();
-    double highGearPosition = highGearCANcoder.getAbsolutePosition().getValue().doubleValue();
-    Rotation2d turretRotation = encoderPositionsToTurretRotation(lowGearPosition, highGearPosition);
-
-    lowGearCANcoder.setPosition(
-        turretRotation.getRotations() * Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO);
-    highGearCANcoder.setPosition(
-        turretRotation.getRotations() * Constants.TurretConstants.HIGH_GEAR_CAN_CODER_RATIO);
-    turretMotor
-        .getEncoder()
-        .setPosition(
-            turretRotation.getRotations() * Constants.TurretConstants.TURRET_MOTOR_TURRET_RATIO);
-  }
-
-  /**
-   * Calculates the turret zero off of given encoder rotations.
-   *
-   * @param lowGearCANcoderPosition The low gear encoder position, as in the gear with a lower gear
-   *     ratio
-   * @param highGearCANcoderPosition The high gear encoder position, as in the gear with a higher
-   *     gear ratio
-   * @return the calculated turret rotation
-   */
-  public static Rotation2d encoderPositionsToTurretRotation(
-      double lowGearCANcoderPosition, double highGearCANcoderPosition) {
-
-    // This equation is based off of
-    // https://www.geeksforgeeks.org/implementation-of-chinese-remainder-theorem-inverse-modulo-based-implementation/
-    // It is accurate to with in 3.6 deg
-    int gearToothPosition =
-        ((int) (lowGearCANcoderPosition * Constants.TurretConstants.LOW_GEAR_CANCODER_TEETH)
-                    * HowdyMath.inverse_modulus(
-                        Constants.TurretConstants.HIGH_GEAR_CANCODER_TEETH,
-                        Constants.TurretConstants.LOW_GEAR_CANCODER_TEETH)
-                    * Constants.TurretConstants.HIGH_GEAR_CANCODER_TEETH
-                + (int)
-                        (highGearCANcoderPosition
-                            * Constants.TurretConstants.HIGH_GEAR_CANCODER_TEETH)
-                    * HowdyMath.inverse_modulus(
-                        Constants.TurretConstants.LOW_GEAR_CANCODER_TEETH,
-                        Constants.TurretConstants.HIGH_GEAR_CANCODER_TEETH)
-                    * Constants.TurretConstants.LOW_GEAR_CANCODER_TEETH)
-            % (Constants.TurretConstants.LOW_GEAR_CANCODER_TEETH
-                * Constants.TurretConstants.HIGH_GEAR_CANCODER_TEETH);
-
-    double roughRotation = gearToothPosition / (Constants.TurretConstants.TURRET_GEAR_TEETH + 0.0);
-    double lowGearCANCoderDivsionSize =
-        (Constants.TurretConstants.LOW_GEAR_CANCODER_TEETH + 0.0)
-            / Constants.TurretConstants.TURRET_GEAR_TEETH;
-    double highGearCANCoderDivsionSize =
-        (Constants.TurretConstants.HIGH_GEAR_CANCODER_TEETH + 0.0)
-            / Constants.TurretConstants.TURRET_GEAR_TEETH;
-
-    double distToLowGearCanCoderDivide =
-        Math.abs(0.5 - (roughRotation / lowGearCANCoderDivsionSize) % 1);
-    double distToHighGearCanCoderDivide =
-        Math.abs(0.5 - (roughRotation / highGearCANCoderDivsionSize) % 1);
-
-    double position;
-    if (distToLowGearCanCoderDivide < distToHighGearCanCoderDivide) {
-      // use low gear CanCoder for fine zeroing
-      position =
-          fineTuneTurretRotation(
-              roughRotation, lowGearCANCoderDivsionSize, lowGearCANcoderPosition);
-    } else {
-      // use high gear CanCoder for fine zeroing
-      position =
-          fineTuneTurretRotation(
-              roughRotation, highGearCANCoderDivsionSize, highGearCANcoderPosition);
-    }
-
-    return Rotation2d.fromRotations(position);
-  }
-
-  private static double fineTuneTurretRotation(
-      double roughPosition, double divisionSize, double CANCoderAngle) {
-    int division = (int) ((roughPosition / divisionSize));
-    return divisionSize * division + CANCoderAngle * divisionSize;
   }
 
   private void setTurretPos(double setpoint) {
@@ -586,10 +456,6 @@ public class TurretSubsystem extends SubsystemBase {
     return run(() -> moveUp()).withName("moveShooterUp");
   }
 
-  private void zeroTurretEncoder() {
-    m_turretEncoder.setPosition(0.0);
-  }
-
   private void updateTurretPosition() {
     turretPosition = calculateTurretPosition();
     SmartDashboard.putNumber("Turret Position", turretPosition);
@@ -598,6 +464,16 @@ public class TurretSubsystem extends SubsystemBase {
         "Soft limit enabled forward", turretMotor.isSoftLimitEnabled(SoftLimitDirection.kForward));
     SmartDashboard.putBoolean(
         "Soft limit enabled reverse", turretMotor.isSoftLimitEnabled(SoftLimitDirection.kReverse));
+  }
+
+  private void updatePitchPosition() {
+    pitchPosition = calculatePitchPosition();
+    SmartDashboard.putNumber("Pitch Position", pitchPosition);
+    SmartDashboard.putBoolean("Out of Bounds", Math.abs(pitchPosition) > 3.14);
+    SmartDashboard.putBoolean(
+        "Soft limit enabled forward", pitchMotor.isSoftLimitEnabled(SoftLimitDirection.kForward));
+    SmartDashboard.putBoolean(
+        "Soft limit enabled reverse", pitchMotor.isSoftLimitEnabled(SoftLimitDirection.kReverse));
   }
 
   public double getTurretPos() {
@@ -695,7 +571,7 @@ public class TurretSubsystem extends SubsystemBase {
 
     updatePitchPosition();
     pitchVelocity =
-        (m_pitchEncoder.getVelocity().getValueAsDouble())
+        (pitchCANcoder.getVelocity().getValueAsDouble())
             * 60; // changing from rotations per second to rotations per minute or rpm
     pitchPositionEntry.log(pitchPosition);
     pitchVelocityEntry.log(pitchVelocity);
@@ -717,7 +593,7 @@ public class TurretSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Turret Angle", Math.toDegrees(pitchSim.getAngleRads()));
     simPitchPos.set(
         Units.radiansToRotations(
-            pitchSim.getAngleRads() / Constants.TurretConstants.PITCH_TURRET_MOTOR_TURRET_RATIO));
+            pitchSim.getAngleRads() / Constants.TurretConstants.PITCH_CONVERSION_FACTOR));
   }
 
   private double getTurretRotationFromOdometry(Pose2d robotPos, Pose2d targetPos) {
