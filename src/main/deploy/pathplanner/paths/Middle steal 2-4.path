@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 8.0,
-        "y": 5.75
+        "y": 4.15
       },
       "prevControl": null,
       "nextControl": {
         "x": 7.5,
-        "y": 5.75
+        "y": 4.15
       },
       "isLocked": false,
       "linkedName": null
@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 8.0,
-        "y": 4.15
+        "y": 5.75
       },
       "prevControl": {
         "x": 7.5,
-        "y": 4.15
+        "y": 5.75
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Screw you 1",
+  "folder": "Middle steal 2",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

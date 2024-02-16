@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.53,
-        "y": 2.1
+        "x": 8.0,
+        "y": 5.75
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.498062716416227,
-        "y": 1.7440096289892337
+        "x": 7.5,
+        "y": 5.75
       },
       "isLocked": false,
       "linkedName": null
@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 8.0,
-        "y": 0.75
+        "y": 7.45
       },
       "prevControl": {
-        "x": 6.0319186047074185,
-        "y": 1.1058870909476834
+        "x": 7.5,
+        "y": 7.45
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Screw you 2",
+  "folder": "Middle steal 2",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }
