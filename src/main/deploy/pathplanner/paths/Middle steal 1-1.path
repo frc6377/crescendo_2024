@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.0,
-        "y": 7.45
+        "x": 0.532928225760986,
+        "y": 7.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.5,
-        "y": 7.45
+        "x": 1.6509622145108813,
+        "y": 7.0
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.0,
-        "y": 5.75
+        "x": 2.6,
+        "y": 7.0
       },
       "prevControl": {
-        "x": 7.5,
-        "y": 5.75
+        "x": 0.8626002107981017,
+        "y": 7.0
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Screw you 1",
+  "folder": "Middle steal 1",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

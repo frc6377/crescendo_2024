@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 8.0,
-        "y": 0.75
+        "y": 4.15
       },
       "prevControl": {
         "x": 7.5,
-        "y": 0.75
+        "y": 4.15
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Screw you 1",
+  "folder": "Middle steal 2",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

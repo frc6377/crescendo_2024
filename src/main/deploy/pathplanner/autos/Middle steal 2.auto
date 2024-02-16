@@ -3,7 +3,7 @@
   "startingPose": {
     "position": {
       "x": 0.53,
-      "y": 7.0
+      "y": 2.1
     },
     "rotation": 0
   },
@@ -14,49 +14,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "One2 Amp"
+            "pathName": "Middle steal 2-1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "One2 Amp2"
+            "pathName": "Middle steal 2-2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Amp return"
+            "pathName": "Middle steal 2-3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "amp to outer notes"
+            "pathName": "Middle steal 2-4"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Screw you 1-3"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Screw you 1-4"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Screw you 1-5"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Screw you 1-6"
+            "pathName": "Middle steal 2-5"
           }
         }
       ]
