@@ -148,7 +148,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   }
 
   /**
-   * Request the robot to point in a specified direction any non zero rotation demand will result in
+   * Request the robot to point in a specified direction. Any non zero rotation demand will result in
    * the command canceling.
    *
    * @param angleToPoint the angle to point in degrees
