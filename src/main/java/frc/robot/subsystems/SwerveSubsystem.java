@@ -278,7 +278,8 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
 
   public static DriveRequest joystickCondition(DriveInput input, double deadband) {
     double mag = Math.sqrt(input.x() * input.x() + input.y() * input.y());
-    double finalAlpha = MathUtil.applyDeadband(input.alpha(), deadband);
+    double finalAlpha =
+        OI.Driver.rotationCurve.calculate(MathUtil.applyDeadband(input.alpha(), deadband));
     if (mag < deadband * deadband) {
       return new DriveRequest(0, 0, finalAlpha);
     }
