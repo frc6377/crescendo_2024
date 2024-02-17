@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -23,8 +24,8 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
-  private int measurementsUsed = 0;
-  private DebugEntry<Integer> measurementEntry = new DebugEntry<Integer>(0, "measurements", this);
+  private double measurementsUsed = 0;
+  private DebugEntry<Double> measurementEntry = new DebugEntry<Double>(0.0, "measurements", this);
 
   private final BiConsumer<Pose2d, Double> measurementConsumer;
 
@@ -55,9 +56,9 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
             mainCamera,
             new Transform3d(
                 new Translation3d(
-                    Constants.VisionConstants.ALPHABOT_LIMELIGHT_X_INCHES,
-                    Constants.VisionConstants.ALPHABOT_LIMELIGHT_Y_INCHES,
-                    Constants.VisionConstants.ALPHABOT_LIMELIGHT_Z_INCHES),
+                    Units.inchesToMeters(Constants.VisionConstants.ALPHABOT_LIMELIGHT_X_INCHES),
+                    Units.inchesToMeters(Constants.VisionConstants.ALPHABOT_LIMELIGHT_Y_INCHES),
+                    Units.inchesToMeters(Constants.VisionConstants.ALPHABOT_LIMELIGHT_Z_INCHES)),
                 new Rotation3d(
                     Constants.VisionConstants.ALPHABOT_LIMELIGHT_ROLL_RADIANS,
                     Constants.VisionConstants.ALPHABOT_LIMELIGHT_PITCH_RADIANS,
@@ -75,7 +76,11 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   }
 
   private Pose3d getPose3d() {
-    return lastPose.estimatedPose;
+    if (lastPose != null) {
+      return lastPose.estimatedPose;
+    } else {
+      return new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
+    }
   }
 
   private Pose2d getPose2d() {
@@ -121,8 +126,8 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       mainResult = mainCamera.getLatestResult();
       if (mainResult.hasTargets()) {
         List<PhotonTrackedTarget> targets = mainResult.getTargets();
-        lastPose = getPVEstimatedPose();
         if (targets.size() > 1) {
+          lastPose = getPVEstimatedPose();
           measurementsUsed++;
           measurementConsumer.accept(getPose2d(), getTime());
           if (measurementsUsed % 100 == 0) {
