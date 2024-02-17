@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -145,7 +146,8 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   }
 
   /**
-   * Request the robot to point in a specified direction
+   * Request the robot to point in a specified direction any non zero rotation demand will result in
+   * the command canceling.
    *
    * @param angleToPoint the angle to point in degrees
    * @param input the X-Y speeds
@@ -156,9 +158,10 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   }
 
   /**
-   * Points a location on the field
+   * Points a location on the field any non zero rotation demand will result in the command
+   * canceling.
    *
-   * @param target the location to point at
+   * @param target the location to point at in meters
    * @param input X-Y speeds
    * @return A command that will point at the specified location until interupted
    */
@@ -173,7 +176,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
 
   /**
    * Makes the robot point in a specfic direction. While still being able to move in the other 2
-   * axis
+   * axis any non zero rotation demand will result in the command canceling.
    *
    * @param targetAngleProvider - the target angle provider to point from robot 0 in degreees
    * @param input the human X-Y request
@@ -188,20 +191,55 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
             new TrapezoidProfile.Constraints(
                 Constants.SwerveDriveConstants.MAX_AUTO_TURN,
                 Constants.SwerveDriveConstants.MAX_AUTO_ACCERLATION));
+    pid.enableContinuousInput(0, 360);
     Runnable command =
         () -> {
           DriveRequest in = input.get();
           pid.setGoal(targetAngleProvider.getAsDouble());
-          double alpha = pid.calculate(getRotation3d().toRotation2d().getDegrees());
+          double alpha = Math.toRadians(pid.calculate(getState().Pose.getRotation().getDegrees()));
           SmartDashboard.putNumber("error", pid.getPositionError());
           this.setControl(
               new SwerveRequest.FieldCentric()
                   .withRotationalRate(alpha)
                   .withVelocityX(in.xSpeed() * maxSpeed)
                   .withVelocityY(in.ySpeed() * maxSpeed));
+          if (in.alpha != 0) {
+            this.getCurrentCommand().cancel();
+          }
         };
 
     return run(command).withName("Point Drive");
+  }
+
+  /**
+   * Rotate to rotation with error from the target rotation being fed in.
+   *
+   * @param err The error from the target target rotation
+   * @param input X-Y speed demands, non-zero alpha will cancel this demand
+   * @return A command that rotates to attempts to zero the error given.
+   */
+  public Command rotationDrive(Supplier<Rotation2d> err, Supplier<DriveRequest> input) {
+    PIDController pid =
+        new PIDController(
+            Constants.SwerveDriveConstants.TURN_kP, 0, Constants.SwerveDriveConstants.TURN_kD);
+    pid.enableContinuousInput(0, 360);
+    pid.setSetpoint(0);
+    ;
+    Runnable command =
+        () -> {
+          DriveRequest in = input.get();
+          double alpha = Math.toRadians(pid.calculate(err.get().getDegrees()));
+          this.setControl(
+              new SwerveRequest.FieldCentric()
+                  .withRotationalRate(alpha)
+                  .withVelocityX(in.xSpeed() * maxSpeed)
+                  .withVelocityY(in.ySpeed() * maxSpeed));
+          if (in.alpha != 0) {
+            this.getCurrentCommand().cancel();
+          }
+        };
+
+    return run(command).finallyDo(() -> pid.close()).withName("Rotation Drive");
   }
 
   public Command robotOrientedDrive(Supplier<DriveRequest> requestSupplier) {
