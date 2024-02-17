@@ -81,11 +81,6 @@ public class RobotContainer {
     } else {
       shooterSubsystem = null;
     }
-    if (Constants.enabledSubsystems.turretEnabled) {
-      turretSubsystem = new TurretSubsystem(robotStateManager);
-    } else {
-      turretSubsystem = null;
-    }
     if (Constants.enabledSubsystems.signalEnabled) {
       signalingSubsystem = new SignalingSubsystem(1, OI.Driver::setRumble, robotStateManager);
     } else {
