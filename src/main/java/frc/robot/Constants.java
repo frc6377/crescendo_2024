@@ -17,9 +17,9 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
   public static class IntakeConstants {
     // TODO: Get real CAN IDs
-    public static final int INTAKE_MOTOR_ID = 6;
-    public static final int INTAKE_CHOOSER_ID = 7;
-    public static final double INTAKE_PERCENTAGE = -0.75;
+    public static final int INTAKE_MOTOR_ID = 11;
+    public static final int INTAKE_CHOOSER_ID = 14;
+    public static final double INTAKE_PERCENTAGE = 0.75;
     public static final double CHOOSER_PERCENTAGE = -0.75;
   }
 
@@ -151,7 +151,7 @@ public final class Constants {
     public static final boolean intakeEnabled = true;
     public static final boolean drivetrainEnabled = false;
     public static final boolean limeLightEnabled = false;
-    public static final boolean elvEnabled = true;
+    public static final boolean elvEnabled = false;
     public static final boolean signalEnabled = false;
     public static final boolean shooterEnabled = false;
     public static final boolean triggerEnabled = false;

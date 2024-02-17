@@ -100,7 +100,11 @@ public class RobotContainer {
     } else {
       intakeSubsystem = null;
     }
-    triggerSubsystem = new TriggerSubsystem();
+    if (Constants.enabledSubsystems.triggerEnabled) {
+      triggerSubsystem = new TriggerSubsystem();
+    } else {
+      triggerSubsystem = null;
+    }
     if (Constants.enabledSubsystems.limeLightEnabled
         && Constants.enabledSubsystems.drivetrainEnabled) {
       limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
