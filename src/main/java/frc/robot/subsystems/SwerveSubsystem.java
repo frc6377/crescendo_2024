@@ -148,8 +148,8 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   }
 
   /**
-   * Request the robot to point in a specified direction. Any non zero rotation demand will result in
-   * the command canceling.
+   * Request the robot to point in a specified direction. Any non zero rotation demand will result
+   * in the command canceling.
    *
    * @param angleToPoint the angle to point in degrees
    * @param input the X-Y speeds
@@ -160,15 +160,15 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   }
 
   /**
-   * Points a location on the field any non zero rotation demand will result in the command
+   * Points toward a location on the field any non zero rotation demand will result in the command
    * canceling.
    *
    * @param target the location to point at in meters
    * @param input X-Y speeds
    * @return A command that will point at the specified location until interupted
    */
-  public Command pointAtLocation(Translation2d target, Supplier<DriveRequest> input) {
-    DoubleSupplier getAngleToTarget =
+  public Command pointAtLocation(final Translation2d target, final Supplier<DriveRequest> input) {
+    final DoubleSupplier getAngleToTarget =
         () -> {
           Translation2d delta = this.getState().Pose.getTranslation().minus(target);
           return new Rotation2d(delta.getX(), delta.getY()).getDegrees();
@@ -184,8 +184,9 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
    * @param input the human X-Y request
    * @return A command that will point in the requested direction until interupted
    */
-  public Command pointDrive(DoubleSupplier targetAngleProvider, Supplier<DriveRequest> input) {
-    ProfiledPIDController pid =
+  public Command pointDrive(
+      final DoubleSupplier targetAngleProvider, final Supplier<DriveRequest> input) {
+    final ProfiledPIDController pid =
         new ProfiledPIDController(
             Constants.SwerveDriveConstants.TURN_kP,
             0,
@@ -194,12 +195,12 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
                 Constants.SwerveDriveConstants.MAX_AUTO_TURN,
                 Constants.SwerveDriveConstants.MAX_AUTO_ACCERLATION));
     pid.enableContinuousInput(0, 360);
-    Runnable init =
+    final Runnable init =
         () -> {
           pid.reset(getState().Pose.getRotation().getDegrees());
         };
 
-    Runnable exec =
+    final Runnable exec =
         () -> {
           DriveRequest in = input.get();
           pid.setGoal(targetAngleProvider.getAsDouble());
@@ -215,7 +216,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
           }
         };
 
-    Command command = new FunctionalCommand(init, exec, (interupt) -> {}, () -> false, this);
+    final Command command = new FunctionalCommand(init, exec, (interupt) -> {}, () -> false, this);
     return command.withName("Point Drive");
   }
 
@@ -226,13 +227,13 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
    * @param input X-Y speed demands, non-zero alpha will cancel this demand
    * @return A command that rotates to attempts to zero the error given.
    */
-  public Command rotationDrive(Supplier<Rotation2d> err, Supplier<DriveRequest> input) {
-    PIDController pid =
+  public Command rotationDrive(final Supplier<Rotation2d> err, final Supplier<DriveRequest> input) {
+    final PIDController pid =
         new PIDController(
             Constants.SwerveDriveConstants.TURN_kP, 0, Constants.SwerveDriveConstants.TURN_kD);
     pid.enableContinuousInput(0, 360);
     pid.setSetpoint(0);
-    Runnable command =
+    final Runnable command =
         () -> {
           DriveRequest in = input.get();
           double alpha = Math.toRadians(pid.calculate(err.get().getDegrees()));
@@ -249,8 +250,8 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     return run(command).finallyDo(() -> pid.close()).withName("Rotation Drive");
   }
 
-  public Command robotOrientedDrive(Supplier<DriveRequest> requestSupplier) {
-    Runnable command =
+  public Command robotOrientedDrive(final Supplier<DriveRequest> requestSupplier) {
+    final Runnable command =
         () -> {
           DriveRequest driveRequest = requestSupplier.get();
           SwerveRequest swerveRequest =
@@ -266,8 +267,8 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     return run(command);
   }
 
-  public Command fieldOrientedDrive(Supplier<DriveRequest> requestSupplier) {
-    Runnable command =
+  public Command fieldOrientedDrive(final Supplier<DriveRequest> requestSupplier) {
+    final Runnable command =
         () -> {
           DriveRequest driveRequest = requestSupplier.get();
           SwerveRequest swerveRequest =
@@ -283,15 +284,15 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     return run(command);
   }
 
-  public static DriveRequest joystickCondition(DriveInput input, double deadband) {
-    double mag = Math.sqrt(input.x() * input.x() + input.y() * input.y());
-    double finalAlpha =
+  public static DriveRequest joystickCondition(final DriveInput input, final double deadband) {
+    final double mag = Math.sqrt(input.x() * input.x() + input.y() * input.y());
+    final double finalAlpha =
         -OI.Driver.rotationCurve.calculate(MathUtil.applyDeadband(input.alpha(), deadband));
     if (mag < deadband * deadband) {
       return new DriveRequest(0, 0, finalAlpha);
     }
 
-    double finalMag =
+    final double finalMag =
         OI.Driver.translationMagnitudeCurve.calculate(MathUtil.applyDeadband(mag, deadband));
     // Mixup is intentional, WPI has its coordinate plane from the perspective of the
     // scoring
