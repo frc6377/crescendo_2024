@@ -9,6 +9,8 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxSim;
+
+import edu.wpi.first.hal.DutyCycleJNI;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -17,6 +19,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -30,6 +33,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TrapElvConstants;
 import frc.robot.Robot;
@@ -38,7 +42,7 @@ import java.util.function.BooleanSupplier;
 
 public class TrapElvSubsystem extends SubsystemBase {
   private final boolean isElv = false;
-
+  //TODO: position, zero wrist, encoder logging, change pids
   // Wrist motors
   private final CANSparkMax wristMotor;
   private double wristState;
@@ -66,7 +70,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   private DigitalInput scoringLimit;
 
   // Encoders
-  private final CANcoder wristEncoder;
+  private final DutyCycleEncoder wristEncoder;
   private SimDeviceSim simWristCoder;
   private SimDouble simWristPos;
   private SimDouble simWristVel;
@@ -85,6 +89,8 @@ public class TrapElvSubsystem extends SubsystemBase {
   private ElevatorSim m_baseElevatorSim;
   private ElevatorSim m_scoringElevatorSim;
   private SingleJointedArmSim m_wristMotorSim;
+
+  private DebugEntry<Double> offsetEntry;
 
   private ShuffleboardTab TrapElvTab = Shuffleboard.getTab("Trap Arm Tab");
   private GenericEntry baseGoal = TrapElvTab.add("Base Goal", 0).getEntry();
@@ -149,7 +155,7 @@ public class TrapElvSubsystem extends SubsystemBase {
             TrapElvConstants.WRIST_FF[3]);
     TrapElvTab.add("Wrist PID", wristPIDController);
 
-    wristEncoder = new CANcoder(TrapElvConstants.WRIST_ENCODER_ID);
+    wristEncoder = new DutyCycleEncoder(6);
 
     rollerMotor = new CANSparkMax(TrapElvConstants.ROLLER_MOTOR_ID, MotorType.kBrushless);
     rollerMotor.restoreFactoryDefaults();
@@ -166,6 +172,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
       baseMotorOffset1 = 0.0;
       baseMotorOffset2 = 0.0;
+      offsetEntry = new DebugEntry<Double>(0.0, "Wrist Offset", this);
 
       baseMotor1 = new CANSparkMaxSim(TrapElvConstants.BASE_MOTOR1_ID, MotorType.kBrushless);
       baseMotor1.restoreFactoryDefaults();
@@ -192,6 +199,10 @@ public class TrapElvSubsystem extends SubsystemBase {
       scoringMotor.getPIDController().setIZone(TrapElvConstants.SCORING_PID[3]);
       scoringMotor.getPIDController().setFF(TrapElvConstants.SCORING_PID[4]);
       TrapElvTab.add("Scoring Elv PID", scoringMotor.getPIDController());
+      SmartDashboard.putData("Intake Source", intakeSource());
+      SmartDashboard.putData("Intake Ground", intakeGround());
+      SmartDashboard.putData("Stow Wrist", new InstantCommand(() -> stowTrapElv()));
+      SmartDashboard.putData("Amp Score", scoreAMP());
     }
 
     // SmartDashboard
@@ -281,9 +292,9 @@ public class TrapElvSubsystem extends SubsystemBase {
   }
 
   // Commands
-  public Command setRoller(double s) {
+  public Command setRoller(double rollerSpeed) {
     return run(() -> {
-          rollerMotor.set(s);
+          rollerMotor.set(rollerSpeed);
         })
         .withName("Set Roller");
   }
