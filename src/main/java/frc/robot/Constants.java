@@ -16,10 +16,10 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   public static class SwerveDriveConstants {
-    public static final double TURN_kP = 0.2;
+    public static final double TURN_kP = 10;
     public static final double TURN_kD = 0;
-    public static final double MAX_AUTO_TURN = 10; // deg/s
-    public static final double MAX_AUTO_ACCERLATION = 10; // deg/s^2
+    public static final double MAX_AUTO_TURN = 180; // deg/s
+    public static final double MAX_AUTO_ACCERLATION = 180; // deg/s^2
   }
 
   public static class IntakeConstants {
@@ -154,12 +154,12 @@ public final class Constants {
   public static class enabledSubsystems {
     public static final boolean intakeEnabled = false;
     public static final boolean drivetrainEnabled = true;
-    public static final boolean limeLightEnabled = true;
-    public static final boolean elvEnabled = true;
-    public static final boolean signalEnabled = true;
-    public static final boolean shooterEnabled = true;
-    public static final boolean triggerEnabled = true;
-    public static final boolean turretEnabled = true;
+    public static final boolean limeLightEnabled = false;
+    public static final boolean elvEnabled = false;
+    public static final boolean signalEnabled = false;
+    public static final boolean shooterEnabled = false;
+    public static final boolean triggerEnabled = false;
+    public static final boolean turretEnabled = false;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;

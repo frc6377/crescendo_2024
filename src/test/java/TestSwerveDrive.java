@@ -21,8 +21,6 @@ public class TestSwerveDrive {
     double deadband = 0.02;
     double epsilion = 0.001;
 
-    // git commit -m 'added curve to rotation controls'
-
     for (int i = 0; i < directions; i++) {
       Matrix<N2, N1> unitDirction = new Matrix<>(Nat.N2(), Nat.N1());
       unitDirction.set(0, 0, Math.sin(2 * Math.PI * i / directions));
@@ -42,7 +40,7 @@ public class TestSwerveDrive {
           assertTrue(
               Math.abs(
                       req.alpha()
-                          - OI.Driver.rotationCurve.calculate(
+                          + OI.Driver.rotationCurve.calculate(
                               MathUtil.applyDeadband(rot, deadband)))
                   < epsilion);
         }

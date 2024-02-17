@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -103,7 +104,11 @@ public class RobotContainer {
     } else {
       intakeSubsystem = null;
     }
-    triggerSubsystem = new TriggerSubsystem();
+    if (Constants.enabledSubsystems.intakeEnabled) {
+      triggerSubsystem = new TriggerSubsystem();
+    } else {
+      triggerSubsystem = null;
+    }
     if (Constants.enabledSubsystems.limeLightEnabled
         && Constants.enabledSubsystems.drivetrainEnabled) {
       limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
@@ -167,7 +172,7 @@ public class RobotContainer {
                   .applyRequest(() -> new SwerveRequest.SwerveDriveBrake())
                   .withName("Brake Swerve"));
       OI.getTrigger(OI.Driver.point_forward)
-          .toggleOnTrue(drivetrain.pointAtLocation(new Translation2d(0, 0), input));
+          .toggleOnTrue(drivetrain.pointAtLocation(new Translation2d(16.4846, 4.1), input));
       OI.getButton(OI.Driver.resetRotationButton)
           .onTrue(
               drivetrain
@@ -188,8 +193,10 @@ public class RobotContainer {
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
     // Turret commands
-    turretSubsystem.setDefaultCommand(turretSubsystem.idleTurret());
-    OI.getTrigger(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
+    if (Constants.enabledSubsystems.turretEnabled) {
+      turretSubsystem.setDefaultCommand(turretSubsystem.idleTurret());
+      OI.getTrigger(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
+    }
 
     // Shooter commands
     if (Constants.enabledSubsystems.shooterEnabled
@@ -246,6 +253,7 @@ public class RobotContainer {
       autonCommands.put("Speaker Intake", intakeSubsystem.getSpeakerIntakeCommand());
       autonCommands.put("Amp Intake", intakeSubsystem.getAmpIntakeCommand());
     }
+    autonCommands.put("Intake", new InstantCommand(() -> {}, new Subsystem[] {}));
 
     NamedCommands.registerCommands(autonCommands);
   }

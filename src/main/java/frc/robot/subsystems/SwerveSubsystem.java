@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
 import frc.robot.OI;
@@ -193,7 +194,12 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
                 Constants.SwerveDriveConstants.MAX_AUTO_TURN,
                 Constants.SwerveDriveConstants.MAX_AUTO_ACCERLATION));
     pid.enableContinuousInput(0, 360);
-    Runnable command =
+    Runnable init =
+        () -> {
+          pid.reset(getState().Pose.getRotation().getDegrees());
+        };
+
+    Runnable exec =
         () -> {
           DriveRequest in = input.get();
           pid.setGoal(targetAngleProvider.getAsDouble());
@@ -209,7 +215,8 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
           }
         };
 
-    return run(command).withName("Point Drive");
+    Command command = new FunctionalCommand(init, exec, (interupt) -> {}, () -> false, this);
+    return command.withName("Point Drive");
   }
 
   /**
@@ -279,7 +286,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   public static DriveRequest joystickCondition(DriveInput input, double deadband) {
     double mag = Math.sqrt(input.x() * input.x() + input.y() * input.y());
     double finalAlpha =
-        OI.Driver.rotationCurve.calculate(MathUtil.applyDeadband(input.alpha(), deadband));
+        -OI.Driver.rotationCurve.calculate(MathUtil.applyDeadband(input.alpha(), deadband));
     if (mag < deadband * deadband) {
       return new DriveRequest(0, 0, finalAlpha);
     }
