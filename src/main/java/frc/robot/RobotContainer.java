@@ -171,7 +171,7 @@ public class RobotContainer {
               drivetrain
                   .applyRequest(() -> new SwerveRequest.SwerveDriveBrake())
                   .withName("Brake Swerve"));
-      OI.getTrigger(OI.Driver.point_forward)
+      OI.getTrigger(OI.Driver.pointForward)
           .toggleOnTrue(drivetrain.pointAtLocation(new Translation2d(16.4846, 4.1), input));
       OI.getButton(OI.Driver.resetRotationButton)
           .onTrue(
