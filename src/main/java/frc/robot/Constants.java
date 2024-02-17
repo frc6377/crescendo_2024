@@ -109,8 +109,8 @@ public final class Constants {
 
   public static class TrapElvConstants {
     // IDs | TODO: get real device IDs
-    public static final int WRIST_MOTOR_ID = 12;
-    public static final int ROLLER_MOTOR_ID = 13;
+    public static final int WRIST_MOTOR_ID = 13;
+    public static final int ROLLER_MOTOR_ID = 12;
     public static final int BASE_MOTOR1_ID = 22;
     public static final int BASE_MOTOR2_ID = 23;
     public static final int SCORING_MOTOR_ID = 24;
@@ -148,10 +148,10 @@ public final class Constants {
   }
 
   public static class enabledSubsystems {
-    public static final boolean intakeEnabled = true;
+    public static final boolean intakeEnabled = false;
     public static final boolean drivetrainEnabled = false;
     public static final boolean limeLightEnabled = false;
-    public static final boolean elvEnabled = false;
+    public static final boolean elvEnabled = true;
     public static final boolean signalEnabled = false;
     public static final boolean shooterEnabled = false;
     public static final boolean triggerEnabled = false;

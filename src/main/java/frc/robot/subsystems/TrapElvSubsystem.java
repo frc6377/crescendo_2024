@@ -85,12 +85,13 @@ public class TrapElvSubsystem extends SubsystemBase {
   private DebugEntry<Double> offsetEntry;
   private DebugEntry<Double> currentPositionEntry;
 
-  private ShuffleboardTab TrapElvTab = Shuffleboard.getTab("Trap Arm Tab");
+  private ShuffleboardTab TrapElvTab = Shuffleboard.getTab("TrapElvSubsystem");
   private GenericEntry baseGoal = TrapElvTab.add("Base Goal", 0).withPosition(9, 0).getEntry();
   private GenericEntry FFOutput = TrapElvTab.add("FF Output", 0).withPosition(8, 0).getEntry();
   private GenericEntry wristOutput =
-      TrapElvTab.add("Wrist Motor Outpu", 0).withPosition(7, 0).getEntry();
+      TrapElvTab.add("Wrist Motor Output", 0).withPosition(7, 0).getEntry();
   private GenericEntry wristGoal = TrapElvTab.add("Wrist Goal", 0).withPosition(6, 0).getEntry();
+  private GenericEntry wristEncoderOutput = TrapElvTab.add("Wrist Encoder Output", 0).withSize(2, 1).getEntry();
 
   private double FF;
 
