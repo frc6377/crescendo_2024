@@ -113,9 +113,10 @@ public class RobotContainer {
       trapElvSubsystem = null;
     }
     // Configure the trigger bindings
+    configureBindings();
+    registerCommands();
+
     if (Constants.enabledSubsystems.drivetrainEnabled) {
-      configureBindings();
-      registerCommands();
       autoChooser = AutoBuilder.buildAutoChooser();
       configTab.add("Auton Selection", autoChooser).withSize(3, 1);
       SmartDashboard.putBoolean("NamedCommand test", false);
@@ -181,13 +182,16 @@ public class RobotContainer {
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
     // Turret commands
-    turretSubsystem.setDefaultCommand(turretSubsystem.idleTurret());
-    OI.getTrigger(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
+    if (Constants.enabledSubsystems.turretEnabled) {
+      turretSubsystem.setDefaultCommand(turretSubsystem.idleTurret());
+      OI.getTrigger(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
+    }
 
     // Shooter commands
-    if (Constants.enabledSubsystems.shooterEnabled
-        && Constants.enabledSubsystems.triggerEnabled
-        && Constants.enabledSubsystems.limeLightEnabled) {
+    if (Constants.enabledSubsystems.shooterEnabled && Constants.enabledSubsystems.triggerEnabled
+    // Limelight disabled for testing
+    // && Constants.enabledSubsystems.limeLightEnabled
+    ) {
       shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
       OI.getTrigger(OI.Operator.shooterRevTrigger).whileTrue(shooterSubsystem.revShooter());
 
@@ -200,7 +204,9 @@ public class RobotContainer {
       OI.getButton(OI.Operator.A).whileTrue(triggerSubsystem.getLoadCommand());
     } else if (Constants.enabledSubsystems.shooterEnabled
         && Constants.enabledSubsystems.triggerEnabled
-        && !Constants.enabledSubsystems.limeLightEnabled) {
+    // Limelight disabled for testing
+    // && !Constants.enabledSubsystems.limeLightEnabled
+    ) {
       shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
       OI.getTrigger(OI.Operator.shooterFireTrigger).whileTrue(shooterSubsystem.bumperShoot());
     }

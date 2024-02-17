@@ -48,7 +48,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private DebugEntry<Boolean> shooterReadyEntry;
 
-  private GenericEntry shooterDistance = shooterTab.add("Shooter Test Distance", 0).getEntry();
+  private GenericEntry leftShooterRPM = shooterTab.add("Shooter Left RPM", 1000).getEntry();
+  private GenericEntry rightShooterRPM = shooterTab.add("Shooter Right RPM", 1000).getEntry();
+
   private SpeakerConfig targetSpeeds;
 
   private FlywheelSim shooterLeftSim;
@@ -158,12 +160,13 @@ public class ShooterSubsystem extends SubsystemBase {
   // Required to be called repeatedly; consider pub-sub for LimelightGetDistance() or equivalent
   // method to save a method call
   public Command revShooter() {
-    double distance = shooterDistance.getDouble(0);
-
     // Only runs if the exit code from the limelight status function returns 0!
 
     return Commands.startEnd(
-        () -> this.setShooterSpeeds(calculateShooterSpeeds(distance)),
+        () ->
+            this.setShooterSpeeds(
+                new SpeakerConfig(
+                    -1, leftShooterRPM.getDouble(1000), rightShooterRPM.getDouble(1000))),
         () -> {
           shooterLeftMotor.stopMotor();
           shooterRightMotor.stopMotor();
