@@ -132,10 +132,10 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // OI.getButton(OI.Operator.A)
-    //     .onTrue(
-    //         new InstantCommand(robotStateManager::switchPlacementMode)
-    //             .withName("Switch Placement Mode Command"));
+    OI.getButton(OI.Operator.A)
+        .onTrue(
+            new InstantCommand(robotStateManager::switchPlacementMode)
+                .withName("Switch Placement Mode Command"));
     if (Constants.enabledSubsystems.intakeEnabled) {
       OI.getTrigger(OI.Driver.intakeTrigger)
           .whileTrue(
