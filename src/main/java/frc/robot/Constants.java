@@ -149,6 +149,8 @@ public final class Constants {
     public static final double ALPHABOT_LIMELIGHT_YAW_RADIANS = Math.toRadians(180);
 
     public static final double TURRET_LIMELIGHT_HEIGHT_INCHES = 17.85;
+    public static final double MAX_ACCEPTABLE_ERROR_METERS = 2;
+    public static final double MAX_TIME_BETWEEN_POSES_SECONDS = 0.2; // 10 periodic cycles
 
     public static final String MAIN_CAMERA_NAME = "Camera_Module_Main";
     public static final String TURRET_CAMERA_NAME = "Camera_Module_Turret";

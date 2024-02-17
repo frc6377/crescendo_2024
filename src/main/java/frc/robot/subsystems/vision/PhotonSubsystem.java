@@ -95,6 +95,24 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
     return lastPose.timestampSeconds;
   }
 
+  private boolean checkPoseValidity(EstimatedRobotPose pose) {
+    double distanceBetweenPoses =
+        Math.sqrt(
+            Math.pow(pose.estimatedPose.getX() - lastPose.estimatedPose.getX(), 2)
+                + Math.pow(pose.estimatedPose.getY() - lastPose.estimatedPose.getY(), 2)
+                + Math.pow(
+                    pose.estimatedPose.getZ() - lastPose.estimatedPose.getZ(),
+                    2)); // 3D distance formula (same one as used in periodic)
+    if (distanceBetweenPoses > Constants.VisionConstants.MAX_ACCEPTABLE_ERROR_METERS
+        && Math.abs(pose.timestampSeconds - lastPose.timestampSeconds)
+            < Constants.VisionConstants.MAX_TIME_BETWEEN_POSES_SECONDS) {
+      System.out.println("POSE REJECTED");
+      return false; // pose is invalid
+    } else {
+      return true; // pose is valid
+    }
+  }
+
   public double getTurretYaw(int id) {
     turretResult = turretCamera.getLatestResult();
     if (turretResult.hasTargets()) {
@@ -127,7 +145,10 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       if (mainResult.hasTargets()) {
         List<PhotonTrackedTarget> targets = mainResult.getTargets();
         if (targets.size() > 1) {
-          lastPose = getPVEstimatedPose();
+          EstimatedRobotPose newPose = getPVEstimatedPose();
+          if (checkPoseValidity(newPose)) {
+            lastPose = newPose;
+          }
           measurementsUsed++;
           measurementConsumer.accept(getPose2d(), getTime());
           if (measurementsUsed % 100 == 0) {
