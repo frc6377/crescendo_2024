@@ -189,10 +189,53 @@ public class CANSparkMaxSim extends CANSparkMax {
     }
   }
 
+  private class SparkAbsoluteEncoderSim extends SparkAbsoluteEncoder {
+
+    private double zeroOffset = 0;
+
+    SparkAbsoluteEncoderSim(CANSparkBase sparkMax, Type type) {
+      super(sparkMax, type);
+    }
+
+    @Override
+    public double getPosition() {
+      if (Robot.isReal()) {
+        return super.getPosition();
+      }
+      return position;
+    }
+
+    @Override
+    public double getVelocity() {
+      if (Robot.isReal()) {
+        return super.getVelocity();
+      }
+      return velocity;
+    }
+
+    @Override
+    public REVLibError setZeroOffset(double offset) {
+      if (Robot.isReal()) {
+        return super.setZeroOffset(offset);
+      }
+      zeroOffset = offset;
+      return REVLibError.kOk;
+    }
+
+    @Override
+    public double getZeroOffset() {
+      if (Robot.isReal()) {
+        return super.getZeroOffset();
+      }
+      return zeroOffset;
+    }
+  }
+
   public static final double kPeriod = 0.001; // 1kHz
   private SparkPIDControllerSim ctrl;
   private final Object pidControllerLock = new Object();
   private SparkRelativeEncoderSim enc;
+  private SparkAbsoluteEncoder absEnc;
   private double prevError, IState, setpoint, position, velocity, output;
   private boolean stopped;
   private ControlType type;
@@ -217,6 +260,17 @@ public class CANSparkMaxSim extends CANSparkMax {
       enc = new SparkRelativeEncoderSim(this, encoderType, countsPerRev);
     }
     return enc;
+  }
+
+  @Override
+  public SparkAbsoluteEncoder getAbsoluteEncoder() {
+    if (Robot.isReal()) {
+      return super.getAbsoluteEncoder();
+    }
+    if (absEnc == null) {
+      absEnc = new SparkAbsoluteEncoderSim(this, SparkAbsoluteEncoder.Type.kDutyCycle);
+    }
+    return absEnc;
   }
 
   @Override
@@ -263,6 +317,11 @@ public class CANSparkMaxSim extends CANSparkMax {
   public void setVoltage(double volts) {
     super.setVoltage(volts);
     output = MathUtil.clamp(volts / RobotController.getBatteryVoltage(), -1, 1);
+  }
+
+  public REVLibError setAbsolutePosition(double pos) {
+    position = pos;
+    return REVLibError.kOk;
   }
 
   // Algorithm pulled from https://docs.revrobotics.com/sparkmax/operating-modes/closed-loop-control
