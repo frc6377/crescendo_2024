@@ -109,16 +109,16 @@ public final class Constants {
 
   public static class TrapElvConstants {
     // IDs | TODO: get real device IDs
-    public static final int WRIST_MOTOR_ID = 20;
-    public static final int ROLLER_MOTOR_ID = 21;
+    public static final int WRIST_MOTOR_ID = 12;
+    public static final int ROLLER_MOTOR_ID = 13;
     public static final int BASE_MOTOR1_ID = 22;
     public static final int BASE_MOTOR2_ID = 23;
     public static final int SCORING_MOTOR_ID = 24;
     public static final int WRIST_ENCODER_ID = 25;
-    public static final int SOURCE_BREAK_ID = 26;
-    public static final int GROUND_BREAK_ID = 27;
-    public static final int BASE_BREAK_ID = 28;
-    public static final int SCORING_BREAK_ID = 29;
+    public static final int SOURCE_BREAK_ID = 1;
+    public static final int GROUND_BREAK_ID = 2;
+    public static final int BASE_BREAK_ID = 3;
+    public static final int SCORING_BREAK_ID = 4;
 
     // Speeds
     public static final double ROLLER_INTAKE_SPEED = 0.25;
@@ -144,17 +144,18 @@ public final class Constants {
     public static final double WRIST_LENGTH = Units.inchesToMeters(11.877934);
     public static final double WRIST_MOI = 0.3175242664; // Moment of Inertia
     public static final double WRIST_GEAR_RATIO = 32.727272727272727272;
+    public static final double WRIST_ZERO_OFFSET = 0; // TODO: find real offset on robot
   }
 
   public static class enabledSubsystems {
     public static final boolean intakeEnabled = true;
-    public static final boolean drivetrainEnabled = true;
-    public static final boolean limeLightEnabled = true;
+    public static final boolean drivetrainEnabled = false;
+    public static final boolean limeLightEnabled = false;
     public static final boolean elvEnabled = true;
-    public static final boolean signalEnabled = true;
-    public static final boolean shooterEnabled = true;
-    public static final boolean triggerEnabled = true;
-    public static final boolean turretEnabled = true;
+    public static final boolean signalEnabled = false;
+    public static final boolean shooterEnabled = false;
+    public static final boolean triggerEnabled = false;
+    public static final boolean turretEnabled = false;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;

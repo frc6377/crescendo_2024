@@ -114,12 +114,13 @@ public class RobotContainer {
     }
     // Configure the trigger bindings
     if (Constants.enabledSubsystems.drivetrainEnabled) {
-      configureBindings();
       registerCommands();
       autoChooser = AutoBuilder.buildAutoChooser();
       configTab.add("Auton Selection", autoChooser).withSize(3, 1);
       SmartDashboard.putBoolean("NamedCommand test", false);
     }
+
+    configureBindings();
   }
 
   /**
@@ -177,12 +178,6 @@ public class RobotContainer {
                   .runOnce(() -> drivetrain.toggleOrientation())
                   .withName("Toggle Orientation"));
     }
-
-    // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
-
-    // Turret commands
-    turretSubsystem.setDefaultCommand(turretSubsystem.idleTurret());
-    OI.getTrigger(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
 
     // Shooter commands
     if (Constants.enabledSubsystems.shooterEnabled

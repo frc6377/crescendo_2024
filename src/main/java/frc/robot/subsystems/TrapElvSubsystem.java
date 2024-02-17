@@ -9,7 +9,6 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxSim;
 import com.revrobotics.SparkAbsoluteEncoder;
-import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
@@ -21,7 +20,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -68,9 +66,6 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   // Encoders
   private final SparkAbsoluteEncoder wristEncoder;
-  private SimDeviceSim simWristCoder;
-  private SimDouble simWristPos;
-  private SimDouble simWristVel;
 
   private DebugEntry<Boolean> sourceLog;
   private DebugEntry<Boolean> groundLog;
@@ -88,10 +83,14 @@ public class TrapElvSubsystem extends SubsystemBase {
   private SingleJointedArmSim m_wristMotorSim;
 
   private DebugEntry<Double> offsetEntry;
+  private DebugEntry<Double> currentPositionEntry;
 
   private ShuffleboardTab TrapElvTab = Shuffleboard.getTab("Trap Arm Tab");
-  private GenericEntry baseGoal = TrapElvTab.add("Base Goal", 0).getEntry();
-  private GenericEntry FFOutput = TrapElvTab.add("FF Output", 0).getEntry();
+  private GenericEntry baseGoal = TrapElvTab.add("Base Goal", 0).withPosition(9, 0).getEntry();
+  private GenericEntry FFOutput = TrapElvTab.add("FF Output", 0).withPosition(8, 0).getEntry();
+  private GenericEntry wristOutput =
+      TrapElvTab.add("Wrist Motor Outpu", 0).withPosition(7, 0).getEntry();
+  private GenericEntry wristGoal = TrapElvTab.add("Wrist Goal", 0).withPosition(6, 0).getEntry();
 
   private double FF;
 
@@ -102,7 +101,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     FROM_INTAKE(-0.25, 0.0, 0.0),
     FROM_SOURCE(-0.1, 0.0, 12.0),
     TRAP_SCORE(0.0, 12.0, 12.0),
-    AMP_SCORE(0.7, 0.0, 12.0);
+    AMP_SCORE(-0.2, 0.0, 12.0);
 
     private double wristPose;
     private double basePose;
@@ -150,7 +149,7 @@ public class TrapElvSubsystem extends SubsystemBase {
             TrapElvConstants.WRIST_FF[1],
             TrapElvConstants.WRIST_FF[2],
             TrapElvConstants.WRIST_FF[3]);
-    TrapElvTab.add("Wrist PID", wristPIDController);
+    TrapElvTab.add("Wrist PID", wristPIDController).withSize(2, 2).withPosition(0, 0);
 
     wristEncoder = wristMotor.getAbsoluteEncoder();
 
@@ -160,6 +159,14 @@ public class TrapElvSubsystem extends SubsystemBase {
     sourceBreak = new DigitalInput(TrapElvConstants.SOURCE_BREAK_ID);
     groundBreak = new DigitalInput(TrapElvConstants.GROUND_BREAK_ID);
 
+    offsetEntry = new DebugEntry<Double>(0.0, "Wrist Offset", this);
+    currentPositionEntry =
+        new DebugEntry<>(wristEncoder.getPosition(), "Current wrist Position", this);
+
+    TrapElvTab.add("Intake Source", intakeSource()).withPosition(2, 0);
+    TrapElvTab.add("Intake Ground", intakeGround()).withPosition(3, 0);
+    TrapElvTab.add("Stow Wrist", new InstantCommand(() -> stowTrapElv())).withPosition(4, 0);
+    TrapElvTab.add("Amp Score", scoreAMP()).withPosition(5, 0);
     // Elv
     if (isElv) {
       baseLimit = new DigitalInput(TrapElvConstants.BASE_BREAK_ID);
@@ -169,7 +176,6 @@ public class TrapElvSubsystem extends SubsystemBase {
 
       baseMotorOffset1 = 0.0;
       baseMotorOffset2 = 0.0;
-      offsetEntry = new DebugEntry<Double>(0.0, "Wrist Offset", this);
 
       baseMotor1 = new CANSparkMaxSim(TrapElvConstants.BASE_MOTOR1_ID, MotorType.kBrushless);
       baseMotor1.restoreFactoryDefaults();
@@ -196,10 +202,6 @@ public class TrapElvSubsystem extends SubsystemBase {
       scoringMotor.getPIDController().setIZone(TrapElvConstants.SCORING_PID[3]);
       scoringMotor.getPIDController().setFF(TrapElvConstants.SCORING_PID[4]);
       TrapElvTab.add("Scoring Elv PID", scoringMotor.getPIDController());
-      SmartDashboard.putData("Intake Source", intakeSource());
-      SmartDashboard.putData("Intake Ground", intakeGround());
-      SmartDashboard.putData("Stow Wrist", new InstantCommand(() -> stowTrapElv()));
-      SmartDashboard.putData("Amp Score", scoreAMP());
     }
 
     // SmartDashboard
@@ -261,13 +263,8 @@ public class TrapElvSubsystem extends SubsystemBase {
               true,
               0);
 
-      TrapElvTab.add("Trap Arm Mech", elvMechanism);
-
-      // simWristCoder = new SimDeviceSim("CANEncoder:CANCoder (v6)", wristEncoder.());
-      // simWristPos = simWristCoder.getDouble("rawPositionInput");
-      // simWristVel = simWristCoder.getDouble("velocity");
-
-      // wristEncoder.setPosition(0);
+      TrapElvTab.add("Trap Arm Mech", elvMechanism).withPosition(7, 7);
+      wristEncoder.setZeroOffset(TrapElvConstants.WRIST_ZERO_OFFSET);
     }
   }
 
@@ -390,8 +387,8 @@ public class TrapElvSubsystem extends SubsystemBase {
   }
 
   public void setTrapArm(TrapElvState state) {
-    SmartDashboard.putNumber("Wrist Goal", state.getWristPose());
     wristState = state.getWristPose();
+    wristGoal.setDouble(wristState);
     if (isElv) {
       baseGoal.setDouble(Units.metersToInches(TrapElvConstants.ELV_MIN_HEIGHT) + state.basePose);
       baseMotor1
@@ -408,6 +405,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    currentPositionEntry.log(wristEncoder.getPosition());
     sourceLog.log(sourceBreak.get());
     groundLog.log(groundBreak.get());
     if (isElv) {
@@ -425,6 +423,8 @@ public class TrapElvSubsystem extends SubsystemBase {
             -12,
             12));
     FFOutput.setDouble(FF);
+
+    wristOutput.setDouble(wristMotor.getAppliedOutput());
   }
 
   @Override
@@ -454,8 +454,6 @@ public class TrapElvSubsystem extends SubsystemBase {
     // Offest added so that gravity is simulated in the right direction
     wristMech.setAngle(Units.radiansToDegrees(m_wristMotorSim.getAngleRads()) - 90);
     SmartDashboard.putNumber("Current Draw Wrist (A)", m_wristMotorSim.getCurrentDrawAmps());
-
-    SmartDashboard.putNumber("Wrist Motor Sim Output", wristMotor.getAppliedOutput());
     SmartDashboard.putNumber(
         "Wrist Sim Angle", Units.radiansToRotations(m_wristMotorSim.getAngleRads()));
 
