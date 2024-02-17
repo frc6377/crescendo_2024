@@ -109,6 +109,8 @@ public class RobotContainer {
                 ? new PhotonSubsystem(drivetrain.getVisionMeasurementConsumer())
                 : new LimelightSubsystem(
                     drivetrain.getVisionMeasurementConsumer(), robotStateManager);
+      } else {
+        visionSubsystem = null;
       }
     } else {
       visionSubsystem = null;
