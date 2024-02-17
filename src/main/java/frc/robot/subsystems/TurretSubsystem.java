@@ -49,63 +49,63 @@ import java.util.function.Consumer;
 
 public class TurretSubsystem extends SubsystemBase {
 
-  private CANSparkMax turretMotor;
+  private final CANSparkMax turretMotor;
   private SingleJointedArmSim turretSim;
   private Mechanism2d turretMech;
   private MechanismRoot2d turretRoot;
   private MechanismLigament2d turretAngleSim;
-  private ShuffleboardTab turretTab = Shuffleboard.getTab("Turret Tab");
-  private SimDeviceSim simTurretEncoder;
-  private SimDouble simTurretPos;
+  private final ShuffleboardTab turretTab = Shuffleboard.getTab("Turret Tab");
+  private final SimDeviceSim simTurretEncoder;
+  private final SimDouble simTurretPos;
 
-  private PIDController turretPIDController;
-  private CANcoder highGearCANcoder;
-  private CANcoder lowGearCANcoder;
+  private final PIDController turretPIDController;
+  private final CANcoder highGearCANcoder;
+  private final CANcoder lowGearCANcoder;
   private double turretPosition;
   private double turretVelocity;
   private Consumer<Double> turretTestPosition;
-  private ShuffleboardTab configTab = Shuffleboard.getTab("Config");
-  private GenericEntry turretKP =
+  private final ShuffleboardTab configTab = Shuffleboard.getTab("Config");
+  private final GenericEntry turretKP =
       configTab.add("Turret KP", Constants.TurretConstants.TURRET_KP).getEntry();
-  private GenericEntry turretKI =
+  private final GenericEntry turretKI =
       configTab.add("Turret KI", Constants.TurretConstants.TURRET_KI).getEntry();
-  private GenericEntry turretKD =
+  private final GenericEntry turretKD =
       configTab.add("Turret KD", Constants.TurretConstants.TURRET_KD).getEntry();
-  private DebugEntry<Double> turretPositionEntry =
+  private final DebugEntry<Double> turretPositionEntry =
       new DebugEntry<Double>(turretPosition, "Turret Position", this);
-  private DebugEntry<Double> turretGoalPositionEntry =
+  private final DebugEntry<Double> turretGoalPositionEntry =
       new DebugEntry<Double>(0.0, "Turret Goal Position", this);
-  private DebugEntry<Double> turretVelocityEntry =
+  private final DebugEntry<Double> turretVelocityEntry =
       new DebugEntry<Double>(turretVelocity, "Turret Velocity", this);
 
-  private CANSparkMax pitchMotor;
+  private final CANSparkMax pitchMotor;
   private SingleJointedArmSim pitchSim;
   private Mechanism2d pitchMech;
   private MechanismRoot2d pitchRoot;
   private MechanismLigament2d pitchAngleSim;
-  private SimDeviceSim simPitchEncoder;
-  private SimDouble simPitchPos;
-  private ArmFeedforward pitchFeedForward;
+  private final SimDeviceSim simPitchEncoder;
+  private final SimDouble simPitchPos;
+  private final ArmFeedforward pitchFeedForward;
 
-  private PIDController pitchPIDController;
-  private CANcoder pitchCANcoder;
+  private final PIDController pitchPIDController;
+  private final CANcoder pitchCANcoder;
   private double pitchPosition;
   private double pitchVelocity;
   private Consumer<Double> pitchTestPosition;
-  private GenericEntry pitchKP =
+  private final GenericEntry pitchKP =
       configTab.add("Pitch KP", Constants.TurretConstants.PITCH_KP).getEntry();
-  private GenericEntry pitchKI =
+  private final GenericEntry pitchKI =
       configTab.add("Pitch KI", Constants.TurretConstants.PITCH_KI).getEntry();
-  private GenericEntry pitchKD =
+  private final GenericEntry pitchKD =
       configTab.add("Pitch KD", Constants.TurretConstants.PITCH_KD).getEntry();
-  private DebugEntry<Double> pitchPositionEntry =
+  private final DebugEntry<Double> pitchPositionEntry =
       new DebugEntry<Double>(pitchPosition, "Pitch Position", this);
-  private DebugEntry<Double> pitchGoalPositionEntry =
+  private final DebugEntry<Double> pitchGoalPositionEntry =
       new DebugEntry<Double>(0.0, "Pitch Goal Position", this);
-  private DebugEntry<Double> pitchVelocityEntry =
+  private final DebugEntry<Double> pitchVelocityEntry =
       new DebugEntry<Double>(pitchVelocity, "Pitch Velocity", this);
 
-  private DebugEntry<Double> tagDistanceEntry =
+  private final DebugEntry<Double> tagDistanceEntry =
       new DebugEntry<Double>(0.0, "LastMeasuredTagDistance", this);
 
   private final RobotStateManager robotStateManager;
@@ -170,27 +170,30 @@ public class TurretSubsystem extends SubsystemBase {
     this.robotStateManager = robotStateManager;
 
     // Soft Limits
+    final double turretMinAngleRotations =
+        (Constants.TurretConstants.TURRET_MIN_ANGLE_DEGREES
+            / (360 * Constants.TurretConstants.TURRET_MOTOR_TURRET_RATIO));
     turretMotor.setSoftLimit(
-        CANSparkMax.SoftLimitDirection.kReverse,
-        (float)
-            (Constants.TurretConstants.TURRET_MIN_ANGLE_DEGREES
-                / (360 * Constants.TurretConstants.TURRET_MOTOR_TURRET_RATIO)));
-    turretMotor.setSoftLimit(
-        CANSparkMax.SoftLimitDirection.kForward,
-        (float)
-            (Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES
-                / (360 * Constants.TurretConstants.TURRET_CONVERSION_FACTOR)));
+        CANSparkMax.SoftLimitDirection.kReverse, (float) turretMinAngleRotations);
 
+    final double turretMaxAngleRotations =
+        (Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES
+            / (360 * Constants.TurretConstants.TURRET_CONVERSION_FACTOR));
+    turretMotor.setSoftLimit(
+        CANSparkMax.SoftLimitDirection.kForward, (float) turretMaxAngleRotations);
+
+    // Pitch
+    final double pitchMinAngleRotations =
+        (Constants.TurretConstants.PITCH_MIN_ANGLE_DEGREES
+            / (360 * Constants.TurretConstants.PITCH_CONVERSION_FACTOR));
     pitchMotor.setSoftLimit(
-        CANSparkMax.SoftLimitDirection.kReverse,
-        (float)
-            (Constants.TurretConstants.PITCH_MIN_ANGLE_DEGREES
-                / (360 * Constants.TurretConstants.PITCH_CONVERSION_FACTOR)));
+        CANSparkMax.SoftLimitDirection.kReverse, (float) pitchMinAngleRotations);
+
+    final double pitchMaxAngleRotations =
+        (Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES
+            / (360 * Constants.TurretConstants.PITCH_CONVERSION_FACTOR));
     pitchMotor.setSoftLimit(
-        CANSparkMax.SoftLimitDirection.kForward,
-        (float)
-            (Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES
-                / (360 * Constants.TurretConstants.PITCH_CONVERSION_FACTOR)));
+        CANSparkMax.SoftLimitDirection.kForward, (float) pitchMaxAngleRotations);
 
     turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
     turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
