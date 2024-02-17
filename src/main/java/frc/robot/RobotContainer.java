@@ -97,7 +97,11 @@ public class RobotContainer {
     } else {
       intakeSubsystem = null;
     }
-    triggerSubsystem = new TriggerSubsystem();
+    if (Constants.enabledSubsystems.triggerEnabled) {
+      triggerSubsystem = new TriggerSubsystem();
+    } else {
+      triggerSubsystem = null;
+    }
     if (Constants.enabledSubsystems.visionEnabled) {
       if (Constants.enabledSubsystems.drivetrainEnabled) {
         visionSubsystem =
