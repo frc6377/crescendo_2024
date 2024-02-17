@@ -20,6 +20,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -88,7 +89,7 @@ public class TurretSubsystem extends SubsystemBase {
   private final ArmFeedforward pitchFeedForward;
 
   private final PIDController pitchPIDController;
-  private final CANcoder pitchCANcoder;
+  private final Encoder pitchCANcoder;
   private double pitchPosition;
   private double pitchVelocity;
   private Consumer<Double> pitchTestPosition;
@@ -241,10 +242,14 @@ public class TurretSubsystem extends SubsystemBase {
             Constants.TurretConstants.PITCH_KP,
             Constants.TurretConstants.PITCH_KI,
             Constants.TurretConstants.PITCH_KD);
-    pitchCANcoder = new CANcoder(Constants.TurretConstants.PITCH_CANcoder_ID);
+    pitchCANcoder =
+        new Encoder(
+            Constants.TurretConstants.PITCH_ENCODER_ID_1,
+            Constants.TurretConstants.PITCH_ENCODER_ID_2,
+            false);
 
     simPitchEncoder =
-        new SimDeviceSim("CANEncoder:CANCoder (v6)", Constants.TurretConstants.PITCH_CANcoder_ID);
+        new SimDeviceSim("CANEncoder:CANCoder (v6)", Constants.TurretConstants.PITCH_ENCODER_ID_1);
     simPitchPos = simPitchEncoder.getDouble("rawPositionInput");
 
     pitchPIDController.setIZone(Constants.TurretConstants.PITCH_KIZ);
@@ -284,7 +289,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   private double calculatePitchPosition() {
     return Math.toRadians(
-        ((pitchCANcoder.getPosition().getValueAsDouble()) * 360)
+        ((pitchCANcoder.get() / Constants.TurretConstants.PITCH_ENCODER_TICKS_PER_REV) * 360)
             * Constants.TurretConstants.PITCH_CONVERSION_FACTOR);
   }
 
@@ -574,7 +579,7 @@ public class TurretSubsystem extends SubsystemBase {
 
     updatePitchPosition();
     pitchVelocity =
-        (pitchCANcoder.getVelocity().getValueAsDouble())
+        (pitchCANcoder.getRate() / Constants.TurretConstants.PITCH_ENCODER_TICKS_PER_REV)
             * 60; // changing from rotations per second to rotations per minute or rpm
     pitchPositionEntry.log(pitchPosition);
     pitchVelocityEntry.log(pitchVelocity);
