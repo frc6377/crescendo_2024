@@ -224,7 +224,6 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
             Constants.SwerveDriveConstants.TURN_kP, 0, Constants.SwerveDriveConstants.TURN_kD);
     pid.enableContinuousInput(0, 360);
     pid.setSetpoint(0);
-    ;
     Runnable command =
         () -> {
           DriveRequest in = input.get();
