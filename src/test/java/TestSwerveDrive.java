@@ -5,6 +5,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
+import frc.robot.OI;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.SwerveSubsystem.DriveInput;
 import frc.robot.subsystems.SwerveSubsystem.DriveRequest;
@@ -27,7 +28,9 @@ public class TestSwerveDrive {
 
       for (int j = 0; j < perDirection; j++) {
         Matrix<N2, N1> translation = unitDirction.times(j / (perDirection + 0.0));
-        double actualMagnitude = MathUtil.applyDeadband(j / (perDirection + 0.0), deadband);
+        double actualMagnitude =
+            OI.Driver.translationMagnitudeCurve.calculate(
+                MathUtil.applyDeadband(j / (perDirection + 0.0), deadband));
 
         for (int rot = 0; rot < rotations; rot++) {
           DriveInput input = new DriveInput(translation.get(0, 0), translation.get(1, 0), rot);

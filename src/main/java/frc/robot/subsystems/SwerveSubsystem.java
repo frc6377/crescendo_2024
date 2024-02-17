@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
+import frc.robot.OI;
 import frc.robot.Robot;
 import frc.robot.Telemetry;
 import java.util.function.BiConsumer;
@@ -282,7 +283,8 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
       return new DriveRequest(0, 0, finalAlpha);
     }
 
-    double finalMag = MathUtil.applyDeadband(mag, deadband);
+    double finalMag =
+        OI.Driver.translationMagnitudeCurve.calculate(MathUtil.applyDeadband(mag, deadband));
     // Mixup is intentional, WPI has its coordinate plane from the perspective of the
     // scoring
     // table
