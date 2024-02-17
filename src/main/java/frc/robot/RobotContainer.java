@@ -212,24 +212,21 @@ public class RobotContainer {
     }
 
     // Shooter commands
-    if (Constants.enabledSubsystems.shooterEnabled
-        && Constants.enabledSubsystems.triggerEnabled
-        && Constants.enabledSubsystems.visionEnabled) {
+    if (Constants.enabledSubsystems.shooterEnabled && Constants.enabledSubsystems.triggerEnabled) {
       shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
-      OI.getTrigger(OI.Operator.shooterRevTrigger).whileTrue(shooterSubsystem.revShooter());
+      if (Constants.enabledSubsystems.visionEnabled) {
+        OI.getTrigger(OI.Operator.shooterRevTrigger).whileTrue(shooterSubsystem.revShooter());
 
-      OI.getTrigger(OI.Operator.shooterFireTrigger)
-          .whileTrue(
-              triggerSubsystem
-                  .getShootCommand()
-                  .onlyIf(shooterSubsystem.shooterReady())
-                  .onlyWhile(OI.getTrigger(OI.Operator.shooterRevTrigger)));
-      OI.getButton(OI.Operator.A).whileTrue(triggerSubsystem.getLoadCommand());
-    } else if (Constants.enabledSubsystems.shooterEnabled
-        && Constants.enabledSubsystems.triggerEnabled
-        && !Constants.enabledSubsystems.visionEnabled) {
-      shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
-      OI.getTrigger(OI.Operator.shooterFireTrigger).whileTrue(shooterSubsystem.bumperShoot());
+        OI.getTrigger(OI.Operator.shooterFireTrigger)
+            .whileTrue(
+                triggerSubsystem
+                    .getShootCommand()
+                    .onlyIf(shooterSubsystem.shooterReady())
+                    .onlyWhile(OI.getTrigger(OI.Operator.shooterRevTrigger)));
+        OI.getButton(OI.Operator.A).whileTrue(triggerSubsystem.getLoadCommand());
+      } else {
+        OI.getTrigger(OI.Operator.shooterFireTrigger).whileTrue(shooterSubsystem.bumperShoot());
+      }
     }
 
     if (Constants.enabledSubsystems.turretEnabled) {
