@@ -98,13 +98,14 @@ public class RobotContainer {
       intakeSubsystem = null;
     }
     triggerSubsystem = new TriggerSubsystem();
-    if (Constants.enabledSubsystems.limeLightEnabled
-        && Constants.enabledSubsystems.drivetrainEnabled) {
-      visionSubsystem =
-          new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer(), robotStateManager);
-    } else if (Constants.enabledSubsystems.photonEnabled
-        && Constants.enabledSubsystems.drivetrainEnabled) {
-      visionSubsystem = new PhotonSubsystem(drivetrain.getVisionMeasurementConsumer());
+    if (Constants.enabledSubsystems.visionEnabled) {
+      if (Constants.enabledSubsystems.drivetrainEnabled) {
+        visionSubsystem =
+            Constants.enabledSubsystems.usingPhoton
+                ? new PhotonSubsystem(drivetrain.getVisionMeasurementConsumer())
+                : new LimelightSubsystem(
+                    drivetrain.getVisionMeasurementConsumer(), robotStateManager);
+      }
     } else {
       visionSubsystem = null;
     }
@@ -114,12 +115,13 @@ public class RobotContainer {
       trapElvSubsystem = null;
     }
     if (Constants.enabledSubsystems.turretEnabled) {
-      if (Constants.enabledSubsystems.limeLightEnabled
-          || Constants.enabledSubsystems.photonEnabled) {
+      if (Constants.enabledSubsystems.visionEnabled) {
         turretSubsystem = new TurretSubsystem(robotStateManager, visionSubsystem);
       } else {
         turretSubsystem = new TurretSubsystem(robotStateManager, null);
       }
+    } else {
+      turretSubsystem = null;
     }
     // Configure the trigger bindings
     if (Constants.enabledSubsystems.drivetrainEnabled) {
@@ -196,7 +198,7 @@ public class RobotContainer {
     // Shooter commands
     if (Constants.enabledSubsystems.shooterEnabled
         && Constants.enabledSubsystems.triggerEnabled
-        && Constants.enabledSubsystems.limeLightEnabled) {
+        && Constants.enabledSubsystems.visionEnabled) {
       shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
       OI.getTrigger(OI.Operator.shooterRevTrigger).whileTrue(shooterSubsystem.revShooter());
 
@@ -209,7 +211,7 @@ public class RobotContainer {
       OI.getButton(OI.Operator.A).whileTrue(triggerSubsystem.getLoadCommand());
     } else if (Constants.enabledSubsystems.shooterEnabled
         && Constants.enabledSubsystems.triggerEnabled
-        && !Constants.enabledSubsystems.limeLightEnabled) {
+        && !Constants.enabledSubsystems.visionEnabled) {
       shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
       OI.getTrigger(OI.Operator.shooterFireTrigger).whileTrue(shooterSubsystem.bumperShoot());
     }

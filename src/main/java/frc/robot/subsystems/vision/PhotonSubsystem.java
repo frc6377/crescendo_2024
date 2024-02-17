@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
@@ -23,7 +22,7 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
+public class PhotonSubsystem extends VisionSubsystem {
   private double measurementsUsed = 0;
   private DebugEntry<Double> measurementEntry = new DebugEntry<Double>(0.0, "measurements", this);
 
@@ -103,9 +102,9 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
                 + Math.pow(
                     pose.estimatedPose.getZ() - lastPose.estimatedPose.getZ(),
                     2)); // 3D distance formula (same one as used in periodic)
-    if (distanceBetweenPoses > Constants.VisionConstants.MAX_ACCEPTABLE_ERROR_METERS
-        && Math.abs(pose.timestampSeconds - lastPose.timestampSeconds)
-            < Constants.VisionConstants.MAX_TIME_BETWEEN_POSES_SECONDS) {
+    if ((distanceBetweenPoses > Constants.VisionConstants.MAX_ACCEPTABLE_ERROR_METERS)
+        && (Math.abs(pose.timestampSeconds - lastPose.timestampSeconds)
+            < Constants.VisionConstants.MAX_TIME_BETWEEN_POSES_SECONDS)) {
       System.out.println("POSE REJECTED");
       return false; // pose is invalid
     } else {
@@ -146,13 +145,15 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
         List<PhotonTrackedTarget> targets = mainResult.getTargets();
         if (targets.size() > 1) {
           EstimatedRobotPose newPose = getPVEstimatedPose();
-          if (checkPoseValidity(newPose)) {
-            lastPose = newPose;
-          }
-          measurementsUsed++;
-          measurementConsumer.accept(getPose2d(), getTime());
-          if (measurementsUsed % 100 == 0) {
-            measurementEntry.log(measurementsUsed);
+          if ((newPose.estimatedPose.getX() > 12) || (newPose.estimatedPose.getX() < 4.54)) {
+            if (checkPoseValidity(newPose)) {
+              lastPose = newPose;
+            }
+            measurementsUsed++;
+            measurementConsumer.accept(getPose2d(), getTime());
+            if (measurementsUsed % 100 == 0) {
+              measurementEntry.log(measurementsUsed);
+            }
           }
         }
         // logging stuff

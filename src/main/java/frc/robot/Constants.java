@@ -159,8 +159,8 @@ public final class Constants {
   public static class enabledSubsystems {
     public static final boolean intakeEnabled = true;
     public static final boolean drivetrainEnabled = true;
-    public static final boolean limeLightEnabled = false;
-    public static final boolean photonEnabled = true;
+    public static final boolean visionEnabled = true;
+    public static final boolean usingPhoton = true;
     public static final boolean elvEnabled = true;
     public static final boolean signalEnabled = true;
     public static final boolean shooterEnabled = true;
