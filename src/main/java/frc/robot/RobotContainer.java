@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.RobotStateManager;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -52,6 +53,7 @@ public class RobotContainer {
   private final ShooterSubsystem shooterSubsystem;
   private final TriggerSubsystem triggerSubsystem;
   private final TurretSubsystem turretSubsystem;
+  private final ClimberSubsystem climberSubsystem;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final SwerveSubsystem drivetrain;
@@ -111,6 +113,11 @@ public class RobotContainer {
       trapElvSubsystem = new TrapElvSubsystem();
     } else {
       trapElvSubsystem = null;
+    }
+    if (Constants.enabledSubsystems.climberEnabled) {
+      climberSubsystem = new ClimberSubsystem();
+    } else {
+      climberSubsystem = null;
     }
     // Configure the trigger bindings
     if (Constants.enabledSubsystems.drivetrainEnabled) {

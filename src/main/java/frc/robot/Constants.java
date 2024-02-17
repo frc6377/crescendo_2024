@@ -153,6 +153,7 @@ public final class Constants {
     public static final boolean shooterEnabled = true;
     public static final boolean triggerEnabled = true;
     public static final boolean turretEnabled = true;
+    public static final boolean climberEnabled = true;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
@@ -163,4 +164,14 @@ public final class Constants {
 
   // Lights
   public static final int LED_COUNT = 20;
+
+  public static class ClimberConstants {
+    public static final double GEAR_RATIO = 0;
+    public static final double MAX_ERROR = 0;
+    public static final double PICK_UP = 0;
+    public static final double CLIP_VOLTAGE = 0;
+    public static final double LIFT_SETPOINT = 0;
+    public static final double IDLE_SETPOINT = 0;
+    public static final double MINIMUM_WAIT = 0.5; // in seconds
+  }
 }
