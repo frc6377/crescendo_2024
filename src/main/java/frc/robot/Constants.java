@@ -148,13 +148,6 @@ public final class Constants {
   }
 
   public static class VisionConstants {
-    public static final double ALPHABOT_LIMELIGHT_X_INCHES = 4.34645669;
-    public static final double ALPHABOT_LIMELIGHT_Y_INCHES = 0;
-    public static final double ALPHABOT_LIMELIGHT_Z_INCHES = 17.28346;
-    public static final double ALPHABOT_LIMELIGHT_ROLL_RADIANS = Math.toRadians(0);
-    public static final double ALPHABOT_LIMELIGHT_PITCH_RADIANS = Math.toRadians(-18);
-    public static final double ALPHABOT_LIMELIGHT_YAW_RADIANS = Math.toRadians(180);
-
     public static final double TURRET_LIMELIGHT_HEIGHT_INCHES = 17.85;
     public static final double MAX_ACCEPTABLE_ERROR_METERS = 2;
     public static final double MAX_TIME_BETWEEN_POSES_SECONDS = 0.2; // 10 periodic cycles

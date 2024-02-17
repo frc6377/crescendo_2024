@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.config.DynamicRobotConfig;
 import frc.robot.utilities.DebugEntry;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,7 @@ public class PhotonSubsystem extends VisionSubsystem {
   private DebugEntry<Double> measurementEntry = new DebugEntry<Double>(0.0, "measurements", this);
 
   private final BiConsumer<Pose2d, Double> measurementConsumer;
+  private Transform3d robotToCam;
 
   private PhotonCamera mainCamera;
   private PhotonCamera turretCamera;
@@ -43,6 +45,7 @@ public class PhotonSubsystem extends VisionSubsystem {
 
   public PhotonSubsystem(BiConsumer<Pose2d, Double> measurementConsumer) {
     this.measurementConsumer = measurementConsumer;
+    robotToCam = DynamicRobotConfig.getLimelightTransform();
     mainCamera = new PhotonCamera(Constants.VisionConstants.MAIN_CAMERA_NAME);
     turretCamera = new PhotonCamera(Constants.VisionConstants.TURRET_CAMERA_NAME);
     mainResult = mainCamera.getLatestResult();
@@ -53,15 +56,7 @@ public class PhotonSubsystem extends VisionSubsystem {
             aprilTagFieldLayout,
             PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
             mainCamera,
-            new Transform3d(
-                new Translation3d(
-                    Units.inchesToMeters(Constants.VisionConstants.ALPHABOT_LIMELIGHT_X_INCHES),
-                    Units.inchesToMeters(Constants.VisionConstants.ALPHABOT_LIMELIGHT_Y_INCHES),
-                    Units.inchesToMeters(Constants.VisionConstants.ALPHABOT_LIMELIGHT_Z_INCHES)),
-                new Rotation3d(
-                    Constants.VisionConstants.ALPHABOT_LIMELIGHT_ROLL_RADIANS,
-                    Constants.VisionConstants.ALPHABOT_LIMELIGHT_PITCH_RADIANS,
-                    Constants.VisionConstants.ALPHABOT_LIMELIGHT_YAW_RADIANS)));
+            robotToCam);
   }
 
   private EstimatedRobotPose getPVEstimatedPose() {
