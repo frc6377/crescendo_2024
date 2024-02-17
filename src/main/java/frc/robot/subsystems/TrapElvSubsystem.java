@@ -69,6 +69,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   private final CANcoder wristEncoder;
   private SimDeviceSim simWristCoder;
   private SimDouble simWristPos;
+  private SimDouble simWristVel;
 
   private DebugEntry<Boolean> sourceLog;
   private DebugEntry<Boolean> groundLog;
@@ -132,7 +133,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   /** Creates a new TrapArm. */
   public TrapElvSubsystem() {
     // Wrist
-    wristMotor = new CANSparkMax(TrapElvConstants.WRIST_MOTOR_ID, MotorType.kBrushless);
+    wristMotor = new CANSparkMax(TrapElvConstants.WRIST_MOTOR_ID, MotorType.kBrushed);
     wristMotor.restoreFactoryDefaults();
     wristPIDController =
         new PIDController(
@@ -143,8 +144,9 @@ public class TrapElvSubsystem extends SubsystemBase {
     wristFeedforward =
         new ArmFeedforward(
             TrapElvConstants.WRIST_FF[0],
-            TrapElvConstants.WRIST_FF[1] / 2.0,
-            TrapElvConstants.WRIST_FF[2]);
+            TrapElvConstants.WRIST_FF[1],
+            TrapElvConstants.WRIST_FF[2],
+            TrapElvConstants.WRIST_FF[3]);
     TrapElvTab.add("Wrist PID", wristPIDController);
 
     wristEncoder = new CANcoder(TrapElvConstants.WRIST_ENCODER_ID);
@@ -242,7 +244,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
       m_wristMotorSim =
           new SingleJointedArmSim(
-              DCMotor.getNEO(1),
+              DCMotor.getBag(1),
               TrapElvConstants.WRIST_GEAR_RATIO,
               TrapElvConstants.WRIST_MOI,
               TrapElvConstants.WRIST_LENGTH,
@@ -255,6 +257,8 @@ public class TrapElvSubsystem extends SubsystemBase {
 
       simWristCoder = new SimDeviceSim("CANEncoder:CANCoder (v6)", wristEncoder.getDeviceID());
       simWristPos = simWristCoder.getDouble("rawPositionInput");
+      simWristVel = simWristCoder.getDouble("velocity");
+
       wristEncoder.setPosition(0);
     }
   }
@@ -403,12 +407,12 @@ public class TrapElvSubsystem extends SubsystemBase {
       scoringLog.log(sourceBreak.get());
     }
 
-    FF =
-        wristFeedforward.calculate(
-            Units.rotationsToRadians(wristEncoder.getPosition().getValueAsDouble()), 0);
+    FF = wristFeedforward.calculate(wristEncoder.getPosition().getValueAsDouble(), 0);
     wristMotor.setVoltage(
         MathUtil.clamp(
-            wristPIDController.calculate(wristEncoder.getPosition().getValueAsDouble(), wristState)
+            wristPIDController.calculate(
+                    Units.rotationsToDegrees(wristEncoder.getPosition().getValueAsDouble()),
+                    Units.rotationsToDegrees(wristState))
                 + FF,
             -12,
             12));
@@ -436,15 +440,15 @@ public class TrapElvSubsystem extends SubsystemBase {
     }
 
     // Wrist Sim Stuff
-    m_wristMotorSim.setInput(wristMotor.getAppliedOutput() * RobotController.getBatteryVoltage());
+    m_wristMotorSim.setInput(wristMotor.getAppliedOutput());
     m_wristMotorSim.update(Robot.defaultPeriodSecs);
     simWristPos.set(Units.radiansToRotations(m_wristMotorSim.getAngleRads()));
+    simWristVel.set(Units.radiansToRotations(m_wristMotorSim.getVelocityRadPerSec()));
     // Offest added so that gravity is simulated in the right direction
     wristMech.setAngle(Units.radiansToDegrees(m_wristMotorSim.getAngleRads()) - 90);
+    SmartDashboard.putNumber("Current Draw Wrist (A)", m_wristMotorSim.getCurrentDrawAmps());
 
-    SmartDashboard.putNumber(
-        "Wrist Motor Sim Output",
-        wristMotor.getAppliedOutput() * RobotController.getBatteryVoltage());
+    SmartDashboard.putNumber("Wrist Motor Sim Output", wristMotor.getAppliedOutput());
     SmartDashboard.putNumber(
         "Wrist Sim Angle", Units.radiansToRotations(m_wristMotorSim.getAngleRads()));
 
