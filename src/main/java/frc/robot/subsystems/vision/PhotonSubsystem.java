@@ -23,7 +23,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class PhotonSubsystem extends VisionSubsystem {
-  private double measurementsUsed = 0;
+  private int measurementsUsed = 0;
   private DebugEntry<Double> measurementEntry = new DebugEntry<Double>(0.0, "measurements", this);
 
   private final BiConsumer<Pose2d, Double> measurementConsumer;
@@ -152,7 +152,7 @@ public class PhotonSubsystem extends VisionSubsystem {
             measurementsUsed++;
             measurementConsumer.accept(getPose2d(), getTime());
             if (measurementsUsed % 100 == 0) {
-              measurementEntry.log(measurementsUsed);
+              measurementEntry.log((double) measurementsUsed);
             }
           }
         }
