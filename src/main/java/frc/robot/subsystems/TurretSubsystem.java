@@ -12,7 +12,6 @@ import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAbsoluteEncoder;
-
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -22,7 +21,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -244,8 +242,7 @@ public class TurretSubsystem extends SubsystemBase {
             Constants.TurretConstants.PITCH_KP,
             Constants.TurretConstants.PITCH_KI,
             Constants.TurretConstants.PITCH_KD);
-    pitchEncoder =
-        pitchMotor.getAbsoluteEncoder();
+    pitchEncoder = pitchMotor.getAbsoluteEncoder();
 
     simPitchEncoder =
         new SimDeviceSim("CANEncoder:CANCoder (v6)", Constants.TurretConstants.PITCH_ENCODER_ID);
@@ -288,8 +285,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   private double calculatePitchPosition() {
     return Math.toRadians(
-        (pitchEncoder.getPosition() * 360)
-            * Constants.TurretConstants.PITCH_CONVERSION_FACTOR);
+        (pitchEncoder.getPosition() * 360) * Constants.TurretConstants.PITCH_CONVERSION_FACTOR);
   }
 
   /**
