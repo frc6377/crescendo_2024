@@ -425,7 +425,7 @@ public class TrapElvSubsystem extends SubsystemBase {
                     Units.rotationsToDegrees(getWristEncoderPos()),
                     Units.rotationsToDegrees(wristState))
                 + FF,
-            -12,s
+            -12,
             12));
     FFOutput.setDouble(FF);
 

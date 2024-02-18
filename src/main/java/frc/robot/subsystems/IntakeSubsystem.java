@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,7 +19,8 @@ import frc.robot.stateManagement.PlacementMode;
 public class IntakeSubsystem extends SubsystemBase {
   private CANSparkMax intakeMotor;
   private CANSparkMax chooserMotor;
-
+  private GenericEntry intakeOutput;
+  private GenericEntry chooserOutput;
   private ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
 
   public IntakeSubsystem() {
@@ -37,6 +39,8 @@ public class IntakeSubsystem extends SubsystemBase {
         .withSize(2, 1);
     intakeTab.add("Amp Chooser", new InstantCommand(() -> ampChooser(), this)).withSize(2, 1);
     intakeTab.add("Stop motors", new InstantCommand(() -> stopMotors(), this)).withSize(2, 1);
+    intakeOutput = intakeTab.add("Intake Motor Output", 0).withPosition(3, 0).getEntry();
+    chooserOutput = intakeTab.add("Chooser Motor Output", 0).withPosition(3, 1).getEntry();
   }
 
   // TODO: Add check to make sure turret is below 45 degrees before running & add photogate when
@@ -97,7 +101,10 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    intakeOutput.setDouble(intakeMotor.getAppliedOutput());
+    chooserOutput.setDouble(chooserMotor.getAppliedOutput());
+  }
 
   @Override
   public void simulationPeriodic() {
