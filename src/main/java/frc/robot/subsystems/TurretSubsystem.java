@@ -84,8 +84,7 @@ public class TurretSubsystem extends SubsystemBase {
   private Mechanism2d pitchMech;
   private MechanismRoot2d pitchRoot;
   private MechanismLigament2d pitchAngleSim;
-  private final SimDeviceSim simPitchEncoder;
-  private final SimDouble simPitchPos;
+  // private final SimDouble simPitchPos;
   private final ArmFeedforward pitchFeedForward;
 
   private final PIDController pitchPIDController;
@@ -243,10 +242,6 @@ public class TurretSubsystem extends SubsystemBase {
             Constants.TurretConstants.PITCH_KI,
             Constants.TurretConstants.PITCH_KD);
     pitchEncoder = pitchMotor.getAbsoluteEncoder();
-
-    simPitchEncoder =
-        new SimDeviceSim("CANEncoder:CANCoder (v6)", Constants.TurretConstants.PITCH_ENCODER_ID);
-    simPitchPos = simPitchEncoder.getDouble("rawPositionInput");
 
     pitchPIDController.setIZone(Constants.TurretConstants.PITCH_KIZ);
 
@@ -442,7 +437,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   private void holdPosition() {
-    setTurretPos(turretPosition);
+    setTurretPos(0);
     setPitchPos(0);
   }
 
@@ -519,7 +514,6 @@ public class TurretSubsystem extends SubsystemBase {
       }
     } else {
       // TODO: Make turret default to using odometry
-      System.out.println("HELP");
       setTurretPos(60);
     }
   }
@@ -594,9 +588,6 @@ public class TurretSubsystem extends SubsystemBase {
     pitchSim.update(Robot.defaultPeriodSecs);
     pitchAngleSim.setAngle(Math.toDegrees(pitchSim.getAngleRads()));
     SmartDashboard.putNumber("Turret Angle", Math.toDegrees(pitchSim.getAngleRads()));
-    simPitchPos.set(
-        Units.radiansToRotations(
-            pitchSim.getAngleRads() / Constants.TurretConstants.PITCH_CONVERSION_FACTOR));
   }
 
   private double getTurretRotationFromOdometry(Pose2d robotPos, Pose2d targetPos) {
