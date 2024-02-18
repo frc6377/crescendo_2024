@@ -1,0 +1,55 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.532928225760986,
+      "y": 7.0
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle steal 1-1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle steal 1-2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle steal 1-3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle steal 1-4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle steal 1-5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle steal 1-6"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

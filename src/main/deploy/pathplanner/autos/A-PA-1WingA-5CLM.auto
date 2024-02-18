@@ -1,0 +1,67 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.53,
+      "y": 7.0
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "One2 Amp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "One2 Amp2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp return"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "amp to outer notes"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle steal 1-3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle steal 1-4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle steal 1-5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle steal 1-6"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

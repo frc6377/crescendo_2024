@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "One3"
+            "pathName": "D1-E4Intake"
           }
         },
         {
@@ -26,7 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Two3"
+            "pathName": "E4-E3Shoot"
           }
         },
         {
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Three3"
+            "pathName": "E3-D4Intake"
           }
         },
         {
@@ -50,7 +50,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Four3"
+            "pathName": "D4-D3Shoot"
           }
         },
         {
@@ -62,7 +62,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Five3"
+            "pathName": "D3-C4Intake"
           }
         },
         {
@@ -74,7 +74,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Six3"
+            "pathName": "C4-B3Shoot"
           }
         },
         {
@@ -86,7 +86,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Seven3"
+            "pathName": "B3-B4Intake"
           }
         }
       ]
