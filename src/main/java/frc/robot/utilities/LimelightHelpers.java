@@ -2,6 +2,7 @@
 
 package frc.robot.utilities;
 
+import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain.SwerveDriveState;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -18,6 +19,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Robot;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -432,13 +435,35 @@ public class LimelightHelpers {
   }
   /////
   /////
+  private static double horizAngle;
+  private static double vertAngle;
 
   public static double getTX(String limelightName) {
+    if (Robot.isSimulation()) {
+      return horizAngle;
+    }
     return getLimelightNTDouble(limelightName, "tx");
   }
 
   public static double getTY(String limelightName) {
+    if (Robot.isSimulation()) {
+      return vertAngle;
+    }
     return getLimelightNTDouble(limelightName, "ty");
+  }
+
+  public static void simPose(SwerveDriveState state) {
+    double newX =
+        state.Pose.getX()
+            - (SmartDashboard.getBoolean("IsRedAlliance", true) == true ? (8.308467 * 2) : 0);
+    double newY = state.Pose.getY() - (1.451102 + 3.837865);
+    double horizontalAngle = Math.atan(newY / newX);
+    double verticalAngle = Math.atan(0.4572 / Math.sqrt(Math.pow(newX, 2) + Math.pow(newY, 2)));
+    horizAngle = horizontalAngle;
+    vertAngle = verticalAngle;
+    SmartDashboard.putNumber("Horizontal Angle", horizAngle);
+    SmartDashboard.putNumber("Vertical Angle", vertAngle);
+    SmartDashboard.putNumber("X Distance", newX);
   }
 
   public static double getTA(String limelightName) {
