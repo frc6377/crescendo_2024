@@ -82,17 +82,14 @@ public class TrapElvSubsystem extends SubsystemBase {
   private ElevatorSim m_scoringElevatorSim;
   private SingleJointedArmSim m_wristMotorSim;
 
-  private DebugEntry<Double> offsetEntry;
   private DebugEntry<Double> currentPositionEntry;
 
   private ShuffleboardTab TrapElvTab = Shuffleboard.getTab("TrapElvSubsystem");
   private GenericEntry baseGoal = TrapElvTab.add("Base Goal", 0).withPosition(9, 0).getEntry();
   private GenericEntry FFOutput = TrapElvTab.add("FF Output", 0).withPosition(8, 0).getEntry();
-  private GenericEntry wristOutput =
+  private GenericEntry wristOutput = 
       TrapElvTab.add("Wrist Motor Output", 0).withPosition(7, 0).getEntry();
   private GenericEntry wristGoal = TrapElvTab.add("Wrist Goal", 0).withPosition(6, 0).getEntry();
-  private GenericEntry wristEncoderOutput =
-      TrapElvTab.add("Wrist Encoder Output", 0).withSize(2, 1).getEntry();
 
   private double FF;
 
@@ -139,7 +136,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     // Wrist
     wristMotor = new CANSparkMaxSim(TrapElvConstants.WRIST_MOTOR_ID, MotorType.kBrushless);
     wristMotor.restoreFactoryDefaults();
-    wristPIDController = new PIDController(0, 0, 0);
+    wristPIDController = new PIDController(1, 0, 0);
     wristPIDController.setIZone(TrapElvConstants.WRIST_PID[3]);
     wristFeedforward =
         new ArmFeedforward(
@@ -157,13 +154,6 @@ public class TrapElvSubsystem extends SubsystemBase {
     sourceBreak = new DigitalInput(TrapElvConstants.SOURCE_BREAK_ID);
     groundBreak = new DigitalInput(TrapElvConstants.GROUND_BREAK_ID);
 
-    offsetEntry = new DebugEntry<Double>(0.0, "Wrist Offset", this);
-    currentPositionEntry = new DebugEntry<>(getWristEncoderPos(), "Current wrist Position", this);
-
-    TrapElvTab.add("Intake Source", intakeSource()).withPosition(2, 0);
-    TrapElvTab.add("Intake Ground", intakeGround()).withPosition(3, 0);
-    TrapElvTab.add("Stow Wrist", new InstantCommand(() -> stowTrapElv())).withPosition(4, 0);
-    TrapElvTab.add("Amp Score", scoreAMP()).withPosition(5, 0);
     // Elv
     if (isElv) {
       baseLimit = new DigitalInput(TrapElvConstants.BASE_BREAK_ID);
@@ -200,10 +190,6 @@ public class TrapElvSubsystem extends SubsystemBase {
       scoringMotor.getPIDController().setFF(TrapElvConstants.SCORING_PID[4]);
       TrapElvTab.add("Scoring Elv PID", scoringMotor.getPIDController());
     }
-
-    // SmartDashboard
-    sourceLog = new DebugEntry<Boolean>(sourceBreak.get(), "Source Beam Break", this);
-    groundLog = new DebugEntry<Boolean>(groundBreak.get(), "Ground Beam Break", this);
 
     // Simulation
     if (Robot.isSimulation()) {
@@ -263,6 +249,16 @@ public class TrapElvSubsystem extends SubsystemBase {
       TrapElvTab.add("Trap Arm Mech", elvMechanism).withPosition(7, 7);
       wristEncoder.setZeroOffset(TrapElvConstants.WRIST_ZERO_OFFSET);
     }
+
+    // SmartDashboard
+    TrapElvTab.add("Intake Source", intakeSource()).withPosition(2, 0);
+    TrapElvTab.add("Intake Ground", intakeGround()).withPosition(3, 0);
+    TrapElvTab.add("Stow Wrist", new InstantCommand(() -> stowTrapElv())).withPosition(4, 0);
+    TrapElvTab.add("Amp Score", scoreAMP()).withPosition(5, 0);
+
+    sourceLog = new DebugEntry<Boolean>(sourceBreak.get(), "Source Beam Break", this);
+    groundLog = new DebugEntry<Boolean>(groundBreak.get(), "Ground Beam Break", this);
+    currentPositionEntry = new DebugEntry<>(getWristEncoderPos(), "Current wrist Position", this);
   }
 
   // Boolean Suppliers
@@ -401,7 +397,10 @@ public class TrapElvSubsystem extends SubsystemBase {
   }
 
   private double getWristEncoderPos() {
-    return wristEncoder.getPosition() - TrapElvConstants.WRIST_ZERO_OFFSET;
+    if (Robot.isReal()) {
+      return wristEncoder.getPosition() - TrapElvConstants.WRIST_ZERO_OFFSET;
+    }
+    return Units.radiansToRotations(m_wristMotorSim.getAngleRads());
   }
 
   // 0.7092
@@ -441,8 +440,6 @@ public class TrapElvSubsystem extends SubsystemBase {
     // Offest added so that gravity is simulated in the right direction
     wristMech.setAngle(Units.radiansToDegrees(m_wristMotorSim.getAngleRads()) - 90);
     SmartDashboard.putNumber("Current Draw Wrist (A)", m_wristMotorSim.getCurrentDrawAmps());
-    SmartDashboard.putNumber(
-        "Wrist Sim Angle", Units.radiansToRotations(m_wristMotorSim.getAngleRads()));
 
     if (isElv) {
       for (double i = 0; i < Robot.defaultPeriodSecs; i += CANSparkMaxSim.kPeriod) {
