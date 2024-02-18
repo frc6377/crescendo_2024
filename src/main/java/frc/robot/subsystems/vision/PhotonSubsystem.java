@@ -47,6 +47,7 @@ public class PhotonSubsystem extends VisionSubsystem {
 
   public PhotonSubsystem(BiConsumer<Pose2d, Double> measurementConsumer) {
     this.measurementConsumer = measurementConsumer;
+    this.dynamicRobotConfig = new DynamicRobotConfig();
     limelightConfig = dynamicRobotConfig.getLimelightConfig();
     robotToCam =
         new Transform3d(
