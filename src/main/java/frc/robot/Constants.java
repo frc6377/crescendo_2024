@@ -123,10 +123,6 @@ public final class Constants {
     public static final double TURRET_PICKUP_ANGLE = 0;
     public static final double PITCH_PICKUP_ANGLE = 30;
 
-    // Limelight
-    public static final double LIMELIGHT_HEIGHT_METERS = 0.45339;
-    public static final double LIMELIGHT_PITCH_RADIANS = Math.toRadians(17.75);
-
     public static final double SPEAKER_TAG_CENTER_HEIGHT_METERS =
         1.450975; // Don't change unless FIRST changes the field layout
     public static final int SPEAKER_TAG_ID_RED = 4;
@@ -201,10 +197,20 @@ public final class Constants {
     public static final double WRIST_LENGTH = Units.inchesToMeters(12.5);
   }
 
+  public static class VisionConstants {
+    public static final double TURRET_LIMELIGHT_HEIGHT_INCHES = 17.85;
+    public static final double MAX_ACCEPTABLE_ERROR_METERS = 2;
+    public static final double MAX_TIME_BETWEEN_POSES_SECONDS = 0.2; // 10 periodic cycles
+
+    public static final String MAIN_CAMERA_NAME = "Camera_Module_Main";
+    public static final String TURRET_CAMERA_NAME = "Camera_Module_Turret";
+  }
+
   public static class enabledSubsystems {
     public static final boolean intakeEnabled = true;
     public static final boolean drivetrainEnabled = true;
-    public static final boolean limeLightEnabled = true;
+    public static final boolean visionEnabled = true;
+    public static final boolean usingPhoton = true;
     public static final boolean elvEnabled = true;
     public static final boolean signalEnabled = true;
     public static final boolean shooterEnabled = true;

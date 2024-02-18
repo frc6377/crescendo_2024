@@ -43,9 +43,9 @@ import frc.robot.config.DynamicRobotConfig;
 import frc.robot.config.TurretZeroConfig;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
+import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.HowdyMath;
-import frc.robot.utilities.LimelightHelpers;
 import java.util.function.Consumer;
 
 public class TurretSubsystem extends SubsystemBase {
@@ -109,8 +109,9 @@ public class TurretSubsystem extends SubsystemBase {
       new DebugEntry<Double>(0.0, "LastMeasuredTagDistance", this);
 
   private final RobotStateManager robotStateManager;
+  private final VisionSubsystem visionSubsystem;
 
-  public TurretSubsystem(RobotStateManager robotStateManager) {
+  public TurretSubsystem(RobotStateManager robotStateManager, VisionSubsystem visionSubsystem) {
     // Initialize Motors
     turretMotor = new CANSparkMax(Constants.TurretConstants.TURRET_MOTOR_ID, MotorType.kBrushless);
     pitchMotor = new CANSparkMax(Constants.TurretConstants.PITCH_MOTOR_ID, MotorType.kBrushless);
@@ -120,7 +121,6 @@ public class TurretSubsystem extends SubsystemBase {
             Constants.TurretConstants.PITCH_KG,
             Constants.TurretConstants.PITCH_KV,
             Constants.TurretConstants.PITCH_KA);
-
     // Simulation
     if (Robot.isSimulation()) {
       // Turret
@@ -168,6 +168,7 @@ public class TurretSubsystem extends SubsystemBase {
     pitchMotor.setSmartCurrentLimit(Constants.TurretConstants.PITCH_SMART_CURRENT_LIMIT);
 
     this.robotStateManager = robotStateManager;
+    this.visionSubsystem = visionSubsystem;
 
     // Soft Limits
     final double turretMinAngleRotations =
@@ -488,29 +489,28 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   private void aimTurret() {
-    double limelightTX = LimelightHelpers.getTX("limelight");
-    if (limelightTX != 0
-        && LimelightHelpers.getFiducialID("limelight")
-            == ((robotStateManager.getAllianceColor()
-                    == AllianceColor
-                        .BLUE) // Default to red because that's the color on our test field
-                ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
-                : Constants.TurretConstants.SPEAKER_TAG_ID_RED)) {
-      // X & Rotation
-      setTurretPos(Math.toRadians(limelightTX) + turretPosition);
+    if (visionSubsystem != null) {
+      int tagID =
+          ((robotStateManager.getAllianceColor()
+                  == AllianceColor
+                      .BLUE) // Default to red because that's the color on our test field
+              ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
+              : Constants.TurretConstants.SPEAKER_TAG_ID_RED);
+      double visionTX = visionSubsystem.getTurretYaw(tagID);
+      if (visionTX != 0) {
+        // X & Rotation
+        setTurretPos(Math.toRadians(visionTX) + turretPosition);
 
-      // Y & Pitch control
-      double limelightTY = LimelightHelpers.getTY("limelight");
-      double distanceToTag = tyToDistanceFromTag(limelightTY);
-      tagDistanceEntry.log(distanceToTag);
-      setPitchPos(distanceToShootingPitch(distanceToTag));
+        // Y & Tilting
+        double visionTY = visionSubsystem.getTurretPitch(tagID);
+        double distanceToTag = tyToDistanceFromTag(visionTY);
+        tagDistanceEntry.log(distanceToTag);
+        // TODO: Add vertical tilt and use distance for it
 
-      if (Math.toRadians(limelightTX) + turretPosition
-              > Math.toRadians(Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES)
-          || Math.toRadians(limelightTX) + turretPosition
-              < Math.toRadians(Constants.TurretConstants.TURRET_MIN_ANGLE_DEGREES)) {
-        // TODO: Make turret rotate the drivebase if necessary and the driver thinks it's a good
-        // idea
+        if (Math.abs(Math.toRadians(visionTX) + turretPosition)
+            > Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES)) {
+          // TODO: Make turret rotate the drivebase if necessary and driver thinks it's a good idea
+        }
       }
     } else {
       // TODO: Make turret default to using odometry
@@ -534,10 +534,13 @@ public class TurretSubsystem extends SubsystemBase {
    * @return The distance from the tag (meters)
    */
   private double tyToDistanceFromTag(double ty) {
-    double tagTheta = Math.toRadians(ty) + Constants.TurretConstants.LIMELIGHT_PITCH_RADIANS;
+    DynamicRobotConfig dynamicRobotConfig = new DynamicRobotConfig();
+    double tagTheta = Math.toRadians(ty) + dynamicRobotConfig.getLimelightConfig().limelightYMeters;
     double height =
         Constants.TurretConstants.SPEAKER_TAG_CENTER_HEIGHT_METERS
-            - Constants.TurretConstants.LIMELIGHT_HEIGHT_METERS;
+            - dynamicRobotConfig.getLimelightConfig()
+                .limelightZMeters; // TODO: Change these alphabot constants to be turret
+    // constants whenever the robot is built
     double distance = height / Math.tan(tagTheta);
     return distance;
   }
