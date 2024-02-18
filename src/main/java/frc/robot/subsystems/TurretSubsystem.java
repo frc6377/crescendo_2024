@@ -150,7 +150,9 @@ public class TurretSubsystem extends SubsystemBase {
 
     turretPIDController.setIZone(Constants.TurretConstants.KIZ);
 
-    zeroTurret();
+    if (Robot.isReal()) {
+      zeroTurret();
+    }
     turretTab.add("zero turret", zeroZeroing());
   }
 
@@ -304,7 +306,7 @@ public class TurretSubsystem extends SubsystemBase {
   private void setTurretPos(double setpoint) {
     turretGoalPositionEntry.log(setpoint);
     turretMotor.set(
-        -turretPIDController.calculate(
+        turretPIDController.calculate(
             turretPosition,
             MathUtil.clamp(
                 setpoint,
@@ -411,9 +413,7 @@ public class TurretSubsystem extends SubsystemBase {
     turretSim.update(Robot.defaultPeriodSecs);
     turretAngleSim.setAngle(Math.toDegrees(turretSim.getAngleRads()));
     SmartDashboard.putNumber("Turret Angle", Math.toDegrees(turretSim.getAngleRads()));
-    simTurretPos.set(
-        Units.radiansToRotations(
-            turretSim.getAngleRads() / Constants.TurretConstants.TURRET_MOTOR_TURRET_RATIO));
+    simTurretPos.set(Units.radiansToRotations(turretSim.getAngleRads()));
   }
 
   private double getTurretRotationFromOdometry(Pose2d robotPos, Pose2d targetPos) {
