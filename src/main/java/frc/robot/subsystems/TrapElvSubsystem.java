@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxSim;
 import com.revrobotics.SparkAbsoluteEncoder;
@@ -138,8 +137,12 @@ public class TrapElvSubsystem extends SubsystemBase {
     wristMotor = new CANSparkMaxSim(TrapElvConstants.WRIST_MOTOR_ID, MotorType.kBrushless);
     wristMotor.restoreFactoryDefaults();
     wristEncoder = wristMotor.getAbsoluteEncoder();
-    wristMotor.getEncoder().setPosition(wristEncoder.getPosition());
-    wristPIDController = new PIDController(1, 0, 0);
+    wristMotor
+        .getEncoder()
+        .setPosition(
+            (wristEncoder.getPosition() - TrapElvConstants.WRIST_ZERO_OFFSET)
+                * TrapElvConstants.WRIST_GEAR_RATIO);
+    wristPIDController = new PIDController(0.1, 0, 0);
     wristPIDController.setIZone(TrapElvConstants.WRIST_PID[3]);
     wristFeedforward =
         new ArmFeedforward(
@@ -399,7 +402,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   private double getWristEncoderPos() {
     if (Robot.isReal()) {
-      return wristEncoder.getPosition() - TrapElvConstants.WRIST_ZERO_OFFSET;
+      return wristMotor.getEncoder().getPosition() / TrapElvConstants.WRIST_GEAR_RATIO;
     }
     return Units.radiansToRotations(m_wristMotorSim.getAngleRads());
   }
@@ -437,7 +440,11 @@ public class TrapElvSubsystem extends SubsystemBase {
     // Wrist Sim Stuff
     m_wristMotorSim.setInput(wristMotor.getAppliedOutput());
     m_wristMotorSim.update(Robot.defaultPeriodSecs);
-    wristMotor.setAbsolutePosition(Units.radiansToRotations(m_wristMotorSim.getAngleRads()));
+    wristMotor
+        .getEncoder()
+        .setPosition(
+            Units.radiansToRotations(m_wristMotorSim.getAngleRads())
+                * TrapElvConstants.WRIST_GEAR_RATIO);
     // Offest added so that gravity is simulated in the right direction
     wristMech.setAngle(Units.radiansToDegrees(m_wristMotorSim.getAngleRads()) - 90);
     SmartDashboard.putNumber("Current Draw Wrist (A)", m_wristMotorSim.getCurrentDrawAmps());
