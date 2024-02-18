@@ -130,7 +130,7 @@ public final class Constants {
 
   public static class enabledSubsystems {
     public static final boolean intakeEnabled = false;
-    public static final boolean drivetrainEnabled = true;
+    public static final boolean drivetrainEnabled = false;
     public static final boolean limeLightEnabled = false;
     public static final boolean elvEnabled = false;
     public static final boolean signalEnabled = false;

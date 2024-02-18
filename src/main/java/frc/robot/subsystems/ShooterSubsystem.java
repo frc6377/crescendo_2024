@@ -48,8 +48,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private DebugEntry<Boolean> shooterReadyEntry;
 
-  private GenericEntry leftShooterRPM = shooterTab.add("Shooter Left RPM", 1000).getEntry();
-  private GenericEntry rightShooterRPM = shooterTab.add("Shooter Right RPM", 1000).getEntry();
+  private GenericEntry leftShooterRPM = shooterTab.add("Shooter Left RPM", 4000).getEntry();
+  private GenericEntry rightShooterRPM = shooterTab.add("Shooter Right RPM", 4000).getEntry();
 
   private SpeakerConfig targetSpeeds;
 
@@ -166,7 +166,7 @@ public class ShooterSubsystem extends SubsystemBase {
         () ->
             this.setShooterSpeeds(
                 new SpeakerConfig(
-                    -1, leftShooterRPM.getDouble(1000), rightShooterRPM.getDouble(1000))),
+                    -1, leftShooterRPM.getDouble(4000), rightShooterRPM.getDouble(4000))),
         () -> {
           shooterLeftMotor.stopMotor();
           shooterRightMotor.stopMotor();
@@ -203,7 +203,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public Trigger shooterReady() {
-    return new Trigger(this::isShooterReady).debounce(0.05);
+    return new Trigger(() -> true).debounce(0.05);
   }
   // Checks if shooter is ready.
   public boolean isShooterReady() {
