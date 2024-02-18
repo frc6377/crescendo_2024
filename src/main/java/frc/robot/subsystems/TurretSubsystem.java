@@ -170,7 +170,9 @@ public class TurretSubsystem extends SubsystemBase {
     double encoderPosition =
         lowGearCANcoder.getPosition().getValueAsDouble()
             / Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO;
-    return encoderPosition + Constants.TurretConstants.ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV;
+    return (encoderPosition + Constants.TurretConstants.ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV)
+        * Math.PI
+        * 2;
   }
 
   /**
