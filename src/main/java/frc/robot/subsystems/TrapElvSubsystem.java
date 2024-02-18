@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxSim;
 import com.revrobotics.SparkAbsoluteEncoder;
@@ -87,7 +88,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   private ShuffleboardTab TrapElvTab = Shuffleboard.getTab("TrapElvSubsystem");
   private GenericEntry baseGoal = TrapElvTab.add("Base Goal", 0).withPosition(9, 0).getEntry();
   private GenericEntry FFOutput = TrapElvTab.add("FF Output", 0).withPosition(8, 0).getEntry();
-  private GenericEntry wristOutput = 
+  private GenericEntry wristOutput =
       TrapElvTab.add("Wrist Motor Output", 0).withPosition(7, 0).getEntry();
   private GenericEntry wristGoal = TrapElvTab.add("Wrist Goal", 0).withPosition(6, 0).getEntry();
 
@@ -136,6 +137,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     // Wrist
     wristMotor = new CANSparkMaxSim(TrapElvConstants.WRIST_MOTOR_ID, MotorType.kBrushless);
     wristMotor.restoreFactoryDefaults();
+    wristMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
     wristPIDController = new PIDController(1, 0, 0);
     wristPIDController.setIZone(TrapElvConstants.WRIST_PID[3]);
     wristFeedforward =
@@ -237,7 +239,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
       m_wristMotorSim =
           new SingleJointedArmSim(
-              DCMotor.getBag(1),
+              DCMotor.getNEO(1),
               TrapElvConstants.WRIST_GEAR_RATIO,
               TrapElvConstants.WRIST_MOI,
               TrapElvConstants.WRIST_LENGTH,
