@@ -109,8 +109,8 @@ public final class Constants {
 
   public static class TrapElvConstants {
     // IDs | TODO: get real device IDs
-    public static final int WRIST_MOTOR_ID = 13;
-    public static final int ROLLER_MOTOR_ID = 12;
+    public static final int WRIST_MOTOR_ID = 12;
+    public static final int ROLLER_MOTOR_ID = 13;
     public static final int BASE_MOTOR1_ID = 22;
     public static final int BASE_MOTOR2_ID = 23;
     public static final int SCORING_MOTOR_ID = 24;
@@ -144,7 +144,7 @@ public final class Constants {
     public static final double WRIST_LENGTH = Units.inchesToMeters(11.877934);
     public static final double WRIST_MOI = 0.3175242664; // Moment of Inertia
     public static final double WRIST_GEAR_RATIO = 32.727272727272727272;
-    public static final double WRIST_ZERO_OFFSET = 0; // TODO: find real offset on robot
+    public static final double WRIST_ZERO_OFFSET = 0.1414; // TODO: find real offset on robot
   }
 
   public static class enabledSubsystems {

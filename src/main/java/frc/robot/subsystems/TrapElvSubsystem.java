@@ -91,18 +91,19 @@ public class TrapElvSubsystem extends SubsystemBase {
   private GenericEntry wristOutput =
       TrapElvTab.add("Wrist Motor Output", 0).withPosition(7, 0).getEntry();
   private GenericEntry wristGoal = TrapElvTab.add("Wrist Goal", 0).withPosition(6, 0).getEntry();
-  private GenericEntry wristEncoderOutput = TrapElvTab.add("Wrist Encoder Output", 0).withSize(2, 1).getEntry();
+  private GenericEntry wristEncoderOutput =
+      TrapElvTab.add("Wrist Encoder Output", 0).withSize(2, 1).getEntry();
 
   private double FF;
 
   // States
   public static enum TrapElvState {
     // Degrees, elv height, elv height
-    STOWED(-0.25, 0.0, 0.0),
-    FROM_INTAKE(-0.25, 0.0, 0.0),
-    FROM_SOURCE(-0.1, 0.0, 12.0),
+    STOWED(-0.11, 0.0, 0.0),
+    FROM_INTAKE(-0.11, 0.0, 0.0),
+    FROM_SOURCE(0.2, 0.0, 12.0),
     TRAP_SCORE(0.0, 12.0, 12.0),
-    AMP_SCORE(-0.2, 0.0, 12.0);
+    AMP_SCORE(0.435, 0.0, 12.0);
 
     private double wristPose;
     private double basePose;
@@ -138,11 +139,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     // Wrist
     wristMotor = new CANSparkMaxSim(TrapElvConstants.WRIST_MOTOR_ID, MotorType.kBrushed);
     wristMotor.restoreFactoryDefaults();
-    wristPIDController =
-        new PIDController(
-            TrapElvConstants.WRIST_PID[0],
-            TrapElvConstants.WRIST_PID[1],
-            TrapElvConstants.WRIST_PID[2]);
+    wristPIDController = new PIDController(0, 0, 0);
     wristPIDController.setIZone(TrapElvConstants.WRIST_PID[3]);
     wristFeedforward =
         new ArmFeedforward(
@@ -161,8 +158,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     groundBreak = new DigitalInput(TrapElvConstants.GROUND_BREAK_ID);
 
     offsetEntry = new DebugEntry<Double>(0.0, "Wrist Offset", this);
-    currentPositionEntry =
-        new DebugEntry<>(wristEncoder.getPosition(), "Current wrist Position", this);
+    currentPositionEntry = new DebugEntry<>(getWristEncoderPos(), "Current wrist Position", this);
 
     TrapElvTab.add("Intake Source", intakeSource()).withPosition(2, 0);
     TrapElvTab.add("Intake Ground", intakeGround()).withPosition(3, 0);
@@ -404,9 +400,17 @@ public class TrapElvSubsystem extends SubsystemBase {
     }
   }
 
+  private double getWristEncoderPos() {
+    return wristEncoder.getPosition() - TrapElvConstants.WRIST_ZERO_OFFSET;
+  }
+
+  // 0.7092
+  // Zero: 0.1414
+  // Start: 0.002
+
   @Override
   public void periodic() {
-    currentPositionEntry.log(wristEncoder.getPosition());
+    currentPositionEntry.log(getWristEncoderPos());
     sourceLog.log(sourceBreak.get());
     groundLog.log(groundBreak.get());
     if (isElv) {
@@ -414,14 +418,14 @@ public class TrapElvSubsystem extends SubsystemBase {
       scoringLog.log(sourceBreak.get());
     }
 
-    FF = wristFeedforward.calculate(wristEncoder.getPosition(), 0);
+    FF = wristFeedforward.calculate(getWristEncoderPos(), 0);
     wristMotor.setVoltage(
         MathUtil.clamp(
             wristPIDController.calculate(
-                    Units.rotationsToDegrees(wristEncoder.getPosition()),
+                    Units.rotationsToDegrees(getWristEncoderPos()),
                     Units.rotationsToDegrees(wristState))
                 + FF,
-            -12,
+            -12,s
             12));
     FFOutput.setDouble(FF);
 
