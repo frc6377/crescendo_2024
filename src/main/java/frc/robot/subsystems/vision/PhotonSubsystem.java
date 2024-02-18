@@ -8,10 +8,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.config.DynamicRobotConfig;
+import frc.robot.config.LimelightConfig;
 import frc.robot.utilities.DebugEntry;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +28,8 @@ public class PhotonSubsystem extends VisionSubsystem {
   private DebugEntry<Double> measurementEntry = new DebugEntry<Double>(0.0, "measurements", this);
 
   private final BiConsumer<Pose2d, Double> measurementConsumer;
+  private DynamicRobotConfig dynamicRobotConfig;
+  private LimelightConfig limelightConfig;
   private Transform3d robotToCam;
 
   private PhotonCamera mainCamera;
@@ -45,7 +47,17 @@ public class PhotonSubsystem extends VisionSubsystem {
 
   public PhotonSubsystem(BiConsumer<Pose2d, Double> measurementConsumer) {
     this.measurementConsumer = measurementConsumer;
-    robotToCam = DynamicRobotConfig.getLimelightTransform();
+    limelightConfig = dynamicRobotConfig.getLimelightConfig();
+    robotToCam =
+        new Transform3d(
+            new Translation3d(
+                limelightConfig.limelightXMeters,
+                limelightConfig.limelightYMeters,
+                limelightConfig.limelightZMeters),
+            new Rotation3d(
+                limelightConfig.limelightRollRadians,
+                limelightConfig.limelightPitchRadians,
+                limelightConfig.limelightYawRadians));
     mainCamera = new PhotonCamera(Constants.VisionConstants.MAIN_CAMERA_NAME);
     turretCamera = new PhotonCamera(Constants.VisionConstants.TURRET_CAMERA_NAME);
     mainResult = mainCamera.getLatestResult();
@@ -53,10 +65,7 @@ public class PhotonSubsystem extends VisionSubsystem {
     aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     poseEstimator =
         new PhotonPoseEstimator(
-            aprilTagFieldLayout,
-            PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-            mainCamera,
-            robotToCam);
+            aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, mainCamera, robotToCam);
   }
 
   private EstimatedRobotPose getPVEstimatedPose() {

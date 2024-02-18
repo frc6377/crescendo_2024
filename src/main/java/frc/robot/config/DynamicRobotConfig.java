@@ -1,8 +1,5 @@
 package frc.robot.config;
 
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Preferences;
@@ -23,12 +20,13 @@ public class DynamicRobotConfig {
     public static double backRightOffset = 0.2529296875;
     public static double lowGearTurretZero = 0;
     public static double highGearTurretZero = 0;
+
     public static double limelightXMeters = Units.inchesToMeters(4.34645669);
     public static double limelightYMeters = Units.inchesToMeters(0);
     public static double limelightZMeters = Units.inchesToMeters(17.28346);
-    public static double limelightRollInches = Math.toRadians(0);
-    public static double limelightPitchInches = Math.toRadians(-18);
-    public static double limelightYawInches = Math.toRadians(180);
+    public static double limelightRollRadians = Math.toRadians(0);
+    public static double limelightPitchRadians = Math.toRadians(-18);
+    public static double limelightYawRadians = Math.toRadians(180);
   }
 
   private static TunerConstants tunerConstants;
@@ -85,8 +83,14 @@ public class DynamicRobotConfig {
         ConfigVariables.lowGearTurretZero, ConfigVariables.highGearTurretZero);
   }
 
-  public static Transform3d getLimelightTransform() {
-    return new Transform3d(new Translation3d(ConfigVariables.limelightXMeters, ConfigVariables.limelightYMeters, ConfigVariables.limelightZMeters), new Rotation3d(ConfigVariables.limelightRollInches, ConfigVariables.limelightPitchInches, ConfigVariables.limelightYawInches));
+  public LimelightConfig getLimelightConfig() {
+    return new LimelightConfig(
+        ConfigVariables.limelightXMeters,
+        ConfigVariables.limelightYMeters,
+        ConfigVariables.limelightZMeters,
+        ConfigVariables.limelightRollRadians,
+        ConfigVariables.limelightPitchRadians,
+        ConfigVariables.limelightYawRadians);
   }
 
   private static void raiseWarning(String warning) {

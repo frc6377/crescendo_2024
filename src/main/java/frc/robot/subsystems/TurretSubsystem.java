@@ -378,12 +378,12 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   private double tyToDistanceFromTag(double ty) {
-    double tagTheta =
-        Math.toRadians(ty) + Constants.VisionConstants.ALPHABOT_LIMELIGHT_PITCH_RADIANS;
+    DynamicRobotConfig dynamicRobotConfig = new DynamicRobotConfig();
+    double tagTheta = Math.toRadians(ty) + dynamicRobotConfig.getLimelightConfig().limelightYMeters;
     double height =
         Constants.TurretConstants.SPEAKER_TAG_CENTER_HEIGHT_INCHES
-            - Constants.VisionConstants
-                .ALPHABOT_LIMELIGHT_Z_INCHES; // TODO: Change these alphabot constants to be turret
+            - dynamicRobotConfig.getLimelightConfig()
+                .limelightZMeters; // TODO: Change these alphabot constants to be turret
     // constants whenever the robot is built
     double distance = height / Math.tan(tagTheta);
     return distance;
