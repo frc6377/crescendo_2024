@@ -72,6 +72,7 @@ public final class Constants {
   public static class TurretConstants {
     public static final int MOTOR_ID = 9;
     public static final int CANcoder_ID = 17; // replace with actual CANcoder ID
+    public static final boolean IS_MOTOR_INVERTED = true;
 
     public static final double SPEAKER_TAG_CENTER_HEIGHT_INCHES =
         57.125; // Don't change unless FIRST changes the field layout

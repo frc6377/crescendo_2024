@@ -103,6 +103,7 @@ public class TurretSubsystem extends SubsystemBase {
 
     turretMotor.restoreFactoryDefaults();
     turretMotor.setSmartCurrentLimit(40);
+    turretMotor.setInverted(TurretConstants.IS_MOTOR_INVERTED);
 
     this.robotStateManager = robotStateManager;
     this.visionSubsystem = visionSubsystem;
