@@ -11,6 +11,8 @@ import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkAbsoluteEncoder;
+
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -89,7 +91,7 @@ public class TurretSubsystem extends SubsystemBase {
   private final ArmFeedforward pitchFeedForward;
 
   private final PIDController pitchPIDController;
-  private final Encoder pitchCANcoder;
+  private final SparkAbsoluteEncoder pitchEncoder;
   private double pitchPosition;
   private double pitchVelocity;
   private Consumer<Double> pitchTestPosition;
@@ -242,14 +244,11 @@ public class TurretSubsystem extends SubsystemBase {
             Constants.TurretConstants.PITCH_KP,
             Constants.TurretConstants.PITCH_KI,
             Constants.TurretConstants.PITCH_KD);
-    pitchCANcoder =
-        new Encoder(
-            Constants.TurretConstants.PITCH_ENCODER_ID_1,
-            Constants.TurretConstants.PITCH_ENCODER_ID_2,
-            false);
+    pitchEncoder =
+        pitchMotor.getAbsoluteEncoder();
 
     simPitchEncoder =
-        new SimDeviceSim("CANEncoder:CANCoder (v6)", Constants.TurretConstants.PITCH_ENCODER_ID_1);
+        new SimDeviceSim("CANEncoder:CANCoder (v6)", Constants.TurretConstants.PITCH_ENCODER_ID);
     simPitchPos = simPitchEncoder.getDouble("rawPositionInput");
 
     pitchPIDController.setIZone(Constants.TurretConstants.PITCH_KIZ);
@@ -289,7 +288,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   private double calculatePitchPosition() {
     return Math.toRadians(
-        ((pitchCANcoder.get() / Constants.TurretConstants.PITCH_ENCODER_TICKS_PER_REV) * 360)
+        (pitchEncoder.getPosition() * 360)
             * Constants.TurretConstants.PITCH_CONVERSION_FACTOR);
   }
 
@@ -579,7 +578,7 @@ public class TurretSubsystem extends SubsystemBase {
 
     updatePitchPosition();
     pitchVelocity =
-        (pitchCANcoder.getRate() / Constants.TurretConstants.PITCH_ENCODER_TICKS_PER_REV)
+        pitchEncoder.getVelocity()
             * 60; // changing from rotations per second to rotations per minute or rpm
     pitchPositionEntry.log(pitchPosition);
     pitchVelocityEntry.log(pitchVelocity);
