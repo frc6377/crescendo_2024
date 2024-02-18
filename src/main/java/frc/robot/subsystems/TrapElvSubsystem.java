@@ -137,7 +137,8 @@ public class TrapElvSubsystem extends SubsystemBase {
     // Wrist
     wristMotor = new CANSparkMaxSim(TrapElvConstants.WRIST_MOTOR_ID, MotorType.kBrushless);
     wristMotor.restoreFactoryDefaults();
-    wristMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
+    wristEncoder = wristMotor.getAbsoluteEncoder();
+    wristMotor.getEncoder().setPosition(wristEncoder.getPosition());
     wristPIDController = new PIDController(1, 0, 0);
     wristPIDController.setIZone(TrapElvConstants.WRIST_PID[3]);
     wristFeedforward =
@@ -147,8 +148,6 @@ public class TrapElvSubsystem extends SubsystemBase {
             TrapElvConstants.WRIST_FF[2],
             TrapElvConstants.WRIST_FF[3]);
     TrapElvTab.add("Wrist PID", wristPIDController).withSize(2, 2).withPosition(0, 0);
-
-    wristEncoder = wristMotor.getAbsoluteEncoder();
 
     rollerMotor = new CANSparkMax(TrapElvConstants.ROLLER_MOTOR_ID, MotorType.kBrushless);
     rollerMotor.restoreFactoryDefaults();
