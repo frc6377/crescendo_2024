@@ -24,9 +24,9 @@ public final class Constants {
 
   public static class IntakeConstants {
     // TODO: Get real CAN IDs
-    public static final int INTAKE_MOTOR_ID = 6;
-    public static final int INTAKE_CHOOSER_ID = 7;
-    public static final double INTAKE_PERCENTAGE = -0.75;
+    public static final int INTAKE_MOTOR_ID = 10;
+    public static final int INTAKE_CHOOSER_ID = 14;
+    public static final double INTAKE_PERCENTAGE = 0.75;
     public static final double CHOOSER_PERCENTAGE = -0.75;
   }
 
@@ -113,7 +113,7 @@ public final class Constants {
   public static class TrapElvConstants {
     // IDs | TODO: get real device IDs
     public static final int WRIST_MOTOR_ID = 20;
-    public static final int ROLLER_MOTOR_ID = 21;
+    public static final int ROLLER_MOTOR_ID = 13;
     public static final int BASE_MOTOR1_ID = 22;
     public static final int BASE_MOTOR2_ID = 23;
     public static final int SCORING_MOTOR_ID = 24;
@@ -124,7 +124,7 @@ public final class Constants {
     public static final int SCORING_BREAK_ID = 29;
 
     // Speeds
-    public static final double ROLLER_INTAKE_SPEED = 0.25;
+    public static final double ROLLER_INTAKE_SPEED = 0.5;
     public static final double ROLLER_SCORING_SPEED = 0.4;
     public static final double ELV_ZEROING_SPEED = 0.1; // Percent Power
 
@@ -162,10 +162,10 @@ public final class Constants {
     public static final boolean visionEnabled = true;
     public static final boolean usingPhoton = true;
     public static final boolean elvEnabled = true;
-    public static final boolean signalEnabled = true;
-    public static final boolean shooterEnabled = true;
-    public static final boolean triggerEnabled = true;
-    public static final boolean turretEnabled = true;
+    public static final boolean signalEnabled = false;
+    public static final boolean shooterEnabled = false;
+    public static final boolean triggerEnabled = false;
+    public static final boolean turretEnabled = false;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
