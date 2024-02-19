@@ -11,8 +11,10 @@ import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkAbsoluteEncoder;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -48,42 +50,80 @@ import java.util.function.Consumer;
 
 public class TurretSubsystem extends SubsystemBase {
 
-  private CANSparkMax turretMotor;
+  private final CANSparkMax turretMotor;
   private SingleJointedArmSim turretSim;
   private Mechanism2d turretMech;
-  private MechanismRoot2d root;
+  private MechanismRoot2d turretRoot;
   private MechanismLigament2d turretAngleSim;
-  private ShuffleboardTab turretTab = Shuffleboard.getTab("Turret Tab");
-  private SimDeviceSim simEncoder;
-  private SimDouble simTurretPos;
+  private final ShuffleboardTab turretTab = Shuffleboard.getTab("Turret Tab");
+  private final SimDeviceSim simTurretEncoder;
+  private final SimDouble simTurretPos;
 
-  private PIDController turretPIDController;
-  private CANcoder highGearCANcoder;
-  private CANcoder lowGearCANcoder;
+  private final PIDController turretPIDController;
+  private final CANcoder highGearCANcoder;
+  private final CANcoder lowGearCANcoder;
   private double turretPosition;
   private double turretVelocity;
-  private Consumer<Double> testPosition;
-  private ShuffleboardTab configTab = Shuffleboard.getTab("Config");
-  private GenericEntry kP = configTab.add("Turret KP", Constants.TurretConstants.KP).getEntry();
-  private GenericEntry kI = configTab.add("Turret KI", Constants.TurretConstants.KI).getEntry();
-  private GenericEntry kD = configTab.add("Turret KD", Constants.TurretConstants.KD).getEntry();
-  private DebugEntry<Double> turretPositionEntry =
-      new DebugEntry<Double>(turretPosition, "Position", this);
-  private DebugEntry<Double> turretGoalPositionEntry =
-      new DebugEntry<Double>(0.0, "Goal Position", this);
-  private DebugEntry<Double> turretVelocityEntry =
-      new DebugEntry<Double>(turretVelocity, "Velocity", this);
+  private Consumer<Double> turretTestPosition;
+  private final ShuffleboardTab configTab = Shuffleboard.getTab("Config");
+  private final GenericEntry turretKP =
+      configTab.add("Turret KP", Constants.TurretConstants.TURRET_KP).getEntry();
+  private final GenericEntry turretKI =
+      configTab.add("Turret KI", Constants.TurretConstants.TURRET_KI).getEntry();
+  private final GenericEntry turretKD =
+      configTab.add("Turret KD", Constants.TurretConstants.TURRET_KD).getEntry();
+  private final DebugEntry<Double> turretPositionEntry =
+      new DebugEntry<Double>(turretPosition, "Turret Position", this);
+  private final DebugEntry<Double> turretGoalPositionEntry =
+      new DebugEntry<Double>(0.0, "Turret Goal Position", this);
+  private final DebugEntry<Double> turretVelocityEntry =
+      new DebugEntry<Double>(turretVelocity, "Turret Velocity", this);
 
-  private DebugEntry<Double> tagDistanceEntry =
+  private final CANSparkMax pitchMotor;
+  private SingleJointedArmSim pitchSim;
+  private Mechanism2d pitchMech;
+  private MechanismRoot2d pitchRoot;
+  private MechanismLigament2d pitchAngleSim;
+  // private final SimDouble simPitchPos;
+  private final ArmFeedforward pitchFeedForward;
+
+  private final PIDController pitchPIDController;
+  private final SparkAbsoluteEncoder pitchEncoder;
+  private double pitchPosition;
+  private double pitchVelocity;
+  private Consumer<Double> pitchTestPosition;
+  private final GenericEntry pitchKP =
+      configTab.add("Pitch KP", Constants.TurretConstants.PITCH_KP).getEntry();
+  private final GenericEntry pitchKI =
+      configTab.add("Pitch KI", Constants.TurretConstants.PITCH_KI).getEntry();
+  private final GenericEntry pitchKD =
+      configTab.add("Pitch KD", Constants.TurretConstants.PITCH_KD).getEntry();
+  private final DebugEntry<Double> pitchPositionEntry =
+      new DebugEntry<Double>(pitchPosition, "Pitch Position", this);
+  private final DebugEntry<Double> pitchGoalPositionEntry =
+      new DebugEntry<Double>(0.0, "Pitch Goal Position", this);
+  private final DebugEntry<Double> pitchVelocityEntry =
+      new DebugEntry<Double>(pitchVelocity, "Pitch Velocity", this);
+
+  private final DebugEntry<Double> tagDistanceEntry =
       new DebugEntry<Double>(0.0, "LastMeasuredTagDistance", this);
 
   private final RobotStateManager robotStateManager;
   private final VisionSubsystem visionSubsystem;
 
   public TurretSubsystem(RobotStateManager robotStateManager, VisionSubsystem visionSubsystem) {
-    turretMotor = new CANSparkMax(Constants.TurretConstants.MOTOR_ID, MotorType.kBrushless);
+    // Initialize Motors
+    turretMotor = new CANSparkMax(Constants.TurretConstants.TURRET_MOTOR_ID, MotorType.kBrushless);
+    pitchMotor = new CANSparkMax(Constants.TurretConstants.PITCH_MOTOR_ID, MotorType.kBrushless);
+    pitchFeedForward =
+        new ArmFeedforward(
+            Constants.TurretConstants.PITCH_KS,
+            Constants.TurretConstants.PITCH_KG,
+            Constants.TurretConstants.PITCH_KV,
+            Constants.TurretConstants.PITCH_KA);
     // Simulation
     if (Robot.isSimulation()) {
+      // Turret
       turretSim =
           new SingleJointedArmSim(
               DCMotor.getNEO(1),
@@ -95,31 +135,72 @@ public class TurretSubsystem extends SubsystemBase {
               false,
               0);
       turretMech = new Mechanism2d(4, 4);
-      root = turretMech.getRoot("Root", 2, 2);
+      turretRoot = turretMech.getRoot("Root", 2, 2);
       turretAngleSim =
-          root.append(new MechanismLigament2d("Turret", 2, 0, 5, new Color8Bit(Color.kRed)));
+          turretRoot.append(new MechanismLigament2d("Turret", 2, 0, 5, new Color8Bit(Color.kRed)));
       turretTab.add("Turret", turretMech);
+
+      // pitch
+      pitchSim =
+          new SingleJointedArmSim(
+              DCMotor.getNEO(1),
+              Constants.TurretConstants.PITCH_CONVERSION_FACTOR,
+              Constants.TurretConstants.SHOOTER_MASS
+                  * Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY
+                  * Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY
+                  / 3,
+              Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY,
+              Math.toRadians(Constants.TurretConstants.PITCH_MIN_ANGLE_DEGREES),
+              Math.toRadians(Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES),
+              true,
+              0);
+      pitchMech = new Mechanism2d(4, 4);
+      pitchRoot = pitchMech.getRoot("Root", 2, 2);
+      pitchAngleSim =
+          pitchRoot.append(new MechanismLigament2d("Pitch", 2, 0, 5, new Color8Bit(Color.kBlue)));
+      turretTab.add("Pitch", pitchMech);
     }
 
     turretMotor.restoreFactoryDefaults();
-    turretMotor.setSmartCurrentLimit(40);
+    turretMotor.setSmartCurrentLimit(Constants.TurretConstants.TURRET_SMART_CURRENT_LIMIT);
+
+    pitchMotor.restoreFactoryDefaults();
+    pitchMotor.setSmartCurrentLimit(Constants.TurretConstants.PITCH_SMART_CURRENT_LIMIT);
 
     this.robotStateManager = robotStateManager;
     this.visionSubsystem = visionSubsystem;
 
+    // Soft Limits
+    final double turretMinAngleRotations =
+        (Constants.TurretConstants.TURRET_MIN_ANGLE_DEGREES
+            / (360 * Constants.TurretConstants.TURRET_MOTOR_TURRET_RATIO));
     turretMotor.setSoftLimit(
-        CANSparkMax.SoftLimitDirection.kReverse,
-        (float)
-            (-Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES
-                / (360 * Constants.TurretConstants.TURRET_MOTOR_TURRET_RATIO)));
+        CANSparkMax.SoftLimitDirection.kReverse, (float) turretMinAngleRotations);
+
+    final double turretMaxAngleRotations =
+        (Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES
+            / (360 * Constants.TurretConstants.TURRET_CONVERSION_FACTOR));
     turretMotor.setSoftLimit(
-        CANSparkMax.SoftLimitDirection.kForward,
-        (float)
-            (Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES
-                / (360 * Constants.TurretConstants.TURRET_MOTOR_TURRET_RATIO)));
+        CANSparkMax.SoftLimitDirection.kForward, (float) turretMaxAngleRotations);
+
+    // Pitch
+    final double pitchMinAngleRotations =
+        (Constants.TurretConstants.PITCH_MIN_ANGLE_DEGREES
+            / (360 * Constants.TurretConstants.PITCH_CONVERSION_FACTOR));
+    pitchMotor.setSoftLimit(
+        CANSparkMax.SoftLimitDirection.kReverse, (float) pitchMinAngleRotations);
+
+    final double pitchMaxAngleRotations =
+        (Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES
+            / (360 * Constants.TurretConstants.PITCH_CONVERSION_FACTOR));
+    pitchMotor.setSoftLimit(
+        CANSparkMax.SoftLimitDirection.kForward, (float) pitchMaxAngleRotations);
 
     turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
     turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
+
+    pitchMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
+    pitchMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
 
     // initialze PID controller and encoder objects
     turretPIDController =
@@ -142,13 +223,28 @@ public class TurretSubsystem extends SubsystemBase {
 
     highGearCANcoder.getConfigurator().apply(highGearSensorConfigs);
     lowGearCANcoder.getConfigurator().apply(lowGearSensorConfigs);
+    turretPIDController.setPID(
+        Constants.TurretConstants.TURRET_KP,
+        Constants.TurretConstants.TURRET_KI,
+        Constants.TurretConstants.TURRET_KD);
 
-    simEncoder =
+    simTurretEncoder =
         new SimDeviceSim(
             "CANEncoder:CANCoder (v6)", Constants.TurretConstants.highGearCAN_CODER_ID);
-    simTurretPos = simEncoder.getDouble("rawPositionInput");
+    simTurretPos = simTurretEncoder.getDouble("rawPositionInput");
 
-    turretPIDController.setIZone(Constants.TurretConstants.KIZ);
+    zeroTurret();
+    turretPIDController.setIZone(Constants.TurretConstants.TURRET_KIZ);
+
+    // Pitch
+    pitchPIDController =
+        new PIDController(
+            Constants.TurretConstants.PITCH_KP,
+            Constants.TurretConstants.PITCH_KI,
+            Constants.TurretConstants.PITCH_KD);
+    pitchEncoder = pitchMotor.getAbsoluteEncoder();
+
+    pitchPIDController.setIZone(Constants.TurretConstants.PITCH_KIZ);
 
     zeroTurret();
     turretTab.add("zero turret", zeroZeroing());
@@ -159,11 +255,21 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public Command stowTurret() {
-    return new InstantCommand(() -> setTurretPos(Math.toRadians(0))).withName("StowTurretCommand");
+    return new InstantCommand(
+            () -> setTurretPos(Math.toRadians(Constants.TurretConstants.TURRET_STOWED_ANGLE)))
+        .alongWith(
+            new InstantCommand(
+                () -> setPitchPos(Math.toRadians(Constants.TurretConstants.PITCH_STOWED_ANGLE))))
+        .withName("StowTurretCommand");
   }
 
-  public Command zeroTurretCommand() {
-    return Commands.runOnce(() -> this.zeroTurret(), this).withName("ZeroTurretCommand");
+  public Command pickup() {
+    return new InstantCommand(
+            () -> setTurretPos(Math.toRadians(Constants.TurretConstants.TURRET_PICKUP_ANGLE)))
+        .alongWith(
+            new InstantCommand(
+                () -> setPitchPos(Math.toRadians(Constants.TurretConstants.PITCH_PICKUP_ANGLE))))
+        .withName("StowTurretCommand");
   }
 
   public double calculateTurretPosition() {
@@ -171,6 +277,11 @@ public class TurretSubsystem extends SubsystemBase {
         lowGearCANcoder.getPosition().getValueAsDouble()
             / Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO;
     return encoderPosition + Constants.TurretConstants.ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV;
+  }
+
+  private double calculatePitchPosition() {
+    return Math.toRadians(
+        (pitchEncoder.getPosition() * 360) * Constants.TurretConstants.PITCH_CONVERSION_FACTOR);
   }
 
   /**
@@ -299,6 +410,10 @@ public class TurretSubsystem extends SubsystemBase {
     return divisionSize * division + CANCoderAngle * divisionSize;
   }
 
+  public Command zeroTurretCommand() {
+    return Commands.runOnce(() -> this.zeroTurret(), this).withName("ZeroTurretCommand");
+  }
+
   private void setTurretPos(double setpoint) {
     turretGoalPositionEntry.log(setpoint);
     turretMotor.set(
@@ -306,16 +421,38 @@ public class TurretSubsystem extends SubsystemBase {
             turretPosition,
             MathUtil.clamp(
                 setpoint,
-                Math.toRadians(-Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES),
-                Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES))));
+                Math.toRadians(Constants.TurretConstants.TURRET_MIN_ANGLE_DEGREES),
+                Math.toRadians(Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES))));
+  }
+
+  private void setPitchPos(double setpoint) {
+    pitchGoalPositionEntry.log(setpoint);
+    pitchMotor.setVoltage(
+        pitchPIDController.calculate(
+                pitchPosition,
+                MathUtil.clamp(
+                    setpoint,
+                    Math.toRadians(Constants.TurretConstants.PITCH_MIN_ANGLE_DEGREES),
+                    Math.toRadians(Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES)))
+            + pitchFeedForward.calculate(turretPosition, 0));
   }
 
   private void holdPosition() {
-    setTurretPos(turretPosition);
+    setTurretPos(0);
+    setPitchPos(0);
   }
 
   public Command idleTurret() {
     return run(() -> holdPosition()).withName("idleTurret");
+  }
+
+  private void moveUp() {
+    setTurretPos(turretPosition);
+    setPitchPos(30);
+  }
+
+  public Command moveUpwards() {
+    return run(() -> moveUp()).withName("moveShooterUp");
   }
 
   private void updateTurretPosition() {
@@ -326,6 +463,16 @@ public class TurretSubsystem extends SubsystemBase {
         "Soft limit enabled forward", turretMotor.isSoftLimitEnabled(SoftLimitDirection.kForward));
     SmartDashboard.putBoolean(
         "Soft limit enabled reverse", turretMotor.isSoftLimitEnabled(SoftLimitDirection.kReverse));
+  }
+
+  private void updatePitchPosition() {
+    pitchPosition = calculatePitchPosition();
+    SmartDashboard.putNumber("Pitch Position", pitchPosition);
+    SmartDashboard.putBoolean("Out of Bounds", Math.abs(pitchPosition) > 3.14);
+    SmartDashboard.putBoolean(
+        "Soft limit enabled forward", pitchMotor.isSoftLimitEnabled(SoftLimitDirection.kForward));
+    SmartDashboard.putBoolean(
+        "Soft limit enabled reverse", pitchMotor.isSoftLimitEnabled(SoftLimitDirection.kReverse));
   }
 
   public double getTurretPos() {
@@ -344,7 +491,9 @@ public class TurretSubsystem extends SubsystemBase {
   private void aimTurret() {
     if (visionSubsystem != null) {
       int tagID =
-          ((robotStateManager.getAllianceColor() == AllianceColor.BLUE)
+          ((robotStateManager.getAllianceColor()
+                  == AllianceColor
+                      .BLUE) // Default to red because that's the color on our test field
               ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
               : Constants.TurretConstants.SPEAKER_TAG_ID_RED);
       double visionTX = visionSubsystem.getTurretYaw(tagID);
@@ -365,7 +514,7 @@ public class TurretSubsystem extends SubsystemBase {
       }
     } else {
       // TODO: Make turret default to using odometry
-      setTurretPos(turretPosition);
+      setTurretPos(60);
     }
   }
 
@@ -377,11 +526,18 @@ public class TurretSubsystem extends SubsystemBase {
     return run(() -> aimTurret()).withName("AimTurretCommand");
   }
 
+  /**
+   * Calculates the distance to the tag centered on the speaker from the angle that the limelight
+   * sees it
+   *
+   * @param ty The ty output by the limelight (degrees)
+   * @return The distance from the tag (meters)
+   */
   private double tyToDistanceFromTag(double ty) {
     DynamicRobotConfig dynamicRobotConfig = new DynamicRobotConfig();
     double tagTheta = Math.toRadians(ty) + dynamicRobotConfig.getLimelightConfig().limelightYMeters;
     double height =
-        Constants.TurretConstants.SPEAKER_TAG_CENTER_HEIGHT_INCHES
+        Constants.TurretConstants.SPEAKER_TAG_CENTER_HEIGHT_METERS
             - dynamicRobotConfig.getLimelightConfig()
                 .limelightZMeters; // TODO: Change these alphabot constants to be turret
     // constants whenever the robot is built
@@ -389,11 +545,22 @@ public class TurretSubsystem extends SubsystemBase {
     return distance;
   }
 
+  /**
+   * Calculates the pitch the shooter should be angled at to fire a given distance.
+   *
+   * @param distance The distance from the speaker in meters
+   * @return The shooter pitch in degrees
+   */
+  private double distanceToShootingPitch(double distance) {
+    return 4; // TODO: Make and use a real formula(use testing, not physics)
+  }
+
   @Override
   public void periodic() {
-    turretPIDController.setP(kP.getDouble(turretPosition));
-    turretPIDController.setI(kI.getDouble(turretPosition));
-    turretPIDController.setD(kD.getDouble(turretPosition));
+    turretPIDController.setP(turretKP.getDouble(turretPosition));
+    turretPIDController.setI(turretKI.getDouble(turretPosition));
+    turretPIDController.setD(turretKD.getDouble(turretPosition));
+
     updateTurretPosition();
     turretVelocity =
         (lowGearCANcoder.getVelocity().getValueAsDouble()
@@ -401,6 +568,13 @@ public class TurretSubsystem extends SubsystemBase {
             * 60; // changing from rotations per second to rotations per minute or rpm
     turretPositionEntry.log(turretPosition);
     turretVelocityEntry.log(turretVelocity);
+
+    updatePitchPosition();
+    pitchVelocity =
+        pitchEncoder.getVelocity()
+            * 60; // changing from rotations per second to rotations per minute or rpm
+    pitchPositionEntry.log(pitchPosition);
+    pitchVelocityEntry.log(pitchVelocity);
   }
 
   @Override
@@ -411,7 +585,12 @@ public class TurretSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Turret Angle", Math.toDegrees(turretSim.getAngleRads()));
     simTurretPos.set(
         Units.radiansToRotations(
-            turretSim.getAngleRads() / Constants.TurretConstants.TURRET_MOTOR_TURRET_RATIO));
+            turretSim.getAngleRads() / Constants.TurretConstants.TURRET_CONVERSION_FACTOR));
+
+    pitchSim.setInput(pitchMotor.getAppliedOutput());
+    pitchSim.update(Robot.defaultPeriodSecs);
+    pitchAngleSim.setAngle(Math.toDegrees(pitchSim.getAngleRads()));
+    SmartDashboard.putNumber("Turret Angle", Math.toDegrees(pitchSim.getAngleRads()));
   }
 
   private double getTurretRotationFromOdometry(Pose2d robotPos, Pose2d targetPos) {

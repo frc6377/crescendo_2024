@@ -79,7 +79,8 @@ public class OI {
     public static final Control A =
         new Control(XboxController.Button.kA, "Switch placement", controller);
     public static final Control B = new Control(XboxController.Button.kB, "Aim Turret", controller);
-    public static final Control Y = new Control(XboxController.Button.kY, null, controller);
+    public static final Control Y =
+        new Control(XboxController.Button.kY, "Test Shooter Pitch Control", controller);
     public static final Control X = new Control(XboxController.Button.kX, null, controller);
 
     // Bumpers & Triggers
