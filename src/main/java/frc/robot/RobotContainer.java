@@ -25,6 +25,7 @@ import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.subsystems.SensorSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TrapElvSubsystem;
@@ -49,12 +50,17 @@ public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   private final IntakeSubsystem intakeSubsystem;
-  private final ShooterSubsystem shooterSubsystem;
-  private final TriggerSubsystem triggerSubsystem;
-  private final TurretSubsystem turretSubsystem;
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
+  private final ShooterSubsystem shooterSubsystem;
+  
+  private final TriggerSubsystem triggerSubsystem;
+  
+  private final TurretSubsystem turretSubsystem;
+  
+  private final SensorSubsystem sensorSubsystem;
+  
   private final SwerveSubsystem drivetrain;
+  
   private final LimelightSubsystem limelightSubsystem;
 
   private final SignalingSubsystem signalingSubsystem;
@@ -78,6 +84,11 @@ public class RobotContainer {
       turretSubsystem = new TurretSubsystem(robotStateManager);
     } else {
       turretSubsystem = null;
+    }
+    if (Constants.enabledSubsystems.sensorsEnabled) {
+      sensorSubsystem = new SensorSubsystem(robotStateManager);
+    } else {
+      sensorSubsystem = null;
     }
     if (Constants.enabledSubsystems.shooterEnabled) {
       shooterSubsystem = new ShooterSubsystem();
@@ -191,26 +202,26 @@ public class RobotContainer {
       OI.getTrigger(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
     }
     // Trap Elv Intaking
-    // if (Constants.enabledSubsystems.elvEnabled) {
-    //   OI.getButton(OI.Driver.groundIntakeButton)
-    //       .whileTrue(
-    //           trapElvSubsystem
-    //               .intakeGround()
-    //               .onlyWhile(trapElvSubsystem.getGroundBreakBoolInverse()));
-    //   OI.getButton(OI.Driver.sourceIntakeButton)
-    //       .whileTrue(
-    //           trapElvSubsystem
-    //               .intakeSource()
-    //               .onlyWhile(trapElvSubsystem.getSourceBreakBoolInverse()));
+    if (Constants.enabledSubsystems.elvEnabled) {
+      OI.getButton(OI.Driver.groundIntakeButton)
+          .whileTrue(
+              trapElvSubsystem
+                  .intakeGround()
+                  .onlyWhile(sensorSubsystem.getGroundBreakBoolInverse()));
+      OI.getButton(OI.Driver.sourceIntakeButton)
+          .whileTrue(
+              trapElvSubsystem
+                  .intakeSource()
+                  .onlyWhile(sensorSubsystem.getSourceBreakBoolInverse()));
 
     // Trap Elv Scoring
 
-    //   OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapElvSubsystem.scoreAMP());
-    //   OI.getButton(OI.Driver.trapScoreButton).whileTrue(trapElvSubsystem.scoreTrap());
-    //   // Trap Elv zeroing button
+      OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapElvSubsystem.scoreAMP());
+      OI.getButton(OI.Driver.trapScoreButton).whileTrue(trapElvSubsystem.scoreTrap());
+      // Trap Elv zeroing button
 
-    //   OI.getButton(OI.Driver.zeroArm).whileTrue(trapElvSubsystem.zeroArm());
-    // }
+      OI.getButton(OI.Driver.zeroArm).whileTrue(trapElvSubsystem.zeroArm());
+    }
 
     if (Robot.isSimulation() && Constants.enabledSubsystems.drivetrainEnabled) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));

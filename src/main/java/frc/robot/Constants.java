@@ -137,6 +137,7 @@ public final class Constants {
     public static final boolean signalEnabled = true;
     public static final boolean shooterEnabled = true;
     public static final boolean turretEnabled = true;
+    public static final boolean sensorsEnabled = true;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
