@@ -159,7 +159,7 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(robotStateManager::switchPlacementMode)
                 .withName("Switch Placement Mode Command"));
-    if (Constants.enabledSubsystems.intakeEnabled) {
+    if (Constants.enabledSubsystems.intakeEnabled && Constants.enabledSubsystems.elvEnabled) {
       OI.getTrigger(OI.Driver.intakeTrigger)
           .whileTrue(
               Commands.either(
