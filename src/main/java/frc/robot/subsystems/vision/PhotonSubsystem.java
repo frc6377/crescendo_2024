@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.config.DynamicRobotConfig;
@@ -99,18 +100,18 @@ public class PhotonSubsystem extends VisionSubsystem {
     return lastPose.timestampSeconds;
   }
 
-  private boolean checkPoseValidity(EstimatedRobotPose pose) {
+  public boolean checkPoseValidity(
+      Pose3d checkPose, Pose3d confirmedPose, double checkTimestamp, double confirmedTimestamp) {
     double distanceBetweenPoses =
         Math.sqrt(
-            Math.pow(pose.estimatedPose.getX() - lastPose.estimatedPose.getX(), 2)
-                + Math.pow(pose.estimatedPose.getY() - lastPose.estimatedPose.getY(), 2)
+            Math.pow(checkPose.getX() - confirmedPose.getX(), 2)
+                + Math.pow(checkPose.getY() - confirmedPose.getY(), 2)
                 + Math.pow(
-                    pose.estimatedPose.getZ() - lastPose.estimatedPose.getZ(),
+                    checkPose.getZ() - confirmedPose.getZ(),
                     2)); // 3D distance formula (same one as used in periodic)
     if ((distanceBetweenPoses > Constants.VisionConstants.MAX_ACCEPTABLE_ERROR_METERS)
-        && (Math.abs(pose.timestampSeconds - lastPose.timestampSeconds)
+        && (Math.abs(checkTimestamp - confirmedTimestamp)
             < Constants.VisionConstants.MAX_TIME_BETWEEN_POSES_SECONDS)) {
-      System.out.println("POSE REJECTED");
       return false; // pose is invalid
     } else {
       return true; // pose is valid
@@ -150,14 +151,24 @@ public class PhotonSubsystem extends VisionSubsystem {
         List<PhotonTrackedTarget> targets = mainResult.getTargets();
         if (targets.size() > 1) {
           EstimatedRobotPose newPose = getPVEstimatedPose();
-          if ((newPose.estimatedPose.getX() > 12) || (newPose.estimatedPose.getX() < 4.54)) {
-            if (checkPoseValidity(newPose)) {
+          if ((newPose.estimatedPose.getX()
+                  > Constants.FIELD_LENGTH_METERS
+                      - Constants.VisionConstants.MAX_DISTANCE_FROM_WALL_METERS)
+              || (newPose.estimatedPose.getX()
+                  < Constants.VisionConstants.MAX_DISTANCE_FROM_WALL_METERS)) {
+            if (checkPoseValidity(
+                newPose.estimatedPose,
+                lastPose.estimatedPose,
+                newPose.timestampSeconds,
+                lastPose.timestampSeconds)) {
               lastPose = newPose;
-            }
-            measurementsUsed++;
-            measurementConsumer.accept(getPose2d(), getTime());
-            if (measurementsUsed % 100 == 0) {
-              measurementEntry.log((double) measurementsUsed);
+              measurementsUsed++;
+              measurementConsumer.accept(getPose2d(), getTime());
+              if (measurementsUsed % 100 == 0) {
+                measurementEntry.log((double) measurementsUsed);
+              }
+            } else {
+              DriverStation.reportWarning("POSE REJECTED", null);
             }
           }
         }

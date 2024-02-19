@@ -151,6 +151,7 @@ public final class Constants {
     public static final double TURRET_LIMELIGHT_HEIGHT_INCHES = 17.85;
     public static final double MAX_ACCEPTABLE_ERROR_METERS = 2;
     public static final double MAX_TIME_BETWEEN_POSES_SECONDS = 0.2; // 10 periodic cycles
+    public static final double MAX_DISTANCE_FROM_WALL_METERS = 4.54;
 
     public static final String MAIN_CAMERA_NAME = "Camera_Module_Main";
     public static final String TURRET_CAMERA_NAME = "Camera_Module_Turret";
@@ -167,6 +168,9 @@ public final class Constants {
     public static final boolean triggerEnabled = true;
     public static final boolean turretEnabled = true;
   }
+
+  public static final double FIELD_LENGTH_METERS = 16.54175;
+  public static final double FIELD_WIDTH_METERS = 8.21055;
 
   public static final int END_GAME_WARNING_TIME = 20;
   public static final double TELEMETRY_LOG_NUMBER = .2;
