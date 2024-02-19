@@ -138,7 +138,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
     wristEncoder = new CANcoder(6);
 
-    rollerMotor = new CANSparkMax(TrapElvConstants.ROLLER_MOTOR_ID, MotorType.kBrushless);
+    rollerMotor = new CANSparkMax(TrapElvConstants.ROLLER_MOTOR_ID, MotorType.kBrushed);
     rollerMotor.restoreFactoryDefaults();
 
     sourceBreak = new DigitalInput(TrapElvConstants.SOURCE_BREAK_ID);
@@ -297,6 +297,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   public Command intakeGround() {
     return startEnd(
             () -> {
+              System.out.println("SPIN!!");
               setTrapArm(TrapElvState.FROM_INTAKE);
               rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
             },

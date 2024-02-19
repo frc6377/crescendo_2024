@@ -4,9 +4,9 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -16,16 +16,17 @@ import frc.robot.Constants;
 import frc.robot.stateManagement.PlacementMode;
 
 public class IntakeSubsystem extends SubsystemBase {
-  private CANSparkMax intakeMotor;
+  private TalonFX intakeMotor;
   private CANSparkMax chooserMotor;
 
   public IntakeSubsystem() {
-    intakeMotor = new CANSparkMax(Constants.IntakeConstants.INTAKE_MOTOR_ID, MotorType.kBrushless);
+    intakeMotor = new TalonFX(Constants.IntakeConstants.INTAKE_MOTOR_ID, "Default Name");
     chooserMotor =
-        new CANSparkMax(Constants.IntakeConstants.INTAKE_CHOOSER_ID, MotorType.kBrushed); //Bag Motor
-    intakeMotor.restoreFactoryDefaults();
+        new CANSparkMax(
+            Constants.IntakeConstants.INTAKE_CHOOSER_ID, MotorType.kBrushed); // Bag Motor
+
     chooserMotor.restoreFactoryDefaults();
-    intakeMotor.setSmartCurrentLimit(40);
+    // intakeMotor.config
     chooserMotor.setSmartCurrentLimit(20);
     SmartDashboard.putData("Run Intake", new InstantCommand(() -> runIntake()));
     SmartDashboard.putData("Reverse Intake", new InstantCommand(() -> reverseIntake()));
