@@ -144,7 +144,7 @@ public final class Constants {
     public static final double WRIST_LENGTH = Units.inchesToMeters(11.877934);
     public static final double WRIST_MOI = 0.3175242664; // Moment of Inertia
     public static final double WRIST_GEAR_RATIO = 35;
-    public static final double WRIST_ZERO_OFFSET = 0.1414; // TODO: find real offset on robot
+    public static final double WRIST_ZERO_OFFSET = 0.2087; // TODO: find real offset on robot
   }
 
   public static class enabledSubsystems {

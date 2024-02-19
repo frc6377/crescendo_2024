@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxSim;
 import com.revrobotics.SparkAbsoluteEncoder;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -149,6 +150,9 @@ public class TrapElvSubsystem extends SubsystemBase {
             TrapElvConstants.WRIST_FF[3]);
 
     wristEncoder = wristMotor.getAbsoluteEncoder();
+    wristEncoder.setPositionConversionFactor(1);
+    wristEncoder.setInverted(false);
+    wristEncoder.setZeroOffset(TrapElvConstants.WRIST_ZERO_OFFSET);
 
     rollerMotor = new CANSparkMax(TrapElvConstants.ROLLER_MOTOR_ID, MotorType.kBrushless);
     rollerMotor.restoreFactoryDefaults();
@@ -401,7 +405,11 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   private double getWristEncoderPos() {
     if (Robot.isReal()) {
-      return wristEncoder.getPosition() - TrapElvConstants.WRIST_ZERO_OFFSET;
+      double a = wristEncoder.getPosition();
+      if (a >= .75) {
+        a = a - 1;
+      }
+      return a;
     }
     return Units.radiansToRotations(m_wristMotorSim.getAngleRads());
   }
@@ -417,15 +425,15 @@ public class TrapElvSubsystem extends SubsystemBase {
     groundLog.log(groundBreak.get());
 
     FF = wristFeedforward.calculate(getWristEncoderPos(), 0);
-    wristMotor.set(0.1);
-    // wristMotor.setVoltage(
-    //     MathUtil.clamp(
-    //         wristPIDController.calculate(
-    //                 Units.rotationsToDegrees(getWristEncoderPos()),
-    //                 Units.rotationsToDegrees(wristState))
-    //             + FF,
-    //         -12,
-    //         12));
+
+    wristMotor.setVoltage(
+        MathUtil.clamp(
+            wristPIDController.calculate(
+                    Units.rotationsToDegrees(getWristEncoderPos()),
+                    Units.rotationsToDegrees(wristState))
+                + FF,
+            -12,
+            12));
     FFOutput.setDouble(FF);
     wristOutput.setDouble(wristMotor.getAppliedOutput());
 
