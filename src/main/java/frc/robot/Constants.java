@@ -15,6 +15,13 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static class SwerveDriveConstants {
+    public static final double TURN_kP = 10;
+    public static final double TURN_kD = 0;
+    public static final double MAX_AUTO_TURN = 180; // deg/s
+    public static final double MAX_AUTO_ACCERLATION = 180; // deg/s^2
+  }
+
   public static class IntakeConstants {
     // TODO: Get real CAN IDs
     public static final int INTAKE_MOTOR_ID = 6;
@@ -63,15 +70,63 @@ public final class Constants {
   }
 
   public static class TurretConstants {
-    public static final int MOTOR_ID = 9;
-    public static final int CANcoder_ID = 17; // replace with actual CANcoder ID
+    public static final int TURRET_MOTOR_ID = 9;
+    public static final int TURRET_CANcoder_ID = 17; // replace with actual CANcoder ID
+    public static final int PITCH_MOTOR_ID = 10;
+    public static final int PITCH_ENCODER_ID = 1; // replace with actual ID
 
-    // Limelight
-    public static final double LIMELIGHT_HEIGHT_INCHES = 17.85;
-    public static final double LIMELIGHT_PITCH_RADIANS = Math.toRadians(17.75);
+    // PID coefficients
+    public static final double TURRET_KP =
+        0.25; // TODO: Change values when there's an actual real functional robot.
+    public static final double TURRET_KI = 0.001;
+    public static final double TURRET_KD = 0;
+    public static final double TURRET_KIZ = 0;
+    public static final double TURRET_KFF = 0;
 
-    public static final double SPEAKER_TAG_CENTER_HEIGHT_INCHES =
-        57.125; // Don't change unless FIRST changes the field layout
+    public static final double TURRET_KMAXOUTPUT = 1;
+    public static final double TURRET_KMINOUTPUT = -1;
+
+    public static final int TURRET_MIN_ANGLE_DEGREES = -5;
+    public static final int TURRET_MAX_ANGLE_DEGREES = 45;
+
+    public static final double TURRET_CONVERSION_FACTOR = 0.25;
+    public static final int TURRET_SMART_CURRENT_LIMIT = 40;
+
+    public static final double PITCH_KP =
+        175; // TODO: Change values when there's an actual real functional robot.
+    public static final double PITCH_KI = 0.001;
+    public static final double PITCH_KD = 0;
+    public static final double PITCH_KIZ = 0;
+    public static final double PITCH_KFF = 0;
+    public static final double PITCH_KS = 0;
+    public static final double PITCH_KV = 0.08;
+    public static final double PITCH_KG = 0.1;
+    public static final double PITCH_KA = 0;
+
+    public static final double PITCH_KMAXOUTPUT = 1;
+    public static final double PITCH_KMINOUTPUT = -1;
+
+    public static final int PITCH_MAX_ANGLE_DEGREES = 50;
+    public static final int PITCH_MIN_ANGLE_DEGREES = -5;
+
+    public static final double PITCH_CONVERSION_FACTOR = 0.25;
+    public static final int PITCH_SMART_CURRENT_LIMIT = 40;
+
+    // Physics Values
+    public static final double SHOOTER_CENTER_OF_GRAVITY = 1; // TODO: Get real values
+    public static final double SHOOTER_MASS = 1;
+
+    // Hardcoded Setpoints
+    public static final double TURRET_STOWED_ANGLE = 0;
+    public static final double PITCH_STOWED_ANGLE = 30;
+
+    public static final double TURRET_PICKUP_ANGLE = 0;
+    public static final double PITCH_PICKUP_ANGLE = 30;
+
+    public static final double SPEAKER_TAG_CENTER_HEIGHT_METERS =
+        1.450975; // Don't change unless FIRST changes the field layout
+    public static final int SPEAKER_TAG_ID_RED = 4;
+    public static final int SPEAKER_TAG_ID_BLUE = 7;
 
     // PID coefficients
     public static final double KP = 0.25;
@@ -152,10 +207,20 @@ public final class Constants {
     public static final int SPEAKER_TAG_ID_BLUE = 7;
   }
 
+  public static class VisionConstants {
+    public static final double TURRET_LIMELIGHT_HEIGHT_INCHES = 17.85;
+    public static final double MAX_ACCEPTABLE_ERROR_METERS = 2;
+    public static final double MAX_TIME_BETWEEN_POSES_SECONDS = 0.2; // 10 periodic cycles
+
+    public static final String MAIN_CAMERA_NAME = "Camera_Module_Main";
+    public static final String TURRET_CAMERA_NAME = "Camera_Module_Turret";
+  }
+
   public static class enabledSubsystems {
     public static final boolean intakeEnabled = true;
     public static final boolean drivetrainEnabled = true;
-    public static final boolean limeLightEnabled = true;
+    public static final boolean visionEnabled = true;
+    public static final boolean usingPhoton = true;
     public static final boolean elvEnabled = true;
     public static final boolean signalEnabled = true;
     public static final boolean shooterEnabled = true;
