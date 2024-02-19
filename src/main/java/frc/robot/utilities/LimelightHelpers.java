@@ -19,7 +19,10 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.LimelightConstants;
 import frc.robot.Robot;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -455,15 +458,23 @@ public class LimelightHelpers {
   public static void simPose(SwerveDriveState state) {
     double newX =
         state.Pose.getX()
-            - (SmartDashboard.getBoolean("IsRedAlliance", true) == true ? (8.308467 * 2) : 0);
-    double newY = state.Pose.getY() - (1.451102 + 3.837865);
-    double horizontalAngle = Math.atan(newY / newX);
-    double verticalAngle = Math.atan(0.4572 / Math.sqrt(Math.pow(newX, 2) + Math.pow(newY, 2)));
-    horizAngle = horizontalAngle;
+            - (DriverStation.getAlliance().isPresent()
+                    && DriverStation.getAlliance().get().equals(Alliance.Red)
+                ? LimelightConstants.FIELD_SIZE
+                : 0);
+    double newY =
+        state.Pose.getY()
+            - (LimelightConstants.FIELD_HALF_WIDTH + LimelightConstants.FIELD_HALF_LENGTH);
+    double horizontalAngle = Units.radiansToDegrees(Math.atan(newY / newX));
+    double verticalAngle =
+        Units.radiansToDegrees(
+            Math.atan(
+                LimelightConstants.TAG_HEIGHT / Math.sqrt(Math.pow(newX, 2) + Math.pow(newY, 2))));
+    horizAngle = horizontalAngle - state.Pose.getRotation().getDegrees();
     vertAngle = verticalAngle;
-    SmartDashboard.putNumber("Horizontal Angle", horizAngle);
-    SmartDashboard.putNumber("Vertical Angle", vertAngle);
-    SmartDashboard.putNumber("X Distance", newX);
+    SmartDashboard.putNumber("LL Horizontal Angle", horizAngle);
+    SmartDashboard.putNumber("LL Vertical Angle", vertAngle);
+    SmartDashboard.putNumber("LL X Distance", newX);
   }
 
   public static double getTA(String limelightName) {

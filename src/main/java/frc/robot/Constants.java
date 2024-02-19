@@ -144,6 +144,13 @@ public final class Constants {
     public static final double WRIST_LENGTH = Units.inchesToMeters(12.5);
   }
 
+  public static class LimelightConstants {
+    public static final double FIELD_SIZE = (8.308467 * 2);
+    public static final double FIELD_HALF_LENGTH = 3.837865;
+    public static final double FIELD_HALF_WIDTH = 1.451102;
+    public static final double TAG_HEIGHT = 0.4572;
+  }
+
   public static class enabledSubsystems {
     public static final boolean intakeEnabled = true;
     public static final boolean drivetrainEnabled = true;
