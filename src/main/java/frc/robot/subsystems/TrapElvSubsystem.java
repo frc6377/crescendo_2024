@@ -10,7 +10,6 @@ import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxSim;
 import com.revrobotics.SparkAbsoluteEncoder;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -100,7 +99,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     STOWED(-0.11, 0.0, 0.0),
     FROM_INTAKE(-0.11, 0.0, 0.0),
     FROM_SOURCE(0.2, 0.0, 12.0),
-    TRAP_SCORE(0.0, 12.0, 12.0),
+    TRAP_SCORE(-0.05, 12.0, 12.0),
     AMP_SCORE(0.435, 0.0, 12.0);
 
     private double wristPose;
@@ -137,8 +136,10 @@ public class TrapElvSubsystem extends SubsystemBase {
     // Wrist
     wristMotor = new CANSparkMaxSim(TrapElvConstants.WRIST_MOTOR_ID, MotorType.kBrushless);
     wristMotor.restoreFactoryDefaults();
+    wristMotor.clearFaults();
+
     wristMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
-    wristPIDController = new PIDController(1, 0, 0);
+    wristPIDController = new PIDController(0.1, 0, 0);
     wristPIDController.setIZone(TrapElvConstants.WRIST_PID[3]);
     wristFeedforward =
         new ArmFeedforward(
@@ -146,7 +147,6 @@ public class TrapElvSubsystem extends SubsystemBase {
             TrapElvConstants.WRIST_FF[1],
             TrapElvConstants.WRIST_FF[2],
             TrapElvConstants.WRIST_FF[3]);
-    TrapElvTab.add("Wrist PID", wristPIDController).withSize(2, 2).withPosition(0, 0);
 
     wristEncoder = wristMotor.getAbsoluteEncoder();
 
@@ -257,6 +257,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     TrapElvTab.add("Intake Ground", intakeGround()).withPosition(3, 0);
     TrapElvTab.add("Stow Wrist", new InstantCommand(() -> stowTrapElv())).withPosition(4, 0);
     TrapElvTab.add("Amp Score", scoreAMP()).withPosition(5, 0);
+    TrapElvTab.add("Wrist PID", wristPIDController).withSize(2, 2).withPosition(0, 0);
 
     sourceLog = new DebugEntry<Boolean>(sourceBreak.get(), "Source Beam Break", this);
     groundLog = new DebugEntry<Boolean>(groundBreak.get(), "Ground Beam Break", this);
@@ -416,14 +417,15 @@ public class TrapElvSubsystem extends SubsystemBase {
     groundLog.log(groundBreak.get());
 
     FF = wristFeedforward.calculate(getWristEncoderPos(), 0);
-    wristMotor.setVoltage(
-        MathUtil.clamp(
-            wristPIDController.calculate(
-                    Units.rotationsToDegrees(getWristEncoderPos()),
-                    Units.rotationsToDegrees(wristState))
-                + FF,
-            -12,
-            12));
+    wristMotor.set(0.1);
+    // wristMotor.setVoltage(
+    //     MathUtil.clamp(
+    //         wristPIDController.calculate(
+    //                 Units.rotationsToDegrees(getWristEncoderPos()),
+    //                 Units.rotationsToDegrees(wristState))
+    //             + FF,
+    //         -12,
+    //         12));
     FFOutput.setDouble(FF);
     wristOutput.setDouble(wristMotor.getAppliedOutput());
 
@@ -431,6 +433,7 @@ public class TrapElvSubsystem extends SubsystemBase {
       baseLog.log(baseLimit.get());
       scoringLog.log(sourceBreak.get());
     }
+    SmartDashboard.putNumber("Fault code", wristMotor.getStickyFaults());
   }
 
   @Override
