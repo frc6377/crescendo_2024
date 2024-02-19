@@ -72,8 +72,6 @@ public final class Constants {
 
     public static final double SPEAKER_TAG_CENTER_HEIGHT_INCHES =
         57.125; // Don't change unless FIRST changes the field layout
-    public static final int SPEAKER_TAG_ID_RED = 4;
-    public static final int SPEAKER_TAG_ID_BLUE = 7;
 
     // PID coefficients
     public static final double KP = 0.25;
@@ -149,6 +147,9 @@ public final class Constants {
     public static final double FIELD_HALF_LENGTH = 3.837865;
     public static final double FIELD_HALF_WIDTH = 1.451102;
     public static final double TAG_HEIGHT = 0.4572;
+
+    public static final int SPEAKER_TAG_ID_RED = 4;
+    public static final int SPEAKER_TAG_ID_BLUE = 7;
   }
 
   public static class enabledSubsystems {

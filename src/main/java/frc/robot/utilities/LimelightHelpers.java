@@ -477,6 +477,13 @@ public class LimelightHelpers {
     SmartDashboard.putNumber("LL X Distance", newX);
   }
 
+  public static int getFiducialId() {
+    if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
+      return LimelightConstants.SPEAKER_TAG_ID_BLUE;
+    }
+    return LimelightConstants.SPEAKER_TAG_ID_RED;
+  }
+
   public static double getTA(String limelightName) {
     return getLimelightNTDouble(limelightName, "ta");
   }

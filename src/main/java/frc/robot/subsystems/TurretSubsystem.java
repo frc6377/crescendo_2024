@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Robot;
 import frc.robot.config.DynamicRobotConfig;
@@ -345,8 +346,8 @@ public class TurretSubsystem extends SubsystemBase {
     if (limelightTX != 0
         && LimelightHelpers.getFiducialID("limelight")
             == ((robotStateManager.getAllianceColor() == AllianceColor.BLUE)
-                ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
-                : Constants.TurretConstants.SPEAKER_TAG_ID_RED)) {
+                ? LimelightConstants.SPEAKER_TAG_ID_BLUE
+                : LimelightConstants.SPEAKER_TAG_ID_RED)) {
       // X & Rotation
       setTurretPos(Math.toRadians(limelightTX) + turretPosition);
 
