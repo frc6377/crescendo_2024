@@ -84,6 +84,16 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
   }
 
+  public static class SensorConstants {
+    // TODO: Get real ids
+    public static final int SOURCE_BREAK_ID = 1;
+    public static final int GROUND_BREAK_ID = 2;
+    public static final int BASE_BREAK_ID = 3;
+    public static final int SCORING_BREAK_ID = 4;
+
+    public static final double WRIST_BREAK_THOLD = 0.1;
+  }
+
   public static class TrapElvConstants {
     // IDs | TODO: get real device IDs
     public static final int WRIST_MOTOR_ID = 1;
@@ -92,17 +102,11 @@ public final class Constants {
     public static final int BASE_MOTOR2_ID = 4;
     public static final int SCORING_MOTOR_ID = 5;
     public static final int WRIST_ENCODER_ID = 6;
-    public static final int SOURCE_BREAK_ID = 1;
-    public static final int GROUND_BREAK_ID = 2;
-    public static final int BASE_BREAK_ID = 3;
-    public static final int SCORING_BREAK_ID = 4;
 
     // Speeds
     public static final double ROLLER_INTAKE_SPEED = 0.25;
     public static final double ROLLER_SCORING_SPEED = 0.4;
     public static final double ELV_ZEROING_SPEED = 0.1; // Percent Power
-
-    public static final double WRIST_BREAK_THOLD = 0.1;
 
     // PIDs
     // P, I, D, Iz, FF

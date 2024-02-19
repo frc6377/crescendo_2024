@@ -191,26 +191,26 @@ public class RobotContainer {
       OI.getTrigger(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
     }
     // Trap Elv Intaking
-    if (Constants.enabledSubsystems.elvEnabled) {
-      OI.getButton(OI.Driver.groundIntakeButton)
-          .whileTrue(
-              trapElvSubsystem
-                  .intakeGround()
-                  .onlyWhile(trapElvSubsystem.getGroundBreakBoolInverse()));
-      OI.getButton(OI.Driver.sourceIntakeButton)
-          .whileTrue(
-              trapElvSubsystem
-                  .intakeSource()
-                  .onlyWhile(trapElvSubsystem.getSourceBreakBoolInverse()));
+    // if (Constants.enabledSubsystems.elvEnabled) {
+    //   OI.getButton(OI.Driver.groundIntakeButton)
+    //       .whileTrue(
+    //           trapElvSubsystem
+    //               .intakeGround()
+    //               .onlyWhile(trapElvSubsystem.getGroundBreakBoolInverse()));
+    //   OI.getButton(OI.Driver.sourceIntakeButton)
+    //       .whileTrue(
+    //           trapElvSubsystem
+    //               .intakeSource()
+    //               .onlyWhile(trapElvSubsystem.getSourceBreakBoolInverse()));
 
-      // Trap Elv Scoring
+    // Trap Elv Scoring
 
-      OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapElvSubsystem.scoreAMP());
-      OI.getButton(OI.Driver.trapScoreButton).whileTrue(trapElvSubsystem.scoreTrap());
-      // Trap Elv zeroing button
+    //   OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapElvSubsystem.scoreAMP());
+    //   OI.getButton(OI.Driver.trapScoreButton).whileTrue(trapElvSubsystem.scoreTrap());
+    //   // Trap Elv zeroing button
 
-      OI.getButton(OI.Driver.zeroArm).whileTrue(trapElvSubsystem.zeroArm());
-    }
+    //   OI.getButton(OI.Driver.zeroArm).whileTrue(trapElvSubsystem.zeroArm());
+    // }
 
     if (Robot.isSimulation() && Constants.enabledSubsystems.drivetrainEnabled) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));

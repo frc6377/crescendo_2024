@@ -34,7 +34,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TrapElvConstants;
 import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
-import frc.robot.utilities.TOFSensorSimple;
 import java.util.function.BooleanSupplier;
 
 public class TrapElvSubsystem extends SubsystemBase {
@@ -58,10 +57,6 @@ public class TrapElvSubsystem extends SubsystemBase {
   private double baseMotorOffset2;
   private double scoringMotorOffset;
 
-  // Beam Breaks
-  private final TOFSensorSimple sourceBreak;
-  private final TOFSensorSimple groundBreak;
-
   // Limit Switches
   private DigitalInput baseLimit;
   private DigitalInput scoringLimit;
@@ -71,8 +66,6 @@ public class TrapElvSubsystem extends SubsystemBase {
   private SimDeviceSim simWristCoder;
   private SimDouble simWristPos;
 
-  private DebugEntry<Boolean> sourceLog;
-  private DebugEntry<Boolean> groundLog;
   private DebugEntry<Boolean> baseLog;
   private DebugEntry<Boolean> scoringLog;
 
@@ -91,8 +84,6 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   private ShuffleboardTab TrapElvTab = Shuffleboard.getTab("Trap Arm Tab");
   private GenericEntry baseGoal = TrapElvTab.add("Base Goal", 0).getEntry();
-  private GenericEntry sourceBreakDis = TrapElvTab.add("Source Break Distance", 0).getEntry();
-  private GenericEntry groundBreakDis = TrapElvTab.add("Ground Break Distance", 0).getEntry();
   private GenericEntry FFOutput = TrapElvTab.add("FF Output", 0).getEntry();
 
   private double FF;
@@ -158,17 +149,12 @@ public class TrapElvSubsystem extends SubsystemBase {
     rollerMotor = new CANSparkMax(TrapElvConstants.ROLLER_MOTOR_ID, MotorType.kBrushless);
     rollerMotor.restoreFactoryDefaults();
 
-    sourceBreak =
-        new TOFSensorSimple(TrapElvConstants.SOURCE_BREAK_ID, TrapElvConstants.WRIST_BREAK_THOLD);
-    groundBreak =
-        new TOFSensorSimple(TrapElvConstants.GROUND_BREAK_ID, TrapElvConstants.WRIST_BREAK_THOLD);
-
     // Elv
     if (isElv) {
-      baseLimit = new DigitalInput(TrapElvConstants.BASE_BREAK_ID);
-      scoringLimit = new DigitalInput(TrapElvConstants.SCORING_BREAK_ID);
-      baseLog = new DebugEntry<Boolean>(baseLimit.get(), "Base Limit Switch", this);
-      scoringLog = new DebugEntry<Boolean>(scoringLimit.get(), "Scoring Limit Switch", this);
+      // baseLimit = new DigitalInput(TrapElvConstants.BASE_BREAK_ID);
+      // scoringLimit = new DigitalInput(TrapElvConstants.SCORING_BREAK_ID);
+      // baseLog = new DebugEntry<Boolean>(baseLimit.get(), "Base Limit Switch", this);
+      // scoringLog = new DebugEntry<Boolean>(scoringLimit.get(), "Scoring Limit Switch", this);
 
       baseMotorOffset1 = 0.0;
       baseMotorOffset2 = 0.0;
@@ -199,12 +185,6 @@ public class TrapElvSubsystem extends SubsystemBase {
       scoringMotor.getPIDController().setFF(TrapElvConstants.SCORING_PID[4]);
       TrapElvTab.add("Scoring Elv PID", scoringMotor.getPIDController());
     }
-
-    // SmartDashboard
-    sourceLog = new DebugEntry<Boolean>(sourceBreak.isBeamBroke(), "Source Beam Break", this);
-    sourceBreakDis.setDouble(sourceBreak.getMilliMeters());
-    groundLog = new DebugEntry<Boolean>(groundBreak.isBeamBroke(), "Ground Beam Break", this);
-    groundBreakDis.setDouble(groundBreak.getMilliMeters());
 
     // Simulation
     if (Robot.isSimulation()) {
@@ -278,26 +258,6 @@ public class TrapElvSubsystem extends SubsystemBase {
   }
 
   // Boolean Suppliers
-  public BooleanSupplier getSourceBreakBool() {
-    return () -> sourceBreak.isBeamBroke();
-  }
-
-  public BooleanSupplier getSourceBreakBoolInverse() {
-    return () -> !sourceBreak.isBeamBroke();
-  }
-
-  public BooleanSupplier getGroundBreakBool() {
-    return () -> groundBreak.isBeamBroke();
-  }
-
-  public BooleanSupplier getGroundBreakBoolInverse() {
-    return () -> !groundBreak.isBeamBroke();
-  }
-
-  public TOFSensorSimple getSourceBreak() {
-    return sourceBreak;
-  }
-
   public BooleanSupplier getBaseLimit() {
     return () -> baseLimit.get();
   }
@@ -426,11 +386,6 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    sourceLog.log(sourceBreak.isBeamBroke());
-    groundLog.log(groundBreak.isBeamBroke());
-    sourceBreakDis.setDouble(sourceBreak.getMilliMeters());
-    groundBreakDis.setDouble(groundBreak.getMilliMeters());
-
     if (isElv) {
       baseLog.log(baseLimit.get());
       scoringLog.log(scoringLimit.get());
