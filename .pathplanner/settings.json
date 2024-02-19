@@ -1,6 +1,6 @@
 {
-  "robotWidth": 0.94,
-  "robotLength": 0.94,
+  "robotWidth": 0.61,
+  "robotLength": 0.61,
   "holonomicMode": true,
   "pathFolders": [
     "2 Note Amp Score",
