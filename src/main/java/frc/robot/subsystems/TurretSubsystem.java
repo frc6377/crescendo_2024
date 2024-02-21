@@ -396,9 +396,9 @@ public class TurretSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    turretPIDController.setP(kP.getDouble(turretPosition));
-    turretPIDController.setI(kI.getDouble(turretPosition));
-    turretPIDController.setD(kD.getDouble(turretPosition));
+    turretPIDController.setP(kP.getDouble(0));
+    turretPIDController.setI(kI.getDouble(0));
+    turretPIDController.setD(kD.getDouble(0));
     updateTurretPosition();
     turretVelocity =
         (lowGearCANcoder.getVelocity().getValueAsDouble()
@@ -414,7 +414,7 @@ public class TurretSubsystem extends SubsystemBase {
     turretSim.update(Robot.defaultPeriodSecs);
     turretAngleSim.setAngle(Math.toDegrees(turretSim.getAngleRads()));
     SmartDashboard.putNumber("Turret Angle", Math.toDegrees(turretSim.getAngleRads()));
-    simTurretPos.set(Units.radiansToRotations(turretSim.getAngleRads()));
+    simTurretPos.set(Units.radiansToRotations(turretSim.getAngleRads()) * Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO);
   }
 
   private double getTurretRotationFromOdometry(Pose2d robotPos, Pose2d targetPos) {
