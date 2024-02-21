@@ -460,11 +460,11 @@ public class LimelightHelpers {
         state.Pose.getX()
             - (DriverStation.getAlliance().isPresent()
                     && DriverStation.getAlliance().get().equals(Alliance.Red)
-                ? LimelightConstants.FIELD_SIZE
+                ? LimelightConstants.FIELD_LENGTH
                 : 0);
     double newY =
         state.Pose.getY()
-            - (LimelightConstants.FIELD_HALF_WIDTH + LimelightConstants.FIELD_HALF_LENGTH);
+            - (LimelightConstants.TAG_Y_POS + LimelightConstants.FIELD_HALF_WIDTH);
     double horizontalAngle = Units.radiansToDegrees(Math.atan(newY / newX));
     double verticalAngle =
         Units.radiansToDegrees(
@@ -478,8 +478,10 @@ public class LimelightHelpers {
   }
 
   public static int getFiducialId() {
-    if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
-      return LimelightConstants.SPEAKER_TAG_ID_BLUE;
+    if(DriverStation.getAlliance().isPresent()) {
+      if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
+        return LimelightConstants.SPEAKER_TAG_ID_BLUE;
+      }
     }
     return LimelightConstants.SPEAKER_TAG_ID_RED;
   }
