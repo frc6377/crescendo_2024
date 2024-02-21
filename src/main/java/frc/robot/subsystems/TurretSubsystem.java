@@ -162,6 +162,8 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     turretMotor.restoreFactoryDefaults();
+
+    turretMotor.setInverted(Constants.TurretConstants.IS_MOTOR_INVERTED);
     turretMotor.setSmartCurrentLimit(Constants.TurretConstants.TURRET_SMART_CURRENT_LIMIT);
 
     pitchMotor.restoreFactoryDefaults();
@@ -246,7 +248,9 @@ public class TurretSubsystem extends SubsystemBase {
 
     pitchPIDController.setIZone(Constants.TurretConstants.PITCH_KIZ);
 
-    zeroTurret();
+    if (Robot.isReal()) {
+      zeroTurret();
+    }
     turretTab.add("zero turret", zeroZeroing());
   }
 
@@ -276,7 +280,9 @@ public class TurretSubsystem extends SubsystemBase {
     double encoderPosition =
         lowGearCANcoder.getPosition().getValueAsDouble()
             / Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO;
-    return encoderPosition + Constants.TurretConstants.ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV;
+    return (encoderPosition + Constants.TurretConstants.ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV)
+        * Math.PI
+        * 2;
   }
 
   private double calculatePitchPosition() {
@@ -417,7 +423,7 @@ public class TurretSubsystem extends SubsystemBase {
   private void setTurretPos(double setpoint) {
     turretGoalPositionEntry.log(setpoint);
     turretMotor.set(
-        -turretPIDController.calculate(
+        turretPIDController.calculate(
             turretPosition,
             MathUtil.clamp(
                 setpoint,
@@ -557,9 +563,9 @@ public class TurretSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    turretPIDController.setP(turretKP.getDouble(turretPosition));
-    turretPIDController.setI(turretKI.getDouble(turretPosition));
-    turretPIDController.setD(turretKD.getDouble(turretPosition));
+    turretPIDController.setP(turretKP.getDouble(0));
+    turretPIDController.setI(turretKI.getDouble(0));
+    turretPIDController.setD(turretKD.getDouble(0));
 
     updateTurretPosition();
     turretVelocity =
@@ -585,7 +591,7 @@ public class TurretSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Turret Angle", Math.toDegrees(turretSim.getAngleRads()));
     simTurretPos.set(
         Units.radiansToRotations(
-            turretSim.getAngleRads() / Constants.TurretConstants.TURRET_CONVERSION_FACTOR));
+            turretSim.getAngleRads() * Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO));
 
     pitchSim.setInput(pitchMotor.getAppliedOutput());
     pitchSim.update(Robot.defaultPeriodSecs);

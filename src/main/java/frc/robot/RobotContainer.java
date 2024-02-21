@@ -205,12 +205,6 @@ public class RobotContainer {
 
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
-    // Turret commands
-    if (Constants.enabledSubsystems.turretEnabled) {
-      turretSubsystem.setDefaultCommand(turretSubsystem.idleTurret());
-      OI.getTrigger(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
-    }
-
     // Shooter commands
     if (Constants.enabledSubsystems.shooterEnabled && Constants.enabledSubsystems.triggerEnabled) {
       shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
@@ -228,6 +222,7 @@ public class RobotContainer {
         OI.getTrigger(OI.Operator.shooterFireTrigger).whileTrue(shooterSubsystem.bumperShoot());
       }
     }
+
     // Turret commands
     if (Constants.enabledSubsystems.turretEnabled) {
       turretSubsystem.setDefaultCommand(turretSubsystem.idleTurret());

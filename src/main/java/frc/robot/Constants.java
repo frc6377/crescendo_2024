@@ -74,6 +74,7 @@ public final class Constants {
     public static final int TURRET_CANcoder_ID = 17; // replace with actual CANcoder ID
     public static final int PITCH_MOTOR_ID = 10;
     public static final int PITCH_ENCODER_ID = 1; // replace with actual ID
+    public static final boolean IS_MOTOR_INVERTED = true;
 
     // PID coefficients
     public static final double TURRET_KP =
