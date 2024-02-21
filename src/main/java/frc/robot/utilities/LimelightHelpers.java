@@ -476,15 +476,6 @@ public class LimelightHelpers {
     SmartDashboard.putNumber("LL X Distance", newX);
   }
 
-  public static int getFiducialId() {
-    if (DriverStation.getAlliance().isPresent()) {
-      if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
-        return LimelightConstants.SPEAKER_TAG_ID_BLUE;
-      }
-    }
-    return LimelightConstants.SPEAKER_TAG_ID_RED;
-  }
-
   public static double getTA(String limelightName) {
     return getLimelightNTDouble(limelightName, "ta");
   }
@@ -571,6 +562,14 @@ public class LimelightHelpers {
   }
 
   public static double getFiducialID(String limelightName) {
+    if (Robot.isSimulation()) {
+      if (DriverStation.getAlliance().isPresent()) {
+        if (DriverStation.getAlliance().get().equals(Alliance.Blue)) {
+          return LimelightConstants.SPEAKER_TAG_ID_BLUE;
+        }
+      }
+      return LimelightConstants.SPEAKER_TAG_ID_RED;
+    }
     return getLimelightNTDouble(limelightName, "tid");
   }
 
