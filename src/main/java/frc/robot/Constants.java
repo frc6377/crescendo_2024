@@ -121,8 +121,8 @@ public final class Constants {
     public static final int SCORING_BREAK_ID = 4;
 
     // Speeds
-    public static final double ROLLER_INTAKE_SPEED = 0.25;
-    public static final double ROLLER_SCORING_SPEED = 0.4;
+    public static final double ROLLER_INTAKE_SPEED = 0.5;
+    public static final double ROLLER_SCORING_SPEED = 0.5;
     public static final double ELV_ZEROING_SPEED = 0.1; // Percent Power
 
     // PIDs

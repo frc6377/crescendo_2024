@@ -97,10 +97,10 @@ public class TrapElvSubsystem extends SubsystemBase {
   // States
   public static enum TrapElvState {
     // Degrees, elv height, elv height
-    STOWED(-0.11, 0.0, 0.0),
-    FROM_INTAKE(-0.11, 0.0, 0.0),
-    FROM_SOURCE(0.2, 0.0, 12.0),
-    TRAP_SCORE(-0.05, 12.0, 12.0),
+    STOWED(-0.15, 0.0, 0.0),
+    FROM_INTAKE(-0.15, 0.0, 0.0),
+    FROM_SOURCE(0.25, 0.0, 12.0),
+    TRAP_SCORE(0, 12.0, 12.0),
     AMP_SCORE(0.435, 0.0, 12.0);
 
     private double wristPose;
@@ -140,7 +140,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     wristMotor.clearFaults();
 
     wristMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
-    wristPIDController = new PIDController(0.1, 0, 0);
+    wristPIDController = new PIDController(0.03, 0, 0);
     wristPIDController.setIZone(TrapElvConstants.WRIST_PID[3]);
     wristFeedforward =
         new ArmFeedforward(
@@ -154,11 +154,12 @@ public class TrapElvSubsystem extends SubsystemBase {
     wristEncoder.setInverted(false);
     wristEncoder.setZeroOffset(TrapElvConstants.WRIST_ZERO_OFFSET);
 
-    rollerMotor = new CANSparkMax(TrapElvConstants.ROLLER_MOTOR_ID, MotorType.kBrushless);
+    rollerMotor = new CANSparkMax(TrapElvConstants.ROLLER_MOTOR_ID, MotorType.kBrushed);
     rollerMotor.restoreFactoryDefaults();
 
     sourceBreak = new DigitalInput(TrapElvConstants.SOURCE_BREAK_ID);
     groundBreak = new DigitalInput(TrapElvConstants.GROUND_BREAK_ID);
+    wristState = TrapElvState.STOWED.getWristPose();
 
     // Elv
     if (isElv) {
@@ -424,7 +425,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     sourceLog.log(sourceBreak.get());
     groundLog.log(groundBreak.get());
 
-    FF = wristFeedforward.calculate(getWristEncoderPos(), 0);
+    FF = wristFeedforward.calculate(Units.rotationsToRadians(getWristEncoderPos()), 0);
 
     wristMotor.setVoltage(
         MathUtil.clamp(
