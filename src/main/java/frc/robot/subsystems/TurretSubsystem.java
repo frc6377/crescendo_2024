@@ -600,7 +600,7 @@ public class TurretSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Turret Angle", Math.toDegrees(turretSim.getAngleRads()));
     simTurretPos.set(
         Units.radiansToRotations(
-            turretSim.getAngleRads() / Constants.TurretConstants.TURRET_CONVERSION_FACTOR));
+            turretSim.getAngleRads() * Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO));
 
     pitchSim.setInput(pitchMotor.getAppliedOutput());
     pitchSim.update(Robot.defaultPeriodSecs);
