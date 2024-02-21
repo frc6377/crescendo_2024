@@ -85,7 +85,7 @@ public final class Constants {
     public static final double TURRET_KFF = 0;
     public static final double TURRET_KS = 0;
     public static final double TURRET_KV = 0.13;
-    public static final double TURRET_KG = 0; // No gravity on the turret
+    public static final double TURRET_KG = 7.26;
     public static final double TURRET_KA = 0.23;
 
     public static final double TURRET_KMAXOUTPUT = 1;
