@@ -140,7 +140,11 @@ public class TrapElvSubsystem extends SubsystemBase {
     wristMotor.clearFaults();
 
     wristMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
-    wristPIDController = new PIDController(0.03, 0, 0);
+    wristPIDController =
+        new PIDController(
+            TrapElvConstants.WRIST_PID[0],
+            TrapElvConstants.WRIST_PID[1],
+            TrapElvConstants.WRIST_PID[2]);
     wristPIDController.setIZone(TrapElvConstants.WRIST_PID[3]);
     wristFeedforward =
         new ArmFeedforward(
@@ -148,18 +152,18 @@ public class TrapElvSubsystem extends SubsystemBase {
             TrapElvConstants.WRIST_FF[1],
             TrapElvConstants.WRIST_FF[2],
             TrapElvConstants.WRIST_FF[3]);
-
-    wristEncoder = wristMotor.getAbsoluteEncoder();
-    wristEncoder.setPositionConversionFactor(1);
-    wristEncoder.setInverted(false);
-    wristEncoder.setZeroOffset(TrapElvConstants.WRIST_ZERO_OFFSET);
+    wristState = TrapElvState.STOWED.getWristPose();
 
     rollerMotor = new CANSparkMax(TrapElvConstants.ROLLER_MOTOR_ID, MotorType.kBrushed);
     rollerMotor.restoreFactoryDefaults();
 
     sourceBreak = new DigitalInput(TrapElvConstants.SOURCE_BREAK_ID);
     groundBreak = new DigitalInput(TrapElvConstants.GROUND_BREAK_ID);
-    wristState = TrapElvState.STOWED.getWristPose();
+
+    wristEncoder = wristMotor.getAbsoluteEncoder();
+    wristEncoder.setPositionConversionFactor(1);
+    wristEncoder.setInverted(false);
+    wristEncoder.setZeroOffset(TrapElvConstants.WRIST_ZERO_OFFSET);
 
     // Elv
     if (isElv) {
@@ -254,7 +258,6 @@ public class TrapElvSubsystem extends SubsystemBase {
               0);
 
       TrapElvTab.add("Trap Arm Mech", elvMechanism).withPosition(7, 7);
-      wristEncoder.setZeroOffset(TrapElvConstants.WRIST_ZERO_OFFSET);
     }
 
     // SmartDashboard
@@ -337,6 +340,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   public Command intakeGround() {
     return startEnd(
             () -> {
+              System.out.println("SPIN!!");
               setTrapArm(TrapElvState.FROM_INTAKE);
               rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
             },
@@ -363,7 +367,8 @@ public class TrapElvSubsystem extends SubsystemBase {
             () -> {
               setTrapArm(TrapElvState.TRAP_SCORE);
               double dif = TrapElvState.TRAP_SCORE.getWristPose() - getWristEncoderPos();
-              if (TrapElvConstants.ROLLER_DEADZONE < dif && dif < TrapElvConstants.ROLLER_DEADZONE) {
+              if (TrapElvConstants.ROLLER_DEADZONE < dif
+                  && dif < TrapElvConstants.ROLLER_DEADZONE) {
                 rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
               }
             },

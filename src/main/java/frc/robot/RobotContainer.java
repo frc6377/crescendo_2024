@@ -17,11 +17,13 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.DynamicRobotConfig;
+import frc.robot.stateManagement.PlacementMode;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
@@ -137,16 +139,18 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    OI.getButton(OI.Operator.A)
+    OI.getButton(OI.Driver.sourceIntakeButton) // Bound to X][\]
         .onTrue(
             new InstantCommand(robotStateManager::switchPlacementMode)
                 .withName("Switch Placement Mode Command"));
     if (Constants.enabledSubsystems.intakeEnabled) {
       OI.getTrigger(OI.Driver.intakeTrigger)
           .whileTrue(
-              intakeSubsystem
-                  .getIntakeCommand(robotStateManager.getPlacementMode())
-                  .withName("Get Placement Mode Command"));
+              Commands.either(
+                  intakeSubsystem.getSpeakerIntakeCommand(),
+                  Commands.parallel(
+                      intakeSubsystem.getAmpIntakeCommand(), trapElvSubsystem.intakeGround()),
+                  () -> robotStateManager.getPlacementMode() == PlacementMode.SPEAKER));
       OI.getButton(OI.Driver.outtakeButton)
           .whileTrue(intakeSubsystem.reverseIntakeCommand().withName("Reverse Intake Command"));
     }
@@ -211,7 +215,7 @@ public class RobotContainer {
     // Trap Elv Intaking
     if (Constants.enabledSubsystems.elvEnabled) {
       OI.getButton(OI.Driver.groundIntakeButton)
-          .whileTrue(trapElvSubsystem.intakeGround().onlyWhile(trapElvSubsystem.getGroundBreak()));
+          .whileTrue(trapElvSubsystem.intakeGround().onlyWhile(() -> true));
       OI.getButton(OI.Driver.sourceIntakeButton)
           .whileTrue(trapElvSubsystem.intakeSource().onlyWhile(trapElvSubsystem.getSourceBreak()));
 

@@ -55,6 +55,7 @@ public class RobotStateManager extends SubsystemBase {
   public void switchPlacementMode() {
     placementMode =
         placementMode == PlacementMode.SPEAKER ? PlacementMode.AMP : PlacementMode.SPEAKER;
+    System.out.println(placementMode);
   }
 
   public void setPlacementMode(PlacementMode placementMode) {
