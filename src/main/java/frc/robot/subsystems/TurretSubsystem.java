@@ -78,6 +78,7 @@ public class TurretSubsystem extends SubsystemBase {
       new DebugEntry<Double>(0.0, "Turret Goal Position", this);
   private final DebugEntry<Double> turretVelocityEntry =
       new DebugEntry<Double>(turretVelocity, "Turret Velocity", this);
+  private final ArmFeedforward turretFeedForward;
 
   private final CANSparkMax pitchMotor;
   private SingleJointedArmSim pitchSim;
@@ -115,6 +116,13 @@ public class TurretSubsystem extends SubsystemBase {
     // Initialize Motors
     turretMotor = new CANSparkMax(Constants.TurretConstants.TURRET_MOTOR_ID, MotorType.kBrushless);
     pitchMotor = new CANSparkMax(Constants.TurretConstants.PITCH_MOTOR_ID, MotorType.kBrushless);
+
+    turretFeedForward =
+        new ArmFeedforward(
+            Constants.TurretConstants.TURRET_KS,
+            Constants.TurretConstants.TURRET_KG,
+            Constants.TurretConstants.TURRET_KV,
+            Constants.TurretConstants.TURRET_KA);
     pitchFeedForward =
         new ArmFeedforward(
             Constants.TurretConstants.PITCH_KS,
@@ -424,11 +432,12 @@ public class TurretSubsystem extends SubsystemBase {
     turretGoalPositionEntry.log(setpoint);
     turretMotor.set(
         turretPIDController.calculate(
-            turretPosition,
-            MathUtil.clamp(
-                setpoint,
-                Math.toRadians(Constants.TurretConstants.TURRET_MIN_ANGLE_DEGREES),
-                Math.toRadians(Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES))));
+                turretPosition,
+                MathUtil.clamp(
+                    setpoint,
+                    Math.toRadians(Constants.TurretConstants.TURRET_MIN_ANGLE_DEGREES),
+                    Math.toRadians(Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES)))
+            + pitchFeedForward.calculate(turretPosition, 0));
   }
 
   private void setPitchPos(double setpoint) {

@@ -83,6 +83,10 @@ public final class Constants {
     public static final double TURRET_KD = 0;
     public static final double TURRET_KIZ = 0;
     public static final double TURRET_KFF = 0;
+    public static final double TURRET_KS = 0;
+    public static final double TURRET_KV = 0.13;
+    public static final double TURRET_KG = 7.26;
+    public static final double TURRET_KA = 0.23;
 
     public static final double TURRET_KMAXOUTPUT = 1;
     public static final double TURRET_KMINOUTPUT = -1;
