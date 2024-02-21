@@ -25,7 +25,7 @@ import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
-import frc.robot.subsystems.SensorSubsystem;
+import frc.robot.subsystems.SensorManager;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TrapElvSubsystem;
@@ -57,8 +57,6 @@ public class RobotContainer {
   
   private final TurretSubsystem turretSubsystem;
   
-  private final SensorSubsystem sensorSubsystem;
-  
   private final SwerveSubsystem drivetrain;
   
   private final LimelightSubsystem limelightSubsystem;
@@ -84,11 +82,6 @@ public class RobotContainer {
       turretSubsystem = new TurretSubsystem(robotStateManager);
     } else {
       turretSubsystem = null;
-    }
-    if (Constants.enabledSubsystems.sensorsEnabled) {
-      sensorSubsystem = new SensorSubsystem(robotStateManager);
-    } else {
-      sensorSubsystem = null;
     }
     if (Constants.enabledSubsystems.shooterEnabled) {
       shooterSubsystem = new ShooterSubsystem();
@@ -207,12 +200,12 @@ public class RobotContainer {
           .whileTrue(
               trapElvSubsystem
                   .intakeGround()
-                  .onlyWhile(sensorSubsystem.getGroundBreakBoolInverse()));
+                  .onlyWhile(SensorManager.getGroundBreakBoolInverse()));
       OI.getButton(OI.Driver.sourceIntakeButton)
           .whileTrue(
               trapElvSubsystem
                   .intakeSource()
-                  .onlyWhile(sensorSubsystem.getSourceBreakBoolInverse()));
+                  .onlyWhile(SensorManager.getSourceBreakBoolInverse()));
 
     // Trap Elv Scoring
 
