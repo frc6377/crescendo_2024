@@ -97,11 +97,11 @@ public class TrapElvSubsystem extends SubsystemBase {
   // States
   public static enum TrapElvState {
     // Degrees, elv height, elv height
-    STOWED(-0.15, 0.0, 0.0),
-    FROM_INTAKE(-0.15, 0.0, 0.0),
+    STOWED(-0.18, 0.0, 0.0),
+    FROM_INTAKE(-0.18, 0.0, 0.0),
     FROM_SOURCE(0.25, 0.0, 12.0),
     TRAP_SCORE(0, 12.0, 12.0),
-    AMP_SCORE(0.435, 0.0, 12.0);
+    AMP_SCORE(0.15, 0.0, 12.0);
 
     private double wristPose;
     private double basePose;
@@ -153,6 +153,7 @@ public class TrapElvSubsystem extends SubsystemBase {
             TrapElvConstants.WRIST_FF[2],
             TrapElvConstants.WRIST_FF[3]);
     wristState = TrapElvState.STOWED.getWristPose();
+    wristGoal.setDouble(wristState);
 
     rollerMotor = new CANSparkMax(TrapElvConstants.ROLLER_MOTOR_ID, MotorType.kBrushed);
     rollerMotor.restoreFactoryDefaults();
@@ -325,6 +326,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   }
 
   // Commands
+
   public Command intakeSource() {
     return startEnd(
             () -> {
@@ -340,7 +342,6 @@ public class TrapElvSubsystem extends SubsystemBase {
   public Command intakeGround() {
     return startEnd(
             () -> {
-              System.out.println("SPIN!!");
               setTrapArm(TrapElvState.FROM_INTAKE);
               rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
             },
@@ -351,10 +352,14 @@ public class TrapElvSubsystem extends SubsystemBase {
   }
 
   public Command scoreAMP() {
-    return startEnd(
+    return runEnd(
             () -> {
               setTrapArm(TrapElvState.AMP_SCORE);
-              rollerMotor.set(-TrapElvConstants.ROLLER_INTAKE_SPEED);
+              double dif = TrapElvState.AMP_SCORE.getWristPose() - getWristEncoderPos();
+              if (-TrapElvConstants.ROLLER_DEADZONE < dif
+                  && dif < TrapElvConstants.ROLLER_DEADZONE) {
+                rollerMotor.set(TrapElvConstants.ROLLER_SCORING_SPEED);
+              }
             },
             () -> {
               stowTrapElv();

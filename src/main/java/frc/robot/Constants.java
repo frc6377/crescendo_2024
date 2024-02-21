@@ -129,7 +129,7 @@ public final class Constants {
     public static final double ROLLER_INTAKE_SPEED = 0.5;
     public static final double ROLLER_SCORING_SPEED = 0.5;
 
-    public static final double ROLLER_DEADZONE = 0.1;
+    public static final double ROLLER_DEADZONE = 0.001;
 
     // Elv
     public static final int BASE_MOTOR1_ID = 22;
@@ -150,8 +150,8 @@ public final class Constants {
   }
 
   public static class enabledSubsystems {
-    public static final boolean intakeEnabled = false;
-    public static final boolean drivetrainEnabled = false;
+    public static final boolean intakeEnabled = true;
+    public static final boolean drivetrainEnabled = true;
     public static final boolean limeLightEnabled = false;
     public static final boolean elvEnabled = true;
     public static final boolean signalEnabled = false;
