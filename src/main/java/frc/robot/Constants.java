@@ -197,6 +197,16 @@ public final class Constants {
     public static final double WRIST_LENGTH = Units.inchesToMeters(12.5);
   }
 
+  public static class LimelightConstants {
+    public static final double FIELD_LENGTH = (8.308467 * 2);
+    public static final double FIELD_HALF_WIDTH = 3.837865;
+    public static final double TAG_Y_POS = 1.451102;
+    public static final double TAG_HEIGHT = 0.4572;
+
+    public static final int SPEAKER_TAG_ID_RED = 4;
+    public static final int SPEAKER_TAG_ID_BLUE = 7;
+  }
+
   public static class VisionConstants {
     public static final double TURRET_LIMELIGHT_HEIGHT_INCHES = 17.85;
     public static final double MAX_ACCEPTABLE_ERROR_METERS = 2;
