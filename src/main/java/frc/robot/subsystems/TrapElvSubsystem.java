@@ -286,21 +286,42 @@ public class TrapElvSubsystem extends SubsystemBase {
     return () -> scoringLimit.get();
   }
 
+  // Getter Functions
+  private double getWristEncoderPos() {
+    if (Robot.isReal()) {
+      double a = wristEncoder.getPosition();
+      if (a >= .75) {
+        a = a - 1;
+      }
+      return a;
+    }
+    return Units.radiansToRotations(m_wristMotorSim.getAngleRads());
+  }
+
+  // Void Functions
+  public void setTrapArm(TrapElvState state) {
+    wristState = state.getWristPose();
+    wristGoal.setDouble(wristState);
+    if (isElv) {
+      baseGoal.setDouble(Units.metersToInches(TrapElvConstants.ELV_MIN_HEIGHT) + state.basePose);
+      baseMotor1
+          .getPIDController()
+          .setReference(state.getBasePose() - baseMotorOffset1, ControlType.kPosition);
+      baseMotor2
+          .getPIDController()
+          .setReference(state.getBasePose() - baseMotorOffset2, ControlType.kPosition);
+      scoringMotor
+          .getPIDController()
+          .setReference(state.getScoringPose() - scoringMotorOffset, ControlType.kPosition);
+    }
+  }
+
+  public void stowTrapElv() {
+    setTrapArm(TrapElvState.STOWED);
+    rollerMotor.stopMotor();
+  }
+
   // Commands
-  public Command setRoller(double rollerSpeed) {
-    return run(() -> {
-          rollerMotor.set(rollerSpeed);
-        })
-        .withName("Set Roller");
-  }
-
-  public Command stopRoller() {
-    return run(() -> {
-          rollerMotor.stopMotor();
-        })
-        .withName("Stop Roller");
-  }
-
   public Command intakeSource() {
     return startEnd(
             () -> {
@@ -329,7 +350,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     return startEnd(
             () -> {
               setTrapArm(TrapElvState.AMP_SCORE);
-              setRoller(-TrapElvConstants.ROLLER_SCORING_SPEED);
+              rollerMotor.set(-TrapElvConstants.ROLLER_INTAKE_SPEED);
             },
             () -> {
               stowTrapElv();
@@ -341,17 +362,15 @@ public class TrapElvSubsystem extends SubsystemBase {
     return startEnd(
             () -> {
               setTrapArm(TrapElvState.TRAP_SCORE);
-              rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
+              double dif = TrapElvState.TRAP_SCORE.getWristPose() - getWristEncoderPos();
+              if (TrapElvConstants.ROLLER_DEADZONE < dif && dif < TrapElvConstants.ROLLER_DEADZONE) {
+                rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
+              }
             },
             () -> {
               stowTrapElv();
             })
         .withName("Score Trap");
-  }
-
-  public void stowTrapElv() {
-    setTrapArm(TrapElvState.STOWED);
-    rollerMotor.stopMotor();
   }
 
   public Command zeroArm() {
@@ -386,38 +405,6 @@ public class TrapElvSubsystem extends SubsystemBase {
       return run(() -> {});
     }
   }
-
-  public void setTrapArm(TrapElvState state) {
-    wristState = state.getWristPose();
-    wristGoal.setDouble(wristState);
-    if (isElv) {
-      baseGoal.setDouble(Units.metersToInches(TrapElvConstants.ELV_MIN_HEIGHT) + state.basePose);
-      baseMotor1
-          .getPIDController()
-          .setReference(state.getBasePose() - baseMotorOffset1, ControlType.kPosition);
-      baseMotor2
-          .getPIDController()
-          .setReference(state.getBasePose() - baseMotorOffset2, ControlType.kPosition);
-      scoringMotor
-          .getPIDController()
-          .setReference(state.getScoringPose() - scoringMotorOffset, ControlType.kPosition);
-    }
-  }
-
-  private double getWristEncoderPos() {
-    if (Robot.isReal()) {
-      double a = wristEncoder.getPosition();
-      if (a >= .75) {
-        a = a - 1;
-      }
-      return a;
-    }
-    return Units.radiansToRotations(m_wristMotorSim.getAngleRads());
-  }
-
-  // 0.7092
-  // Zero: 0.1414
-  // Start: 0.002
 
   @Override
   public void periodic() {
