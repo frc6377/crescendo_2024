@@ -24,19 +24,21 @@ public class OI {
     // A B Y X Buttons
     public static final Control brakeButton =
         new Control(XboxController.Button.kA, "Brake", controller);
-    public static final Control B = new Control(XboxController.Button.kB, null, controller);
+    public static final Control intakeWristButton =
+        new Control(XboxController.Button.kB, "Intake into Wrist", controller);
     public static final Control modeChangeButton =
         new Control(XboxController.Button.kX, "Change Mode", controller);
-    public static final Control Y = new Control(XboxController.Button.kY, null, controller);
+    public static final Control outakeWristButton =
+        new Control(XboxController.Button.kY, "Score From Wrist Pose", controller);
 
     // Bumpers & Triggers
     public static final Control intakeTrigger =
         new Control(XboxController.Axis.kLeftTrigger, "Run intake", controller, 0.5);
-    public static final Control RT =
-        new Control(XboxController.Axis.kRightTrigger, null, controller, 0.5);
+    public static final Control outtakeButton =
+        new Control(XboxController.Axis.kRightTrigger, "Run outtake", controller, 0.5);
     public static final Control ampScoreButton =
         new Control(XboxController.Button.kLeftBumper, "Score AMP", controller);
-    public static final Control outtakeButton =
+    public static final Control sourceIntakeButton =
         new Control(XboxController.Button.kRightBumper, "Run outtake", controller);
 
     // Start, End & Left/Right stick buttons
@@ -64,14 +66,6 @@ public class OI {
         new Control(XboxController.Axis.kRightX, "Rotation", controller, rotationCurve);
     public static final Control RightY =
         new Control(XboxController.Axis.kRightY, null, controller, null);
-
-    // POV
-    public static final Control sourceIntakeButton =
-        new Control(0, "Intake From Source", controller);
-    public static final Control intakeWristButton =
-        new Control(270, "Intake into Wrist", controller);
-    public static final Control outakeWristButton =
-        new Control(90, "Score From Wrist Pose", controller);
 
     public static void setRumble(double rumbleIntensity) {
       controller.setRumble(RumbleType.kBothRumble, rumbleIntensity);

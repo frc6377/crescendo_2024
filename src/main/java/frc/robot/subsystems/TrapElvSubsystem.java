@@ -84,6 +84,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   private SingleJointedArmSim m_wristMotorSim;
 
   private DebugEntry<Double> currentPositionEntry;
+  private DebugEntry<Boolean> isWristRollerRunning;
 
   private ShuffleboardTab TrapElvTab = Shuffleboard.getTab("TrapElvSubsystem");
   private GenericEntry baseGoal = TrapElvTab.add("Base Goal", 0).withPosition(9, 0).getEntry();
@@ -271,6 +272,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     sourceLog = new DebugEntry<Boolean>(sourceBreak.get(), "Source Beam Break", this);
     groundLog = new DebugEntry<Boolean>(groundBreak.get(), "Ground Beam Break", this);
     currentPositionEntry = new DebugEntry<>(getWristEncoderPos(), "Current wrist Position", this);
+    isWristRollerRunning = new DebugEntry<Boolean>(false, "Wrist Rollers", this);
   }
 
   // Boolean Suppliers
@@ -322,6 +324,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   public void stowTrapElv() {
     setTrapArm(TrapElvState.STOWED);
+    isWristRollerRunning.log(false);
     rollerMotor.stopMotor();
   }
 
@@ -329,6 +332,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   public Command wristIntakeCommand() {
     return runEnd(
         () -> {
+          isWristRollerRunning.log(true);
           rollerMotor.set(TrapElvConstants.ROLLER_SPEED);
         },
         () -> {
@@ -339,6 +343,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   public Command wristOutakeCommand() {
     return runEnd(
         () -> {
+          isWristRollerRunning.log(true);
           rollerMotor.set(TrapElvConstants.ROLLER_REVERSE_SPEED);
         },
         () -> {
@@ -350,6 +355,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     return startEnd(
             () -> {
               setTrapArm(TrapElvState.FROM_SOURCE);
+              isWristRollerRunning.log(true);
               rollerMotor.set(TrapElvConstants.ROLLER_SPEED);
             },
             () -> {
@@ -362,6 +368,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     return startEnd(
             () -> {
               setTrapArm(TrapElvState.FROM_INTAKE);
+              isWristRollerRunning.log(true);
               rollerMotor.set(TrapElvConstants.ROLLER_SPEED);
             },
             () -> {
@@ -374,11 +381,6 @@ public class TrapElvSubsystem extends SubsystemBase {
     return runEnd(
             () -> {
               setTrapArm(TrapElvState.AMP_SCORE);
-              double dif = TrapElvState.AMP_SCORE.getWristPose() - getWristEncoderPos();
-              if (-TrapElvConstants.ROLLER_DEADZONE < dif
-                  && dif < TrapElvConstants.ROLLER_DEADZONE) {
-                rollerMotor.set(TrapElvConstants.ROLLER_SPEED);
-              }
             },
             () -> {
               stowTrapElv();
