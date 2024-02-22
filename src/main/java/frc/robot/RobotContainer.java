@@ -215,7 +215,7 @@ public class RobotContainer {
     // Trap Elv Intaking
     if (Constants.enabledSubsystems.elvEnabled) {
       OI.getButton(OI.Driver.groundIntakeButton)
-          .whileTrue(trapElvSubsystem.intakeGround().onlyWhile(() -> true));
+          .whileTrue(trapElvSubsystem.intakeSource().onlyWhile(() -> true));
 
       // Trap Elv Scoring
 
