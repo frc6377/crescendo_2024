@@ -139,7 +139,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    OI.getButton(OI.Driver.sourceIntakeButton) // Bound to X][\]
+    OI.getButton(OI.Driver.modeChangeButton) // Bound to X][\]
         .onTrue(
             new InstantCommand(robotStateManager::switchPlacementMode)
                 .withName("Switch Placement Mode Command"));
@@ -200,7 +200,7 @@ public class RobotContainer {
                   .getShootCommand()
                   .onlyIf(shooterSubsystem.shooterReady())
                   .onlyWhile(OI.getTrigger(OI.Operator.shooterRevTrigger)));
-      OI.getButton(OI.Operator.A).whileTrue(triggerSubsystem.getLoadCommand());
+      OI.getButton(OI.Operator.switchPlacementButton).whileTrue(triggerSubsystem.getLoadCommand());
     } else if (Constants.enabledSubsystems.shooterEnabled
         && Constants.enabledSubsystems.triggerEnabled
         && !Constants.enabledSubsystems.limeLightEnabled) {
@@ -210,11 +210,11 @@ public class RobotContainer {
 
     if (Constants.enabledSubsystems.turretEnabled) {
       turretSubsystem.setDefaultCommand(turretSubsystem.idleTurret());
-      OI.getTrigger(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
+      OI.getTrigger(OI.Operator.aimTurretButton).toggleOnTrue(turretSubsystem.getAimTurretCommand());
     }
     // Trap Elv Intaking
     if (Constants.enabledSubsystems.elvEnabled) {
-      OI.getButton(OI.Driver.groundIntakeButton)
+      OI.getButton(OI.Driver.sourceIntakeButton)
           .whileTrue(trapElvSubsystem.intakeSource().onlyWhile(() -> true));
 
       // Trap Elv Scoring
