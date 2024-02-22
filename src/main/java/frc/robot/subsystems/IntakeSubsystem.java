@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.stateManagement.PlacementMode;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -51,6 +52,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void reverseIntake() {
     intakeMotor.set(-Constants.IntakeConstants.INTAKE_PERCENTAGE);
+    chooserMotor.set(-IntakeConstants.CHOOSER_PERCENTAGE);
   }
 
   public void speakerChooser() {

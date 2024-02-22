@@ -28,8 +28,7 @@ public class OI {
         new Control(XboxController.Button.kB, "Score Trap", controller);
     public static final Control modeChangeButton =
         new Control(XboxController.Button.kX, "Change Mode", controller);
-    public static final Control Y =
-        new Control(XboxController.Button.kY, null, controller);
+    public static final Control Y = new Control(XboxController.Button.kY, null, controller);
 
     // Bumpers & Triggers
     public static final Control intakeTrigger =
@@ -68,9 +67,12 @@ public class OI {
         new Control(XboxController.Axis.kRightY, null, controller, null);
 
     // POV
-    public static final Control sourceIntakeButton = new Control(0, "Intake From Source", controller);
-    public static final Control intakeWristButton = new Control(90, "Intake into Wrist", controller);
-    public static final Control scoreWristButton = new Control(270, "Score From Wrist Pose", controller);
+    public static final Control sourceIntakeButton =
+        new Control(0, "Intake From Source", controller);
+    public static final Control intakeWristButton =
+        new Control(90, "Intake into Wrist", controller);
+    public static final Control scoreWristButton =
+        new Control(270, "Score From Wrist Pose", controller);
 
     public static void setRumble(double rumbleIntensity) {
       controller.setRumble(RumbleType.kBothRumble, rumbleIntensity);
@@ -83,7 +85,8 @@ public class OI {
     // A B Y X Buttons
     public static final Control switchPlacementButton =
         new Control(XboxController.Button.kA, "Switch placement", controller);
-    public static final Control aimTurretButton = new Control(XboxController.Button.kB, "Aim Turret", controller);
+    public static final Control aimTurretButton =
+        new Control(XboxController.Button.kB, "Aim Turret", controller);
     public static final Control Y = new Control(XboxController.Button.kY, null, controller);
     public static final Control X = new Control(XboxController.Button.kX, null, controller);
 
