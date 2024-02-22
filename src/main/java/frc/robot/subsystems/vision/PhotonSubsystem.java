@@ -102,7 +102,7 @@ public class PhotonSubsystem extends VisionSubsystem {
 
   public boolean checkPoseValidity(
       Pose3d checkPose, Pose3d confirmedPose, double checkTimestamp, double confirmedTimestamp) {
-    double distanceBetweenPoses =
+    final double distanceBetweenPoses =
         Math.sqrt(
             Math.pow(checkPose.getX() - confirmedPose.getX(), 2)
                 + Math.pow(checkPose.getY() - confirmedPose.getY(), 2)

@@ -6,7 +6,7 @@ import frc.robot.subsystems.vision.PhotonSubsystem;
 import org.junit.jupiter.api.Test;
 
 public class TestPhotonVision {
-  private Pose3d[] currentPoses = {
+  private final Pose3d[] currentPoses = {
     new Pose3d(0, 0, 0, null),
     new Pose3d(4, 4, 0, null),
     new Pose3d(3, 3, 0, null),
@@ -14,8 +14,8 @@ public class TestPhotonVision {
     new Pose3d(2, 2, 0, null),
     new Pose3d(2.5, 2.5, 0, null)
   };
-  private double[] timestamps = {0, 1, 1.1, 1.15, 2, 2.05};
-  private PhotonSubsystem photonSubsystem = new PhotonSubsystem(null);
+  private final double[] timestamps = {0, 1, 1.1, 1.15, 2, 2.05};
+  private final PhotonSubsystem photonSubsystem = new PhotonSubsystem(null);
 
   @Test
   public void TestPhotonPose() {
