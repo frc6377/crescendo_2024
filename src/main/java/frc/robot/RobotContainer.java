@@ -220,10 +220,10 @@ public class RobotContainer {
           .whileTrue(trapElvSubsystem.intakeSource().onlyWhile(() -> true));
 
       // Wrist Intake/Outake
-      OI.getPOVButton(OI.Driver.outakeWristButton).whileTrue(trapElvSubsystem.wristIntakeCommand());
-      OI.getPOVButton(OI.Driver.intakeWristButton).whileTrue(trapElvSubsystem.wristOutakeCommand());
+      OI.getButton(OI.Driver.outakeWristButton).whileTrue(trapElvSubsystem.wristIntakeCommand());
+      OI.getButton(OI.Driver.intakeWristButton).whileTrue(trapElvSubsystem.wristOutakeCommand());
 
-      OI.getPOVButton(OI.Driver.ampScoreButton).whileTrue(trapElvSubsystem.scoreAMP());
+      OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapElvSubsystem.scoreAMP());
     }
 
     if (Robot.isSimulation() && Constants.enabledSubsystems.drivetrainEnabled) {
