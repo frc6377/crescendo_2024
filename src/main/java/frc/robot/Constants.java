@@ -127,9 +127,9 @@ public final class Constants {
     public static final int ROLLER_MOTOR_ID = 13;
 
     public static final double ROLLER_INTAKE_SPEED = 0.5;
-    public static final double ROLLER_SCORING_SPEED = 0.5;
+    public static final double ROLLER_SCORING_SPEED = 0.6;
 
-    public static final double ROLLER_DEADZONE = 0.001;
+    public static final double ROLLER_DEADZONE = 0.02;
 
     // Elv
     public static final int BASE_MOTOR1_ID = 22;

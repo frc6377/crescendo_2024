@@ -99,9 +99,9 @@ public class TrapElvSubsystem extends SubsystemBase {
     // Degrees, elv height, elv height
     STOWED(-0.18, 0.0, 0.0),
     FROM_INTAKE(-0.18, 0.0, 0.0),
-    FROM_SOURCE(0.25, 0.0, 12.0),
+    FROM_SOURCE(0.4, 0.0, 12.0),
     TRAP_SCORE(0, 12.0, 12.0),
-    AMP_SCORE(0.15, 0.0, 12.0);
+    AMP_SCORE(0.23, 0.0, 12.0);
 
     private double wristPose;
     private double basePose;
