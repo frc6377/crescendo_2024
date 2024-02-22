@@ -326,12 +326,31 @@ public class TrapElvSubsystem extends SubsystemBase {
   }
 
   // Commands
+  public Command wristIntakeCommand() {
+    return runEnd(
+        () -> {
+          rollerMotor.set(TrapElvConstants.ROLLER_SPEED);
+        },
+        () -> {
+          stowTrapElv();
+        });
+  }
+
+  public Command wristOutakeCommand() {
+    return runEnd(
+        () -> {
+          rollerMotor.set(TrapElvConstants.ROLLER_REVERSE_SPEED);
+        },
+        () -> {
+          stowTrapElv();
+        });
+  }
 
   public Command intakeSource() {
     return startEnd(
             () -> {
               setTrapArm(TrapElvState.FROM_SOURCE);
-              rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
+              rollerMotor.set(TrapElvConstants.ROLLER_SPEED);
             },
             () -> {
               stowTrapElv();
@@ -343,7 +362,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     return startEnd(
             () -> {
               setTrapArm(TrapElvState.FROM_INTAKE);
-              rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
+              rollerMotor.set(TrapElvConstants.ROLLER_SPEED);
             },
             () -> {
               stowTrapElv();
@@ -358,29 +377,13 @@ public class TrapElvSubsystem extends SubsystemBase {
               double dif = TrapElvState.AMP_SCORE.getWristPose() - getWristEncoderPos();
               if (-TrapElvConstants.ROLLER_DEADZONE < dif
                   && dif < TrapElvConstants.ROLLER_DEADZONE) {
-                rollerMotor.set(TrapElvConstants.ROLLER_SCORING_SPEED);
+                rollerMotor.set(TrapElvConstants.ROLLER_SPEED);
               }
             },
             () -> {
               stowTrapElv();
             })
         .withName("Score Amp");
-  }
-
-  public Command scoreTrap() {
-    return startEnd(
-            () -> {
-              setTrapArm(TrapElvState.TRAP_SCORE);
-              double dif = TrapElvState.TRAP_SCORE.getWristPose() - getWristEncoderPos();
-              if (TrapElvConstants.ROLLER_DEADZONE < dif
-                  && dif < TrapElvConstants.ROLLER_DEADZONE) {
-                rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
-              }
-            },
-            () -> {
-              stowTrapElv();
-            })
-        .withName("Score Trap");
   }
 
   public Command zeroArm() {

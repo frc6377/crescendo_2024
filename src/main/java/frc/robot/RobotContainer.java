@@ -213,19 +213,18 @@ public class RobotContainer {
       OI.getTrigger(OI.Operator.aimTurretButton)
           .toggleOnTrue(turretSubsystem.getAimTurretCommand());
     }
-    // Trap Elv Intaking
+
+    // AMP / Wrist
     if (Constants.enabledSubsystems.elvEnabled) {
       OI.getButton(OI.Driver.sourceIntakeButton)
           .whileTrue(trapElvSubsystem.intakeSource().onlyWhile(() -> true));
 
       // Trap Elv Scoring
-
       OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapElvSubsystem.scoreAMP());
-      OI.getButton(OI.Driver.trapScoreButton).whileTrue(trapElvSubsystem.scoreTrap());
 
       // Wrist Intake/Outake
-      OI.getButton(OI.Driver.scoreWristButton).whileTrue(trapElvSubsystem);
-
+      OI.getButton(OI.Driver.outakeWristButton).whileTrue(trapElvSubsystem.wristIntakeCommand());
+      OI.getButton(OI.Driver.intakeWristButton).whileTrue(trapElvSubsystem.wristOutakeCommand());
     }
 
     if (Robot.isSimulation() && Constants.enabledSubsystems.drivetrainEnabled) {

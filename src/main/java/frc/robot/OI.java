@@ -24,8 +24,7 @@ public class OI {
     // A B Y X Buttons
     public static final Control brakeButton =
         new Control(XboxController.Button.kA, "Brake", controller);
-    public static final Control trapScoreButton =
-        new Control(XboxController.Button.kB, "Score Trap", controller);
+    public static final Control B = new Control(XboxController.Button.kB, null, controller);
     public static final Control modeChangeButton =
         new Control(XboxController.Button.kX, "Change Mode", controller);
     public static final Control Y = new Control(XboxController.Button.kY, null, controller);
@@ -70,9 +69,9 @@ public class OI {
     public static final Control sourceIntakeButton =
         new Control(0, "Intake From Source", controller);
     public static final Control intakeWristButton =
-        new Control(90, "Intake into Wrist", controller);
-    public static final Control scoreWristButton =
-        new Control(270, "Score From Wrist Pose", controller);
+        new Control(270, "Intake into Wrist", controller);
+    public static final Control outakeWristButton =
+        new Control(90, "Score From Wrist Pose", controller);
 
     public static void setRumble(double rumbleIntensity) {
       controller.setRumble(RumbleType.kBothRumble, rumbleIntensity);

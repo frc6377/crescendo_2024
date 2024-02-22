@@ -126,8 +126,8 @@ public final class Constants {
     // Roller
     public static final int ROLLER_MOTOR_ID = 13;
 
-    public static final double ROLLER_INTAKE_SPEED = 0.5;
-    public static final double ROLLER_SCORING_SPEED = 0.6;
+    public static final double ROLLER_SPEED = 0.6;
+    public static final double ROLLER_REVERSE_SPEED = -0.5;
 
     public static final double ROLLER_DEADZONE = 0.02;
 
