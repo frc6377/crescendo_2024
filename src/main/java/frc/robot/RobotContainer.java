@@ -130,6 +130,7 @@ public class RobotContainer {
       } else {
         turretSubsystem = new TurretSubsystem(robotStateManager, null);
       }
+      SmartDashboard.putData(turretSubsystem);
     } else {
       turretSubsystem = null;
     }

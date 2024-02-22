@@ -105,7 +105,8 @@ public class TurretSubsystem extends SubsystemBase {
       new DebugEntry<Double>(0.0, "Pitch Goal Position", this);
   private final DebugEntry<Double> pitchVelocityEntry =
       new DebugEntry<Double>(pitchVelocity, "Pitch Velocity", this);
-
+  private final DebugEntry<Double> motorOutputEntry =
+      new DebugEntry<Double>(0.0, "Motor Output", this);
   private final DebugEntry<Double> tagDistanceEntry =
       new DebugEntry<Double>(0.0, "LastMeasuredTagDistance", this);
 
@@ -449,7 +450,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public Command idleTurret() {
-    return run(() -> holdPosition()).withName("idleTurret");
+    return runEnd(() -> holdPosition(), this::stopTurret).withName("idleTurret");
   }
 
   private void moveUp() {
@@ -581,6 +582,8 @@ public class TurretSubsystem extends SubsystemBase {
             * 60; // changing from rotations per second to rotations per minute or rpm
     pitchPositionEntry.log(pitchPosition);
     pitchVelocityEntry.log(pitchVelocity);
+
+    motorOutputEntry.log(turretMotor.get());
   }
 
   @Override
