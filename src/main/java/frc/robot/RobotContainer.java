@@ -18,22 +18,28 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.SensorManager;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.SwerveSubsystem.DriveInput;
+import frc.robot.subsystems.SwerveSubsystem.DriveRequest;
 import frc.robot.subsystems.TrapElvSubsystem;
 import frc.robot.subsystems.TriggerSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.signaling.SignalingSubsystem;
+import frc.robot.subsystems.vision.LimelightSubsystem;
+import frc.robot.subsystems.vision.PhotonSubsystem;
+import frc.robot.subsystems.vision.VisionSubsystem;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -58,8 +64,7 @@ public class RobotContainer {
   private final TurretSubsystem turretSubsystem;
   
   private final SwerveSubsystem drivetrain;
-  
-  private final LimelightSubsystem limelightSubsystem;
+  private final VisionSubsystem visionSubsystem;
 
   private final SignalingSubsystem signalingSubsystem;
 
@@ -78,11 +83,6 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    if (Constants.enabledSubsystems.turretEnabled) {
-      turretSubsystem = new TurretSubsystem(robotStateManager);
-    } else {
-      turretSubsystem = null;
-    }
     if (Constants.enabledSubsystems.shooterEnabled) {
       shooterSubsystem = new ShooterSubsystem();
     } else {
@@ -104,17 +104,37 @@ public class RobotContainer {
     } else {
       intakeSubsystem = null;
     }
-    triggerSubsystem = new TriggerSubsystem();
-    if (Constants.enabledSubsystems.limeLightEnabled
-        && Constants.enabledSubsystems.drivetrainEnabled) {
-      limelightSubsystem = new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer());
+    if (Constants.enabledSubsystems.triggerEnabled) {
+      triggerSubsystem = new TriggerSubsystem();
     } else {
-      limelightSubsystem = null;
+      triggerSubsystem = null;
+    }
+    if (Constants.enabledSubsystems.visionEnabled) {
+      if (Constants.enabledSubsystems.drivetrainEnabled) {
+        visionSubsystem =
+            Constants.enabledSubsystems.usingPhoton
+                ? new PhotonSubsystem(drivetrain.getVisionMeasurementConsumer())
+                : new LimelightSubsystem(
+                    drivetrain.getVisionMeasurementConsumer(), robotStateManager);
+      } else {
+        visionSubsystem = null;
+      }
+    } else {
+      visionSubsystem = null;
     }
     if (Constants.enabledSubsystems.elvEnabled) {
       trapElvSubsystem = new TrapElvSubsystem();
     } else {
       trapElvSubsystem = null;
+    }
+    if (Constants.enabledSubsystems.turretEnabled) {
+      if (Constants.enabledSubsystems.visionEnabled) {
+        turretSubsystem = new TurretSubsystem(robotStateManager, visionSubsystem);
+      } else {
+        turretSubsystem = new TurretSubsystem(robotStateManager, null);
+      }
+    } else {
+      turretSubsystem = null;
     }
     // Configure the trigger bindings
     if (Constants.enabledSubsystems.drivetrainEnabled) {
@@ -151,20 +171,24 @@ public class RobotContainer {
     }
     // Swerve config
     if (Constants.enabledSubsystems.drivetrainEnabled) {
+      Supplier<DriveRequest> input =
+          () ->
+              SwerveSubsystem.joystickCondition(
+                  new DriveInput(
+                      OI.getAxisSupplier(OI.Driver.xTranslationAxis).get(),
+                      OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
+                      OI.getAxisSupplier(OI.Driver.rotationAxis).get()),
+                  0.1);
       drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-          drivetrain
-              .applyRequest(
-                  () ->
-                      drivetrain.getDriveRequest(
-                          OI.getAxisSupplier(OI.Driver.xTranslationAxis).get(),
-                          OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
-                          OI.getAxisSupplier(OI.Driver.rotationAxis).get()))
-              .withName("Get Axis Suppliers"));
+          drivetrain.fieldOrientedDrive(input).withName("Get Axis Suppliers"));
+
       OI.getButton(OI.Driver.brakeButton)
           .whileTrue(
               drivetrain
                   .applyRequest(() -> new SwerveRequest.SwerveDriveBrake())
                   .withName("Brake Swerve"));
+      OI.getTrigger(OI.Driver.pointForward)
+          .toggleOnTrue(drivetrain.pointAtLocation(new Translation2d(16.4846, 4.1), input));
       OI.getButton(OI.Driver.resetRotationButton)
           .onTrue(
               drivetrain
@@ -185,15 +209,30 @@ public class RobotContainer {
     // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
 
     // Shooter commands
-    if (Constants.enabledSubsystems.shooterEnabled) {
+    if (Constants.enabledSubsystems.shooterEnabled && Constants.enabledSubsystems.triggerEnabled) {
       shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
-      OI.getTrigger(OI.Operator.shooterTrigger).onTrue(shooterSubsystem.shooterFire());
+      if (Constants.enabledSubsystems.visionEnabled) {
+        OI.getTrigger(OI.Operator.shooterRevTrigger).whileTrue(shooterSubsystem.revShooter());
+
+        OI.getTrigger(OI.Operator.shooterFireTrigger)
+            .whileTrue(
+                triggerSubsystem
+                    .getShootCommand()
+                    .onlyIf(shooterSubsystem.shooterReady())
+                    .onlyWhile(OI.getTrigger(OI.Operator.shooterRevTrigger)));
+        OI.getButton(OI.Operator.A).whileTrue(triggerSubsystem.getLoadCommand());
+      } else {
+        OI.getTrigger(OI.Operator.shooterFireTrigger).whileTrue(shooterSubsystem.bumperShoot());
+      }
     }
+
     // Turret commands
     if (Constants.enabledSubsystems.turretEnabled) {
       turretSubsystem.setDefaultCommand(turretSubsystem.idleTurret());
-      OI.getTrigger(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
+      OI.getButton(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
+      OI.getButton(OI.Operator.Y).onTrue(turretSubsystem.moveUpwards());
     }
+
     // Trap Elv Intaking
     if (Constants.enabledSubsystems.elvEnabled) {
       OI.getButton(OI.Driver.groundIntakeButton)
@@ -230,6 +269,7 @@ public class RobotContainer {
       autonCommands.put("Speaker Intake", intakeSubsystem.getSpeakerIntakeCommand());
       autonCommands.put("Amp Intake", intakeSubsystem.getAmpIntakeCommand());
     }
+    autonCommands.put("Intake", new InstantCommand(() -> {}, new Subsystem[] {}));
 
     NamedCommands.registerCommands(autonCommands);
   }

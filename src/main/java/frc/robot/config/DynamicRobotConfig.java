@@ -1,5 +1,6 @@
 package frc.robot.config;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Preferences;
 import frc.robot.Robot;
@@ -17,6 +18,15 @@ public class DynamicRobotConfig {
     public static double frontRightOffset = -0.10595703125;
     public static double backLeftOffset = -0.298095703125;
     public static double backRightOffset = 0.2529296875;
+    public static double lowGearTurretZero = 0;
+    public static double highGearTurretZero = 0;
+
+    public static double limelightXMeters = Units.inchesToMeters(4.34645669);
+    public static double limelightYMeters = Units.inchesToMeters(0);
+    public static double limelightZMeters = Units.inchesToMeters(17.28346);
+    public static double limelightRollRadians = Math.toRadians(0);
+    public static double limelightPitchRadians = Math.toRadians(-18);
+    public static double limelightYawRadians = Math.toRadians(180);
   }
 
   private static TunerConstants tunerConstants;
@@ -59,6 +69,28 @@ public class DynamicRobotConfig {
               ConfigVariables.backRightOffset);
     }
     return tunerConstants;
+  }
+
+  public void saveTurretZero(TurretZeroConfig cfg) {
+    ConfigVariables.lowGearTurretZero = cfg.lowGearTurretZero;
+    ConfigVariables.highGearTurretZero = cfg.highGearTurretZero;
+    Preferences.setDouble("lowGearTurretZero", cfg.lowGearTurretZero);
+    Preferences.setDouble("highGearTurretZero", cfg.lowGearTurretZero);
+  }
+
+  public TurretZeroConfig getTurretZeroConfig() {
+    return new TurretZeroConfig(
+        ConfigVariables.lowGearTurretZero, ConfigVariables.highGearTurretZero);
+  }
+
+  public LimelightConfig getLimelightConfig() {
+    return new LimelightConfig(
+        ConfigVariables.limelightXMeters,
+        ConfigVariables.limelightYMeters,
+        ConfigVariables.limelightZMeters,
+        ConfigVariables.limelightRollRadians,
+        ConfigVariables.limelightPitchRadians,
+        ConfigVariables.limelightYawRadians);
   }
 
   private static void raiseWarning(String warning) {
