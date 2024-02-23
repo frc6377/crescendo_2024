@@ -78,7 +78,7 @@ public final class Constants {
 
     // PID coefficients
     public static final double TURRET_KP =
-        0.25; // TODO: Change values when there's an actual real functional robot.
+        0.125; // TODO: Change values when there's an actual real functional robot.
     public static final double TURRET_KI = 0.001;
     public static final double TURRET_KD = 0;
     public static final double TURRET_KIZ = 0;
@@ -213,7 +213,7 @@ public final class Constants {
     public static final double WRIST_MAX_ANGLE = Units.degreesToRadians(270); // RADS
     public static final double WRIST_LENGTH = Units.inchesToMeters(11.877934);
     public static final double WRIST_MOI = 0.3175242664; // Moment of Inertia
-    public static final double WRIST_GEAR_RATIO = 360/11;
+    public static final double WRIST_GEAR_RATIO = 360 / 11;
   }
 
   public static class VisionConstants {
