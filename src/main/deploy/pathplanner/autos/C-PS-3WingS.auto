@@ -18,7 +18,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "One"
+                  "pathName": "C1-C2Intake"
                 }
               },
               {
@@ -50,7 +50,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Two"
+                  "pathName": "C2-B2Intake"
                 }
               },
               {
@@ -82,7 +82,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Three"
+                  "pathName": "B2-A2Intake"
                 }
               },
               {
