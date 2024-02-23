@@ -58,11 +58,11 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem;
 
   private final ShooterSubsystem shooterSubsystem;
-  
+
   private final TriggerSubsystem triggerSubsystem;
-  
+
   private final TurretSubsystem turretSubsystem;
-  
+
   private final SwerveSubsystem drivetrain;
   private final VisionSubsystem visionSubsystem;
 
@@ -237,16 +237,12 @@ public class RobotContainer {
     if (Constants.enabledSubsystems.elvEnabled) {
       OI.getButton(OI.Driver.groundIntakeButton)
           .whileTrue(
-              trapElvSubsystem
-                  .intakeGround()
-                  .onlyWhile(SensorManager.getGroundBreakBoolInverse()));
+              trapElvSubsystem.intakeGround().onlyWhile(SensorManager.getGroundBreakBoolInverse()));
       OI.getButton(OI.Driver.sourceIntakeButton)
           .whileTrue(
-              trapElvSubsystem
-                  .intakeSource()
-                  .onlyWhile(SensorManager.getSourceBreakBoolInverse()));
+              trapElvSubsystem.intakeSource().onlyWhile(SensorManager.getSourceBreakBoolInverse()));
 
-    // Trap Elv Scoring
+      // Trap Elv Scoring
 
       OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapElvSubsystem.scoreAMP());
       OI.getButton(OI.Driver.trapScoreButton).whileTrue(trapElvSubsystem.scoreTrap());

@@ -9,14 +9,15 @@ import frc.robot.Constants;
 import frc.robot.utilities.TOFSensorSimple;
 import java.util.function.BooleanSupplier;
 
-public final class SensorManager{
+public final class SensorManager {
   // Beam Breaks
   private static final TOFSensorSimple sourceBreak =
-        new TOFSensorSimple(
-            Constants.SensorConstants.SOURCE_BREAK_ID, Constants.SensorConstants.WRIST_BREAK_THOLD);;
+      new TOFSensorSimple(
+          Constants.SensorConstants.SOURCE_BREAK_ID, Constants.SensorConstants.WRIST_BREAK_THOLD);
+  ;
   private static final TOFSensorSimple groundBreak =
-        new TOFSensorSimple(
-            Constants.SensorConstants.GROUND_BREAK_ID, Constants.SensorConstants.WRIST_BREAK_THOLD);
+      new TOFSensorSimple(
+          Constants.SensorConstants.GROUND_BREAK_ID, Constants.SensorConstants.WRIST_BREAK_THOLD);
 
   // Boolean Suppliers
   public static final BooleanSupplier getSourceBreakBool() {
@@ -35,11 +36,11 @@ public final class SensorManager{
     return () -> !groundBreak.isBeamBroke();
   }
 
-  public static final Trigger getSourceBreakTrigger(){
+  public static final Trigger getSourceBreakTrigger() {
     return new Trigger(getSourceBreakBool());
   }
 
-  public static final Trigger getGroundBreakTrigger(){
+  public static final Trigger getGroundBreakTrigger() {
     return new Trigger(getGroundBreakBool());
   }
 }

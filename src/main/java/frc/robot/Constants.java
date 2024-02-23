@@ -216,8 +216,6 @@ public final class Constants {
     public static final double WRIST_GEAR_RATIO = 32.727272727272727272;
   }
 
-
-
   public static class VisionConstants {
     public static final double TURRET_LIMELIGHT_HEIGHT_INCHES = 17.85;
     public static final double MAX_ACCEPTABLE_ERROR_METERS = 2;
