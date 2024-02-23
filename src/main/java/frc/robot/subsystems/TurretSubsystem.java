@@ -117,10 +117,10 @@ public class TurretSubsystem extends SubsystemBase {
     pitchMotor = new CANSparkMax(Constants.TurretConstants.PITCH_MOTOR_ID, MotorType.kBrushless);
     pitchFeedForward =
         new ArmFeedforward(
-            Constants.TurretConstants.PITCH_KS,
-            Constants.TurretConstants.PITCH_KG,
-            Constants.TurretConstants.PITCH_KV,
-            Constants.TurretConstants.PITCH_KA);
+            Constants.TurretConstants.PITCH_STOWED_KS,
+            Constants.TurretConstants.PITCH_STOWED_KG,
+            Constants.TurretConstants.PITCH_STOWED_KV,
+            Constants.TurretConstants.PITCH_STOWED_KA);
     // Simulation
     if (Robot.isSimulation()) {
       // Turret

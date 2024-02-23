@@ -99,10 +99,11 @@ public final class Constants {
     public static final double PITCH_KD = 0;
     public static final double PITCH_KIZ = 0;
     public static final double PITCH_KFF = 0;
-    public static final double PITCH_KS = 0;
-    public static final double PITCH_KV = 0.08;
-    public static final double PITCH_KG = 0.1;
-    public static final double PITCH_KA = 0;
+
+    public static final double PITCH_STOWED_KS = 0;
+    public static final double PITCH_STOWED_KV = 0.29;
+    public static final double PITCH_STOWED_KG = 1.55;
+    public static final double PITCH_STOWED_KA = 0.01;
 
     public static final double PITCH_KMAXOUTPUT = 1;
     public static final double PITCH_KMINOUTPUT = -1;
