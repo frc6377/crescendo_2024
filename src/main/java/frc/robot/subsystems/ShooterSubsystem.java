@@ -28,7 +28,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private final RelativeEncoder shooterLeftMotorEncoder;
   private final RelativeEncoder shooterRightMotorEncoder;
 
-  private ShuffleboardTab shooterTab = Shuffleboard.getTab(this.getName());
+  private ShuffleboardTab shooterTab = Shuffleboard.getTab("ShooterSubsystem");
 
   private DebugEntry<Double> leftMotorOutputEntry;
   private DebugEntry<Double> leftMotorSpeedEntry;
