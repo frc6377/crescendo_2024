@@ -34,22 +34,15 @@ public class TOFSensorSimple {
     return sensor.getRange();
   }
 
-  public boolean isBeamBroke() {
+  public boolean isBeamBroken() {
     if (Robot.isReal()) {
       return getMilliMeters() < threshold;
     }
     return isBeamBrokeSim;
   }
 
-  public boolean isBeamBrokeInverse() {
-    if (Robot.isReal()) {
-      return !(getMilliMeters() < threshold);
-    }
-    return !isBeamBrokeSim;
-  }
-
   public Trigger beamBroken(Command action) {
-    return new Trigger(this::isBeamBroke);
+    return new Trigger(this::isBeamBroken);
   }
 
   public void blink() {

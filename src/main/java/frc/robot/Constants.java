@@ -213,7 +213,7 @@ public final class Constants {
     public static final double WRIST_MAX_ANGLE = Units.degreesToRadians(270); // RADS
     public static final double WRIST_LENGTH = Units.inchesToMeters(11.877934);
     public static final double WRIST_MOI = 0.3175242664; // Moment of Inertia
-    public static final double WRIST_GEAR_RATIO = 32.727272727272727272;
+    public static final double WRIST_GEAR_RATIO = 360/11;
   }
 
   public static class VisionConstants {

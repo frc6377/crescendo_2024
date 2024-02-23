@@ -21,19 +21,19 @@ public final class SensorManager {
 
   // Boolean Suppliers
   public static final BooleanSupplier getSourceBreakBool() {
-    return () -> sourceBreak.isBeamBroke();
+    return () -> sourceBreak.isBeamBroken();
   }
 
   public static final BooleanSupplier getSourceBreakBoolInverse() {
-    return () -> !sourceBreak.isBeamBroke();
+    return () -> !sourceBreak.isBeamBroken();
   }
 
   public static final BooleanSupplier getGroundBreakBool() {
-    return () -> groundBreak.isBeamBroke();
+    return () -> groundBreak.isBeamBroken();
   }
 
   public static final BooleanSupplier getGroundBreakBoolInverse() {
-    return () -> !groundBreak.isBeamBroke();
+    return () -> !groundBreak.isBeamBroken();
   }
 
   public static final Trigger getSourceBreakTrigger() {

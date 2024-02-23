@@ -151,11 +151,6 @@ public class TrapElvSubsystem extends SubsystemBase {
 
     // Elv
     if (isElv) {
-      // baseLimit = new DigitalInput(TrapElvConstants.BASE_BREAK_ID);
-      // scoringLimit = new DigitalInput(TrapElvConstants.SCORING_BREAK_ID);
-      // baseLog = new DebugEntry<Boolean>(baseLimit.get(), "Base Limit Switch", this);
-      // scoringLog = new DebugEntry<Boolean>(scoringLimit.get(), "Scoring Limit Switch", this);
-
       baseMotorOffset1 = 0.0;
       baseMotorOffset2 = 0.0;
 
