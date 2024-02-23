@@ -106,7 +106,7 @@ public class TurretSubsystem extends SubsystemBase {
   private final DebugEntry<Double> pitchVelocityEntry =
       new DebugEntry<Double>(pitchVelocity, "Pitch Velocity", this);
   private final DebugEntry<Double> motorOutputEntry =
-      new DebugEntry<Double>(0.0, "Motor Output", this);
+      new DebugEntry<Double>(0.0, "Turret Motor Output", this);
   private final DebugEntry<Double> tagDistanceEntry =
       new DebugEntry<Double>(0.0, "LastMeasuredTagDistance", this);
 
