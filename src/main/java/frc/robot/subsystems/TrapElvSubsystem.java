@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -83,8 +82,14 @@ public class TrapElvSubsystem extends SubsystemBase {
   private ElevatorSim m_scoringElevatorSim;
   private SingleJointedArmSim m_wristMotorSim;
 
-  private ShuffleboardTab TrapElvTab = Shuffleboard.getTab("Trap Arm Tab");
+  private ShuffleboardTab TrapElvTab = Shuffleboard.getTab(this.getName());
   private GenericEntry baseGoal = TrapElvTab.add("Base Goal", 0).getEntry();
+  private GenericEntry baseCanSim = TrapElvTab.add("base CAN Sim", 0).getEntry();
+  private GenericEntry scoringCanSim = TrapElvTab.add("scoring CAN Sim", 0).getEntry();
+  private GenericEntry baseElvLength = TrapElvTab.add("Base Elv Length", 0).getEntry();
+  private GenericEntry scoringElvLength = TrapElvTab.add("Scoring Elv Length", 0).getEntry();
+  private GenericEntry wristMotorSim = TrapElvTab.add("Wrist Motor Sim Output", 0).getEntry();
+  private GenericEntry wristSimAngle = TrapElvTab.add("Wrist Sim Angle", 0).getEntry();
 
   // States
   public static enum TrapElvState {
@@ -369,8 +374,8 @@ public class TrapElvSubsystem extends SubsystemBase {
   }
 
   public void setTrapArm(TrapElvState state) {
-    SmartDashboard.putNumber("Wrist Goal", state.wristPose);
-    SmartDashboard.putNumber(
+    TrapElvTab.add("Wrist Goal", state.wristPose);
+    TrapElvTab.add(
         "Wrist PID Control Output",
         wristPIDController.calculate(
             wristEncoder.getPosition().getValueAsDouble(), state.getWristPose()));
@@ -431,21 +436,18 @@ public class TrapElvSubsystem extends SubsystemBase {
     // Offest added so that gravity is simulated in the right direction
     wristMech.setAngle(Units.radiansToDegrees(m_wristMotorSim.getAngleRads()) - 90);
 
-    SmartDashboard.putNumber("Wrist Motor Sim Output", wristMotor.get());
-    SmartDashboard.putNumber(
-        "Wrist Sim Angle", Units.radiansToRotations(m_wristMotorSim.getAngleRads()));
+    wristMotorSim.setDouble(wristMotor.get());
+    wristSimAngle.setDouble(Units.radiansToRotations(m_wristMotorSim.getAngleRads()));
 
     if (isElv) {
-      SmartDashboard.putNumber("base CAN Sim", baseMotor1.get());
-      SmartDashboard.putNumber("scoring CAN Sim", scoringMotor.get());
+      baseCanSim.setDouble(baseMotor1.get());
+      scoringCanSim.setDouble(scoringMotor.get());
 
       baseMech.setLength(m_baseElevatorSim.getPositionMeters());
       scoringMech.setLength(m_scoringElevatorSim.getPositionMeters());
 
-      SmartDashboard.putNumber(
-          "Base Elv Length", Units.metersToInches(m_baseElevatorSim.getPositionMeters()));
-      SmartDashboard.putNumber(
-          "Scoring Elv Length", Units.metersToInches(m_scoringElevatorSim.getPositionMeters()));
+      baseElvLength.setDouble(Units.metersToInches(m_baseElevatorSim.getPositionMeters()));
+      scoringElvLength.setDouble(Units.metersToInches(m_scoringElevatorSim.getPositionMeters()));
     }
   }
 }
