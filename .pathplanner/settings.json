@@ -3,10 +3,9 @@
   "robotLength": 0.61,
   "holonomicMode": true,
   "pathFolders": [
-    "Amp Side 5 Note",
-    "Amp Side 5 Note with amp scoring",
+    "Amp Starting Location",
     "Center Starting Location",
-    "Source Side Middle Notes"
+    "Source Starting Location"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.0,

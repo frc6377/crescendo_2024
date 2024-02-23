@@ -14,31 +14,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Middle steal 2-1"
+            "pathName": "D1-E4Intake"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Middle steal 2-2"
+            "pathName": "E4-D4Intake"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Middle steal 2-3"
+            "pathName": "D4-C4Intake"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Middle steal 2-4"
+            "pathName": "C4-B4Intake"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Middle steal 2-5"
+            "pathName": "B4-A4Intake"
           }
         }
       ]

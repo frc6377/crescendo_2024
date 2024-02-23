@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.2,
-        "y": 5.775
+        "x": 0.37,
+        "y": 6.85
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.949999999999999,
-        "y": 5.775
+        "x": 1.12,
+        "y": 6.85
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.2,
-        "y": 4.105
+        "x": 2.8,
+        "y": 7.0
       },
       "prevControl": {
-        "x": 6.949999999999999,
-        "y": 4.105
+        "x": 1.0499999999999998,
+        "y": 7.0
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Middle steal 1",
+  "folder": "Amp Starting Location",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

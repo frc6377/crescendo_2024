@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.2,
-        "y": 0.775
+        "x": 1.85,
+        "y": 7.8
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.949999999999999,
-        "y": 0.775
+        "x": 1.85,
+        "y": 7.4
       },
       "isLocked": false,
       "linkedName": null
@@ -17,18 +17,24 @@
     {
       "anchor": {
         "x": 8.2,
-        "y": 2.445
+        "y": 7.45
       },
       "prevControl": {
-        "x": 6.949999999999999,
-        "y": 2.445
+        "x": 6.999999999999999,
+        "y": 7.45
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.6,
+      "rotationDegrees": 0.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -39,11 +45,14 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Middle steal 2",
-  "previewStartingState": null,
+  "folder": "Amp Starting Location",
+  "previewStartingState": {
+    "rotation": 90.0,
+    "velocity": 0
+  },
   "useDefaultConstraints": false
 }

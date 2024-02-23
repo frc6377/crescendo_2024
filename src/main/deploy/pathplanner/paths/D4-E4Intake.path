@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.37,
-        "y": 2.1
+        "x": 8.2,
+        "y": 2.445
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.37,
-        "y": 2.1
+        "x": 6.949999999999999,
+        "y": 2.445
       },
       "isLocked": false,
       "linkedName": null
@@ -20,7 +20,7 @@
         "y": 0.775
       },
       "prevControl": {
-        "x": 5.199999999999999,
+        "x": 6.949999999999999,
         "y": 0.775
       },
       "nextControl": null,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Middle steal 2",
+  "folder": "Amp Starting Location",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

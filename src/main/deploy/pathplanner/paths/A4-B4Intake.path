@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 8.2,
-        "y": 4.105
+        "y": 7.445
       },
       "prevControl": null,
       "nextControl": {
         "x": 6.949999999999999,
-        "y": 4.105
+        "y": 7.445
       },
       "isLocked": false,
       "linkedName": null
@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 8.2,
-        "y": 2.445
+        "y": 5.775
       },
       "prevControl": {
         "x": 6.949999999999999,
-        "y": 2.445
+        "y": 5.775
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Middle steal 1",
+  "folder": "Amp Starting Location",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

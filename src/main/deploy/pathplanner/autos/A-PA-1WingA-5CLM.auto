@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.53,
-      "y": 7.0
+      "x": 0.37,
+      "y": 6.85
     },
     "rotation": 0
   },
@@ -14,49 +14,49 @@
         {
           "type": "path",
           "data": {
-            "pathName": "One2 Amp"
+            "pathName": "A1-Amp"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "One2 Amp2"
+            "pathName": "Amp-A2Intake"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Amp return"
+            "pathName": "A2-Amp"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "amp to outer notes"
+            "pathName": "Amp-A4Intake"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Middle steal 1-3"
+            "pathName": "A4-B4Intake"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Middle steal 1-4"
+            "pathName": "B4-C4Intake"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Middle steal 1-5"
+            "pathName": "C4-D4Intake"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Middle steal 1-6"
+            "pathName": "D4-E4Intake"
           }
         }
       ]
