@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxSim;
 import com.revrobotics.SparkAbsoluteEncoder;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.math.MathUtil;
@@ -96,7 +97,7 @@ public class TurretSubsystem extends SubsystemBase {
   private final DebugEntry<Double> turretVelocityEntry =
       new DebugEntry<Double>(turretVelocity, "Turret Velocity", this);
 
-  private final CANSparkMax pitchMotor;
+  private final CANSparkMaxSim pitchMotor;
   private SingleJointedArmSim pitchSim;
   private Mechanism2d pitchMech;
   private MechanismRoot2d pitchRoot;
@@ -121,7 +122,8 @@ public class TurretSubsystem extends SubsystemBase {
       new DebugEntry<Double>(0.0, "Pitch Goal Position", this);
   private final DebugEntry<Double> pitchVelocityEntry =
       new DebugEntry<Double>(pitchVelocity, "Pitch Velocity", this);
-
+  private final DebugEntry<Double> motorOutputEntry =
+      new DebugEntry<Double>(0.0, "Turret Motor Output", this);
   private final DebugEntry<Double> tagDistanceEntry =
       new DebugEntry<Double>(0.0, "LastMeasuredTagDistance", this);
 
@@ -131,7 +133,7 @@ public class TurretSubsystem extends SubsystemBase {
   public TurretSubsystem(RobotStateManager robotStateManager, VisionSubsystem visionSubsystem) {
     // Initialize Motors
     turretMotor = new CANSparkMax(Constants.TurretConstants.TURRET_MOTOR_ID, MotorType.kBrushless);
-    pitchMotor = new CANSparkMax(Constants.TurretConstants.PITCH_MOTOR_ID, MotorType.kBrushless);
+    pitchMotor = new CANSparkMaxSim(Constants.TurretConstants.PITCH_MOTOR_ID, MotorType.kBrushless);
     pitchFeedForward =
         new ArmFeedforward(
             Constants.TurretConstants.PITCH_KS,
@@ -252,7 +254,6 @@ public class TurretSubsystem extends SubsystemBase {
             "CANEncoder:CANCoder (v6)", Constants.TurretConstants.highGearCAN_CODER_ID);
     simTurretPos = simTurretEncoder.getDouble("rawPositionInput");
 
-    zeroTurret();
     turretPIDController.setIZone(Constants.TurretConstants.TURRET_KIZ);
 
     // Pitch
@@ -466,7 +467,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public Command idleTurret() {
-    return run(() -> holdPosition()).withName("idleTurret");
+    return runEnd(() -> holdPosition(), this::stopTurret).withName("idleTurret");
   }
 
   private void moveUp() {
@@ -598,6 +599,8 @@ public class TurretSubsystem extends SubsystemBase {
             * 60; // changing from rotations per second to rotations per minute or rpm
     pitchPositionEntry.log(pitchPosition);
     pitchVelocityEntry.log(pitchVelocity);
+
+    motorOutputEntry.log(turretMotor.get());
   }
 
   @Override
@@ -614,6 +617,7 @@ public class TurretSubsystem extends SubsystemBase {
     pitchSim.update(Robot.defaultPeriodSecs);
     pitchAngleSim.setAngle(Math.toDegrees(pitchSim.getAngleRads()));
     turretPitchEntry.setDouble(Math.toDegrees(pitchSim.getAngleRads()));
+    pitchMotor.setAbsolutePosition(Units.radiansToRotations(pitchSim.getAngleRads()));
   }
 
   private double getTurretRotationFromOdometry(Pose2d robotPos, Pose2d targetPos) {

@@ -129,6 +129,7 @@ public class RobotContainer {
       } else {
         turretSubsystem = new TurretSubsystem(robotStateManager, null);
       }
+      SmartDashboard.putData(turretSubsystem);
     } else {
       turretSubsystem = null;
     }
@@ -227,6 +228,7 @@ public class RobotContainer {
       turretSubsystem.setDefaultCommand(turretSubsystem.idleTurret());
       OI.getButton(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
       OI.getButton(OI.Operator.Y).onTrue(turretSubsystem.moveUpwards());
+      OI.getButton(OI.Operator.X).whileTrue(turretSubsystem.testTurretCommand(75));
     }
 
     // Trap Elv Intaking
