@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.8,
-        "y": 7.0
+        "x": 0.37,
+        "y": 2.1
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5999999999999999,
-        "y": 7.0
+        "x": 1.37,
+        "y": 2.1
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.8,
-        "y": 5.55472336015897
+        "x": 2.1,
+        "y": 4.15
       },
       "prevControl": {
-        "x": 1.5999999999999999,
-        "y": 5.55472336015897
+        "x": 1.8808144266054614,
+        "y": 3.700602976850417
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,11 +39,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": -32.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Amp Starting Location",
+  "folder": "Waco Paths",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

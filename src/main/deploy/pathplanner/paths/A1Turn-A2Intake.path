@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.37,
-        "y": 6.85
+        "x": 2.2,
+        "y": 6.7
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.12,
-        "y": 6.85
+        "x": 2.2,
+        "y": 6.95
       },
       "isLocked": false,
       "linkedName": null
@@ -20,7 +20,7 @@
         "y": 7.0
       },
       "prevControl": {
-        "x": 1.0499999999999998,
+        "x": 2.55,
         "y": 7.0
       },
       "nextControl": null,
@@ -28,7 +28,13 @@
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -43,7 +49,10 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Amp Starting Location",
-  "previewStartingState": null,
+  "folder": "Waco Paths",
+  "previewStartingState": {
+    "rotation": 28.0,
+    "velocity": 0
+  },
   "useDefaultConstraints": false
 }

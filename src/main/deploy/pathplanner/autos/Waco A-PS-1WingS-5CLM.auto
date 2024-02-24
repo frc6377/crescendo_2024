@@ -1,0 +1,67 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.37,
+      "y": 6.85
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "A1Turn"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "A1Turn-A2Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "A2Turn"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "A2Turn-A4Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "A4-B4Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "B4-C4Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "C4-D4Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "D4-E4Intake"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
