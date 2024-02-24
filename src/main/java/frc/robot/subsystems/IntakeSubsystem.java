@@ -11,7 +11,6 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -33,13 +32,6 @@ public class IntakeSubsystem extends SubsystemBase {
     chooserMotor.restoreFactoryDefaults();
     // intakeMotor.config
     chooserMotor.setSmartCurrentLimit(20);
-    intakeTab.add("Run Intake", new InstantCommand(() -> runIntake(), this)).withSize(2, 1);
-    intakeTab.add("Reverse Intake", new InstantCommand(() -> reverseIntake(), this)).withSize(2, 1);
-    intakeTab
-        .add("Speaker Chooser", new InstantCommand(() -> speakerChooser(), this))
-        .withSize(2, 1);
-    intakeTab.add("Amp Chooser", new InstantCommand(() -> ampChooser(), this)).withSize(2, 1);
-    intakeTab.add("Stop motors", new InstantCommand(() -> stopMotors(), this)).withSize(2, 1);
     intakeOutput = intakeTab.add("Intake Motor Output", 0).withPosition(3, 0).getEntry();
     chooserOutput = intakeTab.add("Chooser Motor Output", 0).withPosition(3, 1).getEntry();
   }

@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TrapElvConstants;
 import frc.robot.Robot;
@@ -267,7 +266,6 @@ public class TrapElvSubsystem extends SubsystemBase {
     }
 
     // SmartDashboard
-    TrapElvTab.add("Stow Wrist", new InstantCommand(() -> stowTrapElv())).withPosition(4, 0);
     TrapElvTab.add("Wrist PID", wristPIDController).withSize(2, 2).withPosition(0, 0);
 
     sourceLog = new DebugEntry<Boolean>(sourceBreak.get(), "Source Beam Break", this);
@@ -332,48 +330,50 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   // Commands
   public Command setWristSource() {
-    return run(
-        () -> {
+    return run(() -> {
           setWristState(TrapElvState.FROM_SOURCE);
-        });
+        })
+        .withName("setWristSource");
   }
 
   public Command setWristAMP() {
-    return run(
-        () -> {
+    return run(() -> {
           setWristState(TrapElvState.AMP_SCORE);
-        });
+        })
+        .withName("setWristAMP");
   }
 
   public Command setWristStowed() {
-    return run(
-        () -> {
+    return run(() -> {
           setWristState(TrapElvState.STOWED);
-        });
+        })
+        .withName("setWristStowed");
   }
 
   public Command rollerIntakeCommand() {
     return runEnd(
-        () -> {
-          isWristRollerRunning.log(true);
-          rollerMotor.set(TrapElvConstants.ROLLER_SPEED);
-        },
-        () -> {
-          isWristRollerRunning.log(false);
-          rollerMotor.stopMotor();
-        });
+            () -> {
+              isWristRollerRunning.log(true);
+              rollerMotor.set(TrapElvConstants.ROLLER_SPEED);
+            },
+            () -> {
+              isWristRollerRunning.log(false);
+              rollerMotor.stopMotor();
+            })
+        .withName("rollerIntakeCommand");
   }
 
   public Command rollerOutakeCommand() {
     return runEnd(
-        () -> {
-          isWristRollerRunning.log(true);
-          rollerMotor.set(TrapElvConstants.ROLLER_REVERSE_SPEED);
-        },
-        () -> {
-          isWristRollerRunning.log(false);
-          rollerMotor.stopMotor();
-        });
+            () -> {
+              isWristRollerRunning.log(true);
+              rollerMotor.set(TrapElvConstants.ROLLER_REVERSE_SPEED);
+            },
+            () -> {
+              isWristRollerRunning.log(false);
+              rollerMotor.stopMotor();
+            })
+        .withName("rollerOutakeCommand");
   }
 
   public Command zeroArm() {
@@ -432,7 +432,6 @@ public class TrapElvSubsystem extends SubsystemBase {
       baseLog.log(baseLimit.get());
       scoringLog.log(sourceBreak.get());
     }
-    SmartDashboard.putNumber("Fault code", wristMotor.getStickyFaults());
   }
 
   @Override
