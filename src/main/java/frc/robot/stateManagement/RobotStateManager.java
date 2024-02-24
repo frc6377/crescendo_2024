@@ -2,11 +2,13 @@ package frc.robot.stateManagement;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 
 public class RobotStateManager extends SubsystemBase {
   // Alliance Color
@@ -68,5 +70,17 @@ public class RobotStateManager extends SubsystemBase {
   // Alliance Color
   public AllianceColor getAllianceColor() {
     return allianceColor;
+  }
+
+  public BooleanSupplier isAmpSupplier() {
+    return () -> this.placementMode == PlacementMode.AMP;
+  }
+
+  public Command setAmpMode() {
+    return runOnce(() -> setPlacementMode(PlacementMode.AMP));
+  }
+
+  public Command setSpeakerMode() {
+    return runOnce(() -> setPlacementMode(PlacementMode.SPEAKER));
   }
 }

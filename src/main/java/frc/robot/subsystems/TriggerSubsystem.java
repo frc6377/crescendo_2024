@@ -3,8 +3,10 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.TriggerConstants;
 
 public class TriggerSubsystem extends SubsystemBase {
@@ -33,6 +35,7 @@ public class TriggerSubsystem extends SubsystemBase {
   }
 
   private Command buildCommand(double speed) {
+    if(!Constants.enabledSubsystems.triggerEnabled) return new InstantCommand();
     return new StartEndCommand(() -> setSpeed(speed), () -> setSpeed(0), this);
   }
 }

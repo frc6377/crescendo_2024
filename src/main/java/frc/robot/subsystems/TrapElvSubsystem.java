@@ -28,7 +28,11 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants;
 import frc.robot.Constants.TrapElvConstants;
 import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
@@ -131,6 +135,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   /** Creates a new TrapArm. */
   public TrapElvSubsystem() {
+    if(!Constants.enabledSubsystems.elvEnabled) return;
     // Wrist
     wristMotor = new CANSparkMax(TrapElvConstants.WRIST_MOTOR_ID, MotorType.kBrushless);
     wristMotor.restoreFactoryDefaults();
@@ -257,23 +262,28 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   // Boolean Suppliers
   public BooleanSupplier getSourceBreak() {
+    if(!Constants.enabledSubsystems.elvEnabled) return () -> false;
     return () -> sourceBreak.get();
   }
 
   public BooleanSupplier getGroundBreak() {
+    if(!Constants.enabledSubsystems.elvEnabled) return () -> false;
     return () -> groundBreak.get();
   }
 
   public BooleanSupplier getBaseLimit() {
+    if(!Constants.enabledSubsystems.elvEnabled) return () -> false;
     return () -> baseLimit.get();
   }
 
   public BooleanSupplier getScoringLimit() {
+    if(!Constants.enabledSubsystems.elvEnabled) return () -> false;
     return () -> scoringLimit.get();
   }
 
   // Commands
   public Command setRoller(double s) {
+    if(!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
     return run(() -> {
           rollerMotor.set(s);
         })
@@ -288,21 +298,21 @@ public class TrapElvSubsystem extends SubsystemBase {
   }
 
   public Command intakeSource() {
+    if(!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
     return startEnd(
             () -> {
               setTrapArm(TrapElvState.FROM_SOURCE);
               rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
             },
             () -> {
-              stowTrapElv();
             })
         .withName("Intake From Source");
   }
 
   public Command intakeGround() {
+    if(!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
     return startEnd(
             () -> {
-              setTrapArm(TrapElvState.FROM_INTAKE);
               rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
             },
             () -> {
@@ -311,19 +321,26 @@ public class TrapElvSubsystem extends SubsystemBase {
         .withName("Intake from Ground");
   }
 
-  public Command scoreAMP() {
+  public Command positionAMP() {
     return startEnd(
             () -> {
               setTrapArm(TrapElvState.AMP_SCORE);
+            },
+            () -> {})
+        .withName("Score Amp");
+  }
+
+  public Command scoreAMP() {
+    return startEnd(
+            () -> {
               setRoller(-TrapElvConstants.ROLLER_SCORING_SPEED);
             },
-            () -> {
-              stowTrapElv();
-            })
+            () -> {})
         .withName("Score Amp");
   }
 
   public Command scoreTrap() {
+    if(!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
     return startEnd(
             () -> {
               setTrapArm(TrapElvState.TRAP_SCORE);
@@ -335,12 +352,17 @@ public class TrapElvSubsystem extends SubsystemBase {
         .withName("Score Trap");
   }
 
-  public void stowTrapElv() {
-    setTrapArm(TrapElvState.STOWED);
-    rollerMotor.stopMotor();
+  public Command stowTrapElv() {
+    return startEnd(
+        () -> {
+          setTrapArm(TrapElvState.STOWED);
+          rollerMotor.stopMotor();
+        },
+        () -> {});
   }
 
   public Command zeroArm() {
+    if(!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
     if (isElv) {
       return startEnd(
               () -> {
@@ -374,6 +396,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   }
 
   public void setTrapArm(TrapElvState state) {
+    if(!Constants.enabledSubsystems.elvEnabled) return;
     TrapElvTab.add("Wrist Goal", state.wristPose);
     TrapElvTab.add(
         "Wrist PID Control Output",
@@ -396,6 +419,8 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    if(!Constants.enabledSubsystems.elvEnabled) return;
+
     sourceLog.log(sourceBreak.get());
     groundLog.log(groundBreak.get());
     if (isElv) {
@@ -450,4 +475,20 @@ public class TrapElvSubsystem extends SubsystemBase {
       scoringElvLength.setDouble(Units.metersToInches(m_scoringElevatorSim.getPositionMeters()));
     }
   }
+
+  public Command intakeFromGroundForTime() {
+    return intakeFromGroundForTime(Constants.TrapElvConstants.INTAKE_BEAM_BREAK_DELAY_SEC);
+  }
+
+  public Command intakeFromGroundForTime(double seconds) {
+    return Commands.deadline(intakeGround(), new WaitCommand(seconds));
+  }
+
+public Command intakeFromSourceForTime() {
+    return intakeFromSourceForTime(Constants.TrapElvConstants.INTAKE_BEAM_BREAK_DELAY_SEC);
+  }
+
+public Command intakeFromSourceForTime(double seconds) {
+return Commands.deadline(intakeSource(), new WaitCommand(seconds));
+}
 }

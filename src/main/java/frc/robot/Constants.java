@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.ShooterSubsystem.SpeakerConfig;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -67,6 +68,8 @@ public final class Constants {
 
     public static final double SHOOTER_RIGHT_GEARING = 0.4; // Unitless
     public static final double SHOOTER_RIGHT_MOMENT = 0.000848475500006; // Placeholder; in kg*m^2
+    public static final SpeakerConfig SHOOTER_SOURCE_INTAKE = new SpeakerConfig(-1, -100, -100);
+    public static final double INTAKE_DELAY_SEC = 0.25;
   }
 
   public static class TurretConstants {
@@ -162,6 +165,9 @@ public final class Constants {
   }
 
   public static class TrapElvConstants {
+    // Control
+    public static final double INTAKE_BEAM_BREAK_DELAY_SEC = 0.25;
+
     // IDs | TODO: get real device IDs
     public static final int WRIST_MOTOR_ID = 20;
     public static final int ROLLER_MOTOR_ID = 21;
