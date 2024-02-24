@@ -203,7 +203,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public Trigger shooterReady() {
-    return new Trigger(() -> true).debounce(0.05);
+    return new Trigger(this::isShooterReady).debounce(0.05);
   }
   // Checks if shooter is ready.
   public boolean isShooterReady() {
@@ -324,10 +324,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // Motor RPM, NOT roller RPM
   private static SpeakerConfig[] speakerConfigList = {
-    new SpeakerConfig(0, 250, 250),
-    new SpeakerConfig(40, 350, 350),
-    new SpeakerConfig(195, 500, 500),
-    new SpeakerConfig(290, 700, 700)
+    new SpeakerConfig(0, 2550, 1950),
+    new SpeakerConfig(40, 2750, 2150),
+    new SpeakerConfig(195, 2950, 2350),
+    new SpeakerConfig(290, 2950, 2350)
   };
 
   private static final SpeakerConfig speakerConfigIdle =

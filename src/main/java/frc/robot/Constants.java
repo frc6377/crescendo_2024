@@ -219,12 +219,12 @@ public final class Constants {
   }
 
   public static class enabledSubsystems {
-    public static final boolean intakeEnabled = true;
-    public static final boolean drivetrainEnabled = true;
-    public static final boolean visionEnabled = true;
-    public static final boolean usingPhoton = true;
-    public static final boolean elvEnabled = true;
-    public static final boolean signalEnabled = true;
+    public static final boolean intakeEnabled = false;
+    public static final boolean drivetrainEnabled = false;
+    public static final boolean visionEnabled = false;
+    public static final boolean usingPhoton = false;
+    public static final boolean elvEnabled = false;
+    public static final boolean signalEnabled = false;
     public static final boolean shooterEnabled = true;
     public static final boolean triggerEnabled = true;
     public static final boolean turretEnabled = true;
