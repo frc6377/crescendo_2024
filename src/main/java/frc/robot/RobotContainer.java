@@ -16,12 +16,14 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.DynamicRobotConfig;
+import frc.robot.stateManagement.PlacementMode;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -135,12 +137,13 @@ public class RobotContainer {
     }
     // Configure the trigger bindings
     if (Constants.enabledSubsystems.drivetrainEnabled) {
-      configureBindings();
       registerCommands();
       autoChooser = AutoBuilder.buildAutoChooser();
       configTab.add("Auton Selection", autoChooser).withSize(3, 1);
       configTab.add("NamedCommand test", false);
     }
+
+    configureBindings();
   }
 
   /**
@@ -153,17 +156,20 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    OI.getButton(OI.Operator.A)
+    OI.getButton(OI.Driver.modeChangeButton) // Bound to X][\]
         .onTrue(
             new InstantCommand(robotStateManager::switchPlacementMode)
                 .withName("Switch Placement Mode Command"));
     if (Constants.enabledSubsystems.intakeEnabled) {
       OI.getTrigger(OI.Driver.intakeTrigger)
           .whileTrue(
-              intakeSubsystem
-                  .getIntakeCommand(robotStateManager.getPlacementMode())
-                  .withName("Get Placement Mode Command"));
-      OI.getButton(OI.Driver.outtakeButton)
+              Commands.either(
+                  intakeSubsystem.getSpeakerIntakeCommand(),
+                  Commands.parallel(
+                      intakeSubsystem.getAmpIntakeCommand(),
+                      trapElvSubsystem.rollerIntakeCommand()),
+                  () -> robotStateManager.getPlacementMode() == PlacementMode.SPEAKER));
+      OI.getButton(OI.Operator.outtakeButton)
           .whileTrue(intakeSubsystem.reverseIntakeCommand().withName("Reverse Intake Command"));
     }
     // Swerve config
@@ -203,8 +209,6 @@ public class RobotContainer {
                   .withName("Toggle Orientation"));
     }
 
-    // OI.Driver.getZeroButton().onTrue(new InstantCommand(() -> drivetrain.getPigeon2().reset()));
-
     // Shooter commands
     if (Constants.enabledSubsystems.shooterEnabled && Constants.enabledSubsystems.triggerEnabled) {
       shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
@@ -217,7 +221,7 @@ public class RobotContainer {
                     .getShootCommand()
                     .onlyIf(shooterSubsystem.shooterReady())
                     .onlyWhile(OI.getTrigger(OI.Operator.shooterRevTrigger)));
-        OI.getButton(OI.Operator.A).whileTrue(triggerSubsystem.getLoadCommand());
+        OI.getButton(OI.Operator.start).whileTrue(triggerSubsystem.getLoadCommand());
       } else {
         OI.getTrigger(OI.Operator.shooterFireTrigger).whileTrue(shooterSubsystem.bumperShoot());
       }
@@ -233,18 +237,17 @@ public class RobotContainer {
 
     // Trap Elv Intaking
     if (Constants.enabledSubsystems.elvEnabled) {
-      OI.getButton(OI.Driver.groundIntakeButton)
-          .whileTrue(trapElvSubsystem.intakeGround().onlyWhile(trapElvSubsystem.getGroundBreak()));
+      // Set Wirst State
       OI.getButton(OI.Driver.sourceIntakeButton)
-          .whileTrue(trapElvSubsystem.intakeSource().onlyWhile(trapElvSubsystem.getSourceBreak()));
+          .whileTrue(trapElvSubsystem.setWristSource())
+          .onFalse(trapElvSubsystem.setWristStowed());
+      OI.getButton(OI.Driver.ampScoreButton)
+          .whileTrue(trapElvSubsystem.setWristAMP())
+          .onFalse(trapElvSubsystem.setWristStowed());
 
-      // Trap Elv Scoring
-
-      OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapElvSubsystem.scoreAMP());
-      OI.getButton(OI.Driver.trapScoreButton).whileTrue(trapElvSubsystem.scoreTrap());
-      // Trap Elv zeroing button
-
-      OI.getButton(OI.Driver.zeroArm).whileTrue(trapElvSubsystem.zeroArm());
+      // Wrist Intake/Outake
+      OI.getButton(OI.Driver.outakeWristButton).whileTrue(trapElvSubsystem.rollerIntakeCommand());
+      OI.getButton(OI.Driver.intakeWristButton).whileTrue(trapElvSubsystem.rollerOutakeCommand());
     }
 
     if (Robot.isSimulation() && Constants.enabledSubsystems.drivetrainEnabled) {

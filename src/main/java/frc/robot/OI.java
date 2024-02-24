@@ -24,12 +24,12 @@ public class OI {
     // A B Y X Buttons
     public static final Control brakeButton =
         new Control(XboxController.Button.kA, "Brake", controller);
-    public static final Control trapScoreButton =
-        new Control(XboxController.Button.kB, "Score Trap", controller);
-    public static final Control sourceIntakeButton =
-        new Control(XboxController.Button.kX, "Intake Source", controller);
-    public static final Control groundIntakeButton =
-        new Control(XboxController.Button.kY, "Intake Ground", controller);
+    public static final Control intakeWristButton =
+        new Control(XboxController.Button.kB, "Intake into Wrist", controller);
+    public static final Control modeChangeButton =
+        new Control(XboxController.Button.kX, "Change Mode", controller);
+    public static final Control outakeWristButton =
+        new Control(XboxController.Button.kY, "Score From Wrist Pose", controller);
 
     // Bumpers & Triggers
     public static final Control intakeTrigger =
@@ -38,7 +38,7 @@ public class OI {
         new Control(XboxController.Axis.kRightTrigger, "Lock forward", controller, 0.5);
     public static final Control ampScoreButton =
         new Control(XboxController.Button.kLeftBumper, "Score AMP", controller);
-    public static final Control outtakeButton =
+    public static final Control sourceIntakeButton =
         new Control(XboxController.Button.kRightBumper, "Run outtake", controller);
 
     // Start, End & Left/Right stick buttons
@@ -76,7 +76,7 @@ public class OI {
     private static final XboxController controller = new XboxController(operatorJoystickPort);
 
     // A B Y X Buttons
-    public static final Control A =
+    public static final Control switchPlacementButton =
         new Control(XboxController.Button.kA, "Switch placement", controller);
     public static final Control B = new Control(XboxController.Button.kB, "Aim Turret", controller);
     public static final Control Y =
@@ -88,13 +88,14 @@ public class OI {
         new Control(XboxController.Axis.kLeftTrigger, "Rev Shooter", controller, 0.5);
     public static final Control shooterFireTrigger =
         new Control(XboxController.Axis.kRightTrigger, "Fire Shooter", controller, 0.5);
-    public static final Control LB =
+    public static final Control outtakeButton =
         new Control(XboxController.Button.kLeftBumper, null, controller);
     public static final Control RB =
         new Control(XboxController.Button.kRightBumper, null, controller);
 
     // Start, End & Left/Right stick buttons
-    public static final Control start = new Control(XboxController.Button.kStart, null, controller);
+    public static final Control start =
+        new Control(XboxController.Button.kStart, "TriggerSubsytem Button", controller);
     public static final Control back = new Control(XboxController.Button.kBack, null, controller);
     public static final Control LSB =
         new Control(XboxController.Button.kLeftStick, null, controller);
