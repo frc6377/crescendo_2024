@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.44,
-      "y": 6.95
+      "x": 0.4274465691788532,
+      "y": 2.023005188867521
     },
     "rotation": 0
   },
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "One2"
+            "pathName": "D1-E4Intake"
           }
         },
         {
@@ -26,7 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Two2"
+            "pathName": "E4-E3Shoot"
           }
         },
         {
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Three2"
+            "pathName": "E3-D4Intake"
           }
         },
         {
@@ -50,7 +50,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Four2"
+            "pathName": "D4-D3Shoot"
           }
         },
         {
@@ -62,7 +62,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Five2"
+            "pathName": "D3-C4Intake"
           }
         },
         {
@@ -74,7 +74,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Six2"
+            "pathName": "C4-B3Shoot"
           }
         },
         {
@@ -86,7 +86,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Seven2"
+            "pathName": "B3-B4Intake"
           }
         }
       ]
