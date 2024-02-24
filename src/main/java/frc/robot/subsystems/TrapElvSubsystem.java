@@ -57,10 +57,6 @@ public class TrapElvSubsystem extends SubsystemBase {
   private double baseMotorOffset2;
   private double scoringMotorOffset;
 
-  // Beam Breaks
-  private final DigitalInput sourceBreak;
-  private final DigitalInput groundBreak;
-
   // Limit Switches
   private DigitalInput baseLimit;
   private DigitalInput scoringLimit;
@@ -68,8 +64,6 @@ public class TrapElvSubsystem extends SubsystemBase {
   // Encoders
   private final SparkAbsoluteEncoder wristEncoder;
 
-  private DebugEntry<Boolean> sourceLog;
-  private DebugEntry<Boolean> groundLog;
   private DebugEntry<Boolean> baseLog;
   private DebugEntry<Boolean> scoringLog;
 
@@ -160,9 +154,6 @@ public class TrapElvSubsystem extends SubsystemBase {
 
     rollerMotor = new CANSparkMax(TrapElvConstants.ROLLER_MOTOR_ID, MotorType.kBrushed);
     rollerMotor.restoreFactoryDefaults();
-
-    sourceBreak = new DigitalInput(TrapElvConstants.SOURCE_BREAK_ID);
-    groundBreak = new DigitalInput(TrapElvConstants.GROUND_BREAK_ID);
 
     wristEncoder = wristMotor.getAbsoluteEncoder();
     wristEncoder.setPositionConversionFactor(1);
@@ -270,21 +261,11 @@ public class TrapElvSubsystem extends SubsystemBase {
     TrapElvTab.add("Stow Wrist", new InstantCommand(() -> stowTrapElv())).withPosition(4, 0);
     TrapElvTab.add("Wrist PID", wristPIDController).withSize(2, 2).withPosition(0, 0);
 
-    sourceLog = new DebugEntry<Boolean>(sourceBreak.get(), "Source Beam Break", this);
-    groundLog = new DebugEntry<Boolean>(groundBreak.get(), "Ground Beam Break", this);
     currentPositionEntry = new DebugEntry<>(getWristEncoderPos(), "Current wrist Position", this);
     isWristRollerRunning = new DebugEntry<Boolean>(false, "Wrist Rollers", this);
   }
 
   // Boolean Suppliers
-  public BooleanSupplier getSourceBreak() {
-    return () -> sourceBreak.get();
-  }
-
-  public BooleanSupplier getGroundBreak() {
-    return () -> groundBreak.get();
-  }
-
   public BooleanSupplier getBaseLimit() {
     return () -> baseLimit.get();
   }
@@ -412,8 +393,6 @@ public class TrapElvSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     currentPositionEntry.log(getWristEncoderPos());
-    sourceLog.log(sourceBreak.get());
-    groundLog.log(groundBreak.get());
 
     FF = wristFeedforward.calculate(Units.rotationsToRadians(getWristEncoderPos()), 0);
 
@@ -430,7 +409,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
     if (isElv) {
       baseLog.log(baseLimit.get());
-      scoringLog.log(sourceBreak.get());
+      scoringLog.log(scoringLimit.get());
     }
     SmartDashboard.putNumber("Fault code", wristMotor.getStickyFaults());
   }

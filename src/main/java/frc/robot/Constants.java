@@ -160,12 +160,17 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
   }
 
+  public static class SensorConstants {
+    public static final int SOURCE_BREAK_ID = 1;
+    public static final int GROUND_BREAK_ID = 2;
+
+    public static final double WRIST_BREAK_THOLD = 600;
+  }
+
   public static class TrapElvConstants {
     // Wrist
     public static final int WRIST_MOTOR_ID = 12;
     public static final int WRIST_ENCODER_ID = 25;
-    public static final int SOURCE_BREAK_ID = 1;
-    public static final int GROUND_BREAK_ID = 2;
 
     public static final double[] WRIST_PID = {0.03, 0, 0, 0};
     public static final double[] WRIST_FF = {0, 0.54, 4.29, 0.05}; // kS, kG, kV, kA
@@ -189,6 +194,7 @@ public final class Constants {
     public static final int BASE_MOTOR1_ID = 22;
     public static final int BASE_MOTOR2_ID = 23;
     public static final int SCORING_MOTOR_ID = 24;
+
     public static final int BASE_BREAK_ID = 3;
     public static final int SCORING_BREAK_ID = 4;
 
