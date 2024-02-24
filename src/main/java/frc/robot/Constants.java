@@ -248,7 +248,7 @@ public final class Constants {
     public static final double IDLE_SETPOINT = 0;
     public static final double MINIMUM_WAIT = 0.5; // in seconds
 
-    public static final int LEFT_MOTOR_ID = 0;//TODO: get actual values
+    public static final int LEFT_MOTOR_ID = 0; // TODO: get actual values
     public static final int RIGHT_MOTOR_ID = 0;
 
     public static final boolean LEFT_IS_INVERTED = false;

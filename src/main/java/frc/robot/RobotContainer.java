@@ -129,6 +129,7 @@ public class RobotContainer {
       climberSubsystem = new ClimberSubsystem();
     } else {
       climberSubsystem = null;
+    }
     if (Constants.enabledSubsystems.turretEnabled) {
       if (Constants.enabledSubsystems.visionEnabled) {
         turretSubsystem = new TurretSubsystem(robotStateManager, visionSubsystem);
