@@ -494,8 +494,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     TrapElvTab.add("Wrist Goal", state.wristPose);
     TrapElvTab.add(
         "Wrist PID Control Output",
-        wristPIDController.calculate(
-            wristEncoder.getPosition(), state.getWristPose()));
+        wristPIDController.calculate(wristEncoder.getPosition(), state.getWristPose()));
     if (isElv) {
       baseMotor1
           .getPIDController()

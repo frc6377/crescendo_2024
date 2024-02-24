@@ -131,7 +131,6 @@ public class TurretSubsystem extends SubsystemBase {
   private final VisionSubsystem visionSubsystem;
 
   public TurretSubsystem(RobotStateManager robotStateManager, VisionSubsystem visionSubsystem) {
-    if (!Constants.enabledSubsystems.turretEnabled) return;
 
     // Initialize Motors
     turretMotor = new CANSparkMax(Constants.TurretConstants.TURRET_MOTOR_ID, MotorType.kBrushless);
