@@ -70,11 +70,62 @@ public final class Constants {
   }
 
   public static class TurretConstants {
-    public static final int MOTOR_ID = 9;
-    public static final int CANcoder_ID = 17; // replace with actual CANcoder ID
+    public static final int TURRET_MOTOR_ID = 9;
+    public static final int TURRET_CANcoder_ID = 17; // replace with actual CANcoder ID
+    public static final int PITCH_MOTOR_ID = 10;
+    public static final int PITCH_ENCODER_ID = 1; // replace with actual ID
+    public static final boolean IS_MOTOR_INVERTED = true;
 
-    public static final double SPEAKER_TAG_CENTER_HEIGHT_INCHES =
-        57.125; // Don't change unless FIRST changes the field layout
+    // PID coefficients
+    public static final double TURRET_KP =
+        0.125; // TODO: Change values when there's an actual real functional robot.
+    public static final double TURRET_KI = 0.001;
+    public static final double TURRET_KD = 0;
+    public static final double TURRET_KIZ = 0;
+    public static final double TURRET_KFF = 0;
+
+    public static final double TURRET_KMAXOUTPUT = 1;
+    public static final double TURRET_KMINOUTPUT = -1;
+
+    public static final int TURRET_MIN_ANGLE_DEGREES = -5;
+    public static final int TURRET_MAX_ANGLE_DEGREES = 45;
+
+    public static final double TURRET_CONVERSION_FACTOR = 0.25;
+    public static final int TURRET_SMART_CURRENT_LIMIT = 40;
+
+    public static final double PITCH_KP =
+        175; // TODO: Change values when there's an actual real functional robot.
+    public static final double PITCH_KI = 0.001;
+    public static final double PITCH_KD = 0;
+    public static final double PITCH_KIZ = 0;
+    public static final double PITCH_KFF = 0;
+    public static final double PITCH_KS = 0;
+    public static final double PITCH_KV = 0.08;
+    public static final double PITCH_KG = 0.1;
+    public static final double PITCH_KA = 0;
+
+    public static final double PITCH_KMAXOUTPUT = 1;
+    public static final double PITCH_KMINOUTPUT = -1;
+
+    public static final int PITCH_MAX_ANGLE_DEGREES = 50;
+    public static final int PITCH_MIN_ANGLE_DEGREES = -5;
+
+    public static final double PITCH_CONVERSION_FACTOR = 0.25;
+    public static final int PITCH_SMART_CURRENT_LIMIT = 40;
+
+    // Physics Values
+    public static final double SHOOTER_CENTER_OF_GRAVITY = 1; // TODO: Get real values
+    public static final double SHOOTER_MASS = 1;
+
+    // Hardcoded Setpoints
+    public static final double TURRET_STOWED_ANGLE = 0;
+    public static final double PITCH_STOWED_ANGLE = 30;
+
+    public static final double TURRET_PICKUP_ANGLE = 0;
+    public static final double PITCH_PICKUP_ANGLE = 30;
+
+    public static final double SPEAKER_TAG_CENTER_HEIGHT_METERS =
+        1.450975; // Don't change unless FIRST changes the field layout
     public static final int SPEAKER_TAG_ID_RED = 4;
     public static final int SPEAKER_TAG_ID_BLUE = 7;
 
@@ -145,6 +196,16 @@ public final class Constants {
     public static final double WRIST_MIN_ANGLE = Units.degreesToRadians(-359); // RADS
     public static final double WRIST_MAX_ANGLE = Units.degreesToRadians(359); // RADS
     public static final double WRIST_LENGTH = Units.inchesToMeters(12.5);
+  }
+
+  public static class LimelightConstants {
+    public static final double FIELD_LENGTH = (8.308467 * 2);
+    public static final double FIELD_HALF_WIDTH = 3.837865;
+    public static final double TAG_Y_POS = 1.451102;
+    public static final double TAG_HEIGHT = 0.4572;
+
+    public static final int SPEAKER_TAG_ID_RED = 4;
+    public static final int SPEAKER_TAG_ID_BLUE = 7;
   }
 
   public static class VisionConstants {

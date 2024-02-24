@@ -32,6 +32,7 @@ import frc.robot.Constants;
 import frc.robot.OI;
 import frc.robot.Robot;
 import frc.robot.Telemetry;
+import frc.robot.utilities.LimelightHelpers;
 import java.util.function.BiConsumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -92,7 +93,11 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
         this);
 
     if (Robot.isSimulation()) {
-      this.registerTelemetry(telemetry::telemeterize);
+      this.registerTelemetry(
+          (a) -> {
+            telemetry.telemeterize(a);
+            LimelightHelpers.simPose(a);
+          });
     } else {
       this.registerTelemetry(telemetry::realTelemetry);
     }
