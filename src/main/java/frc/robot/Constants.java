@@ -217,6 +217,13 @@ public final class Constants {
     public static final String TURRET_CAMERA_NAME = "Camera_Module_Turret";
   }
 
+  public static class FieldConstants {
+    public static final double RED_SPEAKER_X = 16.579342;
+    public static final double RED_SPEAKER_Y = 5.547868;
+    public static final double BLUE_SPEAKER_X = -0.0381;
+    public static final double BLUE_SPEAKER_Y = 5.547868;
+  }
+
   public static class enabledSubsystems {
     public static final boolean intakeEnabled = true;
     public static final boolean drivetrainEnabled = true;

@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.DynamicRobotConfig;
+import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -225,8 +226,16 @@ public class RobotContainer {
 
     // Turret commands
     if (Constants.enabledSubsystems.turretEnabled) {
+      Supplier<DriveRequest> input =
+          () ->
+              SwerveSubsystem.joystickCondition(
+                  new DriveInput(
+                      OI.getAxisSupplier(OI.Driver.xTranslationAxis).get(),
+                      OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
+                      OI.getAxisSupplier(OI.Driver.rotationAxis).get()),
+                  0.1);
       turretSubsystem.setDefaultCommand(turretSubsystem.idleTurret());
-      OI.getButton(OI.Operator.B).toggleOnTrue(turretSubsystem.getAimTurretCommand());
+      OI.getButton(OI.Operator.B).toggleOnTrue(drivetrain.pointAtLocation(this.feedSpeakerLocation(), input));
       OI.getButton(OI.Operator.Y).onTrue(turretSubsystem.moveUpwards());
       OI.getButton(OI.Operator.X).whileTrue(turretSubsystem.testTurretCommand(75));
     }
@@ -275,6 +284,14 @@ public class RobotContainer {
   public void onExitDisabled() {
     if (Constants.enabledSubsystems.signalEnabled) {
       signalingSubsystem.clearLEDs();
+    }
+  }
+
+  public Translation2d feedSpeakerLocation() {
+    if (robotStateManager.getAllianceColor() == AllianceColor.BLUE) {
+      return new Translation2d(Constants.FieldConstants.BLUE_SPEAKER_X, Constants.FieldConstants.BLUE_SPEAKER_Y);
+    } else {
+      return new Translation2d(Constants.FieldConstants.RED_SPEAKER_X, Constants.FieldConstants.RED_SPEAKER_Y);
     }
   }
 
