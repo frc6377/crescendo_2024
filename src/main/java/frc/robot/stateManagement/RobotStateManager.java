@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.utilities.DebugEntry;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
@@ -23,6 +24,10 @@ public class RobotStateManager extends SubsystemBase {
 
   // Placement Mode
   private PlacementMode placementMode = PlacementMode.SPEAKER;
+
+  // Debug Logging
+  private DebugEntry<PlacementMode> placementModeLog =
+      new DebugEntry<PlacementMode>(placementMode, "Current Placement Mode", this);
 
   public RobotStateManager() {
     endGameStart =
@@ -57,6 +62,7 @@ public class RobotStateManager extends SubsystemBase {
   public void switchPlacementMode() {
     placementMode =
         placementMode == PlacementMode.SPEAKER ? PlacementMode.AMP : PlacementMode.SPEAKER;
+    placementModeLog.log(placementMode);
   }
 
   public void setPlacementMode(PlacementMode placementMode) {

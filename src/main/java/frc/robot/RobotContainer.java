@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.DynamicRobotConfig;
+import frc.robot.stateManagement.PlacementMode;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -136,7 +137,6 @@ public class RobotContainer {
     }
     // Configure the trigger bindings
     if (Constants.enabledSubsystems.drivetrainEnabled) {
-      configureBindings();
       registerCommands();
       autoChooser = AutoBuilder.buildAutoChooser();
       configTab.add("Auton Selection", autoChooser).withSize(3, 1);
@@ -146,6 +146,8 @@ public class RobotContainer {
     if (Robot.isSimulation() && Constants.enabledSubsystems.drivetrainEnabled) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     }
+
+    configureBindings();
   }
 
   /**
@@ -158,8 +160,6 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // TODO Move subsystem enable behavior to subsystem command factory
-
     // Swerve config
     Supplier<DriveRequest> input =
         () ->
