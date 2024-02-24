@@ -235,7 +235,8 @@ public class RobotContainer {
                       OI.getAxisSupplier(OI.Driver.rotationAxis).get()),
                   0.1);
       turretSubsystem.setDefaultCommand(turretSubsystem.idleTurret());
-      OI.getButton(OI.Operator.B).toggleOnTrue(drivetrain.pointAtLocation(this.feedSpeakerLocation(), input));
+      OI.getButton(OI.Operator.B)
+          .toggleOnTrue(drivetrain.pointAtLocation(this.feedSpeakerLocation(), input));
       OI.getButton(OI.Operator.Y).onTrue(turretSubsystem.moveUpwards());
       OI.getButton(OI.Operator.X).whileTrue(turretSubsystem.testTurretCommand(75));
     }
@@ -289,9 +290,11 @@ public class RobotContainer {
 
   public Translation2d feedSpeakerLocation() {
     if (robotStateManager.getAllianceColor() == AllianceColor.BLUE) {
-      return new Translation2d(Constants.FieldConstants.BLUE_SPEAKER_X, Constants.FieldConstants.BLUE_SPEAKER_Y);
+      return new Translation2d(
+          Constants.FieldConstants.BLUE_SPEAKER_X, Constants.FieldConstants.BLUE_SPEAKER_Y);
     } else {
-      return new Translation2d(Constants.FieldConstants.RED_SPEAKER_X, Constants.FieldConstants.RED_SPEAKER_Y);
+      return new Translation2d(
+          Constants.FieldConstants.RED_SPEAKER_X, Constants.FieldConstants.RED_SPEAKER_Y);
     }
   }
 
