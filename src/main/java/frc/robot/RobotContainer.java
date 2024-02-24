@@ -149,7 +149,8 @@ public class RobotContainer {
               Commands.either(
                   intakeSubsystem.getSpeakerIntakeCommand(),
                   Commands.parallel(
-                      intakeSubsystem.getAmpIntakeCommand(), trapElvSubsystem.intakeGround()),
+                      intakeSubsystem.getAmpIntakeCommand(),
+                      trapElvSubsystem.rollerIntakeCommand()),
                   () -> robotStateManager.getPlacementMode() == PlacementMode.SPEAKER));
       OI.getButton(OI.Driver.outtakeButton)
           .whileTrue(intakeSubsystem.reverseIntakeCommand().withName("Reverse Intake Command"));
@@ -216,14 +217,17 @@ public class RobotContainer {
 
     // AMP / Wrist
     if (Constants.enabledSubsystems.elvEnabled) {
+      // Set Wirst State
       OI.getButton(OI.Driver.sourceIntakeButton)
-          .whileTrue(trapElvSubsystem.intakeSource().onlyWhile(() -> true));
+          .whileTrue(trapElvSubsystem.setWristSource())
+          .onFalse(trapElvSubsystem.setWristStowed());
+      OI.getButton(OI.Driver.ampScoreButton)
+          .whileTrue(trapElvSubsystem.setWristAMP())
+          .onFalse(trapElvSubsystem.setWristStowed());
 
       // Wrist Intake/Outake
-      OI.getButton(OI.Driver.outakeWristButton).whileTrue(trapElvSubsystem.wristIntakeCommand());
-      OI.getButton(OI.Driver.intakeWristButton).whileTrue(trapElvSubsystem.wristOutakeCommand());
-
-      OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapElvSubsystem.scoreAMP());
+      OI.getButton(OI.Driver.outakeWristButton).whileTrue(trapElvSubsystem.rollerIntakeCommand());
+      OI.getButton(OI.Driver.intakeWristButton).whileTrue(trapElvSubsystem.rollerOutakeCommand());
     }
 
     if (Robot.isSimulation() && Constants.enabledSubsystems.drivetrainEnabled) {
