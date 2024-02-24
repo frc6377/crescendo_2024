@@ -173,7 +173,7 @@ public class RobotContainer {
     drivetrain.setDefaultCommand(
         drivetrain.fieldOrientedDrive(input).withName("Get Axis Suppliers"));
 
-    trapElvSubsystem.setDefaultCommand(trapElvSubsystem.stowTrapElv());
+    trapElvSubsystem.setDefaultCommand(trapElvSubsystem.stowTrapElvCommand());
 
     shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
 

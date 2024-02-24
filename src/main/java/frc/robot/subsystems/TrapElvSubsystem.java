@@ -407,6 +407,10 @@ public class TrapElvSubsystem extends SubsystemBase {
     rollerMotor.stopMotor();
   }
 
+  public Command stowTrapElvCommand(){
+    return startEnd(() -> stowTrapElv(), () -> {});
+  }
+
   // Commands
   public Command setWristSource() {
     return run(() -> {
