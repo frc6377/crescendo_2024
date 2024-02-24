@@ -166,10 +166,10 @@ public final class Constants {
   public static final int LED_COUNT = 20;
 
   public static class ClimberConstants {
-    public static final double GEAR_RATIO = 0;
+    public static final double GEAR_RATIO = 221.4844;
     public static final double MAX_ERROR = 0;
     public static final double PICK_UP = 0;
-    public static final double CLIP_VOLTAGE = 0;
+    public static final double CLIP_VOLTAGE = 0.5;
     public static final double LIFT_SETPOINT = 0;
     public static final double IDLE_SETPOINT = 0;
     public static final double MINIMUM_WAIT = 0.5; // in seconds
@@ -183,5 +183,6 @@ public final class Constants {
     public static final double POSITION_P_GAIN = 0;
     public static final double POSITION_I_GAIN = 0;
     public static final double POSITION_D_GAIN = 0;
+    public static final double[] CLIMBER_FF = {0, 0.02, 4.32, 0};
   }
 }

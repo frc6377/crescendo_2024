@@ -5,13 +5,18 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ClimberConstants;
+import frc.robot.utilities.DebugEntry;
+
 import java.util.function.BooleanSupplier;
 
 public class ClimberSubsystem extends SubsystemBase {
@@ -21,6 +26,9 @@ public class ClimberSubsystem extends SubsystemBase {
   final SparkPIDController rightPidController;
   final RelativeEncoder leftEncoder;
   final RelativeEncoder rightEncoder;
+  private DebugEntry<Double> leftClimbPosition;
+  private DebugEntry<Double> rightClimbPosition;
+  private ShuffleboardTab ClimberTab = Shuffleboard.getTab("Climber Tab");
   double target = 0;
 
   public ClimberSubsystem() {
@@ -46,6 +54,10 @@ public class ClimberSubsystem extends SubsystemBase {
     rightPidController.setP(ClimberConstants.POSITION_P_GAIN);
     rightPidController.setI(ClimberConstants.POSITION_I_GAIN);
     rightPidController.setD(ClimberConstants.POSITION_D_GAIN);
+    ClimberTab.add("Left Climb PID", leftPidController).withSize(2, 2).withPosition(0, 0);
+    ClimberTab.add("Right Climb PID", rightPidController).withSize(2, 2).withPosition(2, 0);
+    leftClimbPosition = new DebugEntry<Double>(leftEncoder.getPosition(), "Current right climb position", this);
+    rightClimbPosition = new DebugEntry<Double>(rightEncoder.getPosition(), "Current left climb position", this);
   }
 
   public void applyDemand(double volts) {
@@ -68,17 +80,6 @@ public class ClimberSubsystem extends SubsystemBase {
     return new FunctionalCommand(init, () -> {}, (interupt) -> {}, done, this);
   }
 
-  public Command climberSequence(BooleanSupplier step) {
-    return Commands.sequence(
-        gotoPositionCommand(ClimberConstants.IDLE_SETPOINT),
-        Commands.waitUntil(step),
-        gotoPositionCommand(ClimberConstants.PICK_UP),
-        Commands.waitUntil(step),
-        Commands.startEnd(() -> applyDemand(ClimberConstants.CLIP_VOLTAGE), () -> {}, this)
-            .until(new MinimumDelay(ClimberConstants.MINIMUM_WAIT, step)),
-        gotoPositionCommand(ClimberConstants.LIFT_SETPOINT));
-  }
-
   private class MinimumDelay implements BooleanSupplier {
     Timer timer;
     BooleanSupplier base;
@@ -98,5 +99,11 @@ public class ClimberSubsystem extends SubsystemBase {
       }
       return false;
     }
+  }
+
+  @Override
+  public void periodic() {
+    rightClimbPosition.log(rightEncoder.getPosition());
+    leftClimbPosition.log(leftEncoder.getPosition());
   }
 }
