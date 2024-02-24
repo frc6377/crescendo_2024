@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -134,6 +133,7 @@ public class RobotContainer {
         turretSubsystem = new TurretSubsystem(robotStateManager, null);
       }
       SmartDashboard.putData(turretSubsystem);
+      configTab.add(turretSubsystem);
     } else {
       turretSubsystem = null;
     }
@@ -143,7 +143,7 @@ public class RobotContainer {
       registerCommands();
       autoChooser = AutoBuilder.buildAutoChooser();
       configTab.add("Auton Selection", autoChooser).withSize(3, 1);
-      SmartDashboard.putBoolean("NamedCommand test", false);
+      configTab.add("NamedCommand test", false);
     }
   }
 
@@ -285,7 +285,7 @@ public class RobotContainer {
   }
 
   private Command autonTest() {
-    return new InstantCommand(() -> SmartDashboard.putBoolean("NamedCommand test", true))
+    return new InstantCommand(() -> configTab.add("NamedCommand test", true))
         .withName("Test NamedCommand");
   }
 
