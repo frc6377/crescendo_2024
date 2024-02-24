@@ -213,29 +213,23 @@ public class RobotContainer {
     }
 
     // Shooter commands
-    if (Constants.enabledSubsystems.shooterEnabled && Constants.enabledSubsystems.triggerEnabled
-    // Limelight disabled for testing
-    // && Constants.enabledSubsystems.limeLightEnabled
-    ) {
+    if (Constants.enabledSubsystems.shooterEnabled && Constants.enabledSubsystems.triggerEnabled) {
       shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
+
       if (Constants.enabledSubsystems.visionEnabled) {
         OI.getTrigger(OI.Operator.shooterRevTrigger).whileTrue(shooterSubsystem.revShooter());
-
-      OI.getTrigger(OI.Operator.shooterFireTrigger)
+        OI.getTrigger(OI.Operator.shooterFireTrigger)
           .whileTrue(
               triggerSubsystem
                   .getShootCommand()
                   .onlyIf(shooterSubsystem.shooterReady())
                   .onlyWhile(OI.getTrigger(OI.Operator.shooterRevTrigger)));
+      } else if (!Constants.enabledSubsystems.visionEnabled) {
+        OI.getTrigger(OI.Operator.shooterFireTrigger).whileTrue(shooterSubsystem.bumperShoot());
+      }
+      
       OI.getButton(OI.Operator.A).whileTrue(triggerSubsystem.getLoadCommand());
-    } else if (Constants.enabledSubsystems.shooterEnabled
-        && Constants.enabledSubsystems.triggerEnabled
-    // Limelight disabled for testing
-    // && !Constants.enabledSubsystems.limeLightEnabled
-    ) {
-      shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
-      OI.getTrigger(OI.Operator.shooterFireTrigger).whileTrue(shooterSubsystem.bumperShoot());
-    }
+    } 
 
     // Turret commands
     if (Constants.enabledSubsystems.turretEnabled) {
