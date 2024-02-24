@@ -22,40 +22,37 @@ public class OI {
     private static final XboxController controller = new XboxController(driverJoystickPort);
 
     // A B Y X Buttons
-    public static final Control brakeButton =
-        new Control(XboxController.Button.kA, "Brake", controller);
-    public static final Control intakeWristButton =
-        new Control(XboxController.Button.kB, "Intake into Wrist", controller);
-    public static final Control modeChangeButton =
-        new Control(XboxController.Button.kX, "Change Mode", controller);
-    public static final Control outakeWristButton =
-        new Control(XboxController.Button.kY, "Score From Wrist Pose", controller);
+    public static final Control intakeSource =
+        new Control(XboxController.Button.kA, "Source", controller);
+    public static final Control speakerSource =
+        new Control(XboxController.Button.kB, "Intake Speaker from Source", controller);
+    public static final Control Y = new Control(XboxController.Button.kY, null, controller);
+    public static final Control X = new Control(XboxController.Button.kX, null, controller);
 
     // Bumpers & Triggers
-    public static final Control intakeTrigger =
-        new Control(XboxController.Axis.kLeftTrigger, "Run intake", controller, 0.5);
-    public static final Control pointForward =
-        new Control(XboxController.Axis.kRightTrigger, "Lock forward", controller, 0.5);
-    public static final Control ampScoreButton =
-        new Control(XboxController.Button.kLeftBumper, "Score AMP", controller);
-    public static final Control sourceIntakeButton =
-        new Control(XboxController.Button.kRightBumper, "Run outtake", controller);
+    public static final Control outtake =
+        new Control(XboxController.Axis.kLeftTrigger, "Out take", controller, 0.5);
+    public static final Control intake =
+        new Control(XboxController.Axis.kRightTrigger, "Intake", controller, 0.5);
+    public static final Control useRod =
+        new Control(XboxController.Button.kLeftBumper, "ROD", controller);
+    public static final Control RB =
+        new Control(XboxController.Button.kRightBumper, null, controller);
 
     // Start, End & Left/Right stick buttons
     public static final Control resetRotationButton =
-        new Control(XboxController.Button.kStart, "Reset field rotation", controller);
-    public static final Control leftStick =
+        new Control(XboxController.Button.kStart, "Zero", controller);
+    public static final Control back = new Control(XboxController.Button.kBack, null, controller);
+    public static final Control LSB =
         new Control(XboxController.Button.kLeftStick, null, controller);
-    public static final Control zeroArm =
-        new Control(XboxController.Button.kRightStick, "Zero Arm", controller);
-    public static final Control orientationButton =
-        new Control(XboxController.Button.kBack, "Toggle swerve orientation", controller);
+    public static final Control RSB =
+        new Control(XboxController.Button.kRightStick, null, controller);
 
     // Control Curves
-    private static final ControlCurve xTranslationCurve = new ControlCurve(1, 0, 0, 0.0);
+    private static final ControlCurve xTranslationCurve = new ControlCurve(1, 0, 0, 0.0, true);
     private static final ControlCurve yTranslationCurve = new ControlCurve(1, 0, 0, 0.0);
-    public static final ControlCurve translationMagnitudeCurve = new ControlCurve(1, 0, 1, 0.0);
-    public static final ControlCurve rotationCurve = new ControlCurve(0.8, 0, 1, 0.0, true);
+    public static final ControlCurve translationMagnitudeCurve = new ControlCurve(1, 0, 1, 0.1);
+    public static final ControlCurve rotationCurve = new ControlCurve(0.8, 0, 1, 0.1, true);
 
     // Joystick Axes
     public static final Control xTranslationAxis =
@@ -76,37 +73,38 @@ public class OI {
     private static final XboxController controller = new XboxController(operatorJoystickPort);
 
     // A B Y X Buttons
-    public static final Control switchPlacementButton =
-        new Control(XboxController.Button.kA, "Switch placement", controller);
-    public static final Control B = new Control(XboxController.Button.kB, "Aim Turret", controller);
-    public static final Control Y =
-        new Control(XboxController.Button.kY, "Test Shooter Pitch Control", controller);
-    public static final Control X = new Control(XboxController.Button.kX, null, controller);
+    public static final Control retractClimber =
+        new Control(XboxController.Button.kA, "Retract Climber", controller);
+    public static final Control latchClimber =
+        new Control(XboxController.Button.kB, "Latch Climber", controller);
+    public static final Control dumb =
+        new Control(XboxController.Button.kX, "Dumb Behavior", controller);
+    public static final Control prepClimb =
+        new Control(XboxController.Button.kY, "Prepare Climb", controller);
 
     // Bumpers & Triggers
-    public static final Control shooterRevTrigger =
-        new Control(XboxController.Axis.kLeftTrigger, "Rev Shooter", controller, 0.5);
-    public static final Control shooterFireTrigger =
-        new Control(XboxController.Axis.kRightTrigger, "Fire Shooter", controller, 0.5);
-    public static final Control outtakeButton =
-        new Control(XboxController.Button.kLeftBumper, null, controller);
-    public static final Control RB =
-        new Control(XboxController.Button.kRightBumper, null, controller);
+    public static final Control fire =
+        new Control(XboxController.Axis.kLeftTrigger, "Fire", controller, 0.5);
+    public static final Control prepareToFire =
+        new Control(XboxController.Axis.kRightTrigger, "Rev/Prep to score", controller, 0.5);
+    public static final Control swtichToSpeaker =
+        new Control(XboxController.Button.kLeftBumper, "Speaker Mode", controller);
+    public static final Control switchToAmp =
+        new Control(XboxController.Button.kRightBumper, "Amp Mode", controller);
 
     // Start, End & Left/Right stick buttons
-    public static final Control start =
-        new Control(XboxController.Button.kStart, "TriggerSubsytem Button", controller);
-    public static final Control back = new Control(XboxController.Button.kBack, null, controller);
-    public static final Control LSB =
+    public static final Control start = new Control(XboxController.Button.kStart, null, controller);
+    public static final Control leftStick =
         new Control(XboxController.Button.kLeftStick, null, controller);
-    public static final Control RSB =
+    public static final Control rightStick =
         new Control(XboxController.Button.kRightStick, null, controller);
+    public static final Control back = new Control(XboxController.Button.kBack, null, controller);
 
     // Control Curves
-    private static final ControlCurve xTranslationCurve = new ControlCurve(1, 0, 0, 0.0, true);
+    private static final ControlCurve xTranslationCurve = new ControlCurve(1, 0, 0, 0.0);
     private static final ControlCurve yTranslationCurve = new ControlCurve(1, 0, 0, 0.0);
-    public static final ControlCurve translationMagnitudeCurve = new ControlCurve(1, 0, 1, 0.1);
-    private static final ControlCurve rotationCurve = new ControlCurve(0.8, 0, 1, 0.1, true);
+    public static final ControlCurve translationMagnitudeCurve = new ControlCurve(1, 0, 1, 0.0);
+    public static final ControlCurve rotationCurve = new ControlCurve(0.8, 0, 1, 0.0, true);
 
     // Joystick Axes
     public static final Control xTranslationAxis =

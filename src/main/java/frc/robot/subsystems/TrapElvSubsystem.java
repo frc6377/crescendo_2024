@@ -29,7 +29,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants;
 import frc.robot.Constants.TrapElvConstants;
 import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
@@ -136,6 +140,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   /** Creates a new TrapArm. */
   public TrapElvSubsystem() {
+    if (!Constants.enabledSubsystems.elvEnabled) return;
     // Wrist
     wristMotor = new CANSparkMaxSim(TrapElvConstants.WRIST_MOTOR_ID, MotorType.kBrushless);
     wristMotor.restoreFactoryDefaults();
@@ -276,19 +281,93 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   // Boolean Suppliers
   public BooleanSupplier getSourceBreak() {
+    if (!Constants.enabledSubsystems.elvEnabled) return () -> false;
     return () -> sourceBreak.get();
   }
 
   public BooleanSupplier getGroundBreak() {
+    if (!Constants.enabledSubsystems.elvEnabled) return () -> false;
     return () -> groundBreak.get();
   }
 
   public BooleanSupplier getBaseLimit() {
+    if (!Constants.enabledSubsystems.elvEnabled) return () -> false;
     return () -> baseLimit.get();
   }
 
   public BooleanSupplier getScoringLimit() {
+    if (!Constants.enabledSubsystems.elvEnabled) return () -> false;
     return () -> scoringLimit.get();
+  }
+
+  // Commands
+  public Command setRoller(double s) {
+    if (!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
+    return run(() -> {
+          rollerMotor.set(s);
+        })
+        .withName("Set Roller");
+  }
+
+  public Command stopRoller() {
+    return run(() -> {
+          rollerMotor.stopMotor();
+        })
+        .withName("Stop Roller");
+  }
+
+  public Command intakeSource() {
+    if (!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
+    return startEnd(
+            () -> {
+              setTrapArm(TrapElvState.FROM_SOURCE);
+              rollerMotor.set(TrapElvConstants.ROLLER_SPEED);
+            },
+            () -> {})
+        .withName("Intake From Source");
+  }
+
+  public Command intakeGround() {
+    if (!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
+    return startEnd(
+            () -> {
+              rollerMotor.set(TrapElvConstants.ROLLER_SPEED);
+            },
+            () -> {
+              stowTrapElv();
+            })
+        .withName("Intake from Ground");
+  }
+
+  public Command positionAMP() {
+    return startEnd(
+            () -> {
+              setTrapArm(TrapElvState.AMP_SCORE);
+            },
+            () -> {})
+        .withName("Score Amp");
+  }
+
+  public Command scoreAMP() {
+    return startEnd(
+            () -> {
+              setRoller(-TrapElvConstants.ROLLER_SPEED);
+            },
+            () -> {})
+        .withName("Score Amp");
+  }
+
+  public Command scoreTrap() {
+    if (!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
+    return startEnd(
+            () -> {
+              setTrapArm(TrapElvState.STOWED);
+              rollerMotor.set(TrapElvConstants.ROLLER_SPEED);
+            },
+            () -> {
+              stowTrapElv();
+            })
+        .withName("Score Trap");
   }
 
   // Getter Functions
@@ -326,6 +405,10 @@ public class TrapElvSubsystem extends SubsystemBase {
     setWristState(TrapElvState.STOWED);
     isWristRollerRunning.log(false);
     rollerMotor.stopMotor();
+  }
+
+  public Command stowTrapElvCommand() {
+    return startEnd(() -> stowTrapElv(), () -> {});
   }
 
   // Commands
@@ -377,6 +460,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   }
 
   public Command zeroArm() {
+    if (!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
     if (isElv) {
       return startEnd(
               () -> {
@@ -409,8 +493,29 @@ public class TrapElvSubsystem extends SubsystemBase {
     }
   }
 
+  public void setTrapArm(TrapElvState state) {
+    if (!Constants.enabledSubsystems.elvEnabled) return;
+    TrapElvTab.add("Wrist Goal", state.wristPose);
+    TrapElvTab.add(
+        "Wrist PID Control Output",
+        wristPIDController.calculate(wristEncoder.getPosition(), state.getWristPose()));
+    if (isElv) {
+      baseMotor1
+          .getPIDController()
+          .setReference(state.getBasePose() - baseMotorOffset1, ControlType.kPosition);
+      baseMotor2
+          .getPIDController()
+          .setReference(state.getBasePose() - baseMotorOffset2, ControlType.kPosition);
+      scoringMotor
+          .getPIDController()
+          .setReference(state.getScoringPose() - scoringMotorOffset, ControlType.kPosition);
+    }
+  }
+
   @Override
   public void periodic() {
+    if (!Constants.enabledSubsystems.elvEnabled) return;
+
     currentPositionEntry.log(getWristEncoderPos());
     sourceLog.log(sourceBreak.get());
     groundLog.log(groundBreak.get());
@@ -470,5 +575,21 @@ public class TrapElvSubsystem extends SubsystemBase {
       // baseElvLength.setDouble(Units.metersToInches(m_baseElevatorSim.getPositionMeters()));
       // scoringElvLength.setDouble(Units.metersToInches(m_scoringElevatorSim.getPositionMeters()));
     }
+  }
+
+  public Command intakeFromGroundForTime() {
+    return intakeFromGroundForTime(Constants.TrapElvConstants.INTAKE_BEAM_BREAK_DELAY_SEC);
+  }
+
+  public Command intakeFromGroundForTime(double seconds) {
+    return Commands.deadline(intakeGround(), new WaitCommand(seconds));
+  }
+
+  public Command intakeFromSourceForTime() {
+    return intakeFromSourceForTime(Constants.TrapElvConstants.INTAKE_BEAM_BREAK_DELAY_SEC);
+  }
+
+  public Command intakeFromSourceForTime(double seconds) {
+    return Commands.deadline(intakeSource(), new WaitCommand(seconds));
   }
 }
