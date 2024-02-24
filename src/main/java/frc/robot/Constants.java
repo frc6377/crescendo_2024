@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -218,16 +219,41 @@ public final class Constants {
   }
 
   public static class enabledSubsystems {
-    public static final boolean intakeEnabled = true;
-    public static final boolean drivetrainEnabled = true;
-    public static final boolean visionEnabled = true;
-    public static final boolean usingPhoton = true;
-    public static final boolean elvEnabled = true;
-    public static final boolean signalEnabled = true;
-    public static final boolean shooterEnabled = true;
-    public static final boolean triggerEnabled = true;
-    public static final boolean turretEnabled = true;
+    public static final boolean intakeEnabled = false;
+    public static final boolean drivetrainEnabled = false;
+    public static final boolean visionEnabled = false;
+    public static final boolean usingPhoton = false;
+    public static final boolean elvEnabled = false;
+    public static final boolean signalEnabled = false;
+    public static final boolean shooterEnabled = false;
+    public static final boolean triggerEnabled = false;
+    public static final boolean turretEnabled = false;
     public static final boolean climberEnabled = true;
+  }
+
+  public static class ClimberConstants {
+    public static final double GEAR_RATIO = 221.4844;
+    public static final double MAX_ERROR = 0.01;
+    public static final double CLIP_VOLTAGE = 0.5;
+    public static final double MINIMUM_WAIT = 0.5; // in seconds
+
+    public static final int LEFT_MOTOR_ID = 18; // TODO: get actual values
+    public static final int RIGHT_MOTOR_ID = 19;
+
+    public static final boolean LEFT_IS_INVERTED = false;
+    public static final boolean RIGHT_IS_INVERTED = false;
+
+    public static final double POSITION_P_GAIN = 0;
+    public static final double POSITION_I_GAIN = 0;
+    public static final double POSITION_D_GAIN = 0;
+    public static final double[] CLIMBER_FF = {0, 0.02, 4.32, 0};
+
+    public static final DCMotor CLIMBER_MECH_MOTORS = DCMotor.getNEO(1);
+    public static final double CLIMBER_MOI = 0;
+    public static final double CLIMBER_LENGTH = Units.inchesToMeters(16);
+    public static final double CLIMBER_BASE_LENGTH = Units.inchesToMeters(30);
+    public static final double CLIMBER_MIN_ANGLE = Units.degreesToRadians(0);
+    public static final double CLIMBER_MAX_ANGLE = Units.degreesToRadians(360);
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
@@ -238,25 +264,4 @@ public final class Constants {
 
   // Lights
   public static final int LED_COUNT = 20;
-
-  public static class ClimberConstants {
-    public static final double GEAR_RATIO = 221.4844;
-    public static final double MAX_ERROR = 0;
-    public static final double PICK_UP = 0;
-    public static final double CLIP_VOLTAGE = 0.5;
-    public static final double LIFT_SETPOINT = 0;
-    public static final double IDLE_SETPOINT = 0;
-    public static final double MINIMUM_WAIT = 0.5; // in seconds
-
-    public static final int LEFT_MOTOR_ID = 0; // TODO: get actual values
-    public static final int RIGHT_MOTOR_ID = 0;
-
-    public static final boolean LEFT_IS_INVERTED = false;
-    public static final boolean RIGHT_IS_INVERTED = false;
-
-    public static final double POSITION_P_GAIN = 0;
-    public static final double POSITION_I_GAIN = 0;
-    public static final double POSITION_D_GAIN = 0;
-    public static final double[] CLIMBER_FF = {0, 0.02, 4.32, 0};
-  }
 }

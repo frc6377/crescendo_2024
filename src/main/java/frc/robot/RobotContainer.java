@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -17,10 +16,12 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ClimberConstants;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -186,11 +187,11 @@ public class RobotContainer {
       drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
           drivetrain.fieldOrientedDrive(input).withName("Get Axis Suppliers"));
 
-      OI.getButton(OI.Driver.brakeButton)
-          .whileTrue(
-              drivetrain
-                  .applyRequest(() -> new SwerveRequest.SwerveDriveBrake())
-                  .withName("Brake Swerve"));
+      /*OI.getButton(OI.Driver.brakeButton)
+      .whileTrue(
+          drivetrain
+              .applyRequest(() -> new SwerveRequest.SwerveDriveBrake())
+              .withName("Brake Swerve")); */
       OI.getTrigger(OI.Driver.pointForward)
           .toggleOnTrue(drivetrain.pointAtLocation(new Translation2d(16.4846, 4.1), input));
       OI.getButton(OI.Driver.resetRotationButton)
@@ -240,15 +241,15 @@ public class RobotContainer {
 
     // Trap Elv Intaking
     if (Constants.enabledSubsystems.elvEnabled) {
-      OI.getButton(OI.Driver.groundIntakeButton)
+      /*OI.getButton(OI.Driver.groundIntakeButton)
           .whileTrue(trapElvSubsystem.intakeGround().onlyWhile(trapElvSubsystem.getGroundBreak()));
       OI.getButton(OI.Driver.sourceIntakeButton)
-          .whileTrue(trapElvSubsystem.intakeSource().onlyWhile(trapElvSubsystem.getSourceBreak()));
+      .whileTrue(trapElvSubsystem.intakeSource().onlyWhile(trapElvSubsystem.getSourceBreak()));*/
 
       // Trap Elv Scoring
 
       OI.getButton(OI.Driver.ampScoreButton).whileTrue(trapElvSubsystem.scoreAMP());
-      OI.getButton(OI.Driver.trapScoreButton).whileTrue(trapElvSubsystem.scoreTrap());
+      // OI.getButton(OI.Driver.trapScoreButton).whileTrue(trapElvSubsystem.scoreTrap());
       // Trap Elv zeroing button
 
       OI.getButton(OI.Driver.zeroArm).whileTrue(trapElvSubsystem.zeroArm());
@@ -256,6 +257,13 @@ public class RobotContainer {
 
     if (Robot.isSimulation() && Constants.enabledSubsystems.drivetrainEnabled) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
+    }
+
+    if (Constants.enabledSubsystems.climberEnabled) {
+      OI.getButton(OI.Driver.climbPickUpButton).onTrue(climberSubsystem.gotoLiftPositionCommand());
+      OI.getButton(OI.Driver.climbLowerButton).whileTrue(new StartEndCommand(() -> climberSubsystem.applyDemand(), climberSubsystem::stopMotors));
+      OI.getButton(OI.Driver.climbRaiseRobotButton).onTrue(climberSubsystem.gotoRaisePositionCommand());
+      OI.getButton(OI.Driver.climbIdlePositionButton).onTrue(climberSubsystem.gotoIdlePositionCommand());
     }
   }
 
