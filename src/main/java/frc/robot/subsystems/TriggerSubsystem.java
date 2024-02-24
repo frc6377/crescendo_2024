@@ -35,7 +35,7 @@ public class TriggerSubsystem extends SubsystemBase {
   }
 
   private Command buildCommand(double speed) {
-    if(!Constants.enabledSubsystems.triggerEnabled) return new InstantCommand();
+    if (!Constants.enabledSubsystems.triggerEnabled) return new InstantCommand();
     return new StartEndCommand(() -> setSpeed(speed), () -> setSpeed(0), this);
   }
 }

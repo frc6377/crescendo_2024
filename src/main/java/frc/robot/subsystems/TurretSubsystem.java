@@ -131,7 +131,7 @@ public class TurretSubsystem extends SubsystemBase {
   private final VisionSubsystem visionSubsystem;
 
   public TurretSubsystem(RobotStateManager robotStateManager, VisionSubsystem visionSubsystem) {
-    if(!Constants.enabledSubsystems.turretEnabled) return;
+    if (!Constants.enabledSubsystems.turretEnabled) return;
 
     // Initialize Motors
     turretMotor = new CANSparkMax(Constants.TurretConstants.TURRET_MOTOR_ID, MotorType.kBrushless);
@@ -275,12 +275,12 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   private void stopTurret() {
-    if(!Constants.enabledSubsystems.turretEnabled) return;
+    if (!Constants.enabledSubsystems.turretEnabled) return;
     turretMotor.stopMotor();
   }
 
   public Command stowTurret() {
-    if(!Constants.enabledSubsystems.turretEnabled) return new InstantCommand();
+    if (!Constants.enabledSubsystems.turretEnabled) return new InstantCommand();
     return new InstantCommand(
             () -> setTurretPos(Math.toRadians(Constants.TurretConstants.TURRET_STOWED_ANGLE)))
         .alongWith(
@@ -290,7 +290,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public Command pickup() {
-    if(!Constants.enabledSubsystems.turretEnabled) return new InstantCommand();
+    if (!Constants.enabledSubsystems.turretEnabled) return new InstantCommand();
     return new InstantCommand(
             () -> setTurretPos(Math.toRadians(Constants.TurretConstants.TURRET_PICKUP_ANGLE)))
         .alongWith(
@@ -300,7 +300,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public double calculateTurretPosition() {
-    if(!Constants.enabledSubsystems.turretEnabled) return 0;
+    if (!Constants.enabledSubsystems.turretEnabled) return 0;
     double encoderPosition =
         lowGearCANcoder.getPosition().getValueAsDouble()
             / Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO;
@@ -310,7 +310,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   private double calculatePitchPosition() {
-    if(!Constants.enabledSubsystems.turretEnabled) return 0;
+    if (!Constants.enabledSubsystems.turretEnabled) return 0;
     return Math.toRadians(
         (pitchEncoder.getPosition() * 360) * Constants.TurretConstants.PITCH_CONVERSION_FACTOR);
   }
@@ -321,7 +321,7 @@ public class TurretSubsystem extends SubsystemBase {
    * @return a command that sets the current position as true zero
    */
   public Command zeroZeroing() {
-    if(!Constants.enabledSubsystems.turretEnabled) return new InstantCommand();
+    if (!Constants.enabledSubsystems.turretEnabled) return new InstantCommand();
     return Commands.runOnce(
         () -> {
           MagnetSensorConfigs cfg = new MagnetSensorConfigs();
@@ -362,7 +362,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   /** Will calculate the current turret position and update encoders and motors off of it. */
   public void zeroTurret() {
-    if(!Constants.enabledSubsystems.turretEnabled) return;
+    if (!Constants.enabledSubsystems.turretEnabled) return;
     double lowGearPosition = lowGearCANcoder.getAbsolutePosition().getValue().doubleValue();
     double highGearPosition = highGearCANcoder.getAbsolutePosition().getValue().doubleValue();
     Rotation2d turretRotation = encoderPositionsToTurretRotation(lowGearPosition, highGearPosition);
@@ -448,7 +448,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   private void setTurretPos(double setpoint) {
-    if(!Constants.enabledSubsystems.turretEnabled) return;
+    if (!Constants.enabledSubsystems.turretEnabled) return;
 
     turretGoalPositionEntry.log(setpoint);
     turretMotor.set(
@@ -461,7 +461,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   private void setPitchPos(double setpoint) {
-    if(!Constants.enabledSubsystems.turretEnabled) return;
+    if (!Constants.enabledSubsystems.turretEnabled) return;
     pitchGoalPositionEntry.log(setpoint);
     pitchMotor.setVoltage(
         pitchPIDController.calculate(
@@ -525,7 +525,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   private void aimTurret() {
-    if(!Constants.enabledSubsystems.turretEnabled) return;
+    if (!Constants.enabledSubsystems.turretEnabled) return;
     if (visionSubsystem != null) {
       int tagID =
           ((robotStateManager.getAllianceColor()

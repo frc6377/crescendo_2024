@@ -135,7 +135,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   /** Creates a new TrapArm. */
   public TrapElvSubsystem() {
-    if(!Constants.enabledSubsystems.elvEnabled) return;
+    if (!Constants.enabledSubsystems.elvEnabled) return;
     // Wrist
     wristMotor = new CANSparkMax(TrapElvConstants.WRIST_MOTOR_ID, MotorType.kBrushless);
     wristMotor.restoreFactoryDefaults();
@@ -262,28 +262,28 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   // Boolean Suppliers
   public BooleanSupplier getSourceBreak() {
-    if(!Constants.enabledSubsystems.elvEnabled) return () -> false;
+    if (!Constants.enabledSubsystems.elvEnabled) return () -> false;
     return () -> sourceBreak.get();
   }
 
   public BooleanSupplier getGroundBreak() {
-    if(!Constants.enabledSubsystems.elvEnabled) return () -> false;
+    if (!Constants.enabledSubsystems.elvEnabled) return () -> false;
     return () -> groundBreak.get();
   }
 
   public BooleanSupplier getBaseLimit() {
-    if(!Constants.enabledSubsystems.elvEnabled) return () -> false;
+    if (!Constants.enabledSubsystems.elvEnabled) return () -> false;
     return () -> baseLimit.get();
   }
 
   public BooleanSupplier getScoringLimit() {
-    if(!Constants.enabledSubsystems.elvEnabled) return () -> false;
+    if (!Constants.enabledSubsystems.elvEnabled) return () -> false;
     return () -> scoringLimit.get();
   }
 
   // Commands
   public Command setRoller(double s) {
-    if(!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
+    if (!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
     return run(() -> {
           rollerMotor.set(s);
         })
@@ -298,19 +298,18 @@ public class TrapElvSubsystem extends SubsystemBase {
   }
 
   public Command intakeSource() {
-    if(!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
+    if (!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
     return startEnd(
             () -> {
               setTrapArm(TrapElvState.FROM_SOURCE);
               rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
             },
-            () -> {
-            })
+            () -> {})
         .withName("Intake From Source");
   }
 
   public Command intakeGround() {
-    if(!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
+    if (!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
     return startEnd(
             () -> {
               rollerMotor.set(TrapElvConstants.ROLLER_INTAKE_SPEED);
@@ -340,7 +339,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   }
 
   public Command scoreTrap() {
-    if(!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
+    if (!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
     return startEnd(
             () -> {
               setTrapArm(TrapElvState.TRAP_SCORE);
@@ -362,7 +361,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   }
 
   public Command zeroArm() {
-    if(!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
+    if (!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
     if (isElv) {
       return startEnd(
               () -> {
@@ -396,7 +395,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   }
 
   public void setTrapArm(TrapElvState state) {
-    if(!Constants.enabledSubsystems.elvEnabled) return;
+    if (!Constants.enabledSubsystems.elvEnabled) return;
     TrapElvTab.add("Wrist Goal", state.wristPose);
     TrapElvTab.add(
         "Wrist PID Control Output",
@@ -419,7 +418,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if(!Constants.enabledSubsystems.elvEnabled) return;
+    if (!Constants.enabledSubsystems.elvEnabled) return;
 
     sourceLog.log(sourceBreak.get());
     groundLog.log(groundBreak.get());
@@ -484,11 +483,11 @@ public class TrapElvSubsystem extends SubsystemBase {
     return Commands.deadline(intakeGround(), new WaitCommand(seconds));
   }
 
-public Command intakeFromSourceForTime() {
+  public Command intakeFromSourceForTime() {
     return intakeFromSourceForTime(Constants.TrapElvConstants.INTAKE_BEAM_BREAK_DELAY_SEC);
   }
 
-public Command intakeFromSourceForTime(double seconds) {
-return Commands.deadline(intakeSource(), new WaitCommand(seconds));
-}
+  public Command intakeFromSourceForTime(double seconds) {
+    return Commands.deadline(intakeSource(), new WaitCommand(seconds));
+  }
 }

@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.function.BooleanSupplier;
-
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -20,9 +18,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
+import java.util.function.BooleanSupplier;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -181,10 +180,10 @@ public class ShooterSubsystem extends SubsystemBase {
   // Idle shooter command; for default command purposes
   public Command shooterIdle() {
     return run(() -> {
-      shooterLeftMotor.set(0);
-      shooterRightMotor.set(0);
-
-    }).withName("Idle Shooter command");
+          shooterLeftMotor.set(0);
+          shooterRightMotor.set(0);
+        })
+        .withName("Idle Shooter command");
   }
 
   public Command setShooterIfReady(SpeakerConfig speeds, int exitCode) {
@@ -335,17 +334,19 @@ public class ShooterSubsystem extends SubsystemBase {
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_LEFT,
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT);
 
-public Command intakeSource() {
-    return startEnd(() -> {
-      setShooterSpeeds(ShooterConstants.SHOOTER_SOURCE_INTAKE);
-    }, null);
-}
+  public Command intakeSource() {
+    return startEnd(
+        () -> {
+          setShooterSpeeds(ShooterConstants.SHOOTER_SOURCE_INTAKE);
+        },
+        null);
+  }
 
-public BooleanSupplier getBeamBreak() {
-  return () -> false;
-}
+  public BooleanSupplier getBeamBreak() {
+    return () -> false;
+  }
 
-public Command intakeSourceForTime() {
-return Commands.deadline(new WaitCommand(ShooterConstants.INTAKE_DELAY_SEC), intakeSource());
-}
+  public Command intakeSourceForTime() {
+    return Commands.deadline(new WaitCommand(ShooterConstants.INTAKE_DELAY_SEC), intakeSource());
+  }
 }

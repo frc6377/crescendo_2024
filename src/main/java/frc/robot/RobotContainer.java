@@ -172,7 +172,7 @@ public class RobotContainer {
 
     drivetrain.setDefaultCommand(
         drivetrain.fieldOrientedDrive(input).withName("Get Axis Suppliers"));
-    
+
     trapElvSubsystem.setDefaultCommand(trapElvSubsystem.stowTrapElv());
 
     shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
@@ -209,10 +209,7 @@ public class RobotContainer {
 
     OI.getButton(OI.Driver.intake)
         .whileTrue(
-            Commands.either(
-                intakeAmp(),
-                intakeSpeaker(),
-                robotStateManager.isAmpSupplier()));
+            Commands.either(intakeAmp(), intakeSpeaker(), robotStateManager.isAmpSupplier()));
 
     OI.getButton(OI.Driver.outtake).whileTrue(intakeSubsystem.reverseIntakeCommand());
 
@@ -221,16 +218,23 @@ public class RobotContainer {
     OI.getButton(OI.Driver.speakerSource).whileTrue(intakeSpeakerSource());
   }
 
-  private Command prepIntakeSource(){
-    return trapElvSubsystem.intakeSource().until(trapElvSubsystem.getSourceBreak()).andThen(trapElvSubsystem.intakeFromSourceForTime());
+  private Command prepIntakeSource() {
+    return trapElvSubsystem
+        .intakeSource()
+        .until(trapElvSubsystem.getSourceBreak())
+        .andThen(trapElvSubsystem.intakeFromSourceForTime());
   }
 
-  private Command intakeSpeakerSource(){
-    return shooterSubsystem.intakeSource().until(shooterSubsystem.getBeamBreak()).andThen(shooterSubsystem.intakeSourceForTime());
+  private Command intakeSpeakerSource() {
+    return shooterSubsystem
+        .intakeSource()
+        .until(shooterSubsystem.getBeamBreak())
+        .andThen(shooterSubsystem.intakeSourceForTime());
   }
 
-  private Command intakeSpeaker(){
-    return Commands.parallel(intakeSubsystem.getSpeakerIntakeCommand(), triggerSubsystem.getLoadCommand());
+  private Command intakeSpeaker() {
+    return Commands.parallel(
+        intakeSubsystem.getSpeakerIntakeCommand(), triggerSubsystem.getLoadCommand());
   }
 
   private Command intakeAmp() {
