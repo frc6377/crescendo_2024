@@ -34,8 +34,8 @@ public class OI {
     // Bumpers & Triggers
     public static final Control intakeTrigger =
         new Control(XboxController.Axis.kLeftTrigger, "Run intake", controller, 0.5);
-    public static final Control RT =
-        new Control(XboxController.Axis.kRightTrigger, null, controller, 0.5);
+    public static final Control pointForward =
+        new Control(XboxController.Axis.kRightTrigger, "Lock forward", controller, 0.5);
     public static final Control ampScoreButton =
         new Control(XboxController.Button.kLeftBumper, "Score AMP", controller);
     public static final Control outtakeButton =
@@ -54,8 +54,8 @@ public class OI {
     // Control Curves
     private static final ControlCurve xTranslationCurve = new ControlCurve(1, 0, 0, 0.0);
     private static final ControlCurve yTranslationCurve = new ControlCurve(1, 0, 0, 0.0);
-    public static final ControlCurve translationMagnitudeCurve = new ControlCurve(1, 0, 1, 0.1);
-    private static final ControlCurve rotationCurve = new ControlCurve(0.8, 0, 1, 0.1, true);
+    public static final ControlCurve translationMagnitudeCurve = new ControlCurve(1, 0, 1, 0.0);
+    public static final ControlCurve rotationCurve = new ControlCurve(0.8, 0, 1, 0.0, true);
 
     // Joystick Axes
     public static final Control xTranslationAxis =
@@ -79,7 +79,8 @@ public class OI {
     public static final Control A =
         new Control(XboxController.Button.kA, "Switch placement", controller);
     public static final Control B = new Control(XboxController.Button.kB, "Aim Turret", controller);
-    public static final Control Y = new Control(XboxController.Button.kY, null, controller);
+    public static final Control Y =
+        new Control(XboxController.Button.kY, "Test Shooter Pitch Control", controller);
     public static final Control X = new Control(XboxController.Button.kX, null, controller);
 
     // Bumpers & Triggers
