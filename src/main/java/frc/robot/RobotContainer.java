@@ -219,17 +219,17 @@ public class RobotContainer {
       if (Constants.enabledSubsystems.visionEnabled) {
         OI.getTrigger(OI.Operator.shooterRevTrigger).whileTrue(shooterSubsystem.revShooter());
         OI.getTrigger(OI.Operator.shooterFireTrigger)
-          .whileTrue(
-              triggerSubsystem
-                  .getShootCommand()
-                  .onlyIf(shooterSubsystem.shooterReady())
-                  .onlyWhile(OI.getTrigger(OI.Operator.shooterRevTrigger)));
+            .whileTrue(
+                triggerSubsystem
+                    .getShootCommand()
+                    .onlyIf(shooterSubsystem.shooterReady())
+                    .onlyWhile(OI.getTrigger(OI.Operator.shooterRevTrigger)));
       } else if (!Constants.enabledSubsystems.visionEnabled) {
         OI.getTrigger(OI.Operator.shooterFireTrigger).whileTrue(shooterSubsystem.bumperShoot());
       }
-      
+
       OI.getButton(OI.Operator.A).whileTrue(triggerSubsystem.getLoadCommand());
-    } 
+    }
 
     // Turret commands
     if (Constants.enabledSubsystems.turretEnabled) {
