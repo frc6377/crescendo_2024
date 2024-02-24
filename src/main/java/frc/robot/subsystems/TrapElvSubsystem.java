@@ -407,7 +407,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     rollerMotor.stopMotor();
   }
 
-  public Command stowTrapElvCommand(){
+  public Command stowTrapElvCommand() {
     return startEnd(() -> stowTrapElv(), () -> {});
   }
 
