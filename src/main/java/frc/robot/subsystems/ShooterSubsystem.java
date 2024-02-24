@@ -339,7 +339,7 @@ public class ShooterSubsystem extends SubsystemBase {
         () -> {
           setShooterSpeeds(ShooterConstants.SHOOTER_SOURCE_INTAKE);
         },
-        null);
+        () -> {});
   }
 
   public BooleanSupplier getBeamBreak() {

@@ -192,14 +192,14 @@ public class RobotContainer {
 
     OI.getButton(OI.Driver.useRod).whileTrue(drivetrain.robotOrientedDrive(input));
 
-    OI.getButton(OI.Operator.prepareToFire)
+    OI.getTrigger(OI.Operator.prepareToFire)
         .whileTrue(
             Commands.either(
                 trapElvSubsystem.positionAMP(),
                 prepareToScoreSpeaker(),
                 robotStateManager.isAmpSupplier()));
 
-    OI.getButton(OI.Operator.fire)
+    OI.getTrigger(OI.Operator.fire)
         .whileTrue(
             Commands.either(
                 trapElvSubsystem.scoreAMP(), shootSpeaker(), robotStateManager.isAmpSupplier()));
@@ -207,11 +207,11 @@ public class RobotContainer {
     OI.getButton(OI.Operator.switchToAmp).onTrue(robotStateManager.setAmpMode());
     OI.getButton(OI.Operator.swtichToSpeaker).onTrue(robotStateManager.setSpeakerMode());
 
-    OI.getButton(OI.Driver.intake)
+    OI.getTrigger(OI.Driver.intake)
         .whileTrue(
             Commands.either(intakeAmp(), intakeSpeaker(), robotStateManager.isAmpSupplier()));
 
-    OI.getButton(OI.Driver.outtake).whileTrue(intakeSubsystem.reverseIntakeCommand());
+    OI.getTrigger(OI.Driver.outtake).whileTrue(intakeSubsystem.reverseIntakeCommand());
 
     OI.getButton(OI.Driver.intakeSource).whileTrue(prepIntakeSource());
 
