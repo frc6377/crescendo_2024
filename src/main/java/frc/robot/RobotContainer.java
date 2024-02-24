@@ -80,60 +80,24 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    if (Constants.enabledSubsystems.shooterEnabled) {
-      shooterSubsystem = new ShooterSubsystem();
-    } else {
-      shooterSubsystem = null;
-    }
-    if (Constants.enabledSubsystems.signalEnabled) {
-      signalingSubsystem = new SignalingSubsystem(1, OI.Driver::setRumble, robotStateManager);
-    } else {
-      signalingSubsystem = null;
-    }
+    shooterSubsystem = new ShooterSubsystem();
+    signalingSubsystem = new SignalingSubsystem(1, OI.Driver::setRumble, robotStateManager);
     dynamicRobotConfig = new DynamicRobotConfig();
-    if (Constants.enabledSubsystems.drivetrainEnabled) {
-      drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
-    } else {
-      drivetrain = null;
-    }
-    if (Constants.enabledSubsystems.intakeEnabled) {
-      intakeSubsystem = new IntakeSubsystem();
-    } else {
-      intakeSubsystem = null;
-    }
-    if (Constants.enabledSubsystems.triggerEnabled) {
-      triggerSubsystem = new TriggerSubsystem();
-    } else {
-      triggerSubsystem = null;
-    }
+    drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
+    intakeSubsystem = new IntakeSubsystem();
+    triggerSubsystem = new TriggerSubsystem();
+    visionSubsystem =
+        Constants.enabledSubsystems.usingPhoton
+            ? new PhotonSubsystem(drivetrain.getVisionMeasurementConsumer())
+            : new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer(), robotStateManager);
+    trapElvSubsystem = new TrapElvSubsystem();
     if (Constants.enabledSubsystems.visionEnabled) {
-      if (Constants.enabledSubsystems.drivetrainEnabled) {
-        visionSubsystem =
-            Constants.enabledSubsystems.usingPhoton
-                ? new PhotonSubsystem(drivetrain.getVisionMeasurementConsumer())
-                : new LimelightSubsystem(
-                    drivetrain.getVisionMeasurementConsumer(), robotStateManager);
-      } else {
-        visionSubsystem = null;
-      }
+      turretSubsystem = new TurretSubsystem(robotStateManager, visionSubsystem);
     } else {
-      visionSubsystem = null;
+      turretSubsystem = new TurretSubsystem(robotStateManager, null);
     }
-    if (Constants.enabledSubsystems.elvEnabled) {
-      trapElvSubsystem = new TrapElvSubsystem();
-    } else {
-      trapElvSubsystem = null;
-    }
-    if (Constants.enabledSubsystems.turretEnabled) {
-      if (Constants.enabledSubsystems.visionEnabled) {
-        turretSubsystem = new TurretSubsystem(robotStateManager, visionSubsystem);
-      } else {
-        turretSubsystem = new TurretSubsystem(robotStateManager, null);
-      }
-      SmartDashboard.putData(turretSubsystem);
-    } else {
-      turretSubsystem = null;
-    }
+    SmartDashboard.putData(turretSubsystem);
+
     // Configure the trigger bindings
     if (Constants.enabledSubsystems.drivetrainEnabled) {
       registerCommands();

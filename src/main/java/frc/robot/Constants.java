@@ -235,7 +235,7 @@ public final class Constants {
     public static final boolean usingPhoton = true;
     public static final boolean elvEnabled = true;
     public static final boolean signalEnabled = false;
-    public static final boolean shooterEnabled = false;
+    public static final boolean shooterEnabled = true;
     public static final boolean triggerEnabled = false;
     public static final boolean turretEnabled = false;
   }
