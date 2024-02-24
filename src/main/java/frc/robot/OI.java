@@ -94,7 +94,8 @@ public class OI {
         new Control(XboxController.Button.kRightBumper, null, controller);
 
     // Start, End & Left/Right stick buttons
-    public static final Control start = new Control(XboxController.Button.kStart, "TriggerSubsytem Button", controller);
+    public static final Control start =
+        new Control(XboxController.Button.kStart, "TriggerSubsytem Button", controller);
     public static final Control back = new Control(XboxController.Button.kBack, null, controller);
     public static final Control LSB =
         new Control(XboxController.Button.kLeftStick, null, controller);

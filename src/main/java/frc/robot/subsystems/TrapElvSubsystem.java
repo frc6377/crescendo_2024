@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -82,7 +83,6 @@ public class TrapElvSubsystem extends SubsystemBase {
   private ElevatorSim m_scoringElevatorSim;
   private SingleJointedArmSim m_wristMotorSim;
 
-<<<<<<< HEAD
   private DebugEntry<Double> currentPositionEntry;
   private DebugEntry<Boolean> isWristRollerRunning;
 
@@ -95,16 +95,6 @@ public class TrapElvSubsystem extends SubsystemBase {
       TrapElvTab.add("Current Wrist State", TrapElvState.STOWED.name()).getEntry();
 
   private double FF;
-=======
-  private ShuffleboardTab TrapElvTab = Shuffleboard.getTab(this.getName());
-  private GenericEntry baseGoal = TrapElvTab.add("Base Goal", 0).getEntry();
-  private GenericEntry baseCanSim = TrapElvTab.add("base CAN Sim", 0).getEntry();
-  private GenericEntry scoringCanSim = TrapElvTab.add("scoring CAN Sim", 0).getEntry();
-  private GenericEntry baseElvLength = TrapElvTab.add("Base Elv Length", 0).getEntry();
-  private GenericEntry scoringElvLength = TrapElvTab.add("Scoring Elv Length", 0).getEntry();
-  private GenericEntry wristMotorSim = TrapElvTab.add("Wrist Motor Sim Output", 0).getEntry();
-  private GenericEntry wristSimAngle = TrapElvTab.add("Wrist Sim Angle", 0).getEntry();
->>>>>>> c5d36653f16cf88028f55bda62a60f3f38c1eb4d
 
   // States
   public enum TrapElvState {
@@ -478,8 +468,8 @@ public class TrapElvSubsystem extends SubsystemBase {
       baseMech.setLength(m_baseElevatorSim.getPositionMeters());
       scoringMech.setLength(m_scoringElevatorSim.getPositionMeters());
 
-      baseElvLength.setDouble(Units.metersToInches(m_baseElevatorSim.getPositionMeters()));
-      scoringElvLength.setDouble(Units.metersToInches(m_scoringElevatorSim.getPositionMeters()));
+      // baseElvLength.setDouble(Units.metersToInches(m_baseElevatorSim.getPositionMeters()));
+      // scoringElvLength.setDouble(Units.metersToInches(m_scoringElevatorSim.getPositionMeters()));
     }
   }
 }
