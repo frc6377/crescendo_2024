@@ -30,7 +30,6 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -56,7 +55,7 @@ public class TurretSubsystem extends SubsystemBase {
   private Mechanism2d turretMech;
   private MechanismRoot2d turretRoot;
   private MechanismLigament2d turretAngleSim;
-  private final ShuffleboardTab turretTab = Shuffleboard.getTab("Turret Tab");
+  private final ShuffleboardTab turretTab = Shuffleboard.getTab(this.getName());
   private final SimDeviceSim simTurretEncoder;
   private final SimDouble simTurretPos;
 
@@ -73,6 +72,24 @@ public class TurretSubsystem extends SubsystemBase {
       configTab.add("Turret KI", Constants.TurretConstants.TURRET_KI).getEntry();
   private final GenericEntry turretKD =
       configTab.add("Turret KD", Constants.TurretConstants.TURRET_KD).getEntry();
+  private final GenericEntry turretEntry = turretTab.add("Turret Angle", 0).getEntry();
+  private final GenericEntry turretPitchEntry = turretTab.add("Turret Pitch Angle", 0).getEntry();
+  private final GenericEntry currentTurretPositionEntry =
+      turretTab.add("Current Turret Position", 0).getEntry();
+  private final GenericEntry turretOutOfBoundsEntry =
+      turretTab.add("Turret Out of Bounds", false).getEntry();
+  private final GenericEntry turretSoftLimitForwardEntry =
+      turretTab.add("Turret Soft limit enabled forward", false).getEntry();
+  private final GenericEntry turretSoftLimitReverseEntry =
+      turretTab.add("Turret Soft limit enabled reverse", false).getEntry();
+  private final GenericEntry currentPitchPositioGenericEntry =
+      turretTab.add("Current Pitch Position", 0).getEntry();
+  private final GenericEntry pitchOutOfBoundsEntry =
+      turretTab.add("Pitch Out of Bounds", false).getEntry();
+  private final GenericEntry pitchSoftLimitForwardEntry =
+      turretTab.add("Pitch Soft limit enabled forward", false).getEntry();
+  private final GenericEntry pitchSoftLimitReverseEntry =
+      turretTab.add("Pitch Soft limit enabled reverse", false).getEntry();
   private final DebugEntry<Double> turretPositionEntry =
       new DebugEntry<Double>(turretPosition, "Turret Position", this);
   private final DebugEntry<Double> turretGoalPositionEntry =
@@ -464,22 +481,22 @@ public class TurretSubsystem extends SubsystemBase {
 
   private void updateTurretPosition() {
     turretPosition = calculateTurretPosition();
-    SmartDashboard.putNumber("Turret Position", turretPosition);
-    SmartDashboard.putBoolean("Out of Bounds", Math.abs(turretPosition) > 3.14);
-    SmartDashboard.putBoolean(
-        "Soft limit enabled forward", turretMotor.isSoftLimitEnabled(SoftLimitDirection.kForward));
-    SmartDashboard.putBoolean(
-        "Soft limit enabled reverse", turretMotor.isSoftLimitEnabled(SoftLimitDirection.kReverse));
+    currentTurretPositionEntry.setDouble(turretPosition);
+    turretOutOfBoundsEntry.setBoolean(Math.abs(turretPosition) > 3.14);
+    turretSoftLimitForwardEntry.setBoolean(
+        turretMotor.isSoftLimitEnabled(SoftLimitDirection.kForward));
+    turretSoftLimitReverseEntry.setBoolean(
+        turretMotor.isSoftLimitEnabled(SoftLimitDirection.kReverse));
   }
 
   private void updatePitchPosition() {
     pitchPosition = calculatePitchPosition();
-    SmartDashboard.putNumber("Pitch Position", pitchPosition);
-    SmartDashboard.putBoolean("Out of Bounds", Math.abs(pitchPosition) > 3.14);
-    SmartDashboard.putBoolean(
-        "Soft limit enabled forward", pitchMotor.isSoftLimitEnabled(SoftLimitDirection.kForward));
-    SmartDashboard.putBoolean(
-        "Soft limit enabled reverse", pitchMotor.isSoftLimitEnabled(SoftLimitDirection.kReverse));
+    currentPitchPositioGenericEntry.setDouble(pitchPosition);
+    pitchOutOfBoundsEntry.setBoolean(Math.abs(pitchPosition) > 3.14);
+    pitchSoftLimitForwardEntry.setBoolean(
+        pitchMotor.isSoftLimitEnabled(SoftLimitDirection.kForward));
+    pitchSoftLimitReverseEntry.setBoolean(
+        pitchMotor.isSoftLimitEnabled(SoftLimitDirection.kReverse));
   }
 
   public double getTurretPos() {
@@ -591,7 +608,7 @@ public class TurretSubsystem extends SubsystemBase {
     turretSim.setInput(turretMotor.get() * RobotController.getBatteryVoltage());
     turretSim.update(Robot.defaultPeriodSecs);
     turretAngleSim.setAngle(Math.toDegrees(turretSim.getAngleRads()));
-    SmartDashboard.putNumber("Turret Angle", Math.toDegrees(turretSim.getAngleRads()));
+    turretEntry.setDouble(Math.toDegrees(turretSim.getAngleRads()));
     simTurretPos.set(
         Units.radiansToRotations(
             turretSim.getAngleRads() * Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO));
@@ -599,8 +616,8 @@ public class TurretSubsystem extends SubsystemBase {
     pitchSim.setInput(pitchMotor.getAppliedOutput());
     pitchSim.update(Robot.defaultPeriodSecs);
     pitchAngleSim.setAngle(Math.toDegrees(pitchSim.getAngleRads()));
+    turretPitchEntry.setDouble(Math.toDegrees(pitchSim.getAngleRads()));
     pitchMotor.setAbsolutePosition(Units.radiansToRotations(pitchSim.getAngleRads()));
-    SmartDashboard.putNumber("Turret Angle", Math.toDegrees(pitchSim.getAngleRads()));
   }
 
   private double getTurretRotationFromOdometry(Pose2d robotPos, Pose2d targetPos) {
