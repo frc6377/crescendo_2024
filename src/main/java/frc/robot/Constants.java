@@ -249,7 +249,7 @@ public final class Constants {
     public static final double[] CLIMBER_FF = {0, 0.02, 4.32, 0};
 
     public static final DCMotor CLIMBER_MECH_MOTORS = DCMotor.getNEO(1);
-    public static final double CLIMBER_MOI = 0;
+    public static final double CLIMBER_MOI = 0.0155017077;
     public static final double CLIMBER_LENGTH = Units.inchesToMeters(16);
     public static final double CLIMBER_BASE_LENGTH = Units.inchesToMeters(30);
     public static final double CLIMBER_MIN_ANGLE = Units.degreesToRadians(0);

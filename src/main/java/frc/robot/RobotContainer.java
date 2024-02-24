@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.ClimberConstants;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -260,10 +259,16 @@ public class RobotContainer {
     }
 
     if (Constants.enabledSubsystems.climberEnabled) {
-      OI.getButton(OI.Driver.climbPickUpButton).onTrue(climberSubsystem.gotoLiftPositionCommand());
-      OI.getButton(OI.Driver.climbLowerButton).whileTrue(new StartEndCommand(() -> climberSubsystem.applyDemand(), climberSubsystem::stopMotors));
-      OI.getButton(OI.Driver.climbRaiseRobotButton).onTrue(climberSubsystem.gotoRaisePositionCommand());
-      OI.getButton(OI.Driver.climbIdlePositionButton).onTrue(climberSubsystem.gotoIdlePositionCommand());
+      OI.getButton(OI.Driver.climbPickUpButton)
+          .whileTrue(climberSubsystem.gotoLiftPositionCommand());
+      OI.getButton(OI.Driver.climbLowerButton)
+          .whileTrue(
+              new StartEndCommand(
+                  () -> climberSubsystem.applyDemand(), climberSubsystem::stopMotors));
+      OI.getButton(OI.Driver.climbRaiseRobotButton)
+          .whileTrue(climberSubsystem.gotoRaisePositionCommand());
+      OI.getButton(OI.Driver.climbIdlePositionButton)
+          .whileTrue(climberSubsystem.gotoIdlePositionCommand());
     }
   }
 
