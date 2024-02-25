@@ -271,9 +271,15 @@ public class TrapElvSubsystem extends SubsystemBase {
 
     // SmartDashboard
     TrapElvTab.add("Wrist PID", wristPIDController).withSize(2, 2).withPosition(0, 0);
-    wristP = new TunableNumber("Wrist P", TrapElvConstants.WRIST_PID[0], P -> wristPIDController.setP(P),this);
-    wristI = new TunableNumber("Wrist I", TrapElvConstants.WRIST_PID[1], I -> wristPIDController.setI(I),this);
-    wristD = new TunableNumber("Wrist D", TrapElvConstants.WRIST_PID[2], D -> wristPIDController.setD(D),this);
+    wristP =
+        new TunableNumber(
+            "Wrist P", TrapElvConstants.WRIST_PID[0], P -> wristPIDController.setP(P), this);
+    wristI =
+        new TunableNumber(
+            "Wrist I", TrapElvConstants.WRIST_PID[1], I -> wristPIDController.setI(I), this);
+    wristD =
+        new TunableNumber(
+            "Wrist D", TrapElvConstants.WRIST_PID[2], D -> wristPIDController.setD(D), this);
 
     sourceLog = new DebugEntry<Boolean>(sourceBreak.get(), "Source Beam Break", this);
     groundLog = new DebugEntry<Boolean>(groundBreak.get(), "Ground Beam Break", this);

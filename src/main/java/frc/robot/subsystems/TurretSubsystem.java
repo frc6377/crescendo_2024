@@ -129,18 +129,28 @@ public class TurretSubsystem extends SubsystemBase {
     turretPIDController.setIZone(Constants.TurretConstants.TURRET_KIZ);
     turretP =
         new TunableNumber(
-            "Turret P", Constants.TurretConstants.TURRET_KP, p -> turretPIDController.setP(p), this);
+            "Turret P",
+            Constants.TurretConstants.TURRET_KP,
+            p -> turretPIDController.setP(p),
+            this);
     turretI =
         new TunableNumber(
-            "Turret I", Constants.TurretConstants.TURRET_KI, i -> turretPIDController.setI(i), this);
+            "Turret I",
+            Constants.TurretConstants.TURRET_KI,
+            i -> turretPIDController.setI(i),
+            this);
     turretD =
         new TunableNumber(
-            "Turret D", Constants.TurretConstants.TURRET_KD, d -> turretPIDController.setD(d), this);
+            "Turret D",
+            Constants.TurretConstants.TURRET_KD,
+            d -> turretPIDController.setD(d),
+            this);
     turretIZ =
         new TunableNumber(
             "Turret IZ",
             Constants.TurretConstants.TURRET_KIZ,
-            iz -> turretPIDController.setIZone(iz), this);
+            iz -> turretPIDController.setIZone(iz),
+            this);
 
     pitchMotor = new CANSparkMaxSim(Constants.TurretConstants.PITCH_MOTOR_ID, MotorType.kBrushless);
     pitchMotor.restoreFactoryDefaults();
@@ -170,7 +180,8 @@ public class TurretSubsystem extends SubsystemBase {
         new TunableNumber(
             "Pitch IZ",
             Constants.TurretConstants.TURRET_KIZ,
-            iz -> turretPIDController.setIZone(iz), this);
+            iz -> turretPIDController.setIZone(iz),
+            this);
     pitchFeedForward =
         new ArmFeedforward(
             Constants.TurretConstants.PITCH_KS,
