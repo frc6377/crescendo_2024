@@ -26,6 +26,8 @@ import frc.robot.Constants.enabledSubsystems;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
+import frc.robot.subsystems.climberSubsystem.ClimberCommandFactory;
+import frc.robot.subsystems.climberSubsystem.ClimberSubsystem;
 import frc.robot.subsystems.intakeSubsystem.IntakeCommandFactory;
 import frc.robot.subsystems.intakeSubsystem.IntakeSubsystem;
 import frc.robot.subsystems.shooterSubsystem.ShooterCommandFactory;
@@ -75,6 +77,8 @@ public class RobotContainer {
 
   private final TrapElvSubsystem trapElvSubsystem;
 
+  private final ClimberSubsystem climberSubsystem;
+
   private final DynamicRobotConfig dynamicRobotConfig;
 
   private SendableChooser<Command> autoChooser;
@@ -92,6 +96,7 @@ public class RobotContainer {
   private final TriggerCommandFactory triggerCommandFactory;
   private final TrapElvCommandFactory trapElvCommandFactory;
   private final TurretComandFactory turretCommandFactory;
+  private final ClimberCommandFactory climberCommandFactory;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -146,6 +151,12 @@ public class RobotContainer {
       turretSubsystem = null;
     }
     turretCommandFactory = new TurretComandFactory(turretSubsystem);
+    if (enabledSubsystems.climberEnabled) {
+      climberSubsystem = new ClimberSubsystem();
+    } else {
+      climberSubsystem = null;
+    }
+    climberCommandFactory = new ClimberCommandFactory(climberSubsystem);
 
     if (Constants.enabledSubsystems.drivetrainEnabled) {
       registerCommands();
@@ -221,6 +232,12 @@ public class RobotContainer {
     OI.getButton(OI.Driver.intakeSource).whileTrue(trapElvCommandFactory.wristintakeSource());
 
     OI.getButton(OI.Driver.speakerSource).whileTrue(shooterCommandFactory.intakeSpeakerSource());
+
+    OI.getButton(OI.Operator.prepClimb).onTrue(climberCommandFactory.raise());
+
+    OI.getButton(OI.Operator.latchClimber).onTrue(climberCommandFactory.clip());
+
+    OI.getButton(OI.Operator.retractClimber).onTrue(climberCommandFactory.climb());
   }
 
   private Command intakeSpeaker() {
