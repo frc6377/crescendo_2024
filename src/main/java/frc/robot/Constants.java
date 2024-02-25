@@ -156,7 +156,7 @@ public final class Constants {
     public static final int highGearCAN_CODER_ID = 0;
     public static final int lowGearCAN_CODER_ID = 0;
     public static final double ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV = 0;
-    //Turret limits
+    // Turret limits
     public static final double TURRET_MIN_ANGLE_ROTATIONS =
         (TURRET_MIN_ANGLE_DEGREES / (360 * TURRET_MOTOR_TURRET_RATIO));
     public static final double TURRET_MAX_ANGLE_ROTATIONS =

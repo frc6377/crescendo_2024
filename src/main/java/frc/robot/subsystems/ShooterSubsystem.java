@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxSim;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
@@ -51,6 +52,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private DebugEntry<Boolean> shooterReadyEntry;
 
+  private DebugEntry<SparkPIDController> leftPID;
+  private DebugEntry<SparkPIDController> rightPID;
+
   private GenericEntry targetRPM = shooterTab.add("Target RPM", 0).getEntry();
   private GenericEntry rightTargetRPM = shooterTab.add("right RPM", 0).getEntry();
   private SpeakerConfig targetSpeeds;
@@ -83,8 +87,12 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterRightMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_RIGHT_D);
     shooterRightMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_RIGHT_FF);
 
-    shooterTab.add("Shooter Left Motor PID", shooterLeftMotor.getPIDController());
-    shooterTab.add("Shooter Right Motor PID", shooterRightMotor.getPIDController());
+    leftPID =
+        new DebugEntry<SparkPIDController>(
+            shooterLeftMotor.getPIDController(), "Shooter Left Motor PID", this);
+    rightPID =
+        new DebugEntry<SparkPIDController>(
+            shooterLeftMotor.getPIDController(), "Shooter Right Motor PID", this);
 
     if (Robot.isSimulation()) {
       shooterLeftSim =
