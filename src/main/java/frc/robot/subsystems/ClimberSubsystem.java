@@ -15,13 +15,10 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
-import java.util.function.BooleanSupplier;
 
 public class ClimberSubsystem extends SubsystemBase {
   final CANSparkMaxSim leftMotorController;
@@ -35,6 +32,7 @@ public class ClimberSubsystem extends SubsystemBase {
   private DebugEntry<Double> rightClimbPosition;
   private DebugEntry<String> goalName;
   private DebugEntry<Double> goalPosition;
+  private DebugEntry<Double> motorGoalEntry;
   private DebugEntry<Double> leftMotorOutput;
   private DebugEntry<Double> rightMotorOutput;
 
@@ -61,17 +59,19 @@ public class ClimberSubsystem extends SubsystemBase {
       this.angle = angle;
     }
 
+    public double getMotorAngle() {
+      return angle * ClimberConstants.GEAR_RATIO;
+    }
+
     public double getStateAngle() {
       return angle;
     }
   }
 
-  private ShuffleboardTab ClimberTab = Shuffleboard.getTab("Climber Tab");
+  private ShuffleboardTab ClimberTab = Shuffleboard.getTab("ClimberSubsystem");
   private GenericEntry P = ClimberTab.add("P", ClimberConstants.POSITION_P_GAIN).getEntry();
   private GenericEntry I = ClimberTab.add("I", ClimberConstants.POSITION_I_GAIN).getEntry();
   private GenericEntry D = ClimberTab.add("D", ClimberConstants.POSITION_D_GAIN).getEntry();
-
-  double target = 0;
 
   public ClimberSubsystem() {
     leftMotorController = new CANSparkMaxSim(ClimberConstants.LEFT_MOTOR_ID, MotorType.kBrushless);
@@ -81,8 +81,8 @@ public class ClimberSubsystem extends SubsystemBase {
     leftMotorController.restoreFactoryDefaults();
     rightMotorController.restoreFactoryDefaults();
 
-    leftMotorController.setInverted(ClimberConstants.LEFT_IS_INVERTED);
-    rightMotorController.setInverted(ClimberConstants.RIGHT_IS_INVERTED);
+    // leftMotorController.setInverted(ClimberConstants.LEFT_IS_INVERTED);
+    // rightMotorController.setInverted(ClimberConstants.RIGHT_IS_INVERTED);
 
     leftPidController = leftMotorController.getPIDController();
     rightPidController = rightMotorController.getPIDController();
@@ -161,11 +161,16 @@ public class ClimberSubsystem extends SubsystemBase {
         new DebugEntry<Double>(rightEncoder.getPosition(), "Current left climb position", this);
     goalPosition =
         new DebugEntry<Double>(
-            climbStates.IDLE_SETPOINT.getStateAngle(), "Current Goal Position", this);
-    goalName = new DebugEntry<String>(climbStates.IDLE_SETPOINT.name(), "Current State Name", this);
-    leftMotorOutput = new DebugEntry<Double>(leftMotorController.get(), "Left Motor Output", this);
+            climbStates.IDLE_SETPOINT.getStateAngle(), "Current Climber Position Goal", this);
+    goalName =
+        new DebugEntry<String>(climbStates.IDLE_SETPOINT.name(), "Current Climber State", this);
+    motorGoalEntry =
+        new DebugEntry<Double>(
+            climbStates.IDLE_SETPOINT.getMotorAngle(), "Current Motor Goal", this);
+    leftMotorOutput =
+        new DebugEntry<Double>(leftMotorController.get(), "Left Climber Output", this);
     rightMotorOutput =
-        new DebugEntry<Double>(rightMotorController.get(), "Right Motor Output", this);
+        new DebugEntry<Double>(rightMotorController.get(), "Right Climber Output", this);
   }
 
   public void applyDemand() {
@@ -174,38 +179,47 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public void stopMotors() {
-    leftMotorController.stopMotor();
-    rightMotorController.stopMotor();
-  }
-
-  public void gotoPosition(double rotation) {
-    target = rotation * Constants.ClimberConstants.GEAR_RATIO;
-    leftPidController.setReference(target, ControlType.kPosition);
-    rightPidController.setReference(target, ControlType.kPosition);
+    leftMotorController.setVoltage(0);
+    rightMotorController.setVoltage(0);
+    // leftMotorController.stopMotor();
+    // rightMotorController.stopMotor();
   }
 
   public Command climbLowerCommand() {
-    return runEnd(
-        () -> {
-          applyDemand();
-        },
-        () -> {
-          stopMotors();
-        });
+    return startEnd(
+            () -> {
+              applyDemand();
+            },
+            () -> {
+              stopMotors();
+            })
+        .withName("climbLowerCommand");
   }
 
-  public Command gotoPositionCommand(climbStates state) {
+  public void gotoPositionCommand(climbStates state) {
     goalName.log(state.name());
     goalPosition.log(state.getStateAngle());
+    motorGoalEntry.log(state.getMotorAngle());
+    if (Robot.isSimulation()) {
+      if (state.equals(climbStates.LIFT_SETPOINT)) {
+        leftMotorController.set(1);
+        rightMotorController.set(1);
+      } else if (state.equals(climbStates.PICK_UP)) {
+        leftMotorController.set(-1);
+        rightMotorController.set(-1);
+      } else {
+        leftMotorController.set(0);
+        rightMotorController.set(0);
+      }
+    } else {
+      leftPidController.setReference(state.getMotorAngle(), ControlType.kPosition);
+      rightPidController.setReference(state.getMotorAngle(), ControlType.kPosition);
+    }
 
-    Runnable init = () -> gotoPosition(state.getStateAngle());
-    BooleanSupplier done =
-        () ->
-            Math.abs(rightEncoder.getPosition() - target) < Constants.ClimberConstants.MAX_ERROR
-                && Math.abs(leftEncoder.getPosition() - target)
-                    < Constants.ClimberConstants.MAX_ERROR;
+    // Runnable init = () -> gotoPosition(state.getStateAngle());
+    // BooleanSupplier done = () -> false;
 
-    return new FunctionalCommand(init, () -> {}, (interupt) -> {}, done, this);
+    // return new FunctionalCommand(init, () -> {}, (interupt) -> {}, done, this);
   }
 
   public Command gotoPositionCommand(climbStates state, double x) {
@@ -215,15 +229,36 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public Command gotoLiftPositionCommand() {
-    return gotoPositionCommand(climbStates.PICK_UP);
+    return runEnd(
+            () -> {
+              gotoPositionCommand(climbStates.LIFT_SETPOINT);
+            },
+            () -> {
+              stopMotors();
+            })
+        .withName("Lift Pose Command");
   }
 
   public Command gotoRaisePositionCommand() {
-    return gotoPositionCommand(climbStates.LIFT_SETPOINT);
+    return runEnd(
+            () -> {
+              gotoPositionCommand(climbStates.PICK_UP);
+            },
+            () -> {
+              stopMotors();
+            })
+        .withName("Raise Pose Command");
   }
 
   public Command gotoIdlePositionCommand() {
-    return gotoPositionCommand(climbStates.IDLE_SETPOINT);
+    return runEnd(
+            () -> {
+              gotoPositionCommand(climbStates.IDLE_SETPOINT);
+            },
+            () -> {
+              stopMotors();
+            })
+        .withName("Idle Pose Command");
   }
 
   @Override
@@ -254,8 +289,7 @@ public class ClimberSubsystem extends SubsystemBase {
       // Wrist Sim Stuff
       leftClimberArmSim.setInput(leftMotorController.getAppliedOutput());
       leftClimberArmSim.update(CANSparkMaxSim.kPeriod);
-      leftMotorController.setAbsolutePosition(
-          Units.radiansToRotations(leftClimberArmSim.getAngleRads()));
+      leftEncoder.setPosition(Units.radiansToRotations(leftClimberArmSim.getAngleRads()));
       // Offest added so that gravity is simulated in the right direction
       leftMechArm.setAngle(Units.radiansToDegrees(leftClimberArmSim.getAngleRads()) - 90);
       SmartDashboard.putNumber("Current Draw Wrist (A)", leftClimberArmSim.getCurrentDrawAmps());
@@ -263,8 +297,7 @@ public class ClimberSubsystem extends SubsystemBase {
       // Wrist Sim Stuff
       rightClimberArmSim.setInput(rightMotorController.getAppliedOutput());
       rightClimberArmSim.update(CANSparkMaxSim.kPeriod);
-      rightMotorController.setAbsolutePosition(
-          Units.radiansToRotations(rightClimberArmSim.getAngleRads()));
+      rightEncoder.setPosition(Units.radiansToRotations(rightClimberArmSim.getAngleRads()));
       // Offest added so that gravity is simulated in the right direction
       rightMechArm.setAngle(Units.radiansToDegrees(rightClimberArmSim.getAngleRads()) - 90);
       SmartDashboard.putNumber("Current Draw Wrist (A)", rightClimberArmSim.getCurrentDrawAmps());
