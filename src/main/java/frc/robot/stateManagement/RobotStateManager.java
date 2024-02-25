@@ -2,11 +2,14 @@ package frc.robot.stateManagement;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.utilities.DebugEntry;
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 
 public class RobotStateManager extends SubsystemBase {
   // Alliance Color
@@ -21,6 +24,10 @@ public class RobotStateManager extends SubsystemBase {
 
   // Placement Mode
   private PlacementMode placementMode = PlacementMode.SPEAKER;
+
+  // Debug Logging
+  private DebugEntry<PlacementMode> placementModeLog =
+      new DebugEntry<PlacementMode>(placementMode, "Current Placement Mode", this);
 
   public RobotStateManager() {
     endGameStart =
@@ -55,7 +62,7 @@ public class RobotStateManager extends SubsystemBase {
   public void switchPlacementMode() {
     placementMode =
         placementMode == PlacementMode.SPEAKER ? PlacementMode.AMP : PlacementMode.SPEAKER;
-    System.out.println(placementMode);
+    placementModeLog.log(placementMode);
   }
 
   public void setPlacementMode(PlacementMode placementMode) {
@@ -69,5 +76,17 @@ public class RobotStateManager extends SubsystemBase {
   // Alliance Color
   public AllianceColor getAllianceColor() {
     return allianceColor;
+  }
+
+  public BooleanSupplier isAmpSupplier() {
+    return () -> this.placementMode == PlacementMode.AMP;
+  }
+
+  public Command setAmpMode() {
+    return runOnce(() -> setPlacementMode(PlacementMode.AMP));
+  }
+
+  public Command setSpeakerMode() {
+    return runOnce(() -> setPlacementMode(PlacementMode.SPEAKER));
   }
 }
