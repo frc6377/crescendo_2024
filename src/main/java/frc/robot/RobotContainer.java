@@ -229,6 +229,7 @@ public class RobotContainer {
       }
 
       OI.getButton(OI.Operator.A).whileTrue(triggerSubsystem.getLoadCommand());
+      OI.getButton(OI.Operator.triggerReverse).whileTrue(triggerSubsystem.getShootCommand());
     }
 
     // Turret commands

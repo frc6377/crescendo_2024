@@ -88,8 +88,8 @@ public class OI {
         new Control(XboxController.Axis.kLeftTrigger, "Rev Shooter", controller, 0.5);
     public static final Control shooterFireTrigger =
         new Control(XboxController.Axis.kRightTrigger, "Fire Shooter", controller, 0.5);
-    public static final Control LB =
-        new Control(XboxController.Button.kLeftBumper, null, controller);
+    public static final Control triggerReverse =
+        new Control(XboxController.Button.kLeftBumper, "Reverse Trigger", controller);
     public static final Control RB =
         new Control(XboxController.Button.kRightBumper, null, controller);
 
