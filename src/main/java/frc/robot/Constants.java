@@ -111,7 +111,6 @@ public final class Constants {
 
     public static final int PITCH_MAX_ANGLE_DEGREES = 50;
     public static final int PITCH_MIN_ANGLE_DEGREES = -5;
-
     public static final double PITCH_CONVERSION_FACTOR = 0.25;
     public static final int PITCH_SMART_CURRENT_LIMIT = 40;
 
@@ -157,6 +156,15 @@ public final class Constants {
     public static final int highGearCAN_CODER_ID = 0;
     public static final int lowGearCAN_CODER_ID = 0;
     public static final double ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV = 0;
+    //Turret limits
+    public static final double TURRET_MIN_ANGLE_ROTATIONS =
+        (TURRET_MIN_ANGLE_DEGREES / (360 * TURRET_MOTOR_TURRET_RATIO));
+    public static final double TURRET_MAX_ANGLE_ROTATIONS =
+        (TURRET_MAX_ANGLE_DEGREES / (360 * TURRET_CONVERSION_FACTOR));
+    public static final double PITCH_MIN_ANGLE_ROTATIONS =
+        (PITCH_MIN_ANGLE_DEGREES / (360 * PITCH_CONVERSION_FACTOR));
+    public static final double PITCH_MAX_ANGLE_ROTATIONS =
+        (PITCH_MAX_ANGLE_DEGREES / (360 * PITCH_CONVERSION_FACTOR));
   }
 
   public static class OperatorConstants {
@@ -234,10 +242,10 @@ public final class Constants {
     public static final boolean visionEnabled = true;
     public static final boolean usingPhoton = true;
     public static final boolean elvEnabled = true;
-    public static final boolean signalEnabled = false;
+    public static final boolean signalEnabled = true;
     public static final boolean shooterEnabled = true;
-    public static final boolean triggerEnabled = false;
-    public static final boolean turretEnabled = false;
+    public static final boolean triggerEnabled = true;
+    public static final boolean turretEnabled = true;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
