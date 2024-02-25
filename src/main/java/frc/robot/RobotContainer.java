@@ -290,11 +290,9 @@ public class RobotContainer {
 
   public Translation2d feedSpeakerLocation() {
     if (robotStateManager.getAllianceColor() == AllianceColor.BLUE) {
-      return new Translation2d(
-          Constants.FieldConstants.BLUE_SPEAKER_X, Constants.FieldConstants.BLUE_SPEAKER_Y);
+      return Constants.FieldConstants.BLUE_SPEAKER;
     } else {
-      return new Translation2d(
-          Constants.FieldConstants.RED_SPEAKER_X, Constants.FieldConstants.RED_SPEAKER_Y);
+      return Constants.FieldConstants.RED_SPEAKER;
     }
   }
 

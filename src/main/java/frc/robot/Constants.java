@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -218,10 +219,8 @@ public final class Constants {
   }
 
   public static class FieldConstants {
-    public static final double RED_SPEAKER_X = 16.579342;
-    public static final double RED_SPEAKER_Y = 5.547868;
-    public static final double BLUE_SPEAKER_X = -0.0381;
-    public static final double BLUE_SPEAKER_Y = 5.547868;
+    public static final Translation2d RED_SPEAKER = new Translation2d(16.579342, 5.547868);
+    public static final Translation2d BLUE_SPEAKER = new Translation2d(-0.0381, 5.547868);
   }
 
   public static class enabledSubsystems {
