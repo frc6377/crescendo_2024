@@ -6,7 +6,6 @@ import com.revrobotics.CANSparkMaxSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -19,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
+import frc.robot.utilities.TunableNumber;
 
 public class ClimberSubsystem extends SubsystemBase {
   final CANSparkMaxSim leftMotorController;
@@ -69,9 +69,9 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   private ShuffleboardTab ClimberTab = Shuffleboard.getTab("ClimberSubsystem");
-  private GenericEntry P = ClimberTab.add("P", ClimberConstants.POSITION_P_GAIN).getEntry();
-  private GenericEntry I = ClimberTab.add("I", ClimberConstants.POSITION_I_GAIN).getEntry();
-  private GenericEntry D = ClimberTab.add("D", ClimberConstants.POSITION_D_GAIN).getEntry();
+  private TunableNumber P;
+  private TunableNumber I;
+  private TunableNumber D;
 
   public ClimberSubsystem() {
     leftMotorController = new CANSparkMaxSim(ClimberConstants.LEFT_MOTOR_ID, MotorType.kBrushless);
@@ -96,9 +96,9 @@ public class ClimberSubsystem extends SubsystemBase {
     rightPidController.setP(ClimberConstants.POSITION_P_GAIN);
     rightPidController.setI(ClimberConstants.POSITION_I_GAIN);
     rightPidController.setD(ClimberConstants.POSITION_D_GAIN);
-    P.setDouble(ClimberConstants.POSITION_P_GAIN);
-    I.setDouble(ClimberConstants.POSITION_I_GAIN);
-    D.setDouble(ClimberConstants.POSITION_D_GAIN);
+    P = new TunableNumber("P", ClimberConstants.POSITION_P_GAIN, P -> {leftPidController.setP(P); rightPidController.setP(P);});
+    I = new TunableNumber("P", ClimberConstants.POSITION_I_GAIN, I -> {leftPidController.setI(I); rightPidController.setI(I);});
+    D = new TunableNumber("P", ClimberConstants.POSITION_D_GAIN, D -> {leftPidController.setD(D); rightPidController.setD(D);});
 
     if (Robot.isSimulation()) {
       leftClimberArmSim =
@@ -262,9 +262,9 @@ public class ClimberSubsystem extends SubsystemBase {
     leftMotorOutput.log(leftMotorController.get());
     rightMotorOutput.log(rightMotorController.get());
 
-    double P_Value = P.getDouble(ClimberConstants.POSITION_P_GAIN);
-    double I_Value = I.getDouble(ClimberConstants.POSITION_I_GAIN);
-    double D_Value = D.getDouble(ClimberConstants.POSITION_D_GAIN);
+    double P_Value = P.get();
+    double I_Value = I.get();
+    double D_Value = D.get();
     if (P_Value != leftMotorController.getPIDController().getP()) {
       leftMotorController.getPIDController().setP(P_Value);
     }
