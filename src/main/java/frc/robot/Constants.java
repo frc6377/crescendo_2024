@@ -254,7 +254,7 @@ public final class Constants {
     public static final boolean LEFT_IS_INVERTED = false;
     public static final boolean RIGHT_IS_INVERTED = false;
 
-    public static final double POSITION_P_GAIN = 0;
+    public static final double POSITION_P_GAIN = 1;
     public static final double POSITION_I_GAIN = 0;
     public static final double POSITION_D_GAIN = 0;
     public static final double[] CLIMBER_FF = {0, 0.02, 4.32, 0};
@@ -263,8 +263,8 @@ public final class Constants {
     public static final double CLIMBER_MOI = 0.0155017077;
     public static final double CLIMBER_LENGTH = Units.inchesToMeters(16);
     public static final double CLIMBER_BASE_LENGTH = Units.inchesToMeters(30);
-    public static final double CLIMBER_MIN_ANGLE = Units.degreesToRadians(0);
-    public static final double CLIMBER_MAX_ANGLE = Units.degreesToRadians(360);
+    public static final double CLIMBER_MIN_ANGLE = Units.degreesToRadians(-90);
+    public static final double CLIMBER_MAX_ANGLE = Units.degreesToRadians(180);
   }
 
   public static final int END_GAME_WARNING_TIME = 20;

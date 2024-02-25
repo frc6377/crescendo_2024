@@ -140,7 +140,6 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   /** Creates a new TrapArm. */
   public TrapElvSubsystem() {
-    if (!Constants.enabledSubsystems.elvEnabled) return;
     // Wrist
     wristMotor = new CANSparkMaxSim(TrapElvConstants.WRIST_MOTOR_ID, MotorType.kBrushless);
     wristMotor.restoreFactoryDefaults();
