@@ -34,11 +34,13 @@ public class ShooterSubsystem extends SubsystemBase {
   private DebugEntry<Double> leftMotorSpeedEntry;
   private DebugEntry<Double> leftMotorTargetSpeedEntry;
   private DebugEntry<Double> leftMotorTemperatureEntry;
+  private DebugEntry<Double> leftMotorCurrentEntry;
 
   private DebugEntry<Double> rightMotorOutputEntry;
   private DebugEntry<Double> rightMotorSpeedEntry;
   private DebugEntry<Double> rightMotorTargetSpeedEntry;
   private DebugEntry<Double> rightMotorTemperatureEntry;
+  private DebugEntry<Double> rightMotorCurrentEntry;
 
   private DebugEntry<Double> leftFlywheelInputEntry;
   private DebugEntry<Double> leftFlywheelAngularVelocityEntry;
@@ -72,9 +74,9 @@ public class ShooterSubsystem extends SubsystemBase {
         new CANSparkMaxSim(Constants.ShooterConstants.SHOOTER_MOTOR_RIGHT_ID, MotorType.kBrushless);
 
     shooterLeftMotor.restoreFactoryDefaults();
-    shooterLeftMotor.setSmartCurrentLimit(40);
+    shooterLeftMotor.setSmartCurrentLimit(50);
     shooterRightMotor.restoreFactoryDefaults();
-    shooterRightMotor.setSmartCurrentLimit(40);
+    shooterRightMotor.setSmartCurrentLimit(50);
 
     shooterLeftMotor.setIdleMode(IdleMode.kCoast);
     shooterRightMotor.setIdleMode(IdleMode.kCoast);
@@ -115,11 +117,13 @@ public class ShooterSubsystem extends SubsystemBase {
     leftMotorSpeedEntry = new DebugEntry<Double>(0.0, "Left Motor Speed", this);
     leftMotorTargetSpeedEntry = new DebugEntry<Double>(0.0, "Left Motor Target Speed", this);
     leftMotorTemperatureEntry = new DebugEntry<Double>(0.0, "Left Motor Temperature", this);
+    leftMotorCurrentEntry = new DebugEntry<Double>(0.0, "Left Motor Current", this);
 
     rightMotorOutputEntry = new DebugEntry<Double>(0.0, "Right Motor Output", this);
     rightMotorSpeedEntry = new DebugEntry<Double>(0.0, "Right Motor Speed", this);
     rightMotorTargetSpeedEntry = new DebugEntry<Double>(0.0, "Right Motor Target Speed", this);
     rightMotorTemperatureEntry = new DebugEntry<Double>(0.0, "Right Motor Temperature", this);
+    rightMotorCurrentEntry = new DebugEntry<Double>(0.0, "Right Motor Current", this);
 
     leftFlywheelInputEntry = new DebugEntry<Double>(0.0, "Left Flywheel Input", this);
     leftFlywheelAngularVelocityEntry = new DebugEntry<Double>(0.0, "Left Flywheel RPM", this);
@@ -140,6 +144,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
     leftMotorTemperatureEntry.log(shooterLeftMotor.getMotorTemperature());
     rightMotorTemperatureEntry.log(shooterRightMotor.getMotorTemperature());
+
+    leftMotorCurrentEntry.log(shooterLeftMotor.getOutputCurrent());
+    rightMotorCurrentEntry.log(shooterRightMotor.getOutputCurrent());
 
     shooterLeftMotor
         .getPIDController()
