@@ -254,7 +254,7 @@ public final class Constants {
     public static final boolean LEFT_IS_INVERTED = false;
     public static final boolean RIGHT_IS_INVERTED = false;
 
-    public static final double POSITION_P_GAIN = 0;
+    public static final double POSITION_P_GAIN = 1;
     public static final double POSITION_I_GAIN = 0;
     public static final double POSITION_D_GAIN = 0;
     public static final double[] CLIMBER_FF = {0, 0.02, 4.32, 0};

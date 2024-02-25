@@ -208,6 +208,12 @@ public class ClimberSubsystem extends SubsystemBase {
     return new FunctionalCommand(init, () -> {}, (interupt) -> {}, done, this);
   }
 
+  public Command gotoPositionCommand(climbStates state, double x) {
+    goalName.log(state.name());
+    goalPosition.log(state.getStateAngle());
+    return runEnd(() -> {}, () -> {});
+  }
+
   public Command gotoLiftPositionCommand() {
     return gotoPositionCommand(climbStates.PICK_UP);
   }
