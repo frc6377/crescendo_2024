@@ -228,6 +228,16 @@ public final class Constants {
     public static final String TURRET_CAMERA_NAME = "Camera_Module_Turret";
   }
 
+  public static class ClimberConstants {
+    public static final int LEFT_ARM_ID = 4;
+    public static final int RIGHT_ARM_ID = 5;
+    public static final double CLIMB_PERCENT = -0.2;
+    public static final double CLIMB_POSITION = -0.5;
+    public static final double[] PID = new double[] {0.01, 0, 0};
+    public static final double MIN_RAISE_TIME_SEC = 0.1;
+    public static final double CLIP_CURRENT = -5;
+  }
+
   public static class enabledSubsystems {
     public static final boolean intakeEnabled = false;
     public static final boolean drivetrainEnabled = false;
@@ -238,6 +248,7 @@ public final class Constants {
     public static final boolean shooterEnabled = false;
     public static final boolean triggerEnabled = false;
     public static final boolean turretEnabled = false;
+    public static final boolean climberEnabled = true;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
