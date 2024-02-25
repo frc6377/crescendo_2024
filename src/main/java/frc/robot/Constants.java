@@ -193,6 +193,7 @@ public final class Constants {
     public static final double ROLLER_DEADZONE = 0.02;
 
     // Elv
+    public static final boolean IS_ELV = false;
     public static final int BASE_MOTOR1_ID = 22;
     public static final int BASE_MOTOR2_ID = 23;
     public static final int SCORING_MOTOR_ID = 24;

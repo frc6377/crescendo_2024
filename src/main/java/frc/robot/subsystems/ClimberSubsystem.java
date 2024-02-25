@@ -181,8 +181,6 @@ public class ClimberSubsystem extends SubsystemBase {
   public void stopMotors() {
     leftMotorController.setVoltage(0);
     rightMotorController.setVoltage(0);
-    // leftMotorController.stopMotor();
-    // rightMotorController.stopMotor();
   }
 
   public Command climbLowerCommand() {
@@ -215,11 +213,6 @@ public class ClimberSubsystem extends SubsystemBase {
       leftPidController.setReference(state.getMotorAngle(), ControlType.kPosition);
       rightPidController.setReference(state.getMotorAngle(), ControlType.kPosition);
     }
-
-    // Runnable init = () -> gotoPosition(state.getStateAngle());
-    // BooleanSupplier done = () -> false;
-
-    // return new FunctionalCommand(init, () -> {}, (interupt) -> {}, done, this);
   }
 
   public Command gotoPositionCommand(climbStates state, double x) {

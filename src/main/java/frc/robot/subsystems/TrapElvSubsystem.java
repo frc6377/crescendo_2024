@@ -40,7 +40,6 @@ import frc.robot.utilities.DebugEntry;
 import java.util.function.BooleanSupplier;
 
 public class TrapElvSubsystem extends SubsystemBase {
-  private boolean isElv = false;
   // TODO: position, zero wrist, encoder logging, change pids
   // Wrist motors
   private CANSparkMaxSim wristMotor;
@@ -175,7 +174,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     currentWristState = TrapElvState.STOWED;
 
     // Elv
-    if (isElv) {
+    if (TrapElvConstants.IS_ELV) {
       baseLimit = new DigitalInput(TrapElvConstants.BASE_BREAK_ID);
       scoringLimit = new DigitalInput(TrapElvConstants.SCORING_BREAK_ID);
       baseLog = new DebugEntry<Boolean>(baseLimit.get(), "Base Limit Switch", this);
@@ -387,7 +386,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     currentWristStateEntry.setString(currentWristState.name());
     wristStateGoal = state.getWristPose();
     wristGoal.setDouble(wristStateGoal);
-    if (isElv) {
+    if (TrapElvConstants.IS_ELV) {
       baseMotor1
           .getPIDController()
           .setReference(state.getBasePose() - baseMotorOffset1, ControlType.kPosition);
@@ -460,7 +459,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   public Command zeroArm() {
     if (!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
-    if (isElv) {
+    if (TrapElvConstants.IS_ELV) {
       return startEnd(
               () -> {
                 // Command for zeroing elevator if elevator happens to be not at zero
@@ -498,7 +497,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     TrapElvTab.add(
         "Wrist PID Control Output",
         wristPIDController.calculate(wristEncoder.getPosition(), state.getWristPose()));
-    if (isElv) {
+    if (TrapElvConstants.IS_ELV) {
       baseMotor1
           .getPIDController()
           .setReference(state.getBasePose() - baseMotorOffset1, ControlType.kPosition);
@@ -532,7 +531,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     FFOutput.setDouble(FF);
     wristOutput.setDouble(wristMotor.getAppliedOutput());
 
-    if (isElv) {
+    if (TrapElvConstants.IS_ELV) {
       baseLog.log(baseLimit.get());
       scoringLog.log(sourceBreak.get());
     }
@@ -548,7 +547,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     wristMech.setAngle(Units.radiansToDegrees(m_wristMotorSim.getAngleRads()) - 90);
     SmartDashboard.putNumber("Current Draw Wrist (A)", m_wristMotorSim.getCurrentDrawAmps());
 
-    if (isElv) {
+    if (TrapElvConstants.IS_ELV) {
       for (double i = 0; i < Robot.defaultPeriodSecs; i += CANSparkMaxSim.kPeriod) {
         m_baseElevatorSim.setInput(baseMotor1.get() * RobotController.getBatteryVoltage());
         m_baseElevatorSim.update(CANSparkMaxSim.kPeriod);
