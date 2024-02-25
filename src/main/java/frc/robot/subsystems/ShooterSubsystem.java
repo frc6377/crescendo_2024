@@ -15,10 +15,13 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
+import java.util.function.BooleanSupplier;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -159,19 +162,12 @@ public class ShooterSubsystem extends SubsystemBase {
   // Required to be called repeatedly; consider pub-sub for LimelightGetDistance() or equivalent
   // method to save a method call
   public Command revShooter() {
-
-    // Only runs if the exit code from the limelight status function returns 0!
-
     return Commands.startEnd(
         () ->
             this.setShooterSpeeds(
                 new SpeakerConfig(-1, targetRPM.getDouble(0), rightTargetRPM.getDouble(0))),
-        () -> {
-          shooterLeftMotor.stopMotor();
-          shooterRightMotor.stopMotor();
-        },
-        this); // TODO: Replace distance and exit code with LimelightGetDistance() and
-    // CheckLimelightStatus() respectively
+        () -> {},
+        this);
   }
 
   public Command bumperShoot() {
@@ -183,8 +179,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // Idle shooter command; for default command purposes
   public Command shooterIdle() {
-    // TODO: Determine appropriate open loop rate for shooter idle
-    return run(() -> {}).withName("Idle Shooter command");
+    return run(() -> {
+          shooterLeftMotor.set(0);
+          shooterRightMotor.set(0);
+        })
+        .withName("Idle Shooter command");
   }
 
   public Command setShooterIfReady(SpeakerConfig speeds, int exitCode) {
@@ -334,4 +333,20 @@ public class ShooterSubsystem extends SubsystemBase {
           -1,
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_LEFT,
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT);
+
+  public Command intakeSource() {
+    return startEnd(
+        () -> {
+          setShooterSpeeds(ShooterConstants.SHOOTER_SOURCE_INTAKE);
+        },
+        () -> {});
+  }
+
+  public BooleanSupplier getBeamBreak() {
+    return () -> false;
+  }
+
+  public Command intakeSourceForTime() {
+    return Commands.deadline(new WaitCommand(ShooterConstants.INTAKE_DELAY_SEC), intakeSource());
+  }
 }
