@@ -31,8 +31,8 @@ public final class Constants {
   }
 
   public static class TriggerConstants {
-    public static final int MOTOR_ID = 2; // edit all constants when testing
-    public static final double LOAD_PERCENTAGE = -0.5; // used when intaking into the turret
+    public static final int MOTOR_ID = 15; // edit all constants when testing
+    public static final double LOAD_PERCENTAGE = 0.75; // used when intaking into the turret
     public static final double HOLD_PERCENTAGE =
         -0.05; // very slow motor speed in case note slips out of trigger
     public static final double SHOOT_PERCENTAGE =
@@ -45,15 +45,15 @@ public final class Constants {
     public static final int SHOOTER_MOTOR_RIGHT_ID = 4;
 
     // Placeholder values
-    public static final double SHOOTER_LEFT_P = 0.0015;
-    public static final double SHOOTER_LEFT_I = 0.0;
-    public static final double SHOOTER_LEFT_D = 0.16;
-    public static final double SHOOTER_LEFT_FF = 0.00035;
+    public static final double SHOOTER_LEFT_P = 0.001;
+    public static final double SHOOTER_LEFT_I = 0;
+    public static final double SHOOTER_LEFT_D = 0;
+    public static final double SHOOTER_LEFT_FF = 0.4;
 
-    public static final double SHOOTER_RIGHT_P = 0.0015;
-    public static final double SHOOTER_RIGHT_I = 0.0000;
-    public static final double SHOOTER_RIGHT_D = 0.16;
-    public static final double SHOOTER_RIGHT_FF = 0.00042;
+    public static final double SHOOTER_RIGHT_P = 0.001;
+    public static final double SHOOTER_RIGHT_I = 0;
+    public static final double SHOOTER_RIGHT_D = 0;
+    public static final double SHOOTER_RIGHT_FF = 0.4;
 
     // Motor RPM, NOT roller RPM
     public static final double SHOOTER_IDLE_SPEED_LEFT = 400; // Placeholder; in RPM
@@ -227,7 +227,7 @@ public final class Constants {
     public static final boolean signalEnabled = false;
     public static final boolean shooterEnabled = true;
     public static final boolean triggerEnabled = true;
-    public static final boolean turretEnabled = true;
+    public static final boolean turretEnabled = false;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;

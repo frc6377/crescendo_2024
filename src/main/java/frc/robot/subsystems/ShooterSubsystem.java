@@ -48,6 +48,15 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private DebugEntry<Boolean> shooterReadyEntry;
 
+  private GenericEntry leftFeedForward =
+      shooterTab
+          .add("Left Motor Feed Forward", Constants.ShooterConstants.SHOOTER_LEFT_FF)
+          .getEntry();
+  private GenericEntry rightFeedForward =
+      shooterTab
+          .add("Right Motor Feed Forward", Constants.ShooterConstants.SHOOTER_RIGHT_FF)
+          .getEntry();
+
   private GenericEntry leftShooterRPM = shooterTab.add("Shooter Left RPM", 4000).getEntry();
   private GenericEntry rightShooterRPM = shooterTab.add("Shooter Right RPM", 4000).getEntry();
 
@@ -131,6 +140,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
     leftMotorTemperatureEntry.log(shooterLeftMotor.getMotorTemperature());
     rightMotorTemperatureEntry.log(shooterRightMotor.getMotorTemperature());
+
+    shooterLeftMotor
+        .getPIDController()
+        .setFF(leftFeedForward.getDouble(Constants.ShooterConstants.SHOOTER_LEFT_FF));
+    shooterRightMotor
+        .getPIDController()
+        .setFF(rightFeedForward.getDouble(Constants.ShooterConstants.SHOOTER_RIGHT_FF));
   }
 
   @Override
@@ -176,9 +192,16 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public Command bumperShoot() {
-    return run(() -> {
-          setShooterSpeeds(speakerConfigList[0]);
-        })
+    return startEnd(
+            () -> {
+              setShooterSpeeds(speakerConfigList[0]);
+            },
+            () -> {
+              shooterLeftMotor.stopMotor();
+              shooterRightMotor.stopMotor();
+              leftMotorTargetSpeedEntry.log(0d);
+              rightMotorTargetSpeedEntry.log(0d);
+            })
         .withName("Bumper shoot command");
   }
 
@@ -210,9 +233,6 @@ public class ShooterSubsystem extends SubsystemBase {
     double targetSpeedLeft = targetSpeeds.getSpeedLeftInRPM();
     double targetSpeedRight = targetSpeeds.getSpeedRightInRPM();
 
-    leftMotorTargetSpeedEntry.log(targetSpeedLeft);
-    rightMotorTargetSpeedEntry.log(targetSpeedRight);
-
     double minSpeedToleranceLeft =
         targetSpeedLeft * (1 - Constants.ShooterConstants.SHOOTER_SPEED_TOLERANCE);
     double minSpeedToleranceRight =
@@ -236,6 +256,9 @@ public class ShooterSubsystem extends SubsystemBase {
   // Speed in RPM. Left is index 0, right is index 1.
   public SpeakerConfig setShooterSpeeds(SpeakerConfig speeds) {
     targetSpeeds = speeds;
+
+    leftMotorTargetSpeedEntry.log(targetSpeeds.getSpeedLeftInRPM());
+    rightMotorTargetSpeedEntry.log(targetSpeeds.getSpeedRightInRPM());
 
     shooterLeftMotor
         .getPIDController()
