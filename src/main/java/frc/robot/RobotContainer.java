@@ -224,8 +224,13 @@ public class RobotContainer {
                     .getShootCommand()
                     .onlyIf(shooterSubsystem.shooterReady())
                     .onlyWhile(OI.getTrigger(OI.Operator.shooterRevTrigger)));
-      } else if (!Constants.enabledSubsystems.visionEnabled) {
-        OI.getTrigger(OI.Operator.shooterFireTrigger).whileTrue(shooterSubsystem.bumperShoot());
+      } else {
+        OI.getTrigger(OI.Operator.shooterRevTrigger).whileTrue(shooterSubsystem.bumperShoot());
+        OI.getTrigger(OI.Operator.shooterFireTrigger)
+            .whileTrue(
+                triggerSubsystem
+                    .getShootCommand()
+                    .onlyWhile(OI.getTrigger(OI.Operator.shooterRevTrigger)));
       }
 
       OI.getButton(OI.Operator.A).whileTrue(triggerSubsystem.getLoadCommand());
