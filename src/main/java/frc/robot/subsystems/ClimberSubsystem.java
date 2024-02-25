@@ -185,35 +185,40 @@ public class ClimberSubsystem extends SubsystemBase {
     rightPidController.setReference(target, ControlType.kPosition);
   }
 
+  public Command climbLowerCommand() {
+    return runEnd(
+        () -> {
+          applyDemand();
+        },
+        () -> {
+          stopMotors();
+        });
+  }
+
   public Command gotoPositionCommand(climbStates state) {
+    goalName.log(state.name());
+    goalPosition.log(state.getStateAngle());
+
     Runnable init = () -> gotoPosition(state.getStateAngle());
     BooleanSupplier done =
         () ->
             Math.abs(rightEncoder.getPosition() - target) < Constants.ClimberConstants.MAX_ERROR
                 && Math.abs(leftEncoder.getPosition() - target)
                     < Constants.ClimberConstants.MAX_ERROR;
+
     return new FunctionalCommand(init, () -> {}, (interupt) -> {}, done, this);
   }
 
   public Command gotoLiftPositionCommand() {
-    climbStates state = climbStates.PICK_UP;
-    goalName.log(state.name());
-    goalPosition.log(state.getStateAngle());
-    return gotoPositionCommand(state);
+    return gotoPositionCommand(climbStates.PICK_UP);
   }
 
   public Command gotoRaisePositionCommand() {
-    climbStates state = climbStates.LIFT_SETPOINT;
-    goalName.log(state.name());
-    goalPosition.log(state.getStateAngle());
-    return gotoPositionCommand(state);
+    return gotoPositionCommand(climbStates.LIFT_SETPOINT);
   }
 
   public Command gotoIdlePositionCommand() {
-    climbStates state = climbStates.IDLE_SETPOINT;
-    goalName.log(state.name());
-    goalPosition.log(state.getStateAngle());
-    return gotoPositionCommand(state);
+    return gotoPositionCommand(climbStates.IDLE_SETPOINT);
   }
 
   @Override

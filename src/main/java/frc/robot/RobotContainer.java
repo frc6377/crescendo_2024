@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -261,10 +260,7 @@ public class RobotContainer {
     if (Constants.enabledSubsystems.climberEnabled) {
       OI.getButton(OI.Driver.climbPickUpButton)
           .whileTrue(climberSubsystem.gotoLiftPositionCommand());
-      OI.getButton(OI.Driver.climbLowerButton)
-          .whileTrue(
-              new StartEndCommand(
-                  () -> climberSubsystem.applyDemand(), climberSubsystem::stopMotors));
+      OI.getButton(OI.Driver.climbLowerButton).whileTrue(climberSubsystem.climbLowerCommand());
       OI.getButton(OI.Driver.climbRaiseRobotButton)
           .whileTrue(climberSubsystem.gotoRaisePositionCommand());
       OI.getButton(OI.Driver.climbIdlePositionButton)

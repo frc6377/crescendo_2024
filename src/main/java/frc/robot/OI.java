@@ -22,14 +22,6 @@ public class OI {
     private static final XboxController controller = new XboxController(driverJoystickPort);
 
     // A B Y X Buttons
-    /*  public static final Control brakeButton =
-        new Control(XboxController.Button.kA, "Brake", controller);
-    public static final Control trapScoreButton =
-        new Control(XboxController.Button.kB, "Score Trap", controller);
-    public static final Control sourceIntakeButton =
-      new Control(XboxController.Button.kX, "Intake Source", controller);
-    public static final Control groundIntakeButton =
-      new Control(XboxController.Button.kY, "Intake Ground", controller);*/
     public static final Control climbPickUpButton =
         new Control(XboxController.Button.kA, "Raise climb arm", controller);
     public static final Control climbLowerButton =
