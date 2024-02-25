@@ -174,7 +174,6 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public void stopMotors() {
-    goalName.log("Testing");
     leftMotorController.stopMotor();
     rightMotorController.stopMotor();
   }

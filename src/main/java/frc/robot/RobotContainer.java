@@ -201,9 +201,8 @@ public class RobotContainer {
 
     if (enabledSubsystems.climberEnabled) {
       OI.getButton(OI.Operator.latchClimber).whileTrue(climberSubsystem.climbLowerCommand());
-      OI.getButton(OI.Operator.prepClimb).whileTrue(climberSubsystem.gotoRaisePositionCommand());
-      OI.getButton(OI.Operator.retractClimber)
-          .whileTrue(climberSubsystem.gotoLiftPositionCommand());
+      OI.getButton(OI.Operator.prepClimb).onTrue(climberSubsystem.gotoRaisePositionCommand());
+      OI.getButton(OI.Operator.retractClimber).onTrue(climberSubsystem.gotoLiftPositionCommand());
     }
 
     OI.getButton(OI.Operator.switchToAmp).onTrue(robotStateManager.setAmpMode());
