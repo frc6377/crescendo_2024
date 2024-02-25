@@ -22,17 +22,24 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.enabledSubsystems;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.RobotStateManager;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.SwerveSubsystem.DriveInput;
-import frc.robot.subsystems.SwerveSubsystem.DriveRequest;
-import frc.robot.subsystems.TrapElvSubsystem;
-import frc.robot.subsystems.TriggerSubsystem;
-import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.intakeSubsystem.IntakeCommandFactory;
+import frc.robot.subsystems.intakeSubsystem.IntakeSubsystem;
+import frc.robot.subsystems.shooterSubsystem.ShooterCommandFactory;
+import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem;
 import frc.robot.subsystems.signaling.SignalingSubsystem;
+import frc.robot.subsystems.swerveSubsystem.SwerveCommandFactory;
+import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem;
+import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem.DriveInput;
+import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem.DriveRequest;
+import frc.robot.subsystems.trapElvSubsystem.TrapElvCommandFactory;
+import frc.robot.subsystems.trapElvSubsystem.TrapElvSubsystem;
+import frc.robot.subsystems.triggerSubsystem.TriggerCommandFactory;
+import frc.robot.subsystems.triggerSubsystem.TriggerSubsystem;
+import frc.robot.subsystems.turretSubsystem.TurretComandFactory;
+import frc.robot.subsystems.turretSubsystem.TurretSubsystem;
 import frc.robot.subsystems.vision.LimelightSubsystem;
 import frc.robot.subsystems.vision.PhotonSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
@@ -78,27 +85,67 @@ public class RobotContainer {
           .withProperties(Map.of("min", 0, "max", 2))
           .getEntry();
 
+  private final ShooterCommandFactory shooterCommandFactory;
+  private final SwerveCommandFactory drivetrainCommandFactory;
+  private final IntakeCommandFactory intakeCommandFactory;
+  private final TriggerCommandFactory triggerCommandFactory;
+  private final TrapElvCommandFactory trapElvCommandFactory;
+  private final TurretComandFactory turretCommandFactory;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    shooterSubsystem = new ShooterSubsystem();
-    signalingSubsystem = new SignalingSubsystem(1, OI.Driver::setRumble, robotStateManager);
     dynamicRobotConfig = new DynamicRobotConfig();
-    drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
-    intakeSubsystem = new IntakeSubsystem();
-    triggerSubsystem = new TriggerSubsystem();
-    visionSubsystem =
-        Constants.enabledSubsystems.usingPhoton
-            ? new PhotonSubsystem(drivetrain.getVisionMeasurementConsumer())
-            : new LimelightSubsystem(drivetrain.getVisionMeasurementConsumer(), robotStateManager);
-    trapElvSubsystem = new TrapElvSubsystem();
-    if (Constants.enabledSubsystems.visionEnabled) {
-      turretSubsystem = new TurretSubsystem(robotStateManager, visionSubsystem);
+    if (enabledSubsystems.shooterEnabled) {
+      shooterSubsystem = new ShooterSubsystem();
     } else {
-      turretSubsystem = new TurretSubsystem(robotStateManager, null);
+      shooterSubsystem = null;
     }
-    SmartDashboard.putData(turretSubsystem);
+    shooterCommandFactory = new ShooterCommandFactory(shooterSubsystem);
+    if (enabledSubsystems.signalEnabled) {
+      signalingSubsystem = new SignalingSubsystem(1, OI.Driver::setRumble, robotStateManager);
+    } else {
+      signalingSubsystem = null;
+    }
+    if (enabledSubsystems.drivetrainEnabled) {
+      drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
+    } else {
+      drivetrain = null;
+    }
+    drivetrainCommandFactory = new SwerveCommandFactory(drivetrain);
+    if (enabledSubsystems.intakeEnabled) {
+      intakeSubsystem = new IntakeSubsystem();
+    } else {
+      intakeSubsystem = null;
+    }
+    intakeCommandFactory = new IntakeCommandFactory(intakeSubsystem);
+    if (enabledSubsystems.triggerEnabled) {
+      triggerSubsystem = new TriggerSubsystem();
+    } else {
+      triggerSubsystem = null;
+    }
+    triggerCommandFactory = new TriggerCommandFactory(triggerSubsystem);
+    if (enabledSubsystems.visionEnabled) {
+      visionSubsystem =
+          Constants.enabledSubsystems.usingPhoton
+              ? new PhotonSubsystem(drivetrain.getVisionMeasurementConsumer())
+              : new LimelightSubsystem(
+                  drivetrain.getVisionMeasurementConsumer(), robotStateManager);
+    } else {
+      visionSubsystem = new VisionSubsystem() {};
+    }
+    if (enabledSubsystems.elvEnabled) {
+      trapElvSubsystem = new TrapElvSubsystem();
+    } else {
+      trapElvSubsystem = null;
+    }
+    trapElvCommandFactory = new TrapElvCommandFactory(trapElvSubsystem);
+    if (enabledSubsystems.turretEnabled) {
+      turretSubsystem = new TurretSubsystem(robotStateManager, null);
+    } else {
+      turretSubsystem = null;
+    }
+    turretCommandFactory = new TurretComandFactory(turretSubsystem);
 
-    // Configure the trigger bindings
     if (Constants.enabledSubsystems.drivetrainEnabled) {
       registerCommands();
       autoChooser = AutoBuilder.buildAutoChooser();
@@ -133,39 +180,33 @@ public class RobotContainer {
                     OI.getAxisSupplier(OI.Driver.rotationAxis).get()),
                 0.1);
 
-    drivetrain.setDefaultCommand(
-        drivetrain.fieldOrientedDrive(input).withName("Get Axis Suppliers"));
+    drivetrainCommandFactory.setDefaultCommand(
+        drivetrainCommandFactory.fieldOrientedDrive(input).withName("Get Axis Suppliers"));
 
-    trapElvSubsystem.setDefaultCommand(trapElvSubsystem.stowTrapElvCommand());
+    trapElvCommandFactory.setDefaultCommand(trapElvCommandFactory.stowTrapElvCommand());
 
-    shooterSubsystem.setDefaultCommand(shooterSubsystem.shooterIdle());
+    shooterCommandFactory.setDefaultCommand(shooterCommandFactory.shooterIdle());
 
-    triggerSubsystem.setDefaultCommand(triggerSubsystem.getHoldCommand());
+    triggerCommandFactory.setDefaultCommand(triggerCommandFactory.getHoldCommand());
 
     OI.getButton(OI.Driver.resetRotationButton)
-        .onTrue(
-            drivetrain
-                .runOnce(
-                    () ->
-                        drivetrain.seedFieldRelative(
-                            new Pose2d(
-                                drivetrain.getState().Pose.getTranslation(),
-                                Rotation2d.fromDegrees(180))))
-                .withName("Put Pose & Rotation on Field"));
+        .onTrue(drivetrainCommandFactory.zeroDriveTrain().withName("Put Pose & Rotation on Field"));
 
-    OI.getButton(OI.Driver.useRod).whileTrue(drivetrain.robotOrientedDrive(input));
+    OI.getButton(OI.Driver.useRod).whileTrue(drivetrainCommandFactory.robotOrientedDrive(input));
 
     OI.getTrigger(OI.Operator.prepareToFire)
         .whileTrue(
             Commands.either(
-                trapElvSubsystem.positionAMP(),
+                trapElvCommandFactory.positionAMP(),
                 prepareToScoreSpeaker(),
                 robotStateManager.isAmpSupplier()));
 
     OI.getTrigger(OI.Operator.fire)
         .whileTrue(
             Commands.either(
-                trapElvSubsystem.scoreAMP(), shootSpeaker(), robotStateManager.isAmpSupplier()));
+                trapElvCommandFactory.scoreAMP(),
+                shootSpeaker(),
+                robotStateManager.isAmpSupplier()));
 
     OI.getButton(OI.Operator.switchToAmp).onTrue(robotStateManager.setAmpMode());
     OI.getButton(OI.Operator.swtichToSpeaker).onTrue(robotStateManager.setSpeakerMode());
@@ -174,47 +215,35 @@ public class RobotContainer {
         .whileTrue(
             Commands.either(intakeAmp(), intakeSpeaker(), robotStateManager.isAmpSupplier()));
 
-    OI.getTrigger(OI.Driver.outtake).whileTrue(intakeSubsystem.reverseIntakeCommand());
+    OI.getTrigger(OI.Driver.outtake).whileTrue(intakeCommandFactory.reverseIntakeCommand());
 
-    OI.getButton(OI.Driver.intakeSource).whileTrue(prepIntakeSource());
+    OI.getButton(OI.Driver.intakeSource).whileTrue(trapElvCommandFactory.wristintakeSource());
 
-    OI.getButton(OI.Driver.speakerSource).whileTrue(intakeSpeakerSource());
-  }
-
-  private Command prepIntakeSource() {
-    return trapElvSubsystem
-        .intakeSource()
-        .until(trapElvSubsystem.getSourceBreak())
-        .andThen(trapElvSubsystem.intakeFromSourceForTime());
-  }
-
-  private Command intakeSpeakerSource() {
-    return shooterSubsystem
-        .intakeSource()
-        .until(shooterSubsystem.getBeamBreak())
-        .andThen(shooterSubsystem.intakeSourceForTime());
+    OI.getButton(OI.Driver.speakerSource).whileTrue(shooterCommandFactory.intakeSpeakerSource());
   }
 
   private Command intakeSpeaker() {
     return Commands.parallel(
-        intakeSubsystem.getSpeakerIntakeCommand(), triggerSubsystem.getLoadCommand());
+        intakeCommandFactory.getSpeakerIntakeCommand(), triggerCommandFactory.getLoadCommand());
   }
 
   private Command intakeAmp() {
-    return Commands.parallel(trapElvSubsystem.intakeGround(), intakeSubsystem.getAmpIntakeCommand())
-        .until(trapElvSubsystem.getSourceBreak())
-        .andThen(trapElvSubsystem.intakeFromGroundForTime());
+    return Commands.parallel(
+            trapElvCommandFactory.intakeGround(), intakeCommandFactory.getAmpIntakeCommand())
+        .until(trapElvCommandFactory.getSourceBreak())
+        .andThen(trapElvCommandFactory.intakeFromGroundForTime());
   }
 
   private Command shootSpeaker() {
     return Commands.either(
-        triggerSubsystem.getShootCommand(),
-        triggerSubsystem.getShootCommand().onlyIf(() -> shooterSubsystem.isShooterReady()),
+        triggerCommandFactory.getShootCommand(),
+        triggerCommandFactory.getShootCommand().onlyIf(() -> shooterSubsystem.isShooterReady()),
         OI.getButton(OI.Operator.dumb));
   }
 
   private Command prepareToScoreSpeaker() {
-    return Commands.parallel(turretSubsystem.getAimTurretCommand(), shooterSubsystem.revShooter());
+    return Commands.parallel(
+        turretCommandFactory.getAimTurretCommand(), shooterCommandFactory.revShooter());
   }
 
   // Register commands for auton
@@ -223,8 +252,8 @@ public class RobotContainer {
 
     autonCommands.put("Shoot", autonTest().withName("Shoot"));
     if (Constants.enabledSubsystems.intakeEnabled) {
-      autonCommands.put("Speaker Intake", intakeSubsystem.getSpeakerIntakeCommand());
-      autonCommands.put("Amp Intake", intakeSubsystem.getAmpIntakeCommand());
+      autonCommands.put("Speaker Intake", intakeCommandFactory.getSpeakerIntakeCommand());
+      autonCommands.put("Amp Intake", intakeCommandFactory.getAmpIntakeCommand());
     }
     autonCommands.put("Intake", new InstantCommand(() -> {}, new Subsystem[] {}));
 

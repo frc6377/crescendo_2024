@@ -1,5 +1,5 @@
-import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.ShooterSubsystem.SpeakerConfig;
+import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem;
+import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
 import java.util.Arrays;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

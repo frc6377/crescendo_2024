@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.trapElvSubsystem;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -28,12 +28,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants;
 import frc.robot.Constants.TrapElvConstants;
 import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
@@ -140,7 +135,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   /** Creates a new TrapArm. */
   public TrapElvSubsystem() {
-    if (!Constants.enabledSubsystems.elvEnabled) return;
+
     // Wrist
     wristMotor = new CANSparkMaxSim(TrapElvConstants.WRIST_MOTOR_ID, MotorType.kBrushless);
     wristMotor.restoreFactoryDefaults();
@@ -281,93 +276,23 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   // Boolean Suppliers
   public BooleanSupplier getSourceBreak() {
-    if (!Constants.enabledSubsystems.elvEnabled) return () -> false;
+
     return () -> sourceBreak.get();
   }
 
   public BooleanSupplier getGroundBreak() {
-    if (!Constants.enabledSubsystems.elvEnabled) return () -> false;
+
     return () -> groundBreak.get();
   }
 
   public BooleanSupplier getBaseLimit() {
-    if (!Constants.enabledSubsystems.elvEnabled) return () -> false;
+
     return () -> baseLimit.get();
   }
 
   public BooleanSupplier getScoringLimit() {
-    if (!Constants.enabledSubsystems.elvEnabled) return () -> false;
+
     return () -> scoringLimit.get();
-  }
-
-  // Commands
-  public Command setRoller(double s) {
-    if (!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
-    return run(() -> {
-          rollerMotor.set(s);
-        })
-        .withName("Set Roller");
-  }
-
-  public Command stopRoller() {
-    return run(() -> {
-          rollerMotor.stopMotor();
-        })
-        .withName("Stop Roller");
-  }
-
-  public Command intakeSource() {
-    if (!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
-    return startEnd(
-            () -> {
-              setTrapArm(TrapElvState.FROM_SOURCE);
-              rollerMotor.set(TrapElvConstants.ROLLER_SPEED);
-            },
-            () -> {})
-        .withName("Intake From Source");
-  }
-
-  public Command intakeGround() {
-    if (!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
-    return startEnd(
-            () -> {
-              rollerMotor.set(TrapElvConstants.ROLLER_SPEED);
-            },
-            () -> {
-              stowTrapElv();
-            })
-        .withName("Intake from Ground");
-  }
-
-  public Command positionAMP() {
-    return startEnd(
-            () -> {
-              setTrapArm(TrapElvState.AMP_SCORE);
-            },
-            () -> {})
-        .withName("Score Amp");
-  }
-
-  public Command scoreAMP() {
-    return startEnd(
-            () -> {
-              setRoller(-TrapElvConstants.ROLLER_SPEED);
-            },
-            () -> {})
-        .withName("Score Amp");
-  }
-
-  public Command scoreTrap() {
-    if (!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
-    return startEnd(
-            () -> {
-              setTrapArm(TrapElvState.STOWED);
-              rollerMotor.set(TrapElvConstants.ROLLER_SPEED);
-            },
-            () -> {
-              stowTrapElv();
-            })
-        .withName("Score Trap");
   }
 
   // Getter Functions
@@ -403,98 +328,11 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   public void stowTrapElv() {
     setWristState(TrapElvState.STOWED);
-    isWristRollerRunning.log(false);
-    rollerMotor.stopMotor();
-  }
-
-  public Command stowTrapElvCommand() {
-    return startEnd(() -> stowTrapElv(), () -> {});
-  }
-
-  // Commands
-  public Command setWristSource() {
-    return run(() -> {
-          setWristState(TrapElvState.FROM_SOURCE);
-        })
-        .withName("setWristSource");
-  }
-
-  public Command setWristAMP() {
-    return run(() -> {
-          setWristState(TrapElvState.AMP_SCORE);
-        })
-        .withName("setWristAMP");
-  }
-
-  public Command setWristStowed() {
-    return run(() -> {
-          setWristState(TrapElvState.STOWED);
-        })
-        .withName("setWristStowed");
-  }
-
-  public Command rollerIntakeCommand() {
-    return runEnd(
-            () -> {
-              isWristRollerRunning.log(true);
-              rollerMotor.set(TrapElvConstants.ROLLER_SPEED);
-            },
-            () -> {
-              isWristRollerRunning.log(false);
-              rollerMotor.stopMotor();
-            })
-        .withName("rollerIntakeCommand");
-  }
-
-  public Command rollerOutakeCommand() {
-    return runEnd(
-            () -> {
-              isWristRollerRunning.log(true);
-              rollerMotor.set(TrapElvConstants.ROLLER_REVERSE_SPEED);
-            },
-            () -> {
-              isWristRollerRunning.log(false);
-              rollerMotor.stopMotor();
-            })
-        .withName("rollerOutakeCommand");
-  }
-
-  public Command zeroArm() {
-    if (!Constants.enabledSubsystems.elvEnabled) return new InstantCommand();
-    if (isElv) {
-      return startEnd(
-              () -> {
-                // Command for zeroing elevator if elevator happens to be not at zero
-                // Runs elevator motors until there limit switches are pressed
-                if (!baseLimit.get()) {
-                  baseMotor1.set(TrapElvConstants.ELV_ZEROING_SPEED);
-                  baseMotor2.set(TrapElvConstants.ELV_ZEROING_SPEED);
-                } else {
-                  baseMotor1.stopMotor();
-                  baseMotor2.stopMotor();
-                  baseMotorOffset1 = baseMotor1.getEncoder().getPosition();
-                  baseMotorOffset2 = baseMotor2.getEncoder().getPosition();
-                }
-                if (!scoringLimit.get()) {
-                  scoringMotor.set(TrapElvConstants.ELV_ZEROING_SPEED);
-                } else {
-                  scoringMotor.stopMotor();
-                  scoringMotorOffset = scoringMotor.getEncoder().getPosition();
-                }
-              },
-              () -> {
-                baseMotor1.stopMotor();
-                baseMotor2.stopMotor();
-                scoringMotor.stopMotor();
-              })
-          .withName("Zero Arm");
-    } else {
-      return run(() -> {});
-    }
+    setRoller(0);
   }
 
   public void setTrapArm(TrapElvState state) {
-    if (!Constants.enabledSubsystems.elvEnabled) return;
+
     TrapElvTab.add("Wrist Goal", state.wristPose);
     TrapElvTab.add(
         "Wrist PID Control Output",
@@ -514,7 +352,6 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (!Constants.enabledSubsystems.elvEnabled) return;
 
     currentPositionEntry.log(getWristEncoderPos());
     sourceLog.log(sourceBreak.get());
@@ -577,19 +414,8 @@ public class TrapElvSubsystem extends SubsystemBase {
     }
   }
 
-  public Command intakeFromGroundForTime() {
-    return intakeFromGroundForTime(Constants.TrapElvConstants.INTAKE_BEAM_BREAK_DELAY_SEC);
-  }
-
-  public Command intakeFromGroundForTime(double seconds) {
-    return Commands.deadline(intakeGround(), new WaitCommand(seconds));
-  }
-
-  public Command intakeFromSourceForTime() {
-    return intakeFromSourceForTime(Constants.TrapElvConstants.INTAKE_BEAM_BREAK_DELAY_SEC);
-  }
-
-  public Command intakeFromSourceForTime(double seconds) {
-    return Commands.deadline(intakeSource(), new WaitCommand(seconds));
+  public void setRoller(double speed) {
+    rollerMotor.set(speed);
+    isWristRollerRunning.log(speed != 0);
   }
 }
