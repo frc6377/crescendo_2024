@@ -6,9 +6,9 @@ import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import frc.robot.OI;
-import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.SwerveSubsystem.DriveInput;
-import frc.robot.subsystems.SwerveSubsystem.DriveRequest;
+import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem;
+import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem.DriveInput;
+import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem.DriveRequest;
 import org.junit.jupiter.api.Test;
 
 public class TestSwerveDrive {

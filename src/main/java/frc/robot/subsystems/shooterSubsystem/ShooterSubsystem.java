@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.shooterSubsystem;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -13,13 +13,9 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
 import java.util.function.BooleanSupplier;
@@ -165,49 +161,6 @@ public class ShooterSubsystem extends SubsystemBase {
     }
   }
 
-  // Spins up the shooter, and requests feeding it when the rollers are within parameters.
-  // Receives distance-to-target from Limelight, or other sensor.
-  // Required to be called repeatedly; consider pub-sub for LimelightGetDistance() or equivalent
-  // method to save a method call
-  public Command revShooter() {
-    return Commands.startEnd(
-        () ->
-            this.setShooterSpeeds(
-                new SpeakerConfig(-1, targetRPM.getDouble(0), rightTargetRPM.getDouble(0))),
-        () -> {},
-        this);
-  }
-
-  public Command bumperShoot() {
-    return run(() -> {
-          setShooterSpeeds(speakerConfigList[0]);
-        })
-        .withName("Bumper shoot command");
-  }
-
-  // Idle shooter command; for default command purposes
-  public Command shooterIdle() {
-    return run(() -> {
-          shooterLeftMotor.set(0);
-          shooterRightMotor.set(0);
-        })
-        .withName("Idle Shooter command");
-  }
-
-  public Command setShooterIfReady(SpeakerConfig speeds, int exitCode) {
-    return startEnd(
-        () -> {
-          if (exitCode == 0) {
-            setShooterSpeeds(speeds);
-          }
-        },
-        () -> {
-          setShooterSpeeds(new SpeakerConfig(0, 0, 0));
-          shooterLeftMotor.stopMotor();
-          shooterRightMotor.stopMotor();
-        });
-  }
-
   public Trigger shooterReady() {
     return new Trigger(this::isShooterReady).debounce(0.05);
   }
@@ -342,19 +295,12 @@ public class ShooterSubsystem extends SubsystemBase {
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_LEFT,
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT);
 
-  public Command intakeSource() {
-    return startEnd(
-        () -> {
-          setShooterSpeeds(ShooterConstants.SHOOTER_SOURCE_INTAKE);
-        },
-        () -> {});
-  }
-
   public BooleanSupplier getBeamBreak() {
     return () -> false;
   }
 
-  public Command intakeSourceForTime() {
-    return Commands.deadline(new WaitCommand(ShooterConstants.INTAKE_DELAY_SEC), intakeSource());
+  public void stop() {
+    shooterRightMotor.set(0);
+    shooterLeftMotor.set(0);
   }
 }

@@ -2,19 +2,16 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.intakeSubsystem;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
-import frc.robot.stateManagement.PlacementMode;
 import frc.robot.utilities.DebugEntry;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -68,30 +65,6 @@ public class IntakeSubsystem extends SubsystemBase {
   public void stopMotors() {
     chooserMotor.set(0);
     intakeMotor.set(0);
-  }
-
-  public Command reverseIntakeCommand() {
-    return new StartEndCommand(this::reverseIntake, this::stopMotors, this)
-        .withName("Reverse Intake");
-  }
-
-  // Runs the speaker intake or amp intake based on the robot state provided
-  public Command getIntakeCommand(PlacementMode mode) {
-    return buildIntakeCommand(mode.equals(PlacementMode.SPEAKER)).withName("getIntakeCommand");
-  }
-
-  public Command getSpeakerIntakeCommand() {
-    return buildIntakeCommand(true).withName("getSpeakerIntakeCommnad");
-  }
-
-  public Command getAmpIntakeCommand() {
-    return buildIntakeCommand(false).withName("getAmpIntakeCommand");
-  }
-
-  private Command buildIntakeCommand(boolean isSpeaker) {
-    return new StartEndCommand(
-            isSpeaker ? this::speakerIntake : this::ampIntake, this::stopMotors, this)
-        .withName("Build Intake Command");
   }
 
   @Override
