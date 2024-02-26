@@ -96,9 +96,30 @@ public class ClimberSubsystem extends SubsystemBase {
     rightPidController.setP(ClimberConstants.POSITION_P_GAIN);
     rightPidController.setI(ClimberConstants.POSITION_I_GAIN);
     rightPidController.setD(ClimberConstants.POSITION_D_GAIN);
-    P = new TunableNumber("P", ClimberConstants.POSITION_P_GAIN, P -> {leftPidController.setP(P); rightPidController.setP(P);});
-    I = new TunableNumber("P", ClimberConstants.POSITION_I_GAIN, I -> {leftPidController.setI(I); rightPidController.setI(I);});
-    D = new TunableNumber("P", ClimberConstants.POSITION_D_GAIN, D -> {leftPidController.setD(D); rightPidController.setD(D);});
+    P =
+        new TunableNumber(
+            "P",
+            ClimberConstants.POSITION_P_GAIN,
+            P -> {
+              leftPidController.setP(P);
+              rightPidController.setP(P);
+            });
+    I =
+        new TunableNumber(
+            "P",
+            ClimberConstants.POSITION_I_GAIN,
+            I -> {
+              leftPidController.setI(I);
+              rightPidController.setI(I);
+            });
+    D =
+        new TunableNumber(
+            "P",
+            ClimberConstants.POSITION_D_GAIN,
+            D -> {
+              leftPidController.setD(D);
+              rightPidController.setD(D);
+            });
 
     if (Robot.isSimulation()) {
       leftClimberArmSim =
