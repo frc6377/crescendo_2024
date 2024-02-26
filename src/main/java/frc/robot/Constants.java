@@ -36,7 +36,7 @@ public final class Constants {
     public static final double HOLD_PERCENTAGE =
         -0.05; // very slow motor speed in case note slips out of trigger
     public static final double SHOOT_PERCENTAGE =
-        0.5; // used when feeding note into turret to fire (should be negative value because it
+        -0.75; // used when feeding note into turret to fire (should be negative value because it
     // outtakes)
   }
 

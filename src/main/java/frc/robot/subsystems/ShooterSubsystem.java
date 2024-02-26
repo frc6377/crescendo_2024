@@ -354,10 +354,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // Motor RPM, NOT roller RPM
   private static SpeakerConfig[] speakerConfigList = {
-    new SpeakerConfig(0, 2550, 1950),
-    new SpeakerConfig(40, 2750, 2150),
-    new SpeakerConfig(195, 2950, 2350),
-    new SpeakerConfig(290, 2950, 2350)
+    new SpeakerConfig(0, 2350, 1950),
+    new SpeakerConfig(40, 2550, 2150),
+    new SpeakerConfig(195, 2750, 2350),
+    new SpeakerConfig(290, 2750, 2350)
   };
 
   private static final SpeakerConfig speakerConfigIdle =
