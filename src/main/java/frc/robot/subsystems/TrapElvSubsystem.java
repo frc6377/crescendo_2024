@@ -495,10 +495,10 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   public void setTrapArm(TrapElvState state) {
     if (!Constants.enabledSubsystems.elvEnabled) return;
-    TrapElvTab.add("Wrist Goal", state.wristPose);
-    TrapElvTab.add(
-        "Wrist PID Control Output",
-        wristPIDController.calculate(wristEncoder.getPosition(), state.getWristPose()));
+    // TrapElvTab.add("Wrist Goal", state.wristPose);
+    // TrapElvTab.add(
+    //     "Wrist PID Control Output",
+    //     wristPIDController.calculate(wristEncoder.getPosition(), state.getWristPose()));
     if (isElv) {
       baseMotor1
           .getPIDController()
