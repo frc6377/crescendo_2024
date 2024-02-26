@@ -5,18 +5,26 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 
 public class ClimberSubsystem extends SubsystemBase {
   private CANSparkMax leftArmMotor;
   private CANSparkMax rightArmMotor;
+  private ShuffleboardTab climberTab = Shuffleboard.getTab(this.getName());
 
   public ClimberSubsystem() {
     leftArmMotor = new CANSparkMax(ClimberConstants.LEFT_ARM_ID, MotorType.kBrushless);
     rightArmMotor = new CANSparkMax(ClimberConstants.RIGHT_ARM_ID, MotorType.kBrushless);
     configMotor(leftArmMotor);
     configMotor(rightArmMotor);
+
+    climberTab.addDouble("right arm position", () -> rightArmMotor.getEncoder().getPosition());
+    climberTab.addDouble("left arm position", () -> leftArmMotor.getEncoder().getPosition());
+    climberTab.addDouble("right arm output", () -> rightArmMotor.getAppliedOutput());
+    climberTab.addDouble("left arm  output", () -> leftArmMotor.getAppliedOutput());
   }
 
   private void configMotor(CANSparkMax motor) {
@@ -102,7 +110,7 @@ public class ClimberSubsystem extends SubsystemBase {
   public record AppliedCurrent(double left, double right) {
     public boolean greater(double arg) {
 
-      return left > arg;
+      return left > arg && right > arg;
     }
   }
 
