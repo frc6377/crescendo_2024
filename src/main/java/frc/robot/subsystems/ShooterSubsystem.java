@@ -74,14 +74,16 @@ public class ShooterSubsystem extends SubsystemBase {
 
     shooterLeftMotor.setInverted(true);
 
-    shooterLeftMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_LEFT_P);
-    shooterLeftMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_LEFT_I);
-    shooterLeftMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_LEFT_D);
-    shooterLeftMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_LEFT_FF);
-    shooterRightMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_RIGHT_P);
-    shooterRightMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_RIGHT_I);
-    shooterRightMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_RIGHT_D);
-    shooterRightMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_RIGHT_FF);
+    shooterLeftMotor.getPIDController().setP(ShooterConstants.SHOOTER_LEFT_PID.getP());
+    shooterLeftMotor.getPIDController().setI(ShooterConstants.SHOOTER_LEFT_PID.getI());
+    shooterLeftMotor.getPIDController().setD(ShooterConstants.SHOOTER_LEFT_PID.getD());
+    shooterLeftMotor.getPIDController().setIZone(ShooterConstants.SHOOTER_LEFT_PID.getIz());
+    shooterLeftMotor.getPIDController().setFF(ShooterConstants.SHOOTER_LEFT_PID.getFF());
+    shooterRightMotor.getPIDController().setP(ShooterConstants.SHOOTER_RIGHT_PID.getP());
+    shooterRightMotor.getPIDController().setI(ShooterConstants.SHOOTER_RIGHT_PID.getI());
+    shooterRightMotor.getPIDController().setD(ShooterConstants.SHOOTER_RIGHT_PID.getD());
+    shooterRightMotor.getPIDController().setIZone(ShooterConstants.SHOOTER_RIGHT_PID.getIz());
+    shooterRightMotor.getPIDController().setFF(ShooterConstants.SHOOTER_RIGHT_PID.getFF());
 
     shooterTab.add("Shooter Left Motor PID", shooterLeftMotor.getPIDController());
     shooterTab.add("Shooter Right Motor PID", shooterRightMotor.getPIDController());

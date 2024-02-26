@@ -6,6 +6,8 @@ package frc.robot;
 
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.ShooterSubsystem.SpeakerConfig;
+import frc.robot.utilities.HowdyFF;
+import frc.robot.utilities.HowdyPID;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -45,15 +47,8 @@ public final class Constants {
     public static final int SHOOTER_MOTOR_RIGHT_ID = 4;
 
     // Placeholder values
-    public static final double SHOOTER_LEFT_P = 0.0015;
-    public static final double SHOOTER_LEFT_I = 0.0;
-    public static final double SHOOTER_LEFT_D = 0.16;
-    public static final double SHOOTER_LEFT_FF = 0.00035;
-
-    public static final double SHOOTER_RIGHT_P = 0.0015;
-    public static final double SHOOTER_RIGHT_I = 0.0000;
-    public static final double SHOOTER_RIGHT_D = 0.16;
-    public static final double SHOOTER_RIGHT_FF = 0.00042;
+    public static final HowdyPID SHOOTER_LEFT_PID = new HowdyPID(0.0015, 0.0, 0.16, 0, 0.00035);
+    public static final HowdyPID SHOOTER_RIGHT_PID = new HowdyPID(0.0015, 0.0, 0.16, 0, 0.00042);
 
     // Motor RPM, NOT roller RPM
     public static final double SHOOTER_IDLE_SPEED_LEFT = 400; // Placeholder; in RPM
@@ -79,12 +74,7 @@ public final class Constants {
     public static final boolean IS_MOTOR_INVERTED = true;
 
     // PID coefficients
-    public static final double TURRET_KP =
-        0.125; // TODO: Change values when there's an actual real functional robot.
-    public static final double TURRET_KI = 0.001;
-    public static final double TURRET_KD = 0;
-    public static final double TURRET_KIZ = 0;
-    public static final double TURRET_KFF = 0;
+    public static final HowdyPID TURRET_PID = new HowdyPID(0.125, 0.001, 0, 0, 0);
 
     public static final double TURRET_KMAXOUTPUT = 1;
     public static final double TURRET_KMINOUTPUT = -1;
@@ -95,16 +85,8 @@ public final class Constants {
     public static final double TURRET_CONVERSION_FACTOR = 0.25;
     public static final int TURRET_SMART_CURRENT_LIMIT = 40;
 
-    public static final double PITCH_KP =
-        175; // TODO: Change values when there's an actual real functional robot.
-    public static final double PITCH_KI = 0.001;
-    public static final double PITCH_KD = 0;
-    public static final double PITCH_KIZ = 0;
-    public static final double PITCH_KFF = 0;
-    public static final double PITCH_KS = 0;
-    public static final double PITCH_KV = 0.08;
-    public static final double PITCH_KG = 0.1;
-    public static final double PITCH_KA = 0;
+    public static final HowdyPID PITCH_PID = new HowdyPID(175, 0.001, 0, 0, 0);
+    public static final HowdyFF PITCH_FF = new HowdyFF(0, 0.08, 0.1, 0);
 
     public static final double PITCH_KMAXOUTPUT = 1;
     public static final double PITCH_KMINOUTPUT = -1;
@@ -132,11 +114,7 @@ public final class Constants {
     public static final int SPEAKER_TAG_ID_BLUE = 7;
 
     // PID coefficients
-    public static final double KP = 0.25;
-    public static final double KI = 0.001;
-    public static final double KD = 0;
-    public static final double KIZ = 0;
-    public static final double KFF = 0;
+    public static final HowdyPID OTHER_PID = new HowdyPID(0.25, 0.001, 0, 0, 0);
     public static final double KMAXOUTPUT = 1;
     public static final double KMINOUTPUT = -1;
     public static final int MAX_TURRET_ANGLE_DEGREES = 110;
@@ -173,8 +151,8 @@ public final class Constants {
     public static final int SOURCE_BREAK_ID = 1;
     public static final int GROUND_BREAK_ID = 2;
 
-    public static final double[] WRIST_PID = {0.03, 0, 0, 0};
-    public static final double[] WRIST_FF = {0, 0.54, 4.29, 0.05}; // kS, kG, kV, kA
+    public static final HowdyPID WRIST_PID = new HowdyPID(0.03, 0, 0, 0);
+    public static final HowdyFF WRIST_FF = new HowdyFF(0, 0.54, 4.29, 0.05);
 
     public static final double WRIST_MIN_ANGLE = Units.degreesToRadians(-90); // RADS
     public static final double WRIST_MAX_ANGLE = Units.degreesToRadians(270); // RADS
@@ -199,8 +177,8 @@ public final class Constants {
     public static final int SCORING_BREAK_ID = 4;
 
     public static final double ELV_ZEROING_SPEED = 0.1; // Percent Power
-    public static final double[] BASE_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
-    public static final double[] SCORING_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
+    public static final HowdyPID BASE_PID = new HowdyPID(36e-3, 5e-7, 1e-4, 0.0, 2e-6);
+    public static final HowdyPID SCORING_PID = new HowdyPID(36e-3, 5e-7, 1e-4, 0.0, 2e-6);
 
     public static final int ELV_GEAR_RATIO = 70;
     public static final double ELV_LIFT_MASS = 5.4; // kg
