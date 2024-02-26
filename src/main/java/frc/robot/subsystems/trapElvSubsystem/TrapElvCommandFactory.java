@@ -139,20 +139,6 @@ public class TrapElvCommandFactory {
         .withName("Score Amp");
   }
 
-  public Command scoreTrap() {
-    if (subsystem == null) return new InstantCommand();
-    return subsystem
-        .startEnd(
-            () -> {
-              subsystem.setTrapArm(TrapElvState.STOWED);
-              subsystem.setRoller(TrapElvConstants.ROLLER_SPEED);
-            },
-            () -> {
-              subsystem.stowTrapElv();
-            })
-        .withName("Score Trap");
-  }
-
   public Command wristintakeSource() {
     if (subsystem == null) return new InstantCommand();
     return intakeSource().until(subsystem.getSourceBreak()).andThen(intakeFromSourceForTime());

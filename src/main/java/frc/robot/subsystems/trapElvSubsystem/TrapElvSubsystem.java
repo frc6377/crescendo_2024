@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TrapElvConstants;
 import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
+import frc.robot.utilities.TOFSensorSimple;
 import java.util.function.BooleanSupplier;
 
 public class TrapElvSubsystem extends SubsystemBase {
@@ -56,7 +57,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   private double scoringMotorOffset;
 
   // Beam Breaks
-  private final DigitalInput sourceBreak;
+  private final TOFSensorSimple sourceBreak;
   private final DigitalInput groundBreak;
 
   // Limit Switches
@@ -160,7 +161,8 @@ public class TrapElvSubsystem extends SubsystemBase {
     rollerMotor = new CANSparkMax(TrapElvConstants.ROLLER_MOTOR_ID, MotorType.kBrushed);
     rollerMotor.restoreFactoryDefaults();
 
-    sourceBreak = new DigitalInput(TrapElvConstants.SOURCE_BREAK_ID);
+    sourceBreak =
+        new TOFSensorSimple(TrapElvConstants.SOURCE_BREAK_ID, TrapElvConstants.BREAK_THRESHOLD_MM);
     groundBreak = new DigitalInput(TrapElvConstants.GROUND_BREAK_ID);
 
     wristEncoder = wristMotor.getAbsoluteEncoder();

@@ -22,6 +22,10 @@ public class TOFSensorSimple {
     return sensor.getRange();
   }
 
+  public boolean get() {
+    return isBeamBroke();
+  }
+
   public boolean isBeamBroke() {
     return getMilliMeters() < threshold;
   }
