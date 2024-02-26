@@ -190,7 +190,7 @@ public final class Constants {
     public static final double WRIST_LENGTH = Units.inchesToMeters(11.877934);
     public static final double WRIST_MOI = 0.3175242664; // Moment of Inertia
     public static final double WRIST_GEAR_RATIO = 35;
-    public static final double WRIST_ZERO_OFFSET = 0.2087;
+    public static final double WRIST_ZERO_OFFSET = 0.8164931;
 
     // Roller
     public static final int ROLLER_MOTOR_ID = 13;
