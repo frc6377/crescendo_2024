@@ -29,7 +29,6 @@ public class ClimberCommandFactory {
         noop,
         (interupt) -> {
           if (interupt) return;
-          subsystem.zeroAtCurrentPosition();
           subsystem.applyPercent(0);
         },
         () -> {
@@ -46,6 +45,9 @@ public class ClimberCommandFactory {
     return subsystem.run(() -> subsystem.applyCurrentDemand(ClimberConstants.CLIP_CURRENT));
   }
 
+  boolean right = true;
+  boolean left = true;
+
   public Command climb() {
     if (subsystem == null) return new InstantCommand();
 
@@ -55,14 +57,16 @@ public class ClimberCommandFactory {
           Position pos = subsystem.getPosition();
           double rightDemand;
           double leftDemand;
-          if (pos.right() > ClimberConstants.CLIMB_POSITION) {
+          if (right && pos.right() > ClimberConstants.CLIMB_POSITION) {
             rightDemand = ClimberConstants.CLIMB_PERCENT;
           } else {
+            right = false;
             rightDemand = 0;
           }
-          if (pos.left() > ClimberConstants.CLIMB_POSITION) {
+          if (left && pos.left() > ClimberConstants.CLIMB_POSITION) {
             leftDemand = ClimberConstants.CLIMB_PERCENT;
           } else {
+            left = false;
             leftDemand = 0;
           }
           subsystem.applyDiffertialPercent(new DifferentialDemand(leftDemand, rightDemand));

@@ -46,15 +46,16 @@ public final class Constants {
     public static final int SHOOTER_MOTOR_RIGHT_ID = 4;
 
     // Placeholder values
-    public static final double SHOOTER_LEFT_P = 0.0015;
-    public static final double SHOOTER_LEFT_I = 0.0;
-    public static final double SHOOTER_LEFT_D = 0.16;
-    public static final double SHOOTER_LEFT_FF = 0.00035;
+    public static final double SHOOTER_LEFT_P = 0.001;
+    public static final double SHOOTER_LEFT_I = 3.5e-6;
 
-    public static final double SHOOTER_RIGHT_P = 0.0015;
-    public static final double SHOOTER_RIGHT_I = 0.0000;
-    public static final double SHOOTER_RIGHT_D = 0.16;
-    public static final double SHOOTER_RIGHT_FF = 0.00042;
+    public static final double SHOOTER_LEFT_D = 0;
+    public static final double SHOOTER_LEFT_FF = 0.0;
+
+    public static final double SHOOTER_RIGHT_P = 0.001;
+    public static final double SHOOTER_RIGHT_I = 3.5e-6;
+    public static final double SHOOTER_RIGHT_D = 0;
+    public static final double SHOOTER_RIGHT_FF = 0.0;
 
     // Motor RPM, NOT roller RPM
     public static final double SHOOTER_IDLE_SPEED_LEFT = 400; // Placeholder; in RPM
@@ -70,6 +71,8 @@ public final class Constants {
     public static final double SHOOTER_RIGHT_MOMENT = 0.000848475500006; // Placeholder; in kg*m^2
     public static final SpeakerConfig SHOOTER_SOURCE_INTAKE = new SpeakerConfig(-1, -100, -100);
     public static final double INTAKE_DELAY_SEC = 0.25;
+    public static final int BEAM_BREAK_ID = 0;
+    public static final double BEAM_BREAK_THRESHOLD = 0;
   }
 
   public static class TurretConstants {
@@ -216,6 +219,8 @@ public final class Constants {
     public static final double ELV_MIN_HEIGHT = Units.inchesToMeters(12);
     public static final double ELV_MAX_HEIGHT = Units.inchesToMeters(30);
     public static final double DRUM_RADIUS = Units.inchesToMeters(1);
+
+    public static final double BREAK_THRESHOLD_MM = 15;
   }
 
   public static class LimelightConstants {
@@ -243,13 +248,13 @@ public final class Constants {
   }
 
   public static class ClimberConstants {
-    public static final int LEFT_ARM_ID = 4;
-    public static final int RIGHT_ARM_ID = 5;
-    public static final double CLIMB_PERCENT = -0.2;
-    public static final double CLIMB_POSITION = -0.5;
+    public static final int LEFT_ARM_ID = 20;
+    public static final int RIGHT_ARM_ID = 11;
+    public static final double CLIMB_PERCENT = -0.4;
+    public static final double CLIMB_POSITION = 7;
     public static final double[] PID = new double[] {0.01, 0, 0};
     public static final double MIN_RAISE_TIME_SEC = 0.1;
-    public static final double CLIP_CURRENT = -5;
+    public static final double CLIP_CURRENT = -10;
   }
 
   public static class enabledSubsystems {

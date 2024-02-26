@@ -20,6 +20,7 @@ public class ClimberSubsystem extends SubsystemBase {
     rightArmMotor = new CANSparkMax(ClimberConstants.RIGHT_ARM_ID, MotorType.kBrushless);
     configMotor(leftArmMotor);
     configMotor(rightArmMotor);
+    leftArmMotor.setInverted(true);
 
     climberTab.addDouble("right arm position", () -> rightArmMotor.getEncoder().getPosition());
     climberTab.addDouble("left arm position", () -> leftArmMotor.getEncoder().getPosition());
@@ -34,6 +35,7 @@ public class ClimberSubsystem extends SubsystemBase {
     pidController.setP(ClimberConstants.PID[0]);
     pidController.setI(ClimberConstants.PID[1]);
     pidController.setD(ClimberConstants.PID[2]);
+    motor.setSmartCurrentLimit(40);
   }
 
   /**

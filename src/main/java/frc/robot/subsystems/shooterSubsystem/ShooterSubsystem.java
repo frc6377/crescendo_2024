@@ -16,8 +16,10 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
+import frc.robot.utilities.TOFSensorSimple;
 import java.util.function.BooleanSupplier;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -53,6 +55,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private GenericEntry targetRPM = shooterTab.add("Target RPM", 0).getEntry();
   private GenericEntry rightTargetRPM = shooterTab.add("right RPM", 0).getEntry();
+  private TOFSensorSimple beamBreak;
+
   private SpeakerConfig targetSpeeds;
 
   private FlywheelSim shooterLeftSim;
@@ -63,6 +67,9 @@ public class ShooterSubsystem extends SubsystemBase {
         new CANSparkMaxSim(Constants.ShooterConstants.SHOOTER_MOTOR_LEFT_ID, MotorType.kBrushless);
     shooterRightMotor =
         new CANSparkMaxSim(Constants.ShooterConstants.SHOOTER_MOTOR_RIGHT_ID, MotorType.kBrushless);
+
+    beamBreak =
+        new TOFSensorSimple(ShooterConstants.BEAM_BREAK_ID, ShooterConstants.BEAM_BREAK_THRESHOLD);
 
     shooterLeftMotor.restoreFactoryDefaults();
     shooterLeftMotor.setSmartCurrentLimit(40);
@@ -296,7 +303,7 @@ public class ShooterSubsystem extends SubsystemBase {
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT);
 
   public BooleanSupplier getBeamBreak() {
-    return () -> false;
+    return beamBreak::get;
   }
 
   public void stop() {
