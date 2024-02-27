@@ -210,7 +210,8 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command shooterIdle() {
     // TODO: Determine appropriate open loop rate for shooter idle
     return run(() -> {
-          setShooterSpeeds(speakerConfigIdle);
+          // setShooterSpeeds(speakerConfigIdle);
+          // Temporarily disabled; can be re-enabled when current draw isn't prohibitively high
         })
         .withName("Idle shooter command");
   }
