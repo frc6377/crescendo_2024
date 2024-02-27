@@ -6,6 +6,7 @@ import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.config.DynamicRobotConfig;
@@ -104,7 +105,7 @@ public class TurretComandFactory {
   }
 
   public Command getAimTurretCommand() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return new StartEndCommand(() -> {}, () -> {});
     return subsystem.run(() -> subsystem.aimTurret()).withName("AimTurretCommand");
   }
 

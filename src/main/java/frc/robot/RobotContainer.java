@@ -209,9 +209,10 @@ public class RobotContainer {
     OI.getTrigger(OI.Operator.prepareToFire)
         .whileTrue(
             Commands.either(
-                trapElvCommandFactory.positionAMP(),
-                prepareToScoreSpeaker(),
-                robotStateManager.isAmpSupplier()));
+                    trapElvCommandFactory.positionAMP(),
+                    prepareToScoreSpeaker(),
+                    robotStateManager.isAmpSupplier())
+                .andThen());
 
     OI.getTrigger(OI.Operator.fire)
         .whileTrue(
