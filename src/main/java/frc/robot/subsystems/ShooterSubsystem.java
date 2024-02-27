@@ -178,8 +178,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
   }
 
-  // Spins up the shooter, and requests feeding it when the rollers are within parameters.
-  // Receives distance-to-target from Limelight, or other sensor.
+  // Spins up the shooter. Receives distance-to-target from vision.
   public Command revShooter() {
     return Commands.startEnd(
         () ->
@@ -207,13 +206,13 @@ public class ShooterSubsystem extends SubsystemBase {
         .withName("Bumper shoot command");
   }
 
-  // Idle shooter command; for default command purposes
+  // Idle shooter command.
   public Command shooterIdle() {
     // TODO: Determine appropriate open loop rate for shooter idle
     return run(() -> {
           setShooterSpeeds(speakerConfigIdle);
         })
-        .withName("Idle Shooter command");
+        .withName("Idle shooter command");
   }
 
   public Trigger shooterReady() {
@@ -245,8 +244,8 @@ public class ShooterSubsystem extends SubsystemBase {
     return ready;
   }
 
-  // Speed in RPM. Left is index 0, right is index 1.
-  public SpeakerConfig setShooterSpeeds(SpeakerConfig speeds) {
+  // Speed in RPM.
+  public void setShooterSpeeds(SpeakerConfig speeds) {
     targetSpeeds = speeds;
 
     leftMotorTargetSpeedEntry.log(targetSpeeds.getSpeedLeftInRPM());
@@ -258,11 +257,8 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterRightMotor
         .getPIDController()
         .setReference(speeds.getSpeedRightInRPM(), CANSparkBase.ControlType.kVelocity);
-
-    return targetSpeeds;
   }
 
-  // Left is index 0, right is index 1.
   public static SpeakerConfig calculateShooterSpeeds(double distance) {
     SpeakerConfig speeds;
     Double leftSpeed = 0d;
@@ -276,6 +272,7 @@ public class ShooterSubsystem extends SubsystemBase {
       speeds = new SpeakerConfig(distance, leftSpeed, rightSpeed);
       return speeds;
     }
+
     // A linear search which determines which points the input distance falls between. May be
     // converted to a binary search if there are many points.
     // Loop exits before the last element because interpolation cannot be done on the last element.
@@ -306,6 +303,7 @@ public class ShooterSubsystem extends SubsystemBase {
     // If distance above maximum, set speed to maximum.
     leftSpeed = speakerConfigList[speakerConfigList.length - 1].getSpeedLeftInRPM();
     rightSpeed = speakerConfigList[speakerConfigList.length - 1].getSpeedRightInRPM();
+
     speeds = new SpeakerConfig(distance, leftSpeed, rightSpeed);
     return speeds;
   }
