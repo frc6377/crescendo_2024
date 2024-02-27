@@ -46,9 +46,11 @@ public class ShooterCommandFactory {
   public Command revShooter() {
     if (subsystem == null) return new InstantCommand();
     return Commands.startEnd(
-        () ->
-            subsystem.setShooterSpeeds(
-                new SpeakerConfig(-1, targetRPM.getDouble(0), rightTargetRPM.getDouble(0))),
+        () -> {
+          subsystem.setShooterSpeeds(
+              new SpeakerConfig(-1, targetRPM.getDouble(0), rightTargetRPM.getDouble(0)));
+          System.out.println("Work I dare thee");
+        },
         () -> {},
         subsystem);
   }

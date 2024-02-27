@@ -334,11 +334,6 @@ public class TrapElvSubsystem extends SubsystemBase {
   }
 
   public void setTrapArm(TrapElvState state) {
-
-    TrapElvTab.add("Wrist Goal", state.wristPose);
-    TrapElvTab.add(
-        "Wrist PID Control Output",
-        wristPIDController.calculate(wristEncoder.getPosition(), state.getWristPose()));
     if (isElv) {
       baseMotor1
           .getPIDController()
@@ -346,10 +341,10 @@ public class TrapElvSubsystem extends SubsystemBase {
       baseMotor2
           .getPIDController()
           .setReference(state.getBasePose() - baseMotorOffset2, ControlType.kPosition);
-      scoringMotor
-          .getPIDController()
-          .setReference(state.getScoringPose() - scoringMotorOffset, ControlType.kPosition);
     }
+    scoringMotor
+        .getPIDController()
+        .setReference(state.getScoringPose() - scoringMotorOffset, ControlType.kPosition);
   }
 
   @Override

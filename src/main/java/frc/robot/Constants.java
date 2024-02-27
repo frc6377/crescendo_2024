@@ -27,7 +27,7 @@ public final class Constants {
     public static final int INTAKE_MOTOR_ID = 10;
     public static final int INTAKE_CHOOSER_ID = 14;
     public static final double INTAKE_PERCENTAGE = 0.75;
-    public static final double CHOOSER_PERCENTAGE = -0.75;
+    public static final double CHOOSER_PERCENTAGE = 0.75;
   }
 
   public static class TriggerConstants {
@@ -244,16 +244,16 @@ public final class Constants {
   }
 
   public static class enabledSubsystems {
-    public static final boolean intakeEnabled = false;
-    public static final boolean drivetrainEnabled = false;
+    public static final boolean intakeEnabled = true;
+    public static final boolean drivetrainEnabled = true;
     public static final boolean visionEnabled = false;
     public static final boolean usingPhoton = false;
-    public static final boolean elvEnabled = false;
+    public static final boolean elvEnabled = true;
     public static final boolean signalEnabled = false;
-    public static final boolean shooterEnabled = false;
+    public static final boolean shooterEnabled = true;
     public static final boolean triggerEnabled = false;
     public static final boolean turretEnabled = false;
-    public static final boolean climberEnabled = true;
+    public static final boolean climberEnabled = false;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;

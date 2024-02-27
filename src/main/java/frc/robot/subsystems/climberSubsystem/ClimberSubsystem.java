@@ -83,6 +83,10 @@ public class ClimberSubsystem extends SubsystemBase {
     leftArmMotor.getEncoder().setPosition(0);
   }
 
+  public void setOutputLimits(double max, double min) {
+    leftArmMotor.getPIDController();
+  }
+
   public Position getPosition() {
     return new Position(
         leftArmMotor.getEncoder().getPosition(), rightArmMotor.getEncoder().getPosition());

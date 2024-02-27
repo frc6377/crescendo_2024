@@ -3,6 +3,7 @@ package frc.robot.subsystems.trapElvSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.TrapElvConstants;
@@ -105,7 +106,7 @@ public class TrapElvCommandFactory {
   }
 
   public Command intakeGround() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return new StartEndCommand(() -> {}, () -> {});
     return subsystem
         .startEnd(
             () -> {
@@ -122,7 +123,7 @@ public class TrapElvCommandFactory {
     return subsystem
         .startEnd(
             () -> {
-              subsystem.setTrapArm(TrapElvState.AMP_SCORE);
+              subsystem.setWristState(TrapElvState.AMP_SCORE);
             },
             () -> {})
         .withName("Score Amp");
@@ -165,8 +166,8 @@ public class TrapElvCommandFactory {
   }
 
   public BooleanSupplier getSourceBreak() {
-    if (subsystem == null) return () -> false;
-    return subsystem.getSourceBreak();
+    return () -> false;
+    // return subsystem.getSourceBreak();
   }
 
   public void setDefaultCommand(Command defaultCommand) {

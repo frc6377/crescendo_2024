@@ -22,13 +22,14 @@ public class IntakeSubsystem extends SubsystemBase {
   private ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
 
   public IntakeSubsystem() {
-    intakeMotor = new TalonFX(Constants.IntakeConstants.INTAKE_MOTOR_ID, "Default Name");
+    intakeMotor = new TalonFX(Constants.IntakeConstants.INTAKE_MOTOR_ID, "rio");
     chooserMotor =
         new CANSparkMax(
             Constants.IntakeConstants.INTAKE_CHOOSER_ID, MotorType.kBrushed); // Bag Motor
     chooserMotor.restoreFactoryDefaults();
     // intakeMotor.config
     chooserMotor.setSmartCurrentLimit(20);
+    chooserMotor.setInverted(true);
     intakeOutput = intakeTab.add("Intake Motor Output", 0).withPosition(3, 0).getEntry();
     chooserOutput = intakeTab.add("Chooser Motor Output", 0).withPosition(3, 1).getEntry();
   }
