@@ -180,22 +180,17 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // Spins up the shooter, and requests feeding it when the rollers are within parameters.
   // Receives distance-to-target from Limelight, or other sensor.
-  // Required to be called repeatedly; consider pub-sub for LimelightGetDistance() or equivalent
-  // method to save a method call
   public Command revShooter() {
-    // Only runs if the exit code from the limelight status function returns 0!
-
     return Commands.startEnd(
         () ->
-            this.setShooterSpeeds(
+            this.setShooterSpeeds( // Should receive distance-to-target from vision
                 new SpeakerConfig(
                     -1, leftShooterRPM.getDouble(4000), rightShooterRPM.getDouble(4000))),
         () -> {
           shooterLeftMotor.stopMotor();
           shooterRightMotor.stopMotor();
         },
-        this); // TODO: Replace distance and exit code with LimelightGetDistance() and
-    // CheckLimelightStatus() respectively
+        this);
   }
 
   public Command bumperShoot() {
@@ -215,26 +210,16 @@ public class ShooterSubsystem extends SubsystemBase {
   // Idle shooter command; for default command purposes
   public Command shooterIdle() {
     // TODO: Determine appropriate open loop rate for shooter idle
-    return run(() -> {}).withName("Idle Shooter command");
-  }
-
-  public Command setShooterIfReady(SpeakerConfig speeds, int exitCode) {
-    return startEnd(
-        () -> {
-          if (exitCode == 0) {
-            setShooterSpeeds(speeds);
-          }
-        },
-        () -> {
-          setShooterSpeeds(new SpeakerConfig(0, 0, 0));
-          shooterLeftMotor.stopMotor();
-          shooterRightMotor.stopMotor();
-        });
+    return run(() -> {
+          setShooterSpeeds(speakerConfigIdle);
+        })
+        .withName("Idle Shooter command");
   }
 
   public Trigger shooterReady() {
     return new Trigger(this::isShooterReady).debounce(0.05);
   }
+
   // Checks if shooter is ready.
   public boolean isShooterReady() {
     double targetSpeedLeft = targetSpeeds.getSpeedLeftInRPM();
