@@ -75,7 +75,6 @@ public class ClimberSubsystem extends SubsystemBase {
    * @param currentLimit the limit in amps to set
    */
   public void setCurrentLimit(int currentLimit) {
-    setPIDState(PIDState.CURRENT);
     leftArmMotor.setSmartCurrentLimit(currentLimit);
     rightArmMotor.setSmartCurrentLimit(currentLimit);
   }
@@ -86,14 +85,14 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   /**
-   * Any command that uses this needs to clean up after self.
-   * As in reset min and max to -1 and  1
+   * Any command that uses this needs to clean up after self. As in reset min and max to -1 and 1
+   *
    * @param max the maximum output (Physically 1)
    * @param min the minimum output (Physically -1)
    */
   public void setOutputLimits(double max, double min) {
-    leftArmMotor.getPIDController().setOutputRange(min,max);
-    rightArmMotor.getPIDController().setOutputRange(min,max);
+    leftArmMotor.getPIDController().setOutputRange(min, max);
+    rightArmMotor.getPIDController().setOutputRange(min, max);
   }
 
   public Position getPosition() {
@@ -116,17 +115,18 @@ public class ClimberSubsystem extends SubsystemBase {
     rightArmMotor.getPIDController().setReference(climbPosition, ControlType.kPosition);
   }
 
-  private void setPIDState(PIDState state){
-    if(state == pidState) return;
+  private void setPIDState(PIDState state) {
+    if (state == pidState) return;
     configPID(rightArmMotor.getPIDController(), state.getPID());
     configPID(leftArmMotor.getPIDController(), state.getPID());
   }
 
-  private static void configPID(SparkPIDController pidController, double[] pid){
-    if(pid.length != 3) throw new RuntimeException("Incorrect number of PID numbers");
+  private static void configPID(SparkPIDController pidController, double[] pid) {
+    if (pid.length != 4) throw new RuntimeException("Incorrect number of PID numbers");
     pidController.setP(pid[0]);
     pidController.setI(pid[1]);
     pidController.setD(pid[2]);
+    pidController.setFF(pid[3]);
   }
 
   @Override
@@ -158,18 +158,19 @@ public class ClimberSubsystem extends SubsystemBase {
     CURRENT(0),
     POSITION(1);
     private int id;
-    private PIDState(int id){
+
+    private PIDState(int id) {
       this.id = id;
     }
 
-    public double[] getPID(){
-      switch(this.id){
+    public double[] getPID() {
+      switch (this.id) {
         case 0:
-        return ClimberConstants.CURRENT_PID;
+          return ClimberConstants.CURRENT_PID;
         case 1:
-        return ClimberConstants.POSITION_PID;
+          return ClimberConstants.POSITION_PID;
         default:
-        return new double[]{0,0,0};
+          return new double[] {0, 0, 0, 0};
       }
     }
   }

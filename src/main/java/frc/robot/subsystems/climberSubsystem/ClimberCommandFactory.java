@@ -21,7 +21,7 @@ public class ClimberCommandFactory {
     Timer minTime = new Timer();
     return new FunctionalCommand(
         () -> {
-          subsystem.applyCurrentDemand(10);
+          subsystem.applyCurrentDemand(ClimberConstants.RAISE_CURRENT);
           minTime.start();
         },
         noop,
@@ -32,7 +32,6 @@ public class ClimberCommandFactory {
         () -> {
           boolean vel = subsystem.getVelocity().isZero(0.5);
           boolean cur = subsystem.getCurrent().greater(0.1);
-          System.err.println("done" + vel + "," + cur);
           return vel && minTime.hasElapsed(ClimberConstants.MIN_RAISE_TIME_SEC);
         },
         subsystem);
@@ -43,20 +42,19 @@ public class ClimberCommandFactory {
     return subsystem.run(() -> subsystem.applyCurrentDemand(ClimberConstants.CLIP_CURRENT));
   }
 
-  boolean right = true;
-  boolean left = true;
-
   public Command climb() {
     if (subsystem == null) return new InstantCommand();
 
-    Runnable init = () -> {
-      subsystem.setOutputLimits(0, -1);
-      subsystem.requestPosition(ClimberConstants.CLIMB_POSITION);
-    };
+    Runnable init =
+        () -> {
+          subsystem.setOutputLimits(0, -1);
+          subsystem.requestPosition(ClimberConstants.CLIMB_POSITION);
+        };
     Runnable exec = () -> {};
-    Consumer<Boolean> end = (interupt) -> {
-      subsystem.setOutputLimits(1,-1);
-    };
+    Consumer<Boolean> end =
+        (interupt) -> {
+          subsystem.setOutputLimits(1, -1);
+        };
     BooleanSupplier isFinished =
         () -> subsystem.getPosition().isLessThen(ClimberConstants.CLIMB_POSITION);
 

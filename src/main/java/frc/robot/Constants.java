@@ -45,7 +45,7 @@ public final class Constants {
     public static final int SHOOTER_MOTOR_LEFT_ID = 1;
     public static final int SHOOTER_MOTOR_RIGHT_ID = 4;
 
- // Placeholder values
+    // Placeholder values
     public static final double SHOOTER_LEFT_P = 0.001;
     public static final double SHOOTER_LEFT_I = 0.00000035;
     public static final double SHOOTER_LEFT_D = 0;
@@ -238,11 +238,12 @@ public final class Constants {
     public static final int LEFT_ARM_ID = 20;
     public static final int RIGHT_ARM_ID = 11;
     public static final double CLIMB_PERCENT = -0.4;
-    public static final double CLIMB_POSITION = 7;
-    public static final double[] POSITION_PID = new double[] {0.01, 0, 0};
-    public static final double[] CURRENT_PID = new double[] {0.01, 0, 0};
+    public static final double CLIMB_POSITION = 1;
+    public static final double[] POSITION_PID = new double[] {0.15, 1e-4, 0, 0};
+    public static final double[] CURRENT_PID = new double[] {0.01, 0, 0, 0};
     public static final double MIN_RAISE_TIME_SEC = 0.1;
     public static final double CLIP_CURRENT = -10;
+    public static final double RAISE_CURRENT = 30;
   }
 
   public static class enabledSubsystems {
@@ -255,7 +256,7 @@ public final class Constants {
     public static final boolean shooterEnabled = true;
     public static final boolean triggerEnabled = true;
     public static final boolean turretEnabled = false;
-    public static final boolean climberEnabled = false;
+    public static final boolean climberEnabled = true;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
