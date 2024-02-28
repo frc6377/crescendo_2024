@@ -98,7 +98,7 @@ public class TrapElvCommandFactory {
     return subsystem
         .startEnd(
             () -> {
-              subsystem.setTrapArm(TrapElvState.FROM_SOURCE);
+              subsystem.setWristState(TrapElvState.FROM_SOURCE);
               subsystem.setRoller(TrapElvConstants.ROLLER_SPEED);
             },
             () -> {})
@@ -134,7 +134,7 @@ public class TrapElvCommandFactory {
     return subsystem
         .startEnd(
             () -> {
-              subsystem.setRoller(-TrapElvConstants.ROLLER_SPEED);
+              subsystem.setRoller(TrapElvConstants.ROLLER_SPEED);
             },
             () -> {})
         .withName("Score Amp");
@@ -142,7 +142,9 @@ public class TrapElvCommandFactory {
 
   public Command wristintakeSource() {
     if (subsystem == null) return new InstantCommand();
-    return intakeSource().until(subsystem.getSourceBreak()).andThen(intakeFromSourceForTime());
+    return intakeSource()
+        .until(subsystem.getSourceBreak())
+        .andThen(Commands.print("0.25s left").andThen(intakeFromSourceForTime()));
   }
 
   public Command intakeFromGroundForTime() {
@@ -152,22 +154,22 @@ public class TrapElvCommandFactory {
 
   public Command intakeFromGroundForTime(double seconds) {
     if (subsystem == null) return new InstantCommand();
-    return Commands.deadline(intakeGround(), new WaitCommand(seconds));
+    return Commands.deadline(new WaitCommand(seconds), intakeGround());
   }
 
   public Command intakeFromSourceForTime() {
     if (subsystem == null) return new InstantCommand();
-    return intakeFromSourceForTime(Constants.TrapElvConstants.INTAKE_BEAM_BREAK_DELAY_SEC);
+    return intakeFromSourceForTime(Constants.TrapElvConstants.SOURCE_BEAM_BREAK_DELAY_SEC);
   }
 
   public Command intakeFromSourceForTime(double seconds) {
     if (subsystem == null) return new InstantCommand();
-    return Commands.deadline(intakeSource(), new WaitCommand(seconds));
+    return Commands.deadline(new WaitCommand(seconds), intakeSource());
   }
 
   public BooleanSupplier getSourceBreak() {
-    return () -> false;
-    // return subsystem.getSourceBreak();
+    // return () -> false;
+    return subsystem.getSourceBreak();
   }
 
   public void setDefaultCommand(Command defaultCommand) {

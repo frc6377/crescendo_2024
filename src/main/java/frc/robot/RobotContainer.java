@@ -232,13 +232,18 @@ public class RobotContainer {
 
     OI.getButton(OI.Driver.intakeSource).whileTrue(trapElvCommandFactory.wristintakeSource());
 
-    OI.getButton(OI.Driver.speakerSource).whileTrue(shooterCommandFactory.intakeSpeakerSource());
+    OI.getButton(OI.Driver.speakerSource).whileTrue(speakerSource());
 
     OI.getButton(OI.Operator.prepClimb).onTrue(climberCommandFactory.raise());
 
     OI.getButton(OI.Operator.latchClimber).onTrue(climberCommandFactory.clip());
 
     OI.getButton(OI.Operator.retractClimber).onTrue(climberCommandFactory.climb());
+  }
+
+  private Command speakerSource() {
+    return Commands.deadline(
+        shooterCommandFactory.intakeSource(), triggerCommandFactory.getLoadCommand());
   }
 
   private Command intakeSpeaker() {
