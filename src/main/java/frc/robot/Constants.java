@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.ShooterSubsystem.SpeakerConfig;
 
@@ -228,6 +229,11 @@ public final class Constants {
 
     public static final String MAIN_CAMERA_NAME = "Camera_Module_Main";
     public static final String TURRET_CAMERA_NAME = "Camera_Module_Turret";
+  }
+
+  public static class FieldConstants {
+    public static final Translation2d RED_SPEAKER = new Translation2d(16.579342, 5.547868);
+    public static final Translation2d BLUE_SPEAKER = new Translation2d(-0.0381, 5.547868);
   }
 
   public static class enabledSubsystems {

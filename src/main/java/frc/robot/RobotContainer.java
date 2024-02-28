@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.enabledSubsystems;
 import frc.robot.config.DynamicRobotConfig;
+import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -268,6 +269,14 @@ public class RobotContainer {
   public void onExitDisabled() {
     if (Constants.enabledSubsystems.signalEnabled) {
       signalingSubsystem.clearLEDs();
+    }
+  }
+
+  public Translation2d feedSpeakerLocation() {
+    if (robotStateManager.getAllianceColor() == AllianceColor.BLUE) {
+      return Constants.FieldConstants.BLUE_SPEAKER;
+    } else {
+      return Constants.FieldConstants.RED_SPEAKER;
     }
   }
 
