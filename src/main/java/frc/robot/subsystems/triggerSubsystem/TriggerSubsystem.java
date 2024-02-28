@@ -12,6 +12,7 @@ public class TriggerSubsystem extends SubsystemBase {
     motor = new CANSparkMax(TriggerConstants.MOTOR_ID, MotorType.kBrushed);
     motor.restoreFactoryDefaults();
     motor.setSmartCurrentLimit(40);
+    motor.setInverted(TriggerConstants.MOTOR_INVERT);
   }
 
   public void setSpeed(double speed) {

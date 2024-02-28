@@ -5,6 +5,7 @@
 package frc.robot.utilities;
 
 import com.playingwithfusion.TimeOfFlight;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -12,13 +13,18 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class TOFSensorSimple {
   private TimeOfFlight sensor;
   private double threshold;
+  private int id;
 
   public TOFSensorSimple(int ID, double threshold) {
     sensor = new TimeOfFlight(ID);
+    // sensor.setRangingMode(RangingMode.Short, 100);
     this.threshold = threshold; // in mm
+    this.id = ID;
   }
 
   public double getMilliMeters() {
+    SmartDashboard.putNumber("TOF " + id, sensor.getRange());
+    SmartDashboard.putString("status" + id, sensor.getStatus().toString());
     return sensor.getRange();
   }
 

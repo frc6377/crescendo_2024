@@ -31,13 +31,14 @@ public final class Constants {
   }
 
   public static class TriggerConstants {
-    public static final int MOTOR_ID = 2; // edit all constants when testing
+    public static final int MOTOR_ID = 15; // edit all constants when testing
     public static final double LOAD_PERCENTAGE = -0.5; // used when intaking into the turret
     public static final double HOLD_PERCENTAGE =
         -0.05; // very slow motor speed in case note slips out of trigger
     public static final double SHOOT_PERCENTAGE =
         0.5; // used when feeding note into turret to fire (should be negative value because it
     // outtakes)
+    public static final boolean MOTOR_INVERT = true;
   }
 
   public static class ShooterConstants {
@@ -68,9 +69,9 @@ public final class Constants {
 
     public static final double SHOOTER_RIGHT_GEARING = 0.4; // Unitless
     public static final double SHOOTER_RIGHT_MOMENT = 0.000848475500006; // Placeholder; in kg*m^2
-    public static final SpeakerConfig SHOOTER_SOURCE_INTAKE = new SpeakerConfig(-1, -100, -100);
-    public static final double INTAKE_DELAY_SEC = 0.25;
-    public static final int BEAM_BREAK_ID = 0;
+    public static final SpeakerConfig SHOOTER_SOURCE_INTAKE = new SpeakerConfig(-1, -1000, -1000);
+    public static final double INTAKE_DELAY_SEC = 10;
+    public static final int BEAM_BREAK_ID = 1;
     public static final double BEAM_BREAK_THRESHOLD = 0;
   }
 
@@ -168,13 +169,14 @@ public final class Constants {
 
   public static class TrapElvConstants {
     // Control
-    public static final double INTAKE_BEAM_BREAK_DELAY_SEC = 0.25;
+    public static final double INTAKE_BEAM_BREAK_DELAY_SEC = 0.025;
+    public static final double SOURCE_BEAM_BREAK_DELAY_SEC = 0.2;
 
     // Wrist
     public static final int WRIST_MOTOR_ID = 12;
     public static final int WRIST_ENCODER_ID = 25;
-    public static final int SOURCE_BREAK_ID = 1;
-    public static final int GROUND_BREAK_ID = 2;
+    public static final int SOURCE_BREAK_ID = 2;
+    public static final int GROUND_BREAK_ID = 3;
 
     public static final double[] WRIST_PID = {0.03, 0, 0, 0};
     public static final double[] WRIST_FF = {0, 0.54, 4.29, 0.05}; // kS, kG, kV, kA
@@ -189,7 +191,7 @@ public final class Constants {
     // Roller
     public static final int ROLLER_MOTOR_ID = 13;
 
-    public static final double ROLLER_SPEED = 0.6;
+    public static final double ROLLER_SPEED = 0.4;
     public static final double ROLLER_REVERSE_SPEED = -0.5;
 
     public static final double ROLLER_DEADZONE = 0.02;
@@ -211,7 +213,7 @@ public final class Constants {
     public static final double ELV_MAX_HEIGHT = Units.inchesToMeters(30);
     public static final double DRUM_RADIUS = Units.inchesToMeters(1);
 
-    public static final double BREAK_THRESHOLD_MM = 15;
+    public static final double BREAK_THRESHOLD_MM = 200;
   }
 
   public static class LimelightConstants {
@@ -251,7 +253,7 @@ public final class Constants {
     public static final boolean elvEnabled = true;
     public static final boolean signalEnabled = false;
     public static final boolean shooterEnabled = true;
-    public static final boolean triggerEnabled = false;
+    public static final boolean triggerEnabled = true;
     public static final boolean turretEnabled = false;
     public static final boolean climberEnabled = false;
   }

@@ -101,7 +101,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     STOWED(-0.18, 0.0, 0.0),
     FROM_INTAKE(-0.18, 0.0, 0.0),
     FROM_SOURCE(0.4, 0.0, 12.0),
-    AMP_SCORE(0.23, 0.0, 12.0);
+    AMP_SCORE(0.44, 0.0, 12.0);
 
     private double wristPose;
     private double basePose;
@@ -341,18 +341,18 @@ public class TrapElvSubsystem extends SubsystemBase {
       baseMotor2
           .getPIDController()
           .setReference(state.getBasePose() - baseMotorOffset2, ControlType.kPosition);
+      scoringMotor
+          .getPIDController()
+          .setReference(state.getScoringPose() - scoringMotorOffset, ControlType.kPosition);
     }
-    scoringMotor
-        .getPIDController()
-        .setReference(state.getScoringPose() - scoringMotorOffset, ControlType.kPosition);
   }
 
   @Override
   public void periodic() {
-
     currentPositionEntry.log(getWristEncoderPos());
     sourceLog.log(sourceBreak.get());
     groundLog.log(groundBreak.get());
+    sourceBreak.getMilliMeters();
 
     FF = wristFeedforward.calculate(Units.rotationsToRadians(getWristEncoderPos()), 0);
 
