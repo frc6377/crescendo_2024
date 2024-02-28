@@ -43,10 +43,8 @@ public class ShooterSubsystem extends SubsystemBase {
   private DebugEntry<Double> rightMotorCurrentEntry;
 
   private DebugEntry<Double> leftFlywheelInputEntry;
-  private DebugEntry<Double> leftFlywheelAngularVelocityEntry;
 
   private DebugEntry<Double> rightFlywheelInputEntry;
-  private DebugEntry<Double> rightFlywheelAngularVelocityEntry;
 
   private DebugEntry<Boolean> shooterReadyEntry;
 
@@ -126,10 +124,8 @@ public class ShooterSubsystem extends SubsystemBase {
     rightMotorCurrentEntry = new DebugEntry<Double>(0.0, "Right Motor Current", this);
 
     leftFlywheelInputEntry = new DebugEntry<Double>(0.0, "Left Flywheel Input", this);
-    leftFlywheelAngularVelocityEntry = new DebugEntry<Double>(0.0, "Left Flywheel RPM", this);
 
     rightFlywheelInputEntry = new DebugEntry<Double>(0.0, "Right Flywheel Input", this);
-    rightFlywheelAngularVelocityEntry = new DebugEntry<Double>(0.0, "Right Flywheel RPM", this);
 
     shooterReadyEntry = new DebugEntry<Boolean>(false, "Shooter Ready?", this);
   }
@@ -337,17 +333,41 @@ public class ShooterSubsystem extends SubsystemBase {
     public double getSpeedRightInRPM() {
       return speedRightInRPM;
     }
+
+    @Override
+    public boolean equals(Object object) {
+      if (object == null) {
+        return false;
+      }
+      if (object.getClass() != this.getClass()) {
+        return false;
+      }
+
+      final SpeakerConfig otherConfig = (SpeakerConfig) object;
+
+      if (this.distanceInInches != otherConfig.distanceInInches) {
+        return false;
+      }
+      if (this.speedLeftInRPM != otherConfig.speedLeftInRPM) {
+        return false;
+      }
+      if (this.speedRightInRPM != otherConfig.speedRightInRPM) {
+        return false;
+      }
+
+      return true;
+    }
   }
 
   // Motor RPM, NOT roller RPM
-  private static SpeakerConfig[] speakerConfigList = {
+  public static final SpeakerConfig[] speakerConfigList = {
     new SpeakerConfig(0, 2350, 1950),
     new SpeakerConfig(40, 2550, 2150),
     new SpeakerConfig(195, 2750, 2350),
     new SpeakerConfig(290, 2750, 2350)
   };
 
-  private static final SpeakerConfig speakerConfigIdle =
+  public static final SpeakerConfig speakerConfigIdle =
       new SpeakerConfig(
           -1,
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_LEFT,

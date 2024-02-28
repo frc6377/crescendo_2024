@@ -10,24 +10,13 @@ public class TestShooterSubsystem {
   // TODO: Make more sensible
   @Test
   public void testSpeakerConfig() {
-    SpeakerConfig speedsPair;
-    double[] speedsArray = {0, 0};
-    double[][] speakerConfigListTest = {
-      {-100, 2350, 1950},
-      {0, 2350, 1950},
-      {40, 2550, 2150},
-      {195, 2750, 2350},
-      {290, 2750, 2350},
-      {10000, 2750, 2350}
-    };
-    double[] configSpeeds;
+    SpeakerConfig testConfig;
 
-    for (int i = 0; i < speakerConfigListTest.length; i++) {
-      speedsPair = ShooterSubsystem.calculateShooterSpeeds(speakerConfigListTest[i][0]);
-      speedsArray[0] = speedsPair.getSpeedLeftInRPM();
-      speedsArray[1] = speedsPair.getSpeedRightInRPM();
-      configSpeeds = arraySlice(speakerConfigListTest[i], 1, 2);
-      Assertions.assertArrayEquals(configSpeeds, speedsArray);
+    for (int i = 0; i < ShooterSubsystem.speakerConfigList.length; i++) {
+      testConfig =
+          ShooterSubsystem.calculateShooterSpeeds(
+              ShooterSubsystem.speakerConfigList[i].getDistanceInInches());
+      Assertions.assertEquals(testConfig, ShooterSubsystem.speakerConfigList[i]);
     }
   }
 
