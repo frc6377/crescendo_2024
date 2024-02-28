@@ -6,6 +6,8 @@ package frc.robot.utilities;
 
 import com.revrobotics.CANSparkMax;
 
+import edu.wpi.first.wpilibj2.command.Subsystem;
+
 /** Add your docs here. */
 public class HowdyPID {
   private double P;
@@ -43,11 +45,11 @@ public class HowdyPID {
     this.FF = ff;
   }
 
-  public void createTunableNumbers(String name, CANSparkMax motor) {
-    this.tuneP = new TunableNumber(name.concat(" P"), this.P, p -> motor.getPIDController().setP(p));
-    this.tuneI = new TunableNumber(name.concat(" I"), this.P, i -> motor.getPIDController().setI(i));
-    this.tuneD = new TunableNumber(name.concat(" D"), this.P, d -> motor.getPIDController().setD(d));
-    this.tuneIz = new TunableNumber(name.concat(" Iz"), this.P, iz -> motor.getPIDController().setIZone(iz));
+  public void createTunableNumbers(String name, CANSparkMax motor, Subsystem subsystem) {
+    this.tuneP = new TunableNumber(name.concat(" P"), this.P, p -> motor.getPIDController().setP(p), subsystem);
+    this.tuneI = new TunableNumber(name.concat(" I"), this.P, i -> motor.getPIDController().setI(i), subsystem);
+    this.tuneD = new TunableNumber(name.concat(" D"), this.P, d -> motor.getPIDController().setD(d), subsystem);
+    this.tuneIz = new TunableNumber(name.concat(" Iz"), this.P, iz -> motor.getPIDController().setIZone(iz), subsystem);
   }
 
   public double getP() {
