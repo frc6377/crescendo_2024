@@ -207,7 +207,7 @@ public class RobotContainer {
     }
 
     OI.getButton(OI.Operator.switchToAmp).onTrue(robotStateManager.setAmpMode());
-    OI.getButton(OI.Operator.swtichToSpeaker).onTrue(robotStateManager.setSpeakerMode());
+    OI.getButton(OI.Operator.switchToSpeaker).onTrue(robotStateManager.setSpeakerMode());
   }
 
   private Command prepIntakeSource() {
