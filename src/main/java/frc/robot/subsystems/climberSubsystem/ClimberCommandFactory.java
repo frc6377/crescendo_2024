@@ -49,14 +49,16 @@ public class ClimberCommandFactory {
   public Command climb() {
     if (subsystem == null) return new InstantCommand();
 
-    Runnable init = () -> {
-      subsystem.setOutputLimits(0, -1);
-      subsystem.requestPosition(ClimberConstants.CLIMB_POSITION);
-    };
+    Runnable init =
+        () -> {
+          subsystem.setOutputLimits(0, -1);
+          subsystem.requestPosition(ClimberConstants.CLIMB_POSITION);
+        };
     Runnable exec = () -> {};
-    Consumer<Boolean> end = (interupt) -> {
-      subsystem.setOutputLimits(1,-1);
-    };
+    Consumer<Boolean> end =
+        (interupt) -> {
+          subsystem.setOutputLimits(1, -1);
+        };
     BooleanSupplier isFinished =
         () -> subsystem.getPosition().isLessThen(ClimberConstants.CLIMB_POSITION);
 

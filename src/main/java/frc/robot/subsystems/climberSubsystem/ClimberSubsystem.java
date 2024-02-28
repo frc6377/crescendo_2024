@@ -9,12 +9,18 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
+import frc.robot.utilities.DebugEntry;
 
 public class ClimberSubsystem extends SubsystemBase {
   private PIDState pidState;
   private CANSparkMax leftArmMotor;
   private CANSparkMax rightArmMotor;
   private ShuffleboardTab climberTab = Shuffleboard.getTab(this.getName());
+
+  private DebugEntry<Double> rightArmPoseEntry;
+  private DebugEntry<Double> leftArmPoseEntry;
+  private DebugEntry<Double> rightArmOutputEntry;
+  private DebugEntry<Double> leftArmOutputEntry;
 
   public ClimberSubsystem() {
     leftArmMotor = new CANSparkMax(ClimberConstants.LEFT_ARM_ID, MotorType.kBrushless);
@@ -23,10 +29,15 @@ public class ClimberSubsystem extends SubsystemBase {
     configMotor(rightArmMotor);
     leftArmMotor.setInverted(true);
 
-    climberTab.addDouble("right arm position", () -> rightArmMotor.getEncoder().getPosition());
-    climberTab.addDouble("left arm position", () -> leftArmMotor.getEncoder().getPosition());
-    climberTab.addDouble("right arm output", () -> rightArmMotor.getAppliedOutput());
-    climberTab.addDouble("left arm  output", () -> leftArmMotor.getAppliedOutput());
+    rightArmPoseEntry =
+        new DebugEntry<Double>(
+            rightArmMotor.getEncoder().getPosition(), "right arm position", this);
+    leftArmPoseEntry =
+        new DebugEntry<Double>(rightArmMotor.getEncoder().getPosition(), "left arm position", this);
+    rightArmOutputEntry =
+        new DebugEntry<Double>(rightArmMotor.getAppliedOutput(), "right arm output", this);
+    leftArmOutputEntry =
+        new DebugEntry<Double>(rightArmMotor.getAppliedOutput(), "left arm output", this);
   }
 
   private void configMotor(CANSparkMax motor) {
@@ -86,14 +97,14 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   /**
-   * Any command that uses this needs to clean up after self.
-   * As in reset min and max to -1 and  1
+   * Any command that uses this needs to clean up after self. As in reset min and max to -1 and 1
+   *
    * @param max the maximum output (Physically 1)
    * @param min the minimum output (Physically -1)
    */
   public void setOutputLimits(double max, double min) {
-    leftArmMotor.getPIDController().setOutputRange(min,max);
-    rightArmMotor.getPIDController().setOutputRange(min,max);
+    leftArmMotor.getPIDController().setOutputRange(min, max);
+    rightArmMotor.getPIDController().setOutputRange(min, max);
   }
 
   public Position getPosition() {
@@ -116,14 +127,14 @@ public class ClimberSubsystem extends SubsystemBase {
     rightArmMotor.getPIDController().setReference(climbPosition, ControlType.kPosition);
   }
 
-  private void setPIDState(PIDState state){
-    if(state == pidState) return;
+  private void setPIDState(PIDState state) {
+    if (state == pidState) return;
     configPID(rightArmMotor.getPIDController(), state.getPID());
     configPID(leftArmMotor.getPIDController(), state.getPID());
   }
 
-  private static void configPID(SparkPIDController pidController, double[] pid){
-    if(pid.length != 3) throw new RuntimeException("Incorrect number of PID numbers");
+  private static void configPID(SparkPIDController pidController, double[] pid) {
+    if (pid.length != 3) throw new RuntimeException("Incorrect number of PID numbers");
     pidController.setP(pid[0]);
     pidController.setI(pid[1]);
     pidController.setD(pid[2]);
@@ -158,18 +169,19 @@ public class ClimberSubsystem extends SubsystemBase {
     CURRENT(0),
     POSITION(1);
     private int id;
-    private PIDState(int id){
+
+    private PIDState(int id) {
       this.id = id;
     }
 
-    public double[] getPID(){
-      switch(this.id){
+    public double[] getPID() {
+      switch (this.id) {
         case 0:
-        return ClimberConstants.CURRENT_PID;
+          return ClimberConstants.CURRENT_PID;
         case 1:
-        return ClimberConstants.POSITION_PID;
+          return ClimberConstants.POSITION_PID;
         default:
-        return new double[]{0,0,0};
+          return new double[] {0, 0, 0};
       }
     }
   }

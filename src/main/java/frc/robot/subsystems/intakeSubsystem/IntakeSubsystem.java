@@ -7,19 +7,16 @@ package frc.robot.subsystems.intakeSubsystem;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.utilities.DebugEntry;
 
 public class IntakeSubsystem extends SubsystemBase {
   private TalonFX intakeMotor;
   private CANSparkMax chooserMotor;
-  private GenericEntry intakeOutput;
-  private GenericEntry chooserOutput;
-  private ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
+  private DebugEntry<Double> intakeOutput;
+  private DebugEntry<Double> chooserOutput;
 
   public IntakeSubsystem() {
     intakeMotor = new TalonFX(Constants.IntakeConstants.INTAKE_MOTOR_ID, "rio");
@@ -30,8 +27,8 @@ public class IntakeSubsystem extends SubsystemBase {
     // intakeMotor.config
     chooserMotor.setSmartCurrentLimit(20);
     chooserMotor.setInverted(true);
-    intakeOutput = intakeTab.add("Intake Motor Output", 0).withPosition(3, 0).getEntry();
-    chooserOutput = intakeTab.add("Chooser Motor Output", 0).withPosition(3, 1).getEntry();
+    intakeOutput = new DebugEntry<Double>(0.0, "Intake Motor Ouput", this);
+    chooserOutput = new DebugEntry<Double>(0.0, "Chooser Motor Output", this);
   }
 
   // TODO: Add check to make sure turret is below 45 degrees before running & add photogate when
@@ -70,8 +67,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    intakeOutput.setDouble(intakeMotor.get());
-    chooserOutput.setDouble(chooserMotor.getAppliedOutput());
+    intakeOutput.log(intakeMotor.get());
+    chooserOutput.log(chooserMotor.getAppliedOutput());
   }
 
   @Override
