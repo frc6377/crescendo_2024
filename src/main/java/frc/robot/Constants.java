@@ -44,7 +44,6 @@ public final class Constants {
     public static final int SHOOTER_MOTOR_LEFT_ID = 1;
     public static final int SHOOTER_MOTOR_RIGHT_ID = 4;
 
-    // Placeholder values
     public static final double SHOOTER_LEFT_P = 0.001;
     public static final double SHOOTER_LEFT_I = 0.00000035;
     public static final double SHOOTER_LEFT_D = 0;
@@ -60,7 +59,7 @@ public final class Constants {
     public static final double SHOOTER_IDLE_SPEED_RIGHT = 400; // Placeholder; in RPM
 
     public static final double SHOOTER_SPEED_TOLERANCE =
-        0.1; // Placeholder; speed must be within (1-n)v to (1+n)v to fire
+        0.1; // Speed must be within (1-n)v to (1+n)v to fire
 
     public static final double SHOOTER_LEFT_GEARING = 0.4; // Unitless
     public static final double SHOOTER_LEFT_MOMENT = 0.000848475500006; // Placeholder; in kg*m^2

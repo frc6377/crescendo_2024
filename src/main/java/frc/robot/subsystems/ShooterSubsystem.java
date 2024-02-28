@@ -184,7 +184,7 @@ public class ShooterSubsystem extends SubsystemBase {
         () -> {
           stopAndLogMotors();
         },
-        this);
+        this).withName("Rev shooter command");
   }
 
   public Command bumperShoot() {
