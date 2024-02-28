@@ -5,11 +5,13 @@
 package frc.robot.utilities;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkPIDController;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 /** Add your docs here. */
-public class HowdyPID {
+public class HowdyPID{
   private double P;
   private double I;
   private double D;
@@ -46,10 +48,43 @@ public class HowdyPID {
   }
 
   public void createTunableNumbers(String name, CANSparkMax motor, Subsystem subsystem) {
-    this.tuneP = new TunableNumber(name.concat(" P"), this.P, p -> motor.getPIDController().setP(p), subsystem);
-    this.tuneI = new TunableNumber(name.concat(" I"), this.P, i -> motor.getPIDController().setI(i), subsystem);
-    this.tuneD = new TunableNumber(name.concat(" D"), this.P, d -> motor.getPIDController().setD(d), subsystem);
-    this.tuneIz = new TunableNumber(name.concat(" Iz"), this.P, iz -> motor.getPIDController().setIZone(iz), subsystem);
+    this.tuneP =
+        new TunableNumber(
+            name.concat(" P"), this.P, p -> motor.getPIDController().setP(p), subsystem);
+    this.tuneI =
+        new TunableNumber(
+            name.concat(" I"), this.P, i -> motor.getPIDController().setI(i), subsystem);
+    this.tuneD =
+        new TunableNumber(
+            name.concat(" D"), this.P, d -> motor.getPIDController().setD(d), subsystem);
+    this.tuneIz =
+        new TunableNumber(
+            name.concat(" Iz"), this.P, iz -> motor.getPIDController().setIZone(iz), subsystem);
+  }
+
+  public void createTunableNumbers(String name, PIDController controller, Subsystem subsystem) {
+    this.tuneP =
+        new TunableNumber(
+            name.concat(" P"), this.P, p -> controller.setP(p), subsystem);
+    this.tuneI =
+        new TunableNumber(
+            name.concat(" I"), this.P, i -> controller.setI(i), subsystem);
+    this.tuneD =
+        new TunableNumber(
+            name.concat(" D"), this.P, d -> controller.setD(d), subsystem);
+    this.tuneIz =
+        new TunableNumber(
+            name.concat(" Iz"), this.P, iz -> controller.setIZone(iz), subsystem);
+  }
+
+  public SparkPIDController getPidController(CANSparkMax motor) {
+    SparkPIDController controller = motor.getPIDController();
+    controller.setP(this.P);
+    controller.setI(this.I);
+    controller.setD(this.D);
+    controller.setIZone(this.Iz);
+    controller.setFF(this.FF);
+    return controller;
   }
 
   public double getP() {

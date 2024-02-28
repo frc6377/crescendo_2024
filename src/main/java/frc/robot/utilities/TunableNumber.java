@@ -14,7 +14,8 @@ public class TunableNumber extends SubsystemBase {
   private double value;
   private Consumer<Double> consumer;
 
-  public TunableNumber(String name, double defaultValue, Consumer<Double> consumer, Subsystem subsystem) {
+  public TunableNumber(
+      String name, double defaultValue, Consumer<Double> consumer, Subsystem subsystem) {
     tuningTab = Shuffleboard.getTab(subsystem.getName());
     this.value = defaultValue;
     this.consumer = consumer;
