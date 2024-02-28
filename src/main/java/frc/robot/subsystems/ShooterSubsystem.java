@@ -186,8 +186,7 @@ public class ShooterSubsystem extends SubsystemBase {
                 new SpeakerConfig(
                     -1, leftShooterRPM.getDouble(4000), rightShooterRPM.getDouble(4000))),
         () -> {
-          shooterLeftMotor.stopMotor();
-          shooterRightMotor.stopMotor();
+          stopAndLogMotors();
         },
         this);
   }
@@ -198,10 +197,7 @@ public class ShooterSubsystem extends SubsystemBase {
               setShooterSpeeds(speakerConfigList[0]);
             },
             () -> {
-              shooterLeftMotor.stopMotor();
-              shooterRightMotor.stopMotor();
-              leftMotorTargetSpeedEntry.log(0d);
-              rightMotorTargetSpeedEntry.log(0d);
+              stopAndLogMotors();
             })
         .withName("Bumper shoot command");
   }
@@ -307,6 +303,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
     speeds = new SpeakerConfig(distance, leftSpeed, rightSpeed);
     return speeds;
+  }
+
+  private void stopAndLogMotors() {
+    shooterLeftMotor.stopMotor();
+    shooterRightMotor.stopMotor();
+    leftMotorTargetSpeedEntry.log(0d);
+    rightMotorTargetSpeedEntry.log(0d);
   }
 
   // Distance and speed in inches and RPM respectively.
