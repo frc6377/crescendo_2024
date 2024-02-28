@@ -46,17 +46,16 @@ public final class Constants {
     public static final int SHOOTER_MOTOR_LEFT_ID = 1;
     public static final int SHOOTER_MOTOR_RIGHT_ID = 4;
 
-    // Placeholder values
+ // Placeholder values
     public static final double SHOOTER_LEFT_P = 0.001;
-    public static final double SHOOTER_LEFT_I = 3.5e-6;
-
+    public static final double SHOOTER_LEFT_I = 0.00000035;
     public static final double SHOOTER_LEFT_D = 0;
-    public static final double SHOOTER_LEFT_FF = 0.0;
+    public static final double SHOOTER_LEFT_FF = 0;
 
     public static final double SHOOTER_RIGHT_P = 0.001;
-    public static final double SHOOTER_RIGHT_I = 3.5e-6;
+    public static final double SHOOTER_RIGHT_I = 0.00000035;
     public static final double SHOOTER_RIGHT_D = 0;
-    public static final double SHOOTER_RIGHT_FF = 0.0;
+    public static final double SHOOTER_RIGHT_FF = 0;
 
     // Motor RPM, NOT roller RPM
     public static final double SHOOTER_IDLE_SPEED_LEFT = 400; // Placeholder; in RPM

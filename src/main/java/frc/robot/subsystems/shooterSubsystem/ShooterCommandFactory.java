@@ -13,8 +13,8 @@ import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
 public class ShooterCommandFactory {
   private final ShooterSubsystem subsystem;
   private ShuffleboardTab shooterTab = Shuffleboard.getTab("ShooterSubsystem");
-  private GenericEntry targetRPM = shooterTab.add("Target RPM", 0).getEntry();
-  private GenericEntry rightTargetRPM = shooterTab.add("right RPM", 0).getEntry();
+  private GenericEntry targetRPM = shooterTab.add("Target RPM", 4000).getEntry();
+  private GenericEntry rightTargetRPM = shooterTab.add("right RPM", 4000).getEntry();
 
   public ShooterCommandFactory(ShooterSubsystem subsystem) {
     this.subsystem = subsystem;
@@ -48,8 +48,7 @@ public class ShooterCommandFactory {
     return Commands.startEnd(
         () -> {
           subsystem.setShooterSpeeds(
-              new SpeakerConfig(-1, targetRPM.getDouble(0), rightTargetRPM.getDouble(0)));
-          System.out.println("Work I dare thee");
+              new SpeakerConfig(-1, targetRPM.getDouble(4000), rightTargetRPM.getDouble(4000)));
         },
         () -> {},
         subsystem);
