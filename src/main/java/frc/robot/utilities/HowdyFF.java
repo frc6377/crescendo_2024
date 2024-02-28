@@ -11,6 +11,13 @@ public class HowdyFF {
   private double kV;
   private double kA;
 
+  public HowdyFF(double ks, double kg, double kv) {
+    this.kS = ks;
+    this.kG = kg;
+    this.kV = kv;
+    this.kA = 0.0;
+  }
+
   public HowdyFF(double ks, double kg, double kv, double ka) {
     this.kS = ks;
     this.kG = kg;
