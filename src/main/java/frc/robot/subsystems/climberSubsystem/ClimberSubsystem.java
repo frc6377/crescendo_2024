@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 
 public class ClimberSubsystem extends SubsystemBase {
+  private PIDState pidState;
   private CANSparkMax leftArmMotor;
   private CANSparkMax rightArmMotor;
   private ShuffleboardTab climberTab = Shuffleboard.getTab(this.getName());
@@ -32,9 +33,9 @@ public class ClimberSubsystem extends SubsystemBase {
     motor.restoreFactoryDefaults();
     motor.setIdleMode(IdleMode.kCoast);
     SparkPIDController pidController = motor.getPIDController();
-    pidController.setP(ClimberConstants.PID[0]);
-    pidController.setI(ClimberConstants.PID[1]);
-    pidController.setD(ClimberConstants.PID[2]);
+    pidController.setP(ClimberConstants.CURRENT_PID[0]);
+    pidController.setI(ClimberConstants.CURRENT_PID[1]);
+    pidController.setD(ClimberConstants.CURRENT_PID[2]);
     motor.setSmartCurrentLimit(40);
   }
 
@@ -74,6 +75,7 @@ public class ClimberSubsystem extends SubsystemBase {
    * @param currentLimit the limit in amps to set
    */
   public void setCurrentLimit(int currentLimit) {
+    setPIDState(PIDState.CURRENT);
     leftArmMotor.setSmartCurrentLimit(currentLimit);
     rightArmMotor.setSmartCurrentLimit(currentLimit);
   }
@@ -83,8 +85,15 @@ public class ClimberSubsystem extends SubsystemBase {
     leftArmMotor.getEncoder().setPosition(0);
   }
 
+  /**
+   * Any command that uses this needs to clean up after self.
+   * As in reset min and max to -1 and  1
+   * @param max the maximum output (Physically 1)
+   * @param min the minimum output (Physically -1)
+   */
   public void setOutputLimits(double max, double min) {
-    leftArmMotor.getPIDController();
+    leftArmMotor.getPIDController().setOutputRange(min,max);
+    rightArmMotor.getPIDController().setOutputRange(min,max);
   }
 
   public Position getPosition() {
@@ -99,6 +108,25 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public AppliedCurrent getCurrent() {
     return new AppliedCurrent(leftArmMotor.getOutputCurrent(), rightArmMotor.getOutputCurrent());
+  }
+
+  public void requestPosition(double climbPosition) {
+    setPIDState(PIDState.POSITION);
+    leftArmMotor.getPIDController().setReference(climbPosition, ControlType.kPosition);
+    rightArmMotor.getPIDController().setReference(climbPosition, ControlType.kPosition);
+  }
+
+  private void setPIDState(PIDState state){
+    if(state == pidState) return;
+    configPID(rightArmMotor.getPIDController(), state.getPID());
+    configPID(leftArmMotor.getPIDController(), state.getPID());
+  }
+
+  private static void configPID(SparkPIDController pidController, double[] pid){
+    if(pid.length != 3) throw new RuntimeException("Incorrect number of PID numbers");
+    pidController.setP(pid[0]);
+    pidController.setI(pid[1]);
+    pidController.setD(pid[2]);
   }
 
   @Override
@@ -123,6 +151,26 @@ public class ClimberSubsystem extends SubsystemBase {
   public record CurrentVelocity(double left, double right) {
     public boolean isZero(double epsilion) {
       return Math.abs(left) < epsilion && Math.abs(right) < epsilion;
+    }
+  }
+
+  private enum PIDState {
+    CURRENT(0),
+    POSITION(1);
+    private int id;
+    private PIDState(int id){
+      this.id = id;
+    }
+
+    public double[] getPID(){
+      switch(this.id){
+        case 0:
+        return ClimberConstants.CURRENT_PID;
+        case 1:
+        return ClimberConstants.POSITION_PID;
+        default:
+        return new double[]{0,0,0};
+      }
     }
   }
 }

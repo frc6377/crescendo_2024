@@ -253,7 +253,8 @@ public final class Constants {
     public static final int RIGHT_ARM_ID = 11;
     public static final double CLIMB_PERCENT = -0.4;
     public static final double CLIMB_POSITION = 7;
-    public static final double[] PID = new double[] {0.01, 0, 0};
+    public static final double[] POSITION_PID = new double[] {0.01, 0, 0};
+    public static final double[] CURRENT_PID = new double[] {0.01, 0, 0};
     public static final double MIN_RAISE_TIME_SEC = 0.1;
     public static final double CLIP_CURRENT = -10;
   }
