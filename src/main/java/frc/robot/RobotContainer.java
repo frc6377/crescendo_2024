@@ -169,6 +169,7 @@ public class RobotContainer {
     }
 
     configureBindings();
+    configDriverFeedBack();
   }
 
   /**
@@ -209,10 +210,9 @@ public class RobotContainer {
     OI.getTrigger(OI.Operator.prepareToFire)
         .whileTrue(
             Commands.either(
-                    trapElvCommandFactory.positionAMP(),
-                    prepareToScoreSpeaker(),
-                    robotStateManager.isAmpSupplier())
-                .andThen());
+                trapElvCommandFactory.positionAMP(),
+                prepareToScoreSpeaker(),
+                robotStateManager.isAmpSupplier()));
 
     OI.getTrigger(OI.Operator.fire)
         .whileTrue(
@@ -241,6 +241,11 @@ public class RobotContainer {
     OI.getButton(OI.Operator.retractClimber).onTrue(climberCommandFactory.climb());
   }
 
+  private void configDriverFeedBack(){
+    new Trigger(shooterSubsystem::isShooterReady).whileTrue(
+      Commands.startEnd(()->OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),()->OI.Operator.setRumble(0)));
+  }
+
   private Command speakerSource() {
     return Commands.deadline(
         shooterCommandFactory.intakeSource(), triggerCommandFactory.getLoadCommand());
@@ -248,7 +253,7 @@ public class RobotContainer {
 
   private Command intakeSpeaker() {
     return Commands.parallel(
-        intakeCommandFactory.getSpeakerIntakeCommand(), triggerCommandFactory.getLoadCommand());
+        shooterCommandFactory.intakeSpeakerSource(), triggerCommandFactory.getLoadCommand());
   }
 
   private Command intakeAmp() {
@@ -259,10 +264,12 @@ public class RobotContainer {
   }
 
   private Command shootSpeaker() {
-    return Commands.either(
-        triggerCommandFactory.getShootCommand(),
-        triggerCommandFactory.getShootCommand().onlyIf(() -> shooterSubsystem.isShooterReady()),
-        OI.getButton(OI.Operator.simple));
+    return Commands.parallel(
+        Commands.either(
+            triggerCommandFactory.getShootCommand(),
+            triggerCommandFactory.getShootCommand().onlyIf(() -> shooterSubsystem.isShooterReady()),
+            OI.getButton(OI.Operator.simple)),
+        shooterCommandFactory.revShooter());
   }
 
   private Command prepareToScoreSpeaker() {

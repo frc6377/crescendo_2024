@@ -170,6 +170,7 @@ public final class Constants {
 
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
+    public static final double RUMBLE_STRENGTH = .5;
   }
 
   public static class TrapElvConstants {

@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ShooterConstants;
@@ -45,12 +46,16 @@ public class ShooterCommandFactory {
   // method to save a method call
   public Command revShooter() {
     if (subsystem == null) return new InstantCommand();
-    return Commands.startEnd(
+    return new FunctionalCommand(
         () -> {
           subsystem.setShooterSpeeds(
               new SpeakerConfig(-1, targetRPM.getDouble(4000), rightTargetRPM.getDouble(4000)));
         },
         () -> {},
+        (a) -> {
+          System.err.println(a);
+        },
+        () -> false,
         subsystem);
   }
 
