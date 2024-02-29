@@ -9,12 +9,18 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
+import frc.robot.utilities.DebugEntry;
 
 public class ClimberSubsystem extends SubsystemBase {
   private PIDState pidState;
   private CANSparkMax leftArmMotor;
   private CANSparkMax rightArmMotor;
   private ShuffleboardTab climberTab = Shuffleboard.getTab(this.getName());
+
+  private DebugEntry<Double> rightArmPoseEntry;
+  private DebugEntry<Double> leftArmPoseEntry;
+  private DebugEntry<Double> rightArmOutputEntry;
+  private DebugEntry<Double> leftArmOutputEntry;
 
   public ClimberSubsystem() {
     leftArmMotor = new CANSparkMax(ClimberConstants.LEFT_ARM_ID, MotorType.kBrushless);
@@ -23,10 +29,15 @@ public class ClimberSubsystem extends SubsystemBase {
     configMotor(rightArmMotor);
     leftArmMotor.setInverted(true);
 
-    climberTab.addDouble("right arm position", () -> rightArmMotor.getEncoder().getPosition());
-    climberTab.addDouble("left arm position", () -> leftArmMotor.getEncoder().getPosition());
-    climberTab.addDouble("right arm output", () -> rightArmMotor.getAppliedOutput());
-    climberTab.addDouble("left arm  output", () -> leftArmMotor.getAppliedOutput());
+    rightArmPoseEntry =
+        new DebugEntry<Double>(
+            rightArmMotor.getEncoder().getPosition(), "right arm position", this);
+    leftArmPoseEntry =
+        new DebugEntry<Double>(rightArmMotor.getEncoder().getPosition(), "left arm position", this);
+    rightArmOutputEntry =
+        new DebugEntry<Double>(rightArmMotor.getAppliedOutput(), "right arm output", this);
+    leftArmOutputEntry =
+        new DebugEntry<Double>(rightArmMotor.getAppliedOutput(), "left arm output", this);
   }
 
   private void configMotor(CANSparkMax motor) {
@@ -130,7 +141,12 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    rightArmPoseEntry.log(rightArmMotor.getEncoder().getPosition());
+    leftArmPoseEntry.log(leftArmMotor.getEncoder().getPosition());
+    rightArmOutputEntry.log(rightArmMotor.get());
+    leftArmOutputEntry.log(leftArmMotor.get());
+  }
 
   public record DifferentialDemand(double left, double right) {}
 

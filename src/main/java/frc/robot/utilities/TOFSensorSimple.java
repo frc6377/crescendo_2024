@@ -8,6 +8,7 @@ import com.playingwithfusion.TimeOfFlight;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Robot;
 
 /** Add your docs here. */
 public class TOFSensorSimple {
@@ -23,8 +24,10 @@ public class TOFSensorSimple {
   }
 
   public double getMilliMeters() {
-    SmartDashboard.putNumber("TOF " + id, sensor.getRange());
-    SmartDashboard.putString("status" + id, sensor.getStatus().toString());
+    if (!Robot.isCompetition) {
+      SmartDashboard.putNumber("TOF " + id, sensor.getRange());
+      SmartDashboard.putString("status" + id, sensor.getStatus().toString());
+    }
     return sensor.getRange();
   }
 
