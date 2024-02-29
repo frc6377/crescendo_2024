@@ -312,7 +312,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   public BooleanSupplier isAMPReady() {
     double offset = wristStateGoal - getWristEncoderPos();
     return () ->
-        (-TrapElvConstants.ROLLER_DEADZONE < offset && offset < TrapElvConstants.ROLLER_DEADZONE);
+        (-TrapElvConstants.WRIST_DEADZONE < offset && offset < TrapElvConstants.WRIST_DEADZONE);
   }
 
   // Void Functions
