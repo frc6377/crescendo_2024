@@ -161,7 +161,6 @@ public class RobotContainer {
       registerCommands();
       autoChooser = AutoBuilder.buildAutoChooser();
       configTab.add("Auton Selection", autoChooser).withSize(3, 1);
-      SmartDashboard.putBoolean("NamedCommand test", false);
     }
 
     if (Robot.isSimulation() && Constants.enabledSubsystems.drivetrainEnabled) {

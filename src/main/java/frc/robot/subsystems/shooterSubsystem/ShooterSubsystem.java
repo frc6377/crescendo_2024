@@ -9,6 +9,8 @@ import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -26,6 +28,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private final RelativeEncoder shooterLeftMotorEncoder;
   private final RelativeEncoder shooterRightMotorEncoder;
+
+  private ShuffleboardTab shooterTab = Shuffleboard.getTab("ShooterSubsystem");
 
   private DebugEntry<Double> leftMotorOutputEntry;
   private DebugEntry<Double> leftMotorSpeedEntry;

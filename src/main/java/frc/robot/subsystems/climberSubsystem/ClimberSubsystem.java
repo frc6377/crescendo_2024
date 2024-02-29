@@ -141,7 +141,12 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    rightArmPoseEntry.log(rightArmMotor.getEncoder().getPosition());
+    leftArmPoseEntry.log(leftArmMotor.getEncoder().getPosition());
+    rightArmOutputEntry.log(rightArmMotor.get());
+    leftArmOutputEntry.log(leftArmMotor.get());
+  }
 
   public record DifferentialDemand(double left, double right) {}
 
