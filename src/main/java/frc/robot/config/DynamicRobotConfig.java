@@ -3,7 +3,6 @@ package frc.robot.config;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Preferences;
-import frc.robot.Robot;
 import java.lang.reflect.Field;
 
 /**
@@ -42,7 +41,7 @@ public class DynamicRobotConfig {
       try {
         // If the preference does not exist, or we are bypassing to competition robot defaults, log
         // an alert and open network access for that preference
-        if (!Preferences.containsKey(key) || Robot.isCompetition) {
+        if (!Preferences.containsKey(key)) {
           raiseWarning("Using competition robot default for " + key);
           Preferences.initDouble(key, variable.getDouble(ConfigVariables.class));
         }
