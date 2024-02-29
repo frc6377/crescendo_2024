@@ -65,9 +65,9 @@ public class ShooterSubsystem extends SubsystemBase {
         new TOFSensorSimple(ShooterConstants.BEAM_BREAK_ID, ShooterConstants.BEAM_BREAK_THRESHOLD);
 
     shooterLeftMotor.restoreFactoryDefaults();
-    shooterLeftMotor.setSmartCurrentLimit(40);
+    shooterLeftMotor.setSmartCurrentLimit(50);
     shooterRightMotor.restoreFactoryDefaults();
-    shooterRightMotor.setSmartCurrentLimit(40);
+    shooterRightMotor.setSmartCurrentLimit(50);
 
     shooterLeftMotor.setIdleMode(IdleMode.kCoast);
     shooterRightMotor.setIdleMode(IdleMode.kCoast);

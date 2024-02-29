@@ -21,6 +21,12 @@ public final class Constants {
     public static final double TURN_kD = 0;
     public static final double MAX_AUTO_TURN = 180; // deg/s
     public static final double MAX_AUTO_ACCERLATION = 180; // deg/s^2
+    public static final double LOW_GEAR_MAG_MULTIPLE = 0.6;
+    public static final double LOW_GEAR_STEER_MULTIPLE = 1;
+    public static final double HIGH_GEAR_MAG_MULTIPLE = 1;
+    public static final double HIGH_GEAR_STEER_MULTIPLE = 0.6;
+    public static final double TRANSLATION_DEADBAND = 0.1;
+    public static final double ROTATION_DEADBAND = 0.05;
   }
 
   public static class IntakeConstants {

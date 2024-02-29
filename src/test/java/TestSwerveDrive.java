@@ -5,6 +5,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
+import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.OI;
 import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem;
 import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem.DriveInput;
@@ -34,14 +35,15 @@ public class TestSwerveDrive {
 
         for (int rot = 0; rot < rotations; rot++) {
           DriveInput input = new DriveInput(translation.get(0, 0), translation.get(1, 0), rot);
-          DriveRequest req = SwerveSubsystem.joystickCondition(input, deadband);
-
-          assertTrue(Math.abs(req.getMagnitude() - actualMagnitude) < epsilion);
+          DriveRequest conditioned = SwerveSubsystem.joystickCondition(input, deadband, true);
+          assertTrue(Math.abs(conditioned.getMagnitude() - actualMagnitude) < epsilion);
           assertTrue(
               Math.abs(
-                      req.alpha()
+                      conditioned.alpha()
                           + OI.Driver.rotationCurve.calculate(
-                              MathUtil.applyDeadband(rot, deadband)))
+                                  MathUtil.applyDeadband(
+                                      rot, SwerveDriveConstants.ROTATION_DEADBAND))
+                              * SwerveDriveConstants.HIGH_GEAR_STEER_MULTIPLE)
                   < epsilion);
         }
       }

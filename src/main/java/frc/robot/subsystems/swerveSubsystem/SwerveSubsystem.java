@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.OI;
 import frc.robot.Robot;
 import frc.robot.Telemetry;
@@ -137,16 +138,30 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     }
   }
 
-  public static DriveRequest joystickCondition(final DriveInput input, final double deadband) {
+  public static DriveRequest joystickCondition(
+      final DriveInput input, final double deadband, final boolean isHighGear) {
+    final double magMultiple =
+        isHighGear
+            ? SwerveDriveConstants.HIGH_GEAR_MAG_MULTIPLE
+            : SwerveDriveConstants.LOW_GEAR_MAG_MULTIPLE;
+    final double turnMultiple =
+        isHighGear
+            ? SwerveDriveConstants.HIGH_GEAR_STEER_MULTIPLE
+            : SwerveDriveConstants.LOW_GEAR_STEER_MULTIPLE;
+
     final double mag = Math.sqrt(input.x() * input.x() + input.y() * input.y());
     final double finalAlpha =
-        -OI.Driver.rotationCurve.calculate(MathUtil.applyDeadband(input.alpha(), deadband));
+        -OI.Driver.rotationCurve.calculate(
+                MathUtil.applyDeadband(input.alpha(), SwerveDriveConstants.ROTATION_DEADBAND))
+            * turnMultiple;
     if (mag < deadband * deadband) {
       return new DriveRequest(0, 0, finalAlpha);
     }
 
     final double finalMag =
-        OI.Driver.translationMagnitudeCurve.calculate(MathUtil.applyDeadband(mag, deadband));
+        OI.Driver.translationMagnitudeCurve.calculate(
+                MathUtil.applyDeadband(mag, SwerveDriveConstants.TRANSLATION_DEADBAND))
+            * magMultiple;
     // Mixup is intentional, WPI has its coordinate plane from the perspective of the
     // scoring
     // table

@@ -189,7 +189,8 @@ public class RobotContainer {
                     OI.getAxisSupplier(OI.Driver.xTranslationAxis).get(),
                     OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
                     OI.getAxisSupplier(OI.Driver.rotationAxis).get()),
-                0.1);
+                0.1,
+                OI.getButton(OI.Driver.highGear).getAsBoolean());
 
     drivetrainCommandFactory.setDefaultCommand(
         drivetrainCommandFactory.fieldOrientedDrive(input).withName("Get Axis Suppliers"));
@@ -261,7 +262,7 @@ public class RobotContainer {
     return Commands.either(
         triggerCommandFactory.getShootCommand(),
         triggerCommandFactory.getShootCommand().onlyIf(() -> shooterSubsystem.isShooterReady()),
-        OI.getButton(OI.Operator.dumb));
+        OI.getButton(OI.Operator.simple));
   }
 
   private Command prepareToScoreSpeaker() {
