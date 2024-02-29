@@ -12,10 +12,10 @@ import frc.robot.Constants.TurretConstants;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.config.TurretZeroConfig;
 
-public class TurretComandFactory {
+public class TurretCommandFactory {
   final TurretSubsystem subsystem;
 
-  public TurretComandFactory(TurretSubsystem subsystem) {
+  public TurretCommandFactory(TurretSubsystem subsystem) {
     this.subsystem = subsystem;
   }
 

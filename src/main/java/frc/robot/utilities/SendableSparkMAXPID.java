@@ -14,9 +14,9 @@ public class SendableSparkMAXPID implements Sendable {
 
   @Override
   public void initSendable(SendableBuilder builder) {
+    builder.setSmartDashboardType("PIDController");
     builder.addDoubleProperty("kP", sparkPID::getP, sparkPID::setP);
     builder.addDoubleProperty("ki", sparkPID::getI, sparkPID::setI);
     builder.addDoubleProperty("kd", sparkPID::getD, sparkPID::setD);
-    throw new UnsupportedOperationException("Unimplemented method 'initSendable'");
   }
 }

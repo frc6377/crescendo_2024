@@ -40,7 +40,7 @@ import frc.robot.subsystems.trapElvSubsystem.TrapElvCommandFactory;
 import frc.robot.subsystems.trapElvSubsystem.TrapElvSubsystem;
 import frc.robot.subsystems.triggerSubsystem.TriggerCommandFactory;
 import frc.robot.subsystems.triggerSubsystem.TriggerSubsystem;
-import frc.robot.subsystems.turretSubsystem.TurretComandFactory;
+import frc.robot.subsystems.turretSubsystem.TurretCommandFactory;
 import frc.robot.subsystems.turretSubsystem.TurretSubsystem;
 import frc.robot.subsystems.vision.LimelightSubsystem;
 import frc.robot.subsystems.vision.PhotonSubsystem;
@@ -94,7 +94,7 @@ public class RobotContainer {
   private final IntakeCommandFactory intakeCommandFactory;
   private final TriggerCommandFactory triggerCommandFactory;
   private final TrapElvCommandFactory trapElvCommandFactory;
-  private final TurretComandFactory turretCommandFactory;
+  private final TurretCommandFactory turretCommandFactory;
   private final ClimberCommandFactory climberCommandFactory;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -149,7 +149,7 @@ public class RobotContainer {
     } else {
       turretSubsystem = null;
     }
-    turretCommandFactory = new TurretComandFactory(turretSubsystem);
+    turretCommandFactory = new TurretCommandFactory(turretSubsystem);
     if (enabledSubsystems.climberEnabled) {
       climberSubsystem = new ClimberSubsystem();
     } else {
@@ -249,7 +249,7 @@ public class RobotContainer {
   }
 
   private Command speakerSource() {
-    return Commands.deadline(
+    return Commands.parallel(
         shooterCommandFactory.intakeSource(), triggerCommandFactory.getLoadCommand());
   }
 

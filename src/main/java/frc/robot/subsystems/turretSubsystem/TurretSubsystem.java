@@ -512,11 +512,11 @@ public class TurretSubsystem extends SubsystemBase {
         + robotPos.getRotation().getRadians();
   }
 
-  public CANcoder getLowGearCANCoder() {
+  protected CANcoder getLowGearCANCoder() {
     return lowGearCANcoder;
   }
 
-  public CANcoder getHighGearCANCoder() {
+  protected CANcoder getHighGearCANCoder() {
     return highGearCANcoder;
   }
 }

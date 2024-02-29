@@ -24,9 +24,9 @@ public final class Constants {
     public static final double LOW_GEAR_MAG_MULTIPLE = 0.6;
     public static final double LOW_GEAR_STEER_MULTIPLE = 1;
     public static final double HIGH_GEAR_MAG_MULTIPLE = 1;
-    public static final double HIGH_GEAR_STEER_MULTIPLE = 0.6;
+    public static final double HIGH_GEAR_STEER_MULTIPLE = 1;
     public static final double TRANSLATION_DEADBAND = 0.1;
-    public static final double ROTATION_DEADBAND = 0.05;
+    public static final double ROTATION_DEADBAND = 0.01;
   }
 
   public static class IntakeConstants {
@@ -74,7 +74,7 @@ public final class Constants {
 
     public static final double SHOOTER_RIGHT_GEARING = 0.4; // Unitless
     public static final double SHOOTER_RIGHT_MOMENT = 0.000848475500006; // Placeholder; in kg*m^2
-    public static final SpeakerConfig SHOOTER_SOURCE_INTAKE = new SpeakerConfig(-1, -1000, -1000);
+    public static final SpeakerConfig SHOOTER_SOURCE_INTAKE = new SpeakerConfig(-1, -2000, -2000);
     public static final double INTAKE_DELAY_SEC = 10;
     public static final int BEAM_BREAK_ID = 1;
     public static final double BEAM_BREAK_THRESHOLD = 0;
