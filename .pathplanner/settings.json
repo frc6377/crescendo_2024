@@ -8,7 +8,11 @@
     "Waco Paths",
     "Source Starting Location"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "Test Paths",
+    "Old Waco Paths",
+    "Waco Paths"
+  ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,

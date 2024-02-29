@@ -14,13 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "D1Turn"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "D1Turn-E4Intake"
+            "pathName": "D1-E4Intake"
           }
         },
         {
@@ -50,6 +44,6 @@
       ]
     }
   },
-  "folder": null,
+  "folder": "Waco Paths",
   "choreoAuto": false
 }

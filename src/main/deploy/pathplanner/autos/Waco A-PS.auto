@@ -2,21 +2,15 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.23,
-      "y": 5.55
+      "x": 0.66,
+      "y": 6.55
     },
-    "rotation": 0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
-        {
-          "type": "path",
-          "data": {
-            "pathName": "A1-B1Shoot"
-          }
-        },
         {
           "type": "named",
           "data": {
@@ -26,12 +20,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "B1-A4"
+            "pathName": "A1-A4"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "Waco Paths",
   "choreoAuto": false
 }
