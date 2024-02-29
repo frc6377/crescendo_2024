@@ -103,6 +103,10 @@ public class LimelightSubsystem extends VisionSubsystem {
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("hb").getInteger(0);
   }
 
+  public Pose3d getNoteLocation() {
+    return null; // Replace with Coral functionality
+  }
+
   @Override
   public void periodic() {
     if (Robot.isReal()) {
