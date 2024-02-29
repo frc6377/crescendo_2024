@@ -13,8 +13,8 @@ public class TestShooterSubsystem {
     SpeakerConfig speedsPair;
     double[] speedsArray = {0, 0};
     double[][] speakerConfigListTest = {
-      {-100, 250, 250},
-      {0, 250, 250},
+      {-100, 2350, 1950},
+      {0, 2350, 1950},
       {40, 350, 350},
       {195, 500, 500},
       {290, 700, 700},

@@ -86,7 +86,6 @@ public class ClimberSubsystem extends SubsystemBase {
    * @param currentLimit the limit in amps to set
    */
   public void setCurrentLimit(int currentLimit) {
-    setPIDState(PIDState.CURRENT);
     leftArmMotor.setSmartCurrentLimit(currentLimit);
     rightArmMotor.setSmartCurrentLimit(currentLimit);
   }
@@ -134,10 +133,11 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   private static void configPID(SparkPIDController pidController, double[] pid) {
-    if (pid.length != 3) throw new RuntimeException("Incorrect number of PID numbers");
+    if (pid.length != 4) throw new RuntimeException("Incorrect number of PID numbers");
     pidController.setP(pid[0]);
     pidController.setI(pid[1]);
     pidController.setD(pid[2]);
+    pidController.setFF(pid[3]);
   }
 
   @Override
@@ -181,7 +181,7 @@ public class ClimberSubsystem extends SubsystemBase {
         case 1:
           return ClimberConstants.POSITION_PID;
         default:
-          return new double[] {0, 0, 0};
+          return new double[] {0, 0, 0, 0};
       }
     }
   }

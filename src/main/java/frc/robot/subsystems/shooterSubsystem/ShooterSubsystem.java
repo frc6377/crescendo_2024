@@ -74,10 +74,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
     shooterLeftMotor.setInverted(true);
 
-    shooterLeftMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_LEFT_P);
-    shooterLeftMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_LEFT_I);
-    shooterLeftMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_LEFT_D);
-    shooterLeftMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_LEFT_FF);
+    shooterLeftMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_RIGHT_P);
+    shooterLeftMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_RIGHT_I);
+    shooterLeftMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_RIGHT_D);
+    shooterLeftMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_RIGHT_FF);
     shooterRightMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_RIGHT_P);
     shooterRightMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_RIGHT_I);
     shooterRightMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_RIGHT_D);
@@ -125,6 +125,9 @@ public class ShooterSubsystem extends SubsystemBase {
     rightFlywheelAngularVelocityEntry = new DebugEntry<Double>(0.0, "Right Flywheel RPM", this);
 
     shooterReadyEntry = new DebugEntry<Boolean>(false, "Shooter Ready?", this);
+
+    shooterTab.addDouble("Left Current", shooterLeftMotor::getOutputCurrent);
+    shooterTab.addDouble("Right Current", shooterRightMotor::getOutputCurrent);
   }
 
   @Override
@@ -283,7 +286,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // Motor RPM, NOT roller RPM
   private static SpeakerConfig[] speakerConfigList = {
-    new SpeakerConfig(0, 250, 250),
+    new SpeakerConfig(0, 2350, 1950),
     new SpeakerConfig(40, 350, 350),
     new SpeakerConfig(195, 500, 500),
     new SpeakerConfig(290, 700, 700)

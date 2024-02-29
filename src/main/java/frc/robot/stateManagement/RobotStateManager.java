@@ -35,6 +35,7 @@ public class RobotStateManager extends SubsystemBase {
             () ->
                 (DriverStation.getMatchTime() < Constants.END_GAME_WARNING_TIME
                     && DriverStation.isTeleopEnabled()));
+    endGameStart.onTrue(new InstantCommand(() -> isEndGame = true).withName("EndGame Start"));
   }
 
   @Override
@@ -46,7 +47,6 @@ public class RobotStateManager extends SubsystemBase {
             alliance.get().equals(Alliance.Red) ? AllianceColor.RED : AllianceColor.BLUE;
       }
     }
-    endGameStart.onTrue(new InstantCommand(() -> isEndGame = true).withName("EndGame Start"));
   }
 
   // Note State
