@@ -3,36 +3,42 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.4,
-        "y": 6.46
+        "x": 0.6,
+        "y": 4.5
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.48180267789107,
-        "y": 6.845966834790812
+        "x": 0.6000000000000002,
+        "y": 3.0
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.29957545629377,
-        "y": 4.104648209296419
+        "x": 8.2,
+        "y": 0.775
       },
       "prevControl": {
-        "x": 8.182299793171016,
-        "y": 4.500453572335717
+        "x": 6.949999999999999,
+        "y": 0.775
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.8,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.5,
+    "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
@@ -43,7 +49,10 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Amp Side 5 Note",
-  "previewStartingState": null,
+  "folder": "Center Starting Location",
+  "previewStartingState": {
+    "rotation": -60.0,
+    "velocity": 0
+  },
   "useDefaultConstraints": false
 }

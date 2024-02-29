@@ -269,11 +269,26 @@ public class RobotContainer {
         turretCommandFactory.getAimTurretCommand(), shooterCommandFactory.revShooter());
   }
 
+  private Command shootAuton() {
+    return Commands.parallel(
+        shooterCommandFactory.revShooter(),
+        Commands.waitUntil(() -> shooterSubsystem.isShooterReady())
+            .andThen(triggerCommandFactory.getShootCommand()));
+  }
+
+  private Command ampAuton() {
+    return Commands.parallel(
+        trapElvCommandFactory.positionAMP(),
+        Commands.waitUntil(trapElvSubsystem.isAMPReady())
+            .andThen(trapElvCommandFactory.scoreAMP()));
+  }
+
   // Register commands for auton
   public void registerCommands() {
     HashMap<String, Command> autonCommands = new HashMap<String, Command>();
 
-    autonCommands.put("Shoot", autonTest().withName("Shoot"));
+    autonCommands.put("Shoot", shootAuton());
+    autonCommands.put("Amp", ampAuton());
     if (Constants.enabledSubsystems.intakeEnabled) {
       autonCommands.put("Speaker Intake", intakeCommandFactory.getSpeakerIntakeCommand());
       autonCommands.put("Amp Intake", intakeCommandFactory.getAmpIntakeCommand());
@@ -293,11 +308,6 @@ public class RobotContainer {
     if (Constants.enabledSubsystems.signalEnabled) {
       signalingSubsystem.clearLEDs();
     }
-  }
-
-  private Command autonTest() {
-    return new InstantCommand(() -> SmartDashboard.putBoolean("NamedCommand test", true))
-        .withName("Test NamedCommand");
   }
 
   /**

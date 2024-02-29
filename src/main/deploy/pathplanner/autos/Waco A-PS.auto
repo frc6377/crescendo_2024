@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.53,
-      "y": 4.1
+      "x": 0.66,
+      "y": 6.55
     },
-    "rotation": 0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
@@ -20,18 +20,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "C1-C2Intake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
+            "pathName": "A1-A4"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "Waco Paths",
   "choreoAuto": false
 }
