@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ClimberConstants;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -26,6 +27,7 @@ public class ClimberCommandFactory {
         },
         noop,
         (interupt) -> {
+          subsystem.setOutputLimits(0, -1);
           if (interupt) return;
           subsystem.applyPercent(0);
         },
@@ -39,7 +41,13 @@ public class ClimberCommandFactory {
 
   public Command clip() {
     if (subsystem == null) return new InstantCommand();
-    return subsystem.run(() -> subsystem.applyCurrentDemand(ClimberConstants.CLIP_CURRENT));
+    return breakStatic()
+        .andThen(subsystem.run(() -> subsystem.applyCurrentDemand(ClimberConstants.CLIP_CURRENT)));
+  }
+
+  public Command breakStatic() {
+    return new InstantCommand(() -> subsystem.applyPercent(ClimberConstants.BREAK_STATIC_PERCENT))
+        .andThen(new WaitCommand(ClimberConstants.BREAK_STATIC_TIME));
   }
 
   public Command climb() {
@@ -47,14 +55,10 @@ public class ClimberCommandFactory {
 
     Runnable init =
         () -> {
-          subsystem.setOutputLimits(0, -1);
           subsystem.requestPosition(ClimberConstants.CLIMB_POSITION);
         };
     Runnable exec = () -> {};
-    Consumer<Boolean> end =
-        (interupt) -> {
-          subsystem.setOutputLimits(1, -1);
-        };
+    Consumer<Boolean> end = (interupt) -> {};
     BooleanSupplier isFinished =
         () -> subsystem.getPosition().isLessThen(ClimberConstants.CLIMB_POSITION);
 

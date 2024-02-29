@@ -26,7 +26,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  * project.
  */
 public class Robot extends LoggedRobot {
-  public static final boolean isCompetition = false;
+  public static final boolean isCompetition = true;
 
   private Command m_autonomousCommand;
 
