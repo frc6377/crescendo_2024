@@ -19,9 +19,8 @@ public class ClimberSubsystem extends SubsystemBase {
   public ClimberSubsystem() {
     leftArmMotor = new CANSparkMax(ClimberConstants.LEFT_ARM_ID, MotorType.kBrushless);
     rightArmMotor = new CANSparkMax(ClimberConstants.RIGHT_ARM_ID, MotorType.kBrushless);
-    configMotor(leftArmMotor);
-    configMotor(rightArmMotor);
-    leftArmMotor.setInverted(true);
+    configMotor(leftArmMotor, false);
+    configMotor(rightArmMotor, true);
 
     climberTab.addDouble("right arm position", () -> rightArmMotor.getEncoder().getPosition());
     climberTab.addDouble("left arm position", () -> leftArmMotor.getEncoder().getPosition());
@@ -29,13 +28,16 @@ public class ClimberSubsystem extends SubsystemBase {
     climberTab.addDouble("left arm  output", () -> leftArmMotor.getAppliedOutput());
   }
 
-  private void configMotor(CANSparkMax motor) {
+  private void configMotor(CANSparkMax motor, boolean invert) {
     motor.restoreFactoryDefaults();
     motor.setIdleMode(IdleMode.kCoast);
     SparkPIDController pidController = motor.getPIDController();
     pidController.setP(ClimberConstants.CURRENT_PID[0]);
     pidController.setI(ClimberConstants.CURRENT_PID[1]);
     pidController.setD(ClimberConstants.CURRENT_PID[2]);
+    double armPosition = motor.getAbsoluteEncoder().getPosition() * (invert ? -1 : 1);
+    motor.getEncoder().setPosition(armPosition * ClimberConstants.GEAR_RATIO);
+    motor.setInverted(invert);
     motor.setSmartCurrentLimit(40);
   }
 

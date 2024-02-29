@@ -244,8 +244,9 @@ public final class Constants {
   public static class ClimberConstants {
     public static final int LEFT_ARM_ID = 20;
     public static final int RIGHT_ARM_ID = 11;
+    public static final double GEAR_RATIO = 175;
     public static final double CLIMB_PERCENT = -0.4;
-    public static final double CLIMB_POSITION = 1;
+    public static final double CLIMB_POSITION = 0;
     public static final double[] POSITION_PID = new double[] {0.15, 1e-4, 0, 0};
     public static final double[] CURRENT_PID = new double[] {0.01, 0, 0, 0};
     public static final double MIN_RAISE_TIME_SEC = 0.1;
