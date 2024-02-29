@@ -13,10 +13,10 @@ import java.lang.reflect.Field;
  */
 public class DynamicRobotConfig {
   private static class ConfigVariables {
-    public static double frontLeftOffset = -0.0361328125;
-    public static double frontRightOffset = -0.10595703125;
-    public static double backLeftOffset = -0.298095703125;
-    public static double backRightOffset = 0.2529296875;
+    public static double frontLeftOffset = 0.067;
+    public static double frontRightOffset = 0.384;
+    public static double backLeftOffset = 0.538;
+    public static double backRightOffset = 0.919;
     public static double lowGearTurretZero = 0;
     public static double highGearTurretZero = 0;
 
