@@ -241,9 +241,12 @@ public class RobotContainer {
     OI.getButton(OI.Operator.retractClimber).onTrue(climberCommandFactory.climb());
   }
 
-  private void configDriverFeedBack(){
-    new Trigger(shooterSubsystem::isShooterReady).whileTrue(
-      Commands.startEnd(()->OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),()->OI.Operator.setRumble(0)));
+  private void configDriverFeedBack() {
+    new Trigger(shooterSubsystem::isShooterReady)
+        .whileTrue(
+            Commands.startEnd(
+                () -> OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
+                () -> OI.Operator.setRumble(0)));
   }
 
   private Command speakerSource() {

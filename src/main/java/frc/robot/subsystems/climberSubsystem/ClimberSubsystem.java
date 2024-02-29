@@ -3,17 +3,21 @@ package frc.robot.subsystems.climberSubsystem;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.ClimberConstants;
 
 public class ClimberSubsystem extends SubsystemBase {
   private PIDState pidState;
   private CANSparkMax leftArmMotor;
   private CANSparkMax rightArmMotor;
+  private AbsoluteEncoder leftAbsoluteEncoder;
+  private AbsoluteEncoder rightAbsoluteEncoder;
   private ShuffleboardTab climberTab = Shuffleboard.getTab(this.getName());
 
   public ClimberSubsystem() {
@@ -81,7 +85,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public void zeroAtCurrentPosition() {
     leftArmMotor.getEncoder().setPosition(0);
-    leftArmMotor.getEncoder().setPosition(0);
+    rightArmMotor.getEncoder().setPosition(0);
   }
 
   /**
@@ -97,7 +101,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public Position getPosition() {
     return new Position(
-        leftArmMotor.getEncoder().getPosition(), rightArmMotor.getEncoder().getPosition());
+        leftAbsoluteEncoder.getPosition()-Constants.absoluteEncoderOffsetLeft, rightAbsoluteEncoder.getPosition()-Constants.absoluteEncoderOffsetRight);
   }
 
   public CurrentVelocity getVelocity() {

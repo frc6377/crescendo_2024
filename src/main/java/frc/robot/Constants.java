@@ -276,4 +276,8 @@ public final class Constants {
 
   // Lights
   public static final int LED_COUNT = 20;
+
+  // Absolute Encoder offset
+  public static final double absoluteEncoderOffsetLeft = 0.0;
+  public static final double absoluteEncoderOffsetRight = 0.0;
 }
