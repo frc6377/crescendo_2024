@@ -270,17 +270,17 @@ public class RobotContainer {
   }
 
   private Command shootAuton() {
-    return Commands.parallel(
-        shooterCommandFactory.revShooter(),
+    return Commands.deadline(
         Commands.waitUntil(() -> shooterSubsystem.isShooterReady())
-            .andThen(triggerCommandFactory.getShootCommand()));
+            .andThen(triggerCommandFactory.getShootCommand().withTimeout(2)),
+        shooterCommandFactory.revShooter());
   }
 
   private Command ampAuton() {
-    return Commands.parallel(
-        trapElvCommandFactory.positionAMP(),
-        Commands.waitUntil(trapElvSubsystem.isAMPReady())
-            .andThen(trapElvCommandFactory.scoreAMP()));
+    return null; // return Commands.parallel(
+    //     trapElvCommandFactory.positionAMP(),
+    //     Commands.waitUntil(trapElvSubsystem.isAMPReady())
+    //         .andThen(trapElvCommandFactory.scoreAMP()));
   }
 
   // Register commands for auton
@@ -288,7 +288,7 @@ public class RobotContainer {
     HashMap<String, Command> autonCommands = new HashMap<String, Command>();
 
     autonCommands.put("Shoot", shootAuton());
-    autonCommands.put("Amp", ampAuton());
+    // autonCommands.put("Amp", ampAuton());
     if (Constants.enabledSubsystems.intakeEnabled) {
       autonCommands.put("Speaker Intake", intakeCommandFactory.getSpeakerIntakeCommand());
       autonCommands.put("Amp Intake", intakeCommandFactory.getAmpIntakeCommand());
