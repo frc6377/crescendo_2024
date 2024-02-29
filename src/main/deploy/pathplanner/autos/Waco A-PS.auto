@@ -20,12 +20,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "A1-A4"
+            "pathName": "A1Sub-A4"
           }
         }
       ]
     }
   },
-  "folder": "Waco Paths",
+  "folder": null,
   "choreoAuto": false
 }
