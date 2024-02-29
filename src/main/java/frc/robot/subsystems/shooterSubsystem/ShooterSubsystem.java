@@ -83,8 +83,10 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterRightMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_RIGHT_D);
     shooterRightMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_RIGHT_FF);
 
-    shooterTab.add("Shooter Left Motor PID", shooterLeftMotor.getPIDController());
-    shooterTab.add("Shooter Right Motor PID", shooterRightMotor.getPIDController());
+    if (!Robot.isCompetition) {
+      shooterTab.add("Shooter Right PID", shooterRightMotor.getPIDController());
+      shooterTab.add("Shooter Left PID", shooterLeftMotor.getPIDController());
+    }
 
     if (Robot.isSimulation()) {
       shooterLeftSim =

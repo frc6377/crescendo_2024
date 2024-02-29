@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,6 +38,9 @@ public class TestDebugEntry {
   @Test()
   public void raiseDupEntryError() {
     // Duplicate Entry
+    if (Robot.isCompetition) {
+      return;
+    }
     try (MockedStatic<DriverStation> mockedFactory = Mockito.mockStatic(DriverStation.class)) {
       mockedFactory
           .when(() -> DriverStation.reportError(anyString(), anyBoolean()))
@@ -49,6 +53,9 @@ public class TestDebugEntry {
 
   @Test
   public void raiseDataTypeError() {
+    if (Robot.isCompetition) {
+      return;
+    }
     try (MockedStatic<DriverStation> mockedFactory = Mockito.mockStatic(DriverStation.class)) {
       mockedFactory
           .when(() -> DriverStation.reportWarning(anyString(), anyBoolean()))
@@ -71,6 +78,9 @@ public class TestDebugEntry {
 
   @Test
   public void testSameNameDifferentSubsystem() {
+    if (Robot.isCompetition) {
+      return;
+    }
     try (MockedStatic<DriverStation> mockedFactory = Mockito.mockStatic(DriverStation.class)) {
       mockedFactory
           .when(() -> DriverStation.reportWarning(anyString(), anyBoolean()))
