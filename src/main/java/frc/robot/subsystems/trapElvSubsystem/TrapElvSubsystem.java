@@ -15,7 +15,6 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -33,6 +32,7 @@ import frc.robot.Constants.TrapElvConstants;
 import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.TOFSensorSimple;
+import frc.robot.utilities.TunableNumber;
 import java.util.function.BooleanSupplier;
 
 public class TrapElvSubsystem extends SubsystemBase {
@@ -82,16 +82,18 @@ public class TrapElvSubsystem extends SubsystemBase {
   private ElevatorSim m_scoringElevatorSim;
   private SingleJointedArmSim m_wristMotorSim;
 
+  private ShuffleboardTab TrapElvTab = Shuffleboard.getTab(this.getName());
+
   private DebugEntry<Double> currentPositionEntry;
   private DebugEntry<Boolean> isWristRollerRunning;
+  private DebugEntry<Double> FFOutput;
+  private DebugEntry<Double> wristOutput;
+  private DebugEntry<Double> wristGoal;
+  private DebugEntry<String> currentWristStateEntry;
 
-  private ShuffleboardTab TrapElvTab = Shuffleboard.getTab("TrapElvSubsystem");
-  private GenericEntry FFOutput = TrapElvTab.add("FF Output", 0).withPosition(8, 0).getEntry();
-  private GenericEntry wristOutput =
-      TrapElvTab.add("Wrist Motor Output", 0).withPosition(7, 0).getEntry();
-  private GenericEntry wristGoal = TrapElvTab.add("Wrist Goal", 0).withPosition(6, 0).getEntry();
-  private GenericEntry currentWristStateEntry =
-      TrapElvTab.add("Current Wrist State", TrapElvState.STOWED.name()).getEntry();
+  private TunableNumber wristP;
+  private TunableNumber wristI;
+  private TunableNumber wristD;
 
   private double FF;
 
@@ -156,7 +158,6 @@ public class TrapElvSubsystem extends SubsystemBase {
             TrapElvConstants.WRIST_FF[2],
             TrapElvConstants.WRIST_FF[3]);
     wristStateGoal = TrapElvState.STOWED.getWristPose();
-    wristGoal.setDouble(wristStateGoal);
 
     rollerMotor = new CANSparkMax(TrapElvConstants.ROLLER_MOTOR_ID, MotorType.kBrushed);
     rollerMotor.restoreFactoryDefaults();
@@ -189,7 +190,6 @@ public class TrapElvSubsystem extends SubsystemBase {
       baseMotor1.getPIDController().setD(TrapElvConstants.BASE_PID[2]);
       baseMotor1.getPIDController().setIZone(TrapElvConstants.BASE_PID[3]);
       baseMotor1.getPIDController().setFF(TrapElvConstants.BASE_PID[4]);
-      TrapElvTab.add("Base Elv PID", baseMotor1.getPIDController());
 
       baseMotor2 = new CANSparkMax(TrapElvConstants.BASE_MOTOR2_ID, MotorType.kBrushless);
       baseMotor2.restoreFactoryDefaults();
@@ -206,7 +206,6 @@ public class TrapElvSubsystem extends SubsystemBase {
       scoringMotor.getPIDController().setD(TrapElvConstants.SCORING_PID[2]);
       scoringMotor.getPIDController().setIZone(TrapElvConstants.SCORING_PID[3]);
       scoringMotor.getPIDController().setFF(TrapElvConstants.SCORING_PID[4]);
-      TrapElvTab.add("Scoring Elv PID", scoringMotor.getPIDController());
     }
 
     // Simulation
@@ -268,12 +267,26 @@ public class TrapElvSubsystem extends SubsystemBase {
     }
 
     // SmartDashboard
-    TrapElvTab.add("Wrist PID", wristPIDController).withSize(2, 2).withPosition(0, 0);
+    wristP =
+        new TunableNumber(
+            "Wrist P", TrapElvConstants.WRIST_PID[0], P -> wristPIDController.setP(P), this);
+    wristI =
+        new TunableNumber(
+            "Wrist I", TrapElvConstants.WRIST_PID[1], I -> wristPIDController.setI(I), this);
+    wristD =
+        new TunableNumber(
+            "Wrist D", TrapElvConstants.WRIST_PID[2], D -> wristPIDController.setD(D), this);
 
     sourceLog = new DebugEntry<Boolean>(sourceBreak.get(), "Source Beam Break", this);
     groundLog = new DebugEntry<Boolean>(groundBreak.get(), "Ground Beam Break", this);
     currentPositionEntry = new DebugEntry<>(getWristEncoderPos(), "Current wrist Position", this);
     isWristRollerRunning = new DebugEntry<Boolean>(false, "Wrist Rollers", this);
+    FFOutput = new DebugEntry<Double>(0.0, "FF Output", this);
+    wristOutput = new DebugEntry<Double>(0.0, "Wrist Motor Output", this);
+    wristOutput = new DebugEntry<Double>(0.0, "Wrist Motor Output", this);
+    wristGoal = new DebugEntry<Double>(wristStateGoal, "Wrist Goal", this);
+    currentWristStateEntry =
+        new DebugEntry<String>(TrapElvState.STOWED.name(), "Current Wrist State", this);
   }
 
   // Boolean Suppliers
@@ -318,9 +331,9 @@ public class TrapElvSubsystem extends SubsystemBase {
   // Void Functions
   public void setWristState(TrapElvState state) {
     currentWristState = state;
-    currentWristStateEntry.setString(currentWristState.name());
+    currentWristStateEntry.log(currentWristState.name());
     wristStateGoal = state.getWristPose();
-    wristGoal.setDouble(wristStateGoal);
+    wristGoal.log(wristStateGoal);
     if (isElv) {
       baseMotor1
           .getPIDController()
@@ -370,8 +383,8 @@ public class TrapElvSubsystem extends SubsystemBase {
                 + FF,
             -12,
             12));
-    FFOutput.setDouble(FF);
-    wristOutput.setDouble(wristMotor.getAppliedOutput());
+    FFOutput.log(FF);
+    wristOutput.log(wristMotor.getAppliedOutput());
 
     if (isElv) {
       baseLog.log(baseLimit.get());

@@ -21,6 +21,12 @@ public final class Constants {
     public static final double TURN_kD = 0;
     public static final double MAX_AUTO_TURN = 180; // deg/s
     public static final double MAX_AUTO_ACCERLATION = 180; // deg/s^2
+    public static final double LOW_GEAR_MAG_MULTIPLE = 0.6;
+    public static final double LOW_GEAR_STEER_MULTIPLE = 1;
+    public static final double HIGH_GEAR_MAG_MULTIPLE = 1;
+    public static final double HIGH_GEAR_STEER_MULTIPLE = 0.6;
+    public static final double TRANSLATION_DEADBAND = 0.1;
+    public static final double ROTATION_DEADBAND = 0.05;
   }
 
   public static class IntakeConstants {
@@ -160,10 +166,21 @@ public final class Constants {
     public static final int highGearCAN_CODER_ID = 0;
     public static final int lowGearCAN_CODER_ID = 0;
     public static final double ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV = 0;
+
+    // Turret limits
+    public static final double TURRET_MIN_ANGLE_ROTATIONS =
+        (TURRET_MIN_ANGLE_DEGREES / (360 * TURRET_MOTOR_TURRET_RATIO));
+    public static final double TURRET_MAX_ANGLE_ROTATIONS =
+        (TURRET_MAX_ANGLE_DEGREES / (360 * TURRET_CONVERSION_FACTOR));
+    public static final double PITCH_MIN_ANGLE_ROTATIONS =
+        (PITCH_MIN_ANGLE_DEGREES / (360 * PITCH_CONVERSION_FACTOR));
+    public static final double PITCH_MAX_ANGLE_ROTATIONS =
+        (PITCH_MAX_ANGLE_DEGREES / (360 * PITCH_CONVERSION_FACTOR));
   }
 
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
+    public static final double RUMBLE_STRENGTH = .5;
   }
 
   public static class TrapElvConstants {
@@ -238,8 +255,9 @@ public final class Constants {
   public static class ClimberConstants {
     public static final int LEFT_ARM_ID = 20;
     public static final int RIGHT_ARM_ID = 11;
+    public static final double GEAR_RATIO = 175;
     public static final double CLIMB_PERCENT = -0.4;
-    public static final double CLIMB_POSITION = 1;
+    public static final double CLIMB_POSITION = 0;
     public static final double[] POSITION_PID = new double[] {0.15, 1e-4, 0, 0};
     public static final double[] CURRENT_PID = new double[] {0.01, 0, 0, 0};
     public static final double MIN_RAISE_TIME_SEC = 0.1;

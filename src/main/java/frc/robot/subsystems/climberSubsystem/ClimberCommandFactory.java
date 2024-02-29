@@ -33,7 +33,6 @@ public class ClimberCommandFactory {
         },
         () -> {
           boolean vel = subsystem.getVelocity().isZero(0.5);
-          boolean cur = subsystem.getCurrent().greater(0.1);
           return vel && minTime.hasElapsed(ClimberConstants.MIN_RAISE_TIME_SEC);
         },
         subsystem);

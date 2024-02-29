@@ -161,7 +161,6 @@ public class RobotContainer {
       registerCommands();
       autoChooser = AutoBuilder.buildAutoChooser();
       configTab.add("Auton Selection", autoChooser).withSize(3, 1);
-      SmartDashboard.putBoolean("NamedCommand test", false);
     }
 
     if (Robot.isSimulation() && Constants.enabledSubsystems.drivetrainEnabled) {
@@ -169,6 +168,7 @@ public class RobotContainer {
     }
 
     configureBindings();
+    configDriverFeedBack();
   }
 
   /**
@@ -189,7 +189,8 @@ public class RobotContainer {
                     OI.getAxisSupplier(OI.Driver.xTranslationAxis).get(),
                     OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
                     OI.getAxisSupplier(OI.Driver.rotationAxis).get()),
-                0.1);
+                0.1,
+                OI.getButton(OI.Driver.highGear).getAsBoolean());
 
     drivetrainCommandFactory.setDefaultCommand(
         drivetrainCommandFactory.fieldOrientedDrive(input).withName("Get Axis Suppliers"));
@@ -208,10 +209,9 @@ public class RobotContainer {
     OI.getTrigger(OI.Operator.prepareToFire)
         .whileTrue(
             Commands.either(
-                    trapElvCommandFactory.positionAMP(),
-                    prepareToScoreSpeaker(),
-                    robotStateManager.isAmpSupplier())
-                .andThen());
+                trapElvCommandFactory.positionAMP(),
+                prepareToScoreSpeaker(),
+                robotStateManager.isAmpSupplier()));
 
     OI.getTrigger(OI.Operator.fire)
         .whileTrue(
@@ -237,7 +237,15 @@ public class RobotContainer {
 
     OI.getButton(OI.Operator.latchClimber).onTrue(climberCommandFactory.clip());
 
-    OI.getButton(OI.Operator.retractClimber).onTrue(climberCommandFactory.climb());
+    OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
+  }
+
+  private void configDriverFeedBack() {
+    new Trigger(shooterSubsystem::isShooterReady)
+        .whileTrue(
+            Commands.startEnd(
+                () -> OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
+                () -> OI.Operator.setRumble(0)));
   }
 
   private Command speakerSource() {
@@ -247,7 +255,7 @@ public class RobotContainer {
 
   private Command intakeSpeaker() {
     return Commands.parallel(
-        intakeCommandFactory.getSpeakerIntakeCommand(), triggerCommandFactory.getLoadCommand());
+        shooterCommandFactory.intakeSpeakerSource(), triggerCommandFactory.getLoadCommand());
   }
 
   private Command intakeAmp() {
@@ -258,10 +266,12 @@ public class RobotContainer {
   }
 
   private Command shootSpeaker() {
-    return Commands.either(
-        triggerCommandFactory.getShootCommand(),
-        triggerCommandFactory.getShootCommand().onlyIf(() -> shooterSubsystem.isShooterReady()),
-        OI.getButton(OI.Operator.dumb));
+    return Commands.parallel(
+        Commands.either(
+            triggerCommandFactory.getShootCommand(),
+            triggerCommandFactory.getShootCommand().onlyIf(() -> shooterSubsystem.isShooterReady()),
+            OI.getButton(OI.Operator.simple)),
+        shooterCommandFactory.revShooter());
   }
 
   private Command prepareToScoreSpeaker() {
