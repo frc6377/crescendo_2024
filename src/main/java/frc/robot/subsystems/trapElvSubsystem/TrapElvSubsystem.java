@@ -322,6 +322,12 @@ public class TrapElvSubsystem extends SubsystemBase {
     return Units.radiansToRotations(m_wristMotorSim.getAngleRads());
   }
 
+  public BooleanSupplier isAMPReady() {
+    double offset = wristStateGoal - getWristEncoderPos();
+    return () ->
+        (-TrapElvConstants.WRIST_DEADZONE < offset && offset < TrapElvConstants.WRIST_DEADZONE);
+  }
+
   // Void Functions
   public void setWristState(TrapElvState state) {
     currentWristState = state;

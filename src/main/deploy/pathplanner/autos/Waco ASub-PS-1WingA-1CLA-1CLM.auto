@@ -2,45 +2,19 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.53,
-      "y": 4.1
+      "x": 0.6,
+      "y": 6.6
     },
-    "rotation": 0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "C1-C2Intake"
-                }
-              },
-              {
-                "type": "deadline",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 2.0
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Intake"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
+            "name": "Shoot"
           }
         },
         {
@@ -50,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "C2-B2Intake"
+                  "pathName": "A1Sub-A2Intake"
                 }
               },
               {
@@ -66,7 +40,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Intake"
+                        "name": "Amp Intake"
                       }
                     }
                   ]
@@ -76,13 +50,69 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "A2-Amp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Amp"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "B2-A2Intake"
+                  "pathName": "Amp-A4Intake"
+                }
+              },
+              {
+                "type": "deadline",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 3.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Amp Intake"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "A4-Amp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Amp"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Amp-B4Intake"
                 }
               },
               {
@@ -98,13 +128,25 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Intake"
+                        "name": "Amp Intake"
                       }
                     }
                   ]
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "B4-B3Drop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Amp"
           }
         }
       ]
