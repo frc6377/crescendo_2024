@@ -256,12 +256,13 @@ public final class Constants {
     public static final int RIGHT_ARM_ID = 11;
     public static final double GEAR_RATIO = 175;
     public static final double CLIMB_PERCENT = -0.4;
-    public static final double CLIMB_POSITION = 0;
-    public static final double[] POSITION_PID = new double[] {0.15, 1e-4, 0, 0};
+    public static final double CLIMB_POSITION = 7;
+    public static final double[] POSITION_PID = new double[] {0.15, 0, 0, 0};
     public static final double[] CURRENT_PID = new double[] {0.01, 0, 0, 0};
-    public static final double MIN_RAISE_TIME_SEC = 0.1;
+    public static final double MIN_RAISE_TIME_SEC = 0.2;
     public static final double CLIP_CURRENT = -10;
     public static final double RAISE_CURRENT = 30;
+    public static final double INITAL_RAISE_PERCENT = 0.3;
     public static final double BREAK_STATIC_PERCENT = -0.3;
     public static final double BREAK_STATIC_TIME = 0.1;
   }

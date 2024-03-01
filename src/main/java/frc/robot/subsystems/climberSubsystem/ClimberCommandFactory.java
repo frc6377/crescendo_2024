@@ -20,22 +20,31 @@ public class ClimberCommandFactory {
   public Command raise() {
     if (subsystem == null) return new InstantCommand();
     Timer minTime = new Timer();
-    return new FunctionalCommand(
-        () -> {
-          subsystem.applyCurrentDemand(ClimberConstants.RAISE_CURRENT);
-          minTime.start();
-        },
-        noop,
-        (interupt) -> {
-          subsystem.setOutputLimits(0, -1);
-          if (interupt) return;
-          subsystem.applyPercent(0);
-        },
-        () -> {
-          boolean vel = subsystem.getVelocity().isZero(0.5);
-          return vel && minTime.hasElapsed(ClimberConstants.MIN_RAISE_TIME_SEC);
-        },
-        subsystem);
+    return initalRaise()
+        .andThen(
+            new FunctionalCommand(
+                () -> {
+                  subsystem.setOutputLimits(1, 0);
+                  subsystem.applyCurrentDemand(ClimberConstants.RAISE_CURRENT);
+                  minTime.start();
+                },
+                noop,
+                (interupt) -> {
+                  subsystem.setOutputLimits(0, -1);
+                  if (interupt) return;
+                  subsystem.applyPercent(0);
+                },
+                () -> {
+                  boolean vel = subsystem.getVelocity().isZero(0.5);
+                  return vel && minTime.hasElapsed(ClimberConstants.MIN_RAISE_TIME_SEC);
+                },
+                subsystem));
+  }
+
+  public Command initalRaise() {
+    if (subsystem == null) return new InstantCommand();
+    return new InstantCommand(() -> subsystem.applyPercent(ClimberConstants.INITAL_RAISE_PERCENT))
+        .andThen(new WaitCommand(ClimberConstants.BREAK_STATIC_TIME));
   }
 
   public Command clip() {
@@ -45,6 +54,7 @@ public class ClimberCommandFactory {
   }
 
   public Command breakStatic() {
+    // return new InstantCommand();
     return new InstantCommand(() -> subsystem.applyPercent(ClimberConstants.BREAK_STATIC_PERCENT))
         .andThen(new WaitCommand(ClimberConstants.BREAK_STATIC_TIME));
   }

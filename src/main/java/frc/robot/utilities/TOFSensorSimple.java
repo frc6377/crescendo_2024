@@ -5,7 +5,6 @@
 package frc.robot.utilities;
 
 import com.playingwithfusion.TimeOfFlight;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -22,7 +21,6 @@ public class TOFSensorSimple {
     sensor = new TimeOfFlight(ID);
     // sensor.setRangingMode(RangingMode.Short, 100);
     this.threshold = threshold; // in mm
-    sensorTab.getLayout("TOF " + id, BuiltInLayouts.kList).add(sensor);
     this.id = ID;
   }
 

@@ -25,8 +25,8 @@ public class ClimberSubsystem extends SubsystemBase {
   public ClimberSubsystem() {
     leftArmMotor = new CANSparkMax(ClimberConstants.LEFT_ARM_ID, MotorType.kBrushless);
     rightArmMotor = new CANSparkMax(ClimberConstants.RIGHT_ARM_ID, MotorType.kBrushless);
-    configMotor(leftArmMotor, false);
-    configMotor(rightArmMotor, true);
+    configMotor(leftArmMotor, true);
+    configMotor(rightArmMotor, false);
 
     rightArmPoseEntry =
         new DebugEntry<Double>(
@@ -41,12 +41,18 @@ public class ClimberSubsystem extends SubsystemBase {
 
   private void configMotor(CANSparkMax motor, boolean invert) {
     motor.restoreFactoryDefaults();
-    motor.setIdleMode(IdleMode.kCoast);
+    motor.setIdleMode(IdleMode.kBrake);
     SparkPIDController pidController = motor.getPIDController();
     pidController.setP(ClimberConstants.CURRENT_PID[0]);
     pidController.setI(ClimberConstants.CURRENT_PID[1]);
     pidController.setD(ClimberConstants.CURRENT_PID[2]);
-    double armPosition = motor.getAbsoluteEncoder().getPosition() * (invert ? -1 : 1);
+    double armPosition;
+    if(invert){
+      armPosition = 1-motor.getAbsoluteEncoder().getPosition();
+    }else{
+      armPosition = motor.getAbsoluteEncoder().getPosition();
+    }
+
     motor.getEncoder().setPosition(armPosition * ClimberConstants.GEAR_RATIO);
     motor.setInverted(invert);
     motor.setSmartCurrentLimit(40);
@@ -78,6 +84,8 @@ public class ClimberSubsystem extends SubsystemBase {
    * @param current the current to set
    */
   public void applyCurrentDemand(double current) {
+    leftArmMotor.getPIDController().setIAccum(0);
+    rightArmMotor.getPIDController().setIAccum(0);
     leftArmMotor.getPIDController().setReference(current, ControlType.kCurrent);
     rightArmMotor.getPIDController().setReference(current, ControlType.kCurrent);
   }
@@ -124,6 +132,8 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public void requestPosition(double climbPosition) {
     setPIDState(PIDState.POSITION);
+    leftArmMotor.getPIDController().setIAccum(0);
+    rightArmMotor.getPIDController().setIAccum(0);
     leftArmMotor.getPIDController().setReference(climbPosition, ControlType.kPosition);
     rightArmMotor.getPIDController().setReference(climbPosition, ControlType.kPosition);
   }
