@@ -2,9 +2,12 @@ package frc.robot.subsystems.climberSubsystem;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
+
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -52,6 +55,9 @@ public class ClimberSubsystem extends SubsystemBase {
     }else{
       armPosition = motor.getAbsoluteEncoder().getPosition();
     }
+
+    motor.setSoftLimit(SoftLimitDirection.kForward,(float) (Units.degreesToRotations(135)*ClimberConstants.GEAR_RATIO));
+    motor.setSoftLimit(SoftLimitDirection.kReverse, 0);
 
     motor.getEncoder().setPosition(armPosition * ClimberConstants.GEAR_RATIO);
     motor.setInverted(invert);
