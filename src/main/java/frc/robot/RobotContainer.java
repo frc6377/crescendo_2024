@@ -245,6 +245,12 @@ public class RobotContainer {
   }
 
   private void configDriverFeedBack() {
+    new Trigger(trapElvCommandFactory.getSourceBreak())
+        .and(OI.getTrigger(OI.Driver.intake))
+        .whileTrue(
+            Commands.startEnd(
+                () -> OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
+                () -> OI.Driver.setRumble(0)));
     new Trigger(shooterSubsystem::isShooterReady)
         .whileTrue(
             Commands.startEnd(
