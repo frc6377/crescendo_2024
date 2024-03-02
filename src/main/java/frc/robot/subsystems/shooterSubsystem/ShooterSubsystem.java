@@ -255,6 +255,11 @@ public class ShooterSubsystem extends SubsystemBase {
     return speeds;
   }
 
+  public void requestPercent(double percent) {
+    shooterRightMotor.set(percent);
+    shooterLeftMotor.set(percent);
+  }
+
   // Distance and speed in inches and RPM respectively.
   public static class SpeakerConfig {
     private double distanceInInches;

@@ -6,7 +6,6 @@ import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
-
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -50,16 +49,20 @@ public class ClimberSubsystem extends SubsystemBase {
     pidController.setI(ClimberConstants.CURRENT_PID[1]);
     pidController.setD(ClimberConstants.CURRENT_PID[2]);
     double armPosition;
-    if(invert){
-      armPosition = 1-motor.getAbsoluteEncoder().getPosition();
-    }else{
-      armPosition = motor.getAbsoluteEncoder().getPosition();
+
+    armPosition = motor.getAbsoluteEncoder().getPosition();
+
+    motor.setSoftLimit(
+        SoftLimitDirection.kForward,
+        (float) (Units.degreesToRotations(135) * ClimberConstants.GEAR_RATIO));
+    motor.setSoftLimit(SoftLimitDirection.kReverse, 0);
+    double motorPosition = armPosition * ClimberConstants.GEAR_RATIO;
+    if (Math.abs(motorPosition) > 10) {
+      motor.getEncoder().setPosition(0);
+    } else {
+      motor.getEncoder().setPosition(motorPosition);
     }
 
-    motor.setSoftLimit(SoftLimitDirection.kForward,(float) (Units.degreesToRotations(135)*ClimberConstants.GEAR_RATIO));
-    motor.setSoftLimit(SoftLimitDirection.kReverse, 0);
-
-    motor.getEncoder().setPosition(armPosition * ClimberConstants.GEAR_RATIO);
     motor.setInverted(invert);
     motor.setSmartCurrentLimit(40);
   }

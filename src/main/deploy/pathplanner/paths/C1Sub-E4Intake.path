@@ -16,11 +16,11 @@
     },
     {
       "anchor": {
-        "x": 8.2,
+        "x": 8.3,
         "y": 0.775
       },
       "prevControl": {
-        "x": 6.949999999999999,
+        "x": 7.050000000000001,
         "y": 0.775
       },
       "nextControl": null,
@@ -30,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.8,
+      "waypointRelativePos": 0.5,
       "rotationDegrees": 0,
       "rotateFast": false
     }
@@ -49,7 +49,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Center Starting Location",
+  "folder": null,
   "previewStartingState": {
     "rotation": -60.0,
     "velocity": 0

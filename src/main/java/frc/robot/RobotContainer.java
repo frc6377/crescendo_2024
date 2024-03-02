@@ -226,7 +226,12 @@ public class RobotContainer {
         .whileTrue(
             Commands.either(intakeAmp(), intakeSpeaker(), robotStateManager.isAmpSupplier()));
 
-    OI.getTrigger(OI.Driver.outtake).whileTrue(intakeCommandFactory.reverseIntakeCommand());
+    OI.getTrigger(OI.Driver.outtake)
+        .whileTrue(
+            Commands.either(
+                intakeCommandFactory.reverseIntakeCommand(),
+                shooterCommandFactory.outtake().asProxy(),
+                robotStateManager.isAmpSupplier()));
 
     OI.getButton(OI.Driver.intakeSource).whileTrue(trapElvCommandFactory.wristintakeSource());
 
