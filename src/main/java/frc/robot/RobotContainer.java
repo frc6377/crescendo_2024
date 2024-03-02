@@ -56,9 +56,9 @@ import java.util.function.Supplier;
  */
 public class RobotContainer {
   private static final double MaxSpeed = 6; // 6 meters per second desired top speed
-  private static final double MaxAngularRate =
+  private static final double MaxAngula9hrRate =
       Math.PI; // Half a rotation per second max angular velocity
-
+  private final boolean isRed = true;
   private final RobotStateManager robotStateManager = new RobotStateManager();
 
   // The robot's subsystems and commands are defined here...
@@ -312,7 +312,7 @@ public class RobotContainer {
     // autonCommands.put("Amp", ampAuton());
     if (Constants.enabledSubsystems.intakeEnabled) {
       autonCommands.put("Speaker Intake", intakeCommandFactory.getSpeakerIntakeCommand());
-      autonCommands.put("Amp Intake", intakeCommandFactory.getAmpIntakeCommand());
+      autonCommands.put("Amp Intake", intakeAmp());
     }
     autonCommands.put("Intake", new InstantCommand(() -> {}, new Subsystem[] {}));
 
@@ -340,7 +340,14 @@ public class RobotContainer {
     if (Constants.enabledSubsystems.drivetrainEnabled) {
       return new WaitCommand(autoDelay.getDouble(0))
           .andThen(autoChooser.getSelected())
-          .withName("Get Auto Command");
+          .withName("Get Auto Command")
+          .andThen(
+              new InstantCommand(
+                  () -> {
+                    if (isRed) {
+                      drivetrain.setOperatorPerspectiveForward(Rotation2d.fromRotations(0.5));
+                    }
+                  }));
     }
     return null;
   }
