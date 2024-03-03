@@ -190,4 +190,32 @@ public class SwerveCommandFactory {
                 new Pose2d(
                     subsystem.getState().Pose.getTranslation(), Rotation2d.fromDegrees(180))));
   }
+
+  public Command assistedDriving(){
+    /*
+     * 4 Assisted Drives
+     * 
+     * 1. Auto target speaker
+     * 2. Auto target amp
+     * 3. Point at source
+     * 
+     * Decision flow:
+     * Is amp mode?
+     * Yes:
+     *  Is on near side of Field?
+     *  Yes:
+     *   Auto target amp
+     *   No Op
+     * No:
+     *  Is on near side of Field?
+     *  Yes:
+     *    Target speaker
+     *   No:
+     *    Target source
+     */
+
+    Pose2d robotPosition;
+
+    return new InstantCommand();
+  }
 }
