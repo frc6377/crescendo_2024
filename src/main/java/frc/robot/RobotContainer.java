@@ -10,6 +10,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -344,7 +346,7 @@ public class RobotContainer {
           .andThen(
               new InstantCommand(
                   () -> {
-                    if (isRed) {
+                    if (DriverStation.getAlliance().get() == Alliance.Red) {
                       drivetrain.setOperatorPerspectiveForward(Rotation2d.fromRotations(0.5));
                     }
                   }));
