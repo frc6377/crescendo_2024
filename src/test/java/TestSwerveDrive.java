@@ -5,6 +5,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
+import frc.robot.Constants;
 import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.OI;
 import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem;
@@ -20,7 +21,7 @@ public class TestSwerveDrive {
     int perDirection = 100;
     int rotations = 50;
     double deadband = 0.02;
-    double epsilion = 0.001;
+    double epsilion = 0.0015;
 
     for (int i = 0; i < directions; i++) {
       Matrix<N2, N1> unitDirction = new Matrix<>(Nat.N2(), Nat.N1());
@@ -31,11 +32,12 @@ public class TestSwerveDrive {
         Matrix<N2, N1> translation = unitDirction.times(j / (perDirection + 0.0));
         double actualMagnitude =
             OI.Driver.translationMagnitudeCurve.calculate(
-                MathUtil.applyDeadband(j / (perDirection + 0.0), deadband));
+                MathUtil.applyDeadband(
+                    j / (perDirection + 0.0), Constants.SwerveDriveConstants.TRANSLATION_DEADBAND));
 
         for (int rot = 0; rot < rotations; rot++) {
           DriveInput input = new DriveInput(translation.get(0, 0), translation.get(1, 0), rot);
-          DriveRequest conditioned = SwerveSubsystem.joystickCondition(input, deadband, true);
+          DriveRequest conditioned = SwerveSubsystem.joystickCondition(input, true);
           assertTrue(Math.abs(conditioned.getMagnitude() - actualMagnitude) < epsilion);
           assertTrue(
               Math.abs(

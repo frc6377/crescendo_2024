@@ -185,7 +185,6 @@ public class RobotContainer {
                     OI.getAxisSupplier(OI.Driver.xTranslationAxis).get(),
                     OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
                     OI.getAxisSupplier(OI.Driver.rotationAxis).get()),
-                0.1,
                 OI.getButton(OI.Driver.highGear).getAsBoolean());
 
     drivetrainCommandFactory.setDefaultCommand(

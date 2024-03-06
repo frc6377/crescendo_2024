@@ -1,7 +1,6 @@
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
 import java.util.Arrays;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -13,10 +12,15 @@ public class TestShooterSubsystem {
   public void testSpeakerConfig() {
     SpeakerConfig speedsPair;
     double[] speedsArray = {0, 0};
-    double[][] speakerConfigListTest =
-        Stream.of(ShooterSubsystem.speakerConfigList)
-            .map(this::toSpeedPair)
-            .toArray((a) -> new double[a][2]);
+    double[][] speakerConfigListTest = {
+      {-100, 2350, 1950},
+      {0, 2350, 1950},
+      {40, 350, 350},
+      {195, 500, 500},
+      {290, 700, 700},
+      {10000, 700, 700}
+    };
+    ;
     double[] configSpeeds;
 
     for (int i = 0; i < speakerConfigListTest.length; i++) {

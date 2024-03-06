@@ -8,12 +8,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ClimberConstants;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
-/**
- * Expected climb sequece is:
- * 1. Raise
- * 2. Clip
- * 3. Climb
- */
+
+/** Expected climb sequece is: 1. Raise 2. Clip 3. Climb */
 public class ClimberCommandFactory {
   private final ClimberSubsystem subsystem;
   private final Runnable noop = () -> {};
@@ -54,11 +50,13 @@ public class ClimberCommandFactory {
   public Command clip() {
     if (subsystem == null) return new InstantCommand();
     return breakStatic()
-        .andThen(subsystem.startEnd(() -> subsystem.applyCurrentDemand(ClimberConstants.CLIP_CURRENT),()->{}));
+        .andThen(
+            subsystem.startEnd(
+                () -> subsystem.applyCurrentDemand(ClimberConstants.CLIP_CURRENT), () -> {}));
   }
 
   public Command breakStatic() {
-    if(subsystem == null) return new InstantCommand();
+    if (subsystem == null) return new InstantCommand();
     return new InstantCommand(() -> subsystem.applyPercent(ClimberConstants.BREAK_STATIC_PERCENT))
         .andThen(new WaitCommand(ClimberConstants.BREAK_STATIC_TIME));
   }
