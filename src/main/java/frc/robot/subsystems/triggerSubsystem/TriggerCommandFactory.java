@@ -30,7 +30,7 @@ public class TriggerCommandFactory {
   }
 
   private Command buildCommand(double speed) {
-    if (subsystem == null) return new InstantCommand().withName("buildCommand").asProxy();
+    if (subsystem == null) return new InstantCommand();
     return new StartEndCommand(
             () -> subsystem.setSpeed(speed), () -> subsystem.setSpeed(0), subsystem)
         .withName("buildCommand")

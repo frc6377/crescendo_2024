@@ -44,7 +44,7 @@ public class ClimberCommandFactory {
   }
 
   public Command initalRaise() {
-    if (subsystem == null) return new InstantCommand().withName("initalRaise").asProxy();
+    if (subsystem == null) return new InstantCommand();
     return new InstantCommand(() -> subsystem.applyPercent(ClimberConstants.INITAL_RAISE_PERCENT))
         .andThen(new WaitCommand(ClimberConstants.BREAK_STATIC_TIME))
         .withName("initalRaise")
@@ -52,7 +52,7 @@ public class ClimberCommandFactory {
   }
 
   public Command clip() {
-    if (subsystem == null) return new InstantCommand().withName("clip").asProxy();
+    if (subsystem == null) return new InstantCommand();
     return breakStatic()
         .andThen(subsystem.run(() -> subsystem.applyCurrentDemand(ClimberConstants.CLIP_CURRENT)))
         .withName("clip")
@@ -68,7 +68,7 @@ public class ClimberCommandFactory {
   }
 
   public Command climb() {
-    if (subsystem == null) return new InstantCommand().withName("climb").asProxy();
+    if (subsystem == null) return new InstantCommand();
 
     Runnable init =
         () -> {

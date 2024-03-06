@@ -20,7 +20,7 @@ public class TurretCommandFactory {
   }
 
   public Command stowTurret() {
-    if (subsystem == null) return new InstantCommand().withName("StowTurretCommand").asProxy();
+    if (subsystem == null) return new InstantCommand();
     return new InstantCommand(
             () ->
                 subsystem.setTurretPos(
@@ -35,7 +35,7 @@ public class TurretCommandFactory {
   }
 
   public Command pickup() {
-    if (subsystem == null) return new InstantCommand().withName("pickup").asProxy();
+    if (subsystem == null) return new InstantCommand();
     return new InstantCommand(
             () ->
                 subsystem.setTurretPos(
@@ -55,7 +55,7 @@ public class TurretCommandFactory {
    * @return a command that sets the current position as true zero
    */
   public Command zeroZeroing() {
-    if (subsystem == null) return new InstantCommand().withName("zeroZeroing").asProxy();
+    if (subsystem == null) return new InstantCommand();
     return Commands.runOnce(
             () -> {
               MagnetSensorConfigs cfg = new MagnetSensorConfigs();
@@ -99,25 +99,25 @@ public class TurretCommandFactory {
   }
 
   public Command zeroTurretCommand() {
-    if (subsystem == null) return new InstantCommand().withName("ZeroTurretCommand").asProxy();
+    if (subsystem == null) return new InstantCommand();
     return Commands.runOnce(() -> subsystem.zeroTurret(), subsystem)
         .withName("ZeroTurretCommand")
         .asProxy();
   }
 
   public Command moveUpwards() {
-    if (subsystem == null) return new InstantCommand().withName("moveShooterUp").asProxy();
+    if (subsystem == null) return new InstantCommand();
     return subsystem.run(() -> subsystem.moveUp()).withName("moveShooterUp").asProxy();
   }
 
   public Command getAimTurretCommand() {
     if (subsystem == null)
-      return new StartEndCommand(() -> {}, () -> {}).withName("AimTurretCommand").asProxy();
+      return new StartEndCommand(() -> {}, () -> {});
     return subsystem.run(() -> subsystem.aimTurret()).withName("AimTurretCommand").asProxy();
   }
 
   public Command idleTurret() {
-    if (subsystem == null) return new InstantCommand().withName("idleTurret").asProxy();
+    if (subsystem == null) return new InstantCommand();
     return subsystem
         .runEnd(() -> subsystem.holdPosition(), subsystem::stopTurret)
         .withName("idleTurret")
@@ -125,7 +125,7 @@ public class TurretCommandFactory {
   }
 
   public Command testTurretCommand(double degrees) {
-    if (subsystem == null) return new InstantCommand().withName("TestTurret").asProxy();
+    if (subsystem == null) return new InstantCommand();
     return subsystem
         .runEnd(() -> subsystem.setTurretPos(Math.toRadians(degrees)), subsystem::stopTurret)
         .withName("TestTurret")

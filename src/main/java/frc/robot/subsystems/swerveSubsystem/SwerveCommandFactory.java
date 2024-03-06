@@ -26,7 +26,7 @@ public class SwerveCommandFactory {
   }
 
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
-    if (subsystem == null) return new InstantCommand().withName("applyRequest").asProxy();
+    if (subsystem == null) return new InstantCommand();
     return subsystem
         .run(() -> subsystem.setControl(requestSupplier.get()))
         .withName("Request Supplier")
@@ -43,7 +43,7 @@ public class SwerveCommandFactory {
    * @return A command that will point in the specified direction until interupted
    */
   public Command pointInDirection(Rotation2d angleToPoint, Supplier<DriveRequest> input) {
-    if (subsystem == null) return new InstantCommand().withName("point In Direction").asProxy();
+    if (subsystem == null) return new InstantCommand();
     return pointDrive(() -> angleToPoint.getDegrees(), input)
         .withName("Pointing In Direction")
         .asProxy();
@@ -58,7 +58,7 @@ public class SwerveCommandFactory {
    * @return A command that will point at the specified location until interupted
    */
   public Command pointAtLocation(final Translation2d target, final Supplier<DriveRequest> input) {
-    if (subsystem == null) return new InstantCommand().withName("Pointing at location").asProxy();
+    if (subsystem == null) return new InstantCommand();
     final DoubleSupplier getAngleToTarget =
         () -> {
           Translation2d delta = subsystem.getState().Pose.getTranslation().minus(target);
@@ -77,7 +77,7 @@ public class SwerveCommandFactory {
    */
   public Command pointDrive(
       final DoubleSupplier targetAngleProvider, final Supplier<DriveRequest> input) {
-    if (subsystem == null) return new InstantCommand().withName("pointDrive").asProxy();
+    if (subsystem == null) return new InstantCommand();
     final ProfiledPIDController pid =
         new ProfiledPIDController(
             Constants.SwerveDriveConstants.TURN_kP,
@@ -122,7 +122,7 @@ public class SwerveCommandFactory {
    * @return A command that rotates to attempts to zero the error given.
    */
   public Command rotationDrive(final Supplier<Rotation2d> err, final Supplier<DriveRequest> input) {
-    if (subsystem == null) return new InstantCommand().withName("rotationDrive").asProxy();
+    if (subsystem == null) return new InstantCommand();
     final PIDController pid =
         new PIDController(
             Constants.SwerveDriveConstants.TURN_kP, 0, Constants.SwerveDriveConstants.TURN_kD);
@@ -146,7 +146,7 @@ public class SwerveCommandFactory {
   }
 
   public Command robotOrientedDrive(final Supplier<DriveRequest> requestSupplier) {
-    if (subsystem == null) return new InstantCommand().withName("robotOrientedDrive").asProxy();
+    if (subsystem == null) return new InstantCommand();
     ;
     final Runnable command =
         () -> {
@@ -165,7 +165,7 @@ public class SwerveCommandFactory {
   }
 
   public Command fieldOrientedDrive(final Supplier<DriveRequest> requestSupplier) {
-    if (subsystem == null) return new InstantCommand().withName("fieldOrientedDrive").asProxy();
+    if (subsystem == null) return new InstantCommand();
     final Runnable command =
         () -> {
           DriveRequest driveRequest = requestSupplier.get();
@@ -188,7 +188,7 @@ public class SwerveCommandFactory {
   }
 
   public Command zeroDriveTrain() {
-    if (subsystem == null) return new InstantCommand().withName("zeroDriveTrain").asProxy();
+    if (subsystem == null) return new InstantCommand();
     ;
     return subsystem
         .runOnce(

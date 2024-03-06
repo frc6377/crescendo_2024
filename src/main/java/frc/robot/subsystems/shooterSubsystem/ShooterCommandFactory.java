@@ -22,7 +22,7 @@ public class ShooterCommandFactory {
   }
 
   public Command intakeSource() {
-    if (subsystem == null) return new InstantCommand().withName("intakeSource").asProxy();
+    if (subsystem == null) return new InstantCommand();
     return subsystem
         .startEnd(
             () -> {
@@ -34,14 +34,14 @@ public class ShooterCommandFactory {
   }
 
   public Command intakeSourceForTime() {
-    if (subsystem == null) return new InstantCommand().withName("intakeSourceForTime").asProxy();
+    if (subsystem == null) return new InstantCommand();
     return Commands.deadline(new WaitCommand(ShooterConstants.INTAKE_DELAY_SEC), intakeSource())
         .withName("intakeSourceForTime")
         .asProxy();
   }
 
   public Command intakeSpeakerSource() {
-    if (subsystem == null) return new InstantCommand().withName("intakeSpeakerSource").asProxy();
+    if (subsystem == null) return new InstantCommand();
     return intakeSource()
         .until(subsystem.getBeamBreak())
         .andThen(intakeSourceForTime())
@@ -54,7 +54,7 @@ public class ShooterCommandFactory {
   // Required to be called repeatedly; consider pub-sub for LimelightGetDistance() or equivalent
   // method to save a method call
   public Command revShooter() {
-    if (subsystem == null) return new InstantCommand().withName("revShooter").asProxy();
+    if (subsystem == null) return new InstantCommand();
     return new FunctionalCommand(
             () -> {
               subsystem.setShooterSpeeds(
@@ -70,7 +70,7 @@ public class ShooterCommandFactory {
 
   // Idle shooter command; for default command purposes
   public Command shooterIdle() {
-    if (subsystem == null) return new InstantCommand().withName("shooterIdle").asProxy();
+    if (subsystem == null) return new InstantCommand();
     return subsystem
         .run(
             () -> {
@@ -81,7 +81,7 @@ public class ShooterCommandFactory {
   }
 
   public Command outtake() {
-    if (subsystem == null) return new InstantCommand().withName("outtake").asProxy();
+    if (subsystem == null) return new InstantCommand();
     return subsystem
         .startEnd(() -> subsystem.requestPercent(-1), subsystem::stop)
         .withName("outtake")
