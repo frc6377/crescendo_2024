@@ -231,19 +231,22 @@ public class SwerveCommandFactory {
 
     Command assistDriver =
         Commands.either(
-            Commands.either(autoTargetAmp(requestSupplier, RSM), autoTargetSpeaker(requestSupplier, RSM), isAmpMode),
+            Commands.either(
+                autoTargetAmp(requestSupplier, RSM),
+                autoTargetSpeaker(requestSupplier, RSM),
+                isAmpMode),
             Commands.either(Commands.none(), autoTargetSource(requestSupplier, RSM), isAmpMode),
             onNearSide);
 
     return assistDriver;
   }
 
-  private BooleanSupplier isOnNearSide(){
+  private BooleanSupplier isOnNearSide() {
     return () -> subsystem.getState().Pose.getX() > FieldConstants.CENTERLINE_X;
   }
 
   private Command autoTargetSource(Supplier<DriveRequest> request, RobotStateManager RSM) {
-        return Commands.either(
+    return Commands.either(
             pointInDirection(DriverConstants.RED_SOURCE_ROTATION, request),
             pointInDirection(DriverConstants.BLUE_SOURCE_ROTATION, request),
             () -> RSM.getAllianceColor() == AllianceColor.RED)
