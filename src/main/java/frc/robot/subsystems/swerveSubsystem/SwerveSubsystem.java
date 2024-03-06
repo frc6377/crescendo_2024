@@ -1,6 +1,7 @@
 package frc.robot.subsystems.swerveSubsystem;
 
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
@@ -21,6 +22,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants.SwerveDriveConstants;
+import frc.robot.Constants;
 import frc.robot.OI;
 import frc.robot.Robot;
 import frc.robot.Telemetry;
@@ -64,6 +66,17 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
       kinematicsTranslations[i] = new Translation2d(modules[i].LocationX, modules[i].LocationY);
     }
     kinematics = new SwerveDriveKinematics(kinematicsTranslations);
+
+    this.getModule(0).getDriveMotor().getConfigurator().apply(new ClosedLoopRampsConfigs() .withDutyCycleClosedLoopRampPeriod(Constants.RAMP_RATE));
+    this.getModule(1).getDriveMotor().getConfigurator().apply(new ClosedLoopRampsConfigs() .withDutyCycleClosedLoopRampPeriod(Constants.RAMP_RATE));
+    this.getModule(2).getDriveMotor().getConfigurator().apply(new ClosedLoopRampsConfigs() .withDutyCycleClosedLoopRampPeriod(Constants.RAMP_RATE));
+    this.getModule(3).getDriveMotor().getConfigurator().apply(new ClosedLoopRampsConfigs() .withDutyCycleClosedLoopRampPeriod(Constants.RAMP_RATE));
+    this.getModule(4).getDriveMotor().getConfigurator().apply(new ClosedLoopRampsConfigs() .withDutyCycleClosedLoopRampPeriod(Constants.RAMP_RATE));
+    this.getModule(5).getDriveMotor().getConfigurator().apply(new ClosedLoopRampsConfigs() .withDutyCycleClosedLoopRampPeriod(Constants.RAMP_RATE));
+    this.getModule(6).getDriveMotor().getConfigurator().apply(new ClosedLoopRampsConfigs() .withDutyCycleClosedLoopRampPeriod(Constants.RAMP_RATE));
+    this.getModule(7).getDriveMotor().getConfigurator().apply(new ClosedLoopRampsConfigs() .withDutyCycleClosedLoopRampPeriod(Constants.RAMP_RATE));
+
+
 
     AutoBuilder.configureHolonomic(
         () -> super.getState().Pose,

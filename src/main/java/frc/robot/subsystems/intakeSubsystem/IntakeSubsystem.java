@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.intakeSubsystem;
 
+import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
@@ -20,13 +21,16 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public IntakeSubsystem() {
     intakeMotor = new TalonFX(Constants.IntakeConstants.INTAKE_MOTOR_ID, "rio");
+    intakeMotor.getConfigurator().apply(new ClosedLoopRampsConfigs() .withDutyCycleClosedLoopRampPeriod(Constants.RAMP_RATE));
+
     chooserMotor =
         new CANSparkMax(
             Constants.IntakeConstants.INTAKE_CHOOSER_ID, MotorType.kBrushed); // Bag Motor
     chooserMotor.restoreFactoryDefaults();
-    // intakeMotor.config
     chooserMotor.setSmartCurrentLimit(20);
+    chooserMotor.setClosedLoopRampRate(Constants.RAMP_RATE);
     chooserMotor.setInverted(true);
+    System.out.println(chooserMotor.setClosedLoopRampRate(5));
     intakeOutput = new DebugEntry<Double>(0.0, "Intake Motor Ouput", this);
     chooserOutput = new DebugEntry<Double>(0.0, "Chooser Motor Output", this);
   }

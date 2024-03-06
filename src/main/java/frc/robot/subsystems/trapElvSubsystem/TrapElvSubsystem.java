@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TrapElvConstants;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.TOFSensorSimple;
@@ -143,6 +144,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     wristMotor = new CANSparkMaxSim(TrapElvConstants.WRIST_MOTOR_ID, MotorType.kBrushless);
     wristMotor.restoreFactoryDefaults();
     wristMotor.clearFaults();
+    wristMotor.setClosedLoopRampRate(Constants.RAMP_RATE);
 
     wristMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
     wristPIDController =
@@ -161,6 +163,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
     rollerMotor = new CANSparkMax(TrapElvConstants.ROLLER_MOTOR_ID, MotorType.kBrushed);
     rollerMotor.restoreFactoryDefaults();
+    rollerMotor.setClosedLoopRampRate(Constants.RAMP_RATE);
 
     sourceBreak =
         new TOFSensorSimple(TrapElvConstants.SOURCE_BREAK_ID, TrapElvConstants.BREAK_THRESHOLD_MM);
