@@ -9,12 +9,17 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.Constants;
+import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem.DriveRequest;
+
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -200,22 +205,47 @@ public class SwerveCommandFactory {
      * 3. Point at source
      * 
      * Decision flow:
-     * Is amp mode?
-     * Yes:
-     *  Is on near side of Field?
-     *  Yes:
-     *   Auto target amp
-     *   No Op
-     * No:
-     *  Is on near side of Field?
-     *  Yes:
-     *    Target speaker
-     *   No:
-     *    Target source
+     * is on near side?
+     * yes{
+     *  is amp mode?
+     *  yes{
+     *   target amp
+     *  }
+     *  no{
+     *   target speaker
+     *  }
+     * }
+     * no{
+     *  is amp mode?
+     *  yes{
+     *   no op
+     *  }
+     *  no{
+     *   target source
+     *  }
+     * }
      */
 
-    Pose2d robotPosition;
+    BooleanSupplier onNearSide = ()-> false;
+    BooleanSupplier isAmpMode = ()-> false;
+    Command decider = Commands.either(
+      Commands.either(autoTargetAmp(), autoTargetSpeaker(), isAmpMode),
+      Commands.either(new InstantCommand(), autoTargetSource(), isAmpMode),
+      onNearSide
+    );
 
     return new InstantCommand();
+  }
+
+  private Command autoTargetSource() {
+    return new InstantCommand().asProxy();
+  }
+
+  private Command autoTargetSpeaker() {
+    return new InstantCommand().asProxy();
+  }
+
+  public Command autoTargetAmp(Supplier<DriveRequest> request, RobotStateManager RSM){
+    return Commands.either(pointInDirection(, request),pointInDirection(, request),RSM.getPlacementMode() ).asProxy();
   }
 }
