@@ -26,10 +26,12 @@ public class SwerveCommandFactory {
   }
 
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return new InstantCommand().withName("applyRequest").asProxy();
     return subsystem
         .run(() -> subsystem.setControl(requestSupplier.get()))
-        .withName("Request Supplier");
+        .withName("Request Supplier")
+        .withName("applyRequest")
+        .asProxy();
   }
 
   /**
@@ -41,8 +43,10 @@ public class SwerveCommandFactory {
    * @return A command that will point in the specified direction until interupted
    */
   public Command pointInDirection(Rotation2d angleToPoint, Supplier<DriveRequest> input) {
-    if (subsystem == null) return new InstantCommand();
-    return pointDrive(() -> angleToPoint.getDegrees(), input).withName("Pointing in direction");
+    if (subsystem == null) return new InstantCommand().withName("point In Direction").asProxy();
+    return pointDrive(() -> angleToPoint.getDegrees(), input)
+        .withName("Pointing In Direction")
+        .asProxy();
   }
 
   /**
@@ -54,13 +58,13 @@ public class SwerveCommandFactory {
    * @return A command that will point at the specified location until interupted
    */
   public Command pointAtLocation(final Translation2d target, final Supplier<DriveRequest> input) {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return new InstantCommand().withName("Pointing at location").asProxy();
     final DoubleSupplier getAngleToTarget =
         () -> {
           Translation2d delta = subsystem.getState().Pose.getTranslation().minus(target);
           return new Rotation2d(delta.getX(), delta.getY()).getDegrees();
         };
-    return pointDrive(getAngleToTarget, input).withName("Pointing at location");
+    return pointDrive(getAngleToTarget, input).withName("Pointing at location").asProxy();
   }
 
   /**
@@ -73,7 +77,7 @@ public class SwerveCommandFactory {
    */
   public Command pointDrive(
       final DoubleSupplier targetAngleProvider, final Supplier<DriveRequest> input) {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return new InstantCommand().withName("pointDrive").asProxy();
     final ProfiledPIDController pid =
         new ProfiledPIDController(
             Constants.SwerveDriveConstants.TURN_kP,
@@ -107,7 +111,7 @@ public class SwerveCommandFactory {
 
     final Command command =
         new FunctionalCommand(init, exec, (interupt) -> {}, () -> false, subsystem);
-    return command.withName("Point Drive");
+    return command.withName("pointDrive").asProxy();
   }
 
   /**
@@ -118,7 +122,7 @@ public class SwerveCommandFactory {
    * @return A command that rotates to attempts to zero the error given.
    */
   public Command rotationDrive(final Supplier<Rotation2d> err, final Supplier<DriveRequest> input) {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return new InstantCommand().withName("rotationDrive").asProxy();
     final PIDController pid =
         new PIDController(
             Constants.SwerveDriveConstants.TURN_kP, 0, Constants.SwerveDriveConstants.TURN_kD);
@@ -138,11 +142,12 @@ public class SwerveCommandFactory {
           }
         };
 
-    return subsystem.run(command).finallyDo(() -> pid.close()).withName("Rotation Drive");
+    return subsystem.run(command).finallyDo(() -> pid.close()).withName("rotationDrive").asProxy();
   }
 
   public Command robotOrientedDrive(final Supplier<DriveRequest> requestSupplier) {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return new InstantCommand().withName("robotOrientedDrive").asProxy();
+    ;
     final Runnable command =
         () -> {
           DriveRequest driveRequest = requestSupplier.get();
@@ -156,11 +161,11 @@ public class SwerveCommandFactory {
           subsystem.setControl(swerveRequest);
         };
 
-    return subsystem.run(command);
+    return subsystem.run(command).withName("robotOrientedDrive").asProxy();
   }
 
   public Command fieldOrientedDrive(final Supplier<DriveRequest> requestSupplier) {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return new InstantCommand().withName("fieldOrientedDrive").asProxy();
     final Runnable command =
         () -> {
           DriveRequest driveRequest = requestSupplier.get();
@@ -174,7 +179,7 @@ public class SwerveCommandFactory {
           subsystem.setControl(swerveRequest);
         };
 
-    return subsystem.run(command);
+    return subsystem.run(command).withName("fieldOrientedDrive").asProxy();
   }
 
   public void setDefaultCommand(Command defaultCommand) {
@@ -183,11 +188,15 @@ public class SwerveCommandFactory {
   }
 
   public Command zeroDriveTrain() {
-    if (subsystem == null) return new InstantCommand();
-    return subsystem.runOnce(
-        () ->
-            subsystem.seedFieldRelative(
-                new Pose2d(
-                    subsystem.getState().Pose.getTranslation(), Rotation2d.fromDegrees(180))));
+    if (subsystem == null) return new InstantCommand().withName("zeroDriveTrain").asProxy();
+    ;
+    return subsystem
+        .runOnce(
+            () ->
+                subsystem.seedFieldRelative(
+                    new Pose2d(
+                        subsystem.getState().Pose.getTranslation(), Rotation2d.fromDegrees(180))))
+        .withName("zeroDriveTrain")
+        .asProxy();
   }
 }

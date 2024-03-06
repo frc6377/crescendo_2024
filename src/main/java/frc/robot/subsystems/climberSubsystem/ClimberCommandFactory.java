@@ -38,29 +38,37 @@ public class ClimberCommandFactory {
                   boolean vel = subsystem.getVelocity().isZero(0.5);
                   return vel && minTime.hasElapsed(ClimberConstants.MIN_RAISE_TIME_SEC);
                 },
-                subsystem));
+                subsystem))
+        .withName("raise")
+        .asProxy();
   }
 
   public Command initalRaise() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return new InstantCommand().withName("initalRaise").asProxy();
     return new InstantCommand(() -> subsystem.applyPercent(ClimberConstants.INITAL_RAISE_PERCENT))
-        .andThen(new WaitCommand(ClimberConstants.BREAK_STATIC_TIME));
+        .andThen(new WaitCommand(ClimberConstants.BREAK_STATIC_TIME))
+        .withName("initalRaise")
+        .asProxy();
   }
 
   public Command clip() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return new InstantCommand().withName("clip").asProxy();
     return breakStatic()
-        .andThen(subsystem.run(() -> subsystem.applyCurrentDemand(ClimberConstants.CLIP_CURRENT)));
+        .andThen(subsystem.run(() -> subsystem.applyCurrentDemand(ClimberConstants.CLIP_CURRENT)))
+        .withName("clip")
+        .asProxy();
   }
 
   public Command breakStatic() {
     // return new InstantCommand();
     return new InstantCommand(() -> subsystem.applyPercent(ClimberConstants.BREAK_STATIC_PERCENT))
-        .andThen(new WaitCommand(ClimberConstants.BREAK_STATIC_TIME));
+        .andThen(new WaitCommand(ClimberConstants.BREAK_STATIC_TIME))
+        .withName("breakStatic")
+        .asProxy();
   }
 
   public Command climb() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return new InstantCommand().withName("climb").asProxy();
 
     Runnable init =
         () -> {
@@ -71,6 +79,8 @@ public class ClimberCommandFactory {
     BooleanSupplier isFinished =
         () -> subsystem.getPosition().isLessThen(ClimberConstants.CLIMB_POSITION);
 
-    return new FunctionalCommand(init, exec, end, isFinished, subsystem);
+    return new FunctionalCommand(init, exec, end, isFinished, subsystem)
+        .withName("climb")
+        .asProxy();
   }
 }

@@ -22,22 +22,31 @@ public class ShooterCommandFactory {
   }
 
   public Command intakeSource() {
-    if (subsystem == null) return new InstantCommand();
-    return subsystem.startEnd(
-        () -> {
-          subsystem.setShooterSpeeds(ShooterConstants.SHOOTER_SOURCE_INTAKE);
-        },
-        () -> {});
+    if (subsystem == null) return new InstantCommand().withName("intakeSource").asProxy();
+    return subsystem
+        .startEnd(
+            () -> {
+              subsystem.setShooterSpeeds(ShooterConstants.SHOOTER_SOURCE_INTAKE);
+            },
+            () -> {})
+        .withName("intakeSource")
+        .asProxy();
   }
 
   public Command intakeSourceForTime() {
-    if (subsystem == null) return new InstantCommand();
-    return Commands.deadline(new WaitCommand(ShooterConstants.INTAKE_DELAY_SEC), intakeSource());
+    if (subsystem == null) return new InstantCommand().withName("intakeSourceForTime").asProxy();
+    return Commands.deadline(new WaitCommand(ShooterConstants.INTAKE_DELAY_SEC), intakeSource())
+        .withName("intakeSourceForTime")
+        .asProxy();
   }
 
   public Command intakeSpeakerSource() {
-    if (subsystem == null) return new InstantCommand();
-    return intakeSource().until(subsystem.getBeamBreak()).andThen(intakeSourceForTime());
+    if (subsystem == null) return new InstantCommand().withName("intakeSpeakerSource").asProxy();
+    return intakeSource()
+        .until(subsystem.getBeamBreak())
+        .andThen(intakeSourceForTime())
+        .withName("intakeSpeakerSource")
+        .asProxy();
   }
 
   // Spins up the shooter, and requests feeding it when the rollers are within parameters.
@@ -45,36 +54,42 @@ public class ShooterCommandFactory {
   // Required to be called repeatedly; consider pub-sub for LimelightGetDistance() or equivalent
   // method to save a method call
   public Command revShooter() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return new InstantCommand().withName("revShooter").asProxy();
     return new FunctionalCommand(
-        () -> {
-          subsystem.setShooterSpeeds(
-              new SpeakerConfig(-1, targetRPM.getDouble(4000), rightTargetRPM.getDouble(4000)));
-        },
-        () -> {},
-        (a) -> {},
-        () -> false,
-        subsystem);
+            () -> {
+              subsystem.setShooterSpeeds(
+                  new SpeakerConfig(-1, targetRPM.getDouble(4000), rightTargetRPM.getDouble(4000)));
+            },
+            () -> {},
+            (a) -> {},
+            () -> false,
+            subsystem)
+        .withName("revShooter")
+        .asProxy();
   }
 
   // Idle shooter command; for default command purposes
   public Command shooterIdle() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return new InstantCommand().withName("shooterIdle").asProxy();
     return subsystem
         .run(
             () -> {
               subsystem.stop();
             })
-        .withName("Idle Shooter command");
+        .withName("Idle Shooter command")
+        .asProxy();
+  }
+
+  public Command outtake() {
+    if (subsystem == null) return new InstantCommand().withName("outtake").asProxy();
+    return subsystem
+        .startEnd(() -> subsystem.requestPercent(-1), subsystem::stop)
+        .withName("outtake")
+        .asProxy();
   }
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
     subsystem.setDefaultCommand(defaultCommand);
-  }
-
-  public Command outtake() {
-    if (subsystem == null) return new InstantCommand();
-    return subsystem.startEnd(() -> subsystem.requestPercent(-1), subsystem::stop);
   }
 }

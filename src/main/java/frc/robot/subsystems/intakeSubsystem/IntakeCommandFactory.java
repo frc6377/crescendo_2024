@@ -13,34 +13,40 @@ public class IntakeCommandFactory {
   }
 
   public Command reverseIntakeCommand() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return new InstantCommand().withName("reverseIntakeCommand").asProxy();
     return new StartEndCommand(subsystem::reverseIntake, subsystem::stopMotors, subsystem)
-        .withName("Reverse Intake");
+        .withName("Reverse Intake")
+        .withName("reverseIntakeCommand")
+        .asProxy();
   }
 
   // Runs the speaker intake or amp intake based on the robot state provided
   public Command getIntakeCommand(PlacementMode mode) {
-    if (subsystem == null) return new InstantCommand();
-    return buildIntakeCommand(mode.equals(PlacementMode.SPEAKER)).withName("getIntakeCommand");
+    if (subsystem == null) return new InstantCommand().withName("getIntakeCommand").asProxy();
+    return buildIntakeCommand(mode.equals(PlacementMode.SPEAKER))
+        .withName("getIntakeCommand")
+        .asProxy();
   }
 
   public Command getSpeakerIntakeCommand() {
-    if (subsystem == null) return new InstantCommand();
-    return buildIntakeCommand(true).withName("getSpeakerIntakeCommnad");
+    if (subsystem == null)
+      return new InstantCommand().withName("getSpeakerIntakeCommand").asProxy();
+    return buildIntakeCommand(true).withName("getSpeakerIntakeCommand").asProxy();
   }
 
   public Command getAmpIntakeCommand() {
-    if (subsystem == null) return new InstantCommand();
-    return buildIntakeCommand(false).withName("getAmpIntakeCommand");
+    if (subsystem == null) return new InstantCommand().withName("getAmpIntakeCommand").asProxy();
+    return buildIntakeCommand(false).withName("getAmpIntakeCommand").asProxy();
   }
 
   private Command buildIntakeCommand(boolean isSpeaker) {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return new InstantCommand().withName("Build Intake Command").asProxy();
     return new StartEndCommand(
             isSpeaker ? subsystem::speakerIntake : subsystem::ampIntake,
             subsystem::stopMotors,
             subsystem)
-        .withName("Build Intake Command");
+        .withName("Build Intake Command")
+        .asProxy();
   }
 
   public void setDefaultCommand(Command defaultCommand) {

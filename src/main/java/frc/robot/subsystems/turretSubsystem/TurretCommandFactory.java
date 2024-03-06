@@ -20,7 +20,7 @@ public class TurretCommandFactory {
   }
 
   public Command stowTurret() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return new InstantCommand().withName("StowTurretCommand").asProxy();
     return new InstantCommand(
             () ->
                 subsystem.setTurretPos(
@@ -30,11 +30,12 @@ public class TurretCommandFactory {
                 () ->
                     subsystem.setPitchPos(
                         Math.toRadians(Constants.TurretConstants.PITCH_STOWED_ANGLE))))
-        .withName("StowTurretCommand");
+        .withName("StowTurretCommand")
+        .asProxy();
   }
 
   public Command pickup() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return new InstantCommand().withName("pickup").asProxy();
     return new InstantCommand(
             () ->
                 subsystem.setTurretPos(
@@ -44,7 +45,8 @@ public class TurretCommandFactory {
                 () ->
                     subsystem.setPitchPos(
                         Math.toRadians(Constants.TurretConstants.PITCH_PICKUP_ANGLE))))
-        .withName("StowTurretCommand");
+        .withName("pickup")
+        .asProxy();
   }
 
   /**
@@ -53,74 +55,81 @@ public class TurretCommandFactory {
    * @return a command that sets the current position as true zero
    */
   public Command zeroZeroing() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return new InstantCommand().withName("zeroZeroing").asProxy();
     return Commands.runOnce(
-        () -> {
-          MagnetSensorConfigs cfg = new MagnetSensorConfigs();
-          cfg.withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1);
-          cfg.withMagnetOffset(0);
-          CANcoderConfigurator lowGearCANcoderConfigurator =
-              subsystem.getLowGearCANCoder().getConfigurator();
-          CANcoderConfigurator highGearCANcoderConfigurator =
-              subsystem.getHighGearCANCoder().getConfigurator();
-          lowGearCANcoderConfigurator.apply(cfg);
-          highGearCANcoderConfigurator.apply(cfg);
+            () -> {
+              MagnetSensorConfigs cfg = new MagnetSensorConfigs();
+              cfg.withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1);
+              cfg.withMagnetOffset(0);
+              CANcoderConfigurator lowGearCANcoderConfigurator =
+                  subsystem.getLowGearCANCoder().getConfigurator();
+              CANcoderConfigurator highGearCANcoderConfigurator =
+                  subsystem.getHighGearCANCoder().getConfigurator();
+              lowGearCANcoderConfigurator.apply(cfg);
+              highGearCANcoderConfigurator.apply(cfg);
 
-          final double trueZeroLowGearOffset =
-              subsystem.getLowGearCANCoder().getAbsolutePosition().getValueAsDouble();
-          final double trueZeroHighGearOffset =
-              subsystem.getHighGearCANCoder().getAbsolutePosition().getValueAsDouble();
+              final double trueZeroLowGearOffset =
+                  subsystem.getLowGearCANCoder().getAbsolutePosition().getValueAsDouble();
+              final double trueZeroHighGearOffset =
+                  subsystem.getHighGearCANCoder().getAbsolutePosition().getValueAsDouble();
 
-          final double lowGearOffset =
-              trueZeroLowGearOffset
-                  - TurretConstants.LOW_GEAR_CAN_CODER_RATIO
-                      * TurretConstants.ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV;
-          final double highGearOffset =
-              trueZeroHighGearOffset
-                  - TurretConstants.HIGH_GEAR_CAN_CODER_RATIO
-                      * TurretConstants.ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV;
+              final double lowGearOffset =
+                  trueZeroLowGearOffset
+                      - TurretConstants.LOW_GEAR_CAN_CODER_RATIO
+                          * TurretConstants.ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV;
+              final double highGearOffset =
+                  trueZeroHighGearOffset
+                      - TurretConstants.HIGH_GEAR_CAN_CODER_RATIO
+                          * TurretConstants.ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV;
 
-          MagnetSensorConfigs newCfgLowGear = new MagnetSensorConfigs();
-          newCfgLowGear.withMagnetOffset(lowGearOffset);
-          lowGearCANcoderConfigurator.apply(newCfgLowGear);
+              MagnetSensorConfigs newCfgLowGear = new MagnetSensorConfigs();
+              newCfgLowGear.withMagnetOffset(lowGearOffset);
+              lowGearCANcoderConfigurator.apply(newCfgLowGear);
 
-          MagnetSensorConfigs newCfgHighGear = new MagnetSensorConfigs();
-          newCfgHighGear.withMagnetOffset(highGearOffset);
-          highGearCANcoderConfigurator.apply(newCfgHighGear);
+              MagnetSensorConfigs newCfgHighGear = new MagnetSensorConfigs();
+              newCfgHighGear.withMagnetOffset(highGearOffset);
+              highGearCANcoderConfigurator.apply(newCfgHighGear);
 
-          DynamicRobotConfig dynamicConfig = new DynamicRobotConfig();
-          dynamicConfig.saveTurretZero(new TurretZeroConfig(lowGearOffset, highGearOffset));
-        },
-        subsystem);
+              DynamicRobotConfig dynamicConfig = new DynamicRobotConfig();
+              dynamicConfig.saveTurretZero(new TurretZeroConfig(lowGearOffset, highGearOffset));
+            },
+            subsystem)
+        .withName("zeroZeroing")
+        .asProxy();
   }
 
   public Command zeroTurretCommand() {
-    if (subsystem == null) return new InstantCommand();
-    return Commands.runOnce(() -> subsystem.zeroTurret(), subsystem).withName("ZeroTurretCommand");
+    if (subsystem == null) return new InstantCommand().withName("ZeroTurretCommand").asProxy();
+    return Commands.runOnce(() -> subsystem.zeroTurret(), subsystem)
+        .withName("ZeroTurretCommand")
+        .asProxy();
   }
 
   public Command moveUpwards() {
-    if (subsystem == null) return new InstantCommand();
-    return subsystem.run(() -> subsystem.moveUp()).withName("moveShooterUp");
+    if (subsystem == null) return new InstantCommand().withName("moveShooterUp").asProxy();
+    return subsystem.run(() -> subsystem.moveUp()).withName("moveShooterUp").asProxy();
   }
 
   public Command getAimTurretCommand() {
-    if (subsystem == null) return new StartEndCommand(() -> {}, () -> {});
-    return subsystem.run(() -> subsystem.aimTurret()).withName("AimTurretCommand");
+    if (subsystem == null)
+      return new StartEndCommand(() -> {}, () -> {}).withName("AimTurretCommand").asProxy();
+    return subsystem.run(() -> subsystem.aimTurret()).withName("AimTurretCommand").asProxy();
   }
 
   public Command idleTurret() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return new InstantCommand().withName("idleTurret").asProxy();
     return subsystem
         .runEnd(() -> subsystem.holdPosition(), subsystem::stopTurret)
-        .withName("idleTurret");
+        .withName("idleTurret")
+        .asProxy();
   }
 
   public Command testTurretCommand(double degrees) {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return new InstantCommand().withName("TestTurret").asProxy();
     return subsystem
         .runEnd(() -> subsystem.setTurretPos(Math.toRadians(degrees)), subsystem::stopTurret)
-        .withName("TestTurret");
+        .withName("TestTurret")
+        .asProxy();
   }
 
   public void setDefaultCommand(Command defaultCommand) {
