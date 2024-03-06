@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
 
@@ -57,10 +58,10 @@ public final class Constants {
     public static final double SHOOTER_LEFT_D = 0;
     public static final double SHOOTER_LEFT_FF = 0;
 
-    public static final double SHOOTER_RIGHT_P = 0.001;
-    public static final double SHOOTER_RIGHT_I = 0.00000035;
-    public static final double SHOOTER_RIGHT_D = 0;
-    public static final double SHOOTER_RIGHT_FF = 0;
+    public static final double SHOOTER_P = 0.001;
+    public static final double SHOOTER_I = 0.00000035;
+    public static final double SHOOTER_D = 0;
+    public static final double SHOOTER_FF = 0;
 
     // Motor RPM, NOT roller RPM
     public static final double SHOOTER_IDLE_SPEED_LEFT = 400; // Placeholder; in RPM
@@ -266,6 +267,11 @@ public final class Constants {
     public static final double INITAL_RAISE_PERCENT = 0.3;
     public static final double BREAK_STATIC_PERCENT = -0.3;
     public static final double BREAK_STATIC_TIME = 0.1;
+  }
+
+  public static class FieldConstants {
+    public static final Translation2d RED_SPEAKER = new Translation2d(16.579342, 5.547868);
+    public static final Translation2d BLUE_SPEAKER = new Translation2d(-0.0381, 5.547868);
   }
 
   public static class enabledSubsystems {

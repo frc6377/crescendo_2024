@@ -29,8 +29,7 @@ public class IntakeCommandFactory {
   }
 
   public Command getSpeakerIntakeCommand() {
-    if (subsystem == null)
-      return new InstantCommand();
+    if (subsystem == null) return new InstantCommand();
     return buildIntakeCommand(true).withName("getSpeakerIntakeCommand").asProxy();
   }
 

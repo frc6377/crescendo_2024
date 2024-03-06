@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.enabledSubsystems;
 import frc.robot.config.DynamicRobotConfig;
+import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.climberSubsystem.ClimberCommandFactory;
 import frc.robot.subsystems.climberSubsystem.ClimberSubsystem;
@@ -57,10 +58,6 @@ import java.util.function.Supplier;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private static final double MaxSpeed = 6; // 6 meters per second desired top speed
-  private static final double MaxAngula9hrRate =
-      Math.PI; // Half a rotation per second max angular velocity
-  private final boolean isRed = true;
   private final RobotStateManager robotStateManager = new RobotStateManager();
 
   // The robot's subsystems and commands are defined here...
@@ -69,7 +66,6 @@ public class RobotContainer {
   private final TriggerSubsystem triggerSubsystem;
   private final TurretSubsystem turretSubsystem;
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
   private final SwerveSubsystem drivetrain;
   private final VisionSubsystem visionSubsystem;
 
@@ -190,7 +186,6 @@ public class RobotContainer {
                     OI.getAxisSupplier(OI.Driver.xTranslationAxis).get(),
                     OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
                     OI.getAxisSupplier(OI.Driver.rotationAxis).get()),
-                0.1,
                 OI.getButton(OI.Driver.highGear).getAsBoolean());
 
     drivetrainCommandFactory.setDefaultCommand(
@@ -222,7 +217,7 @@ public class RobotContainer {
                 robotStateManager.isAmpSupplier()));
 
     OI.getButton(OI.Operator.switchToAmp).onTrue(robotStateManager.setAmpMode());
-    OI.getButton(OI.Operator.swtichToSpeaker).onTrue(robotStateManager.setSpeakerMode());
+    OI.getButton(OI.Operator.switchToSpeaker).onTrue(robotStateManager.setSpeakerMode());
 
     OI.getTrigger(OI.Driver.intake)
         .whileTrue(
@@ -330,6 +325,14 @@ public class RobotContainer {
   public void onExitDisabled() {
     if (Constants.enabledSubsystems.signalEnabled) {
       signalingSubsystem.clearLEDs();
+    }
+  }
+
+  public Translation2d feedSpeakerLocation() {
+    if (robotStateManager.getAllianceColor() == AllianceColor.BLUE) {
+      return Constants.FieldConstants.BLUE_SPEAKER;
+    } else {
+      return Constants.FieldConstants.RED_SPEAKER;
     }
   }
 

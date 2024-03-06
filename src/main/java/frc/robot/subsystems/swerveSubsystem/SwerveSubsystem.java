@@ -138,8 +138,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     }
   }
 
-  public static DriveRequest joystickCondition(
-      final DriveInput input, final double deadband, final boolean isHighGear) {
+  public static DriveRequest joystickCondition(final DriveInput input, final boolean isHighGear) {
     final double magMultiple =
         isHighGear
             ? SwerveDriveConstants.HIGH_GEAR_MAG_MULTIPLE
@@ -154,7 +153,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
         -OI.Driver.rotationCurve.calculate(
                 MathUtil.applyDeadband(input.alpha(), SwerveDriveConstants.ROTATION_DEADBAND))
             * turnMultiple;
-    if (mag < deadband * deadband) {
+    if (mag < SwerveDriveConstants.TRANSLATION_DEADBAND) {
       return new DriveRequest(0, 0, finalAlpha);
     }
 

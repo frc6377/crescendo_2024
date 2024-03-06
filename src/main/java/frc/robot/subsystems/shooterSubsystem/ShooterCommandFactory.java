@@ -70,7 +70,7 @@ public class ShooterCommandFactory {
 
   // Idle shooter command; for default command purposes
   public Command shooterIdle() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return subsystem
         .run(
             () -> {
@@ -81,7 +81,7 @@ public class ShooterCommandFactory {
   }
 
   public Command outtake() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return subsystem
         .startEnd(() -> subsystem.requestPercent(-1), subsystem::stop)
         .withName("outtake")

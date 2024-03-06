@@ -2,6 +2,7 @@ package frc.robot.subsystems.climberSubsystem;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -9,6 +10,7 @@ import frc.robot.Constants.ClimberConstants;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
+/** Expected climb sequece is: 1. Raise 2. Clip 3. Climb */
 public class ClimberCommandFactory {
   private final ClimberSubsystem subsystem;
   private final Runnable noop = () -> {};
@@ -18,7 +20,7 @@ public class ClimberCommandFactory {
   }
 
   public Command raise() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     Timer minTime = new Timer();
     return initalRaise()
         .andThen(
@@ -31,7 +33,6 @@ public class ClimberCommandFactory {
                 noop,
                 (interupt) -> {
                   subsystem.setOutputLimits(0, -1);
-                  if (interupt) return;
                   subsystem.applyPercent(0);
                 },
                 () -> {

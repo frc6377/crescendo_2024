@@ -7,6 +7,8 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.utilities.DebugEntry;
@@ -15,6 +17,7 @@ public class ClimberSubsystem extends SubsystemBase {
   private PIDState pidState;
   private CANSparkMax leftArmMotor;
   private CANSparkMax rightArmMotor;
+  private ShuffleboardTab climberTab = Shuffleboard.getTab(this.getName());
 
   private DebugEntry<Double> rightArmPoseEntry;
   private DebugEntry<Double> leftArmPoseEntry;
