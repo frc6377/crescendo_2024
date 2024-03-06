@@ -18,12 +18,12 @@ public class TrapElvCommandFactory {
   }
 
   public Command stowTrapElvCommand() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return subsystem.startEnd(() -> subsystem.stowTrapElv(), () -> {});
   }
 
   public Command setWristSource() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return subsystem
         .run(
             () -> {
@@ -33,7 +33,7 @@ public class TrapElvCommandFactory {
   }
 
   public Command setWristAMP() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return subsystem
         .run(
             () -> {
@@ -43,7 +43,7 @@ public class TrapElvCommandFactory {
   }
 
   public Command setWristStowed() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return subsystem
         .run(
             () -> {
@@ -53,7 +53,7 @@ public class TrapElvCommandFactory {
   }
 
   public Command rollerIntakeCommand() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return subsystem
         .runEnd(
             () -> {
@@ -66,7 +66,7 @@ public class TrapElvCommandFactory {
   }
 
   public Command rollerOutakeCommand() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return subsystem
         .runEnd(
             () -> {
@@ -79,12 +79,12 @@ public class TrapElvCommandFactory {
   }
 
   public Command zeroArm() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     throw new UnsupportedOperationException("Unimplemented");
   }
 
   public Command stopRoller() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return subsystem
         .run(
             () -> {
@@ -94,7 +94,7 @@ public class TrapElvCommandFactory {
   }
 
   public Command intakeSource() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return subsystem
         .startEnd(
             () -> {
@@ -119,7 +119,7 @@ public class TrapElvCommandFactory {
   }
 
   public Command positionAMP() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return subsystem
         .startEnd(
             () -> {
@@ -130,7 +130,7 @@ public class TrapElvCommandFactory {
   }
 
   public Command scoreAMP() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return subsystem
         .startEnd(
             () -> {
@@ -141,29 +141,29 @@ public class TrapElvCommandFactory {
   }
 
   public Command wristintakeSource() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return intakeSource()
         .until(subsystem.getSourceBreak())
         .andThen(Commands.print("0.25s left").andThen(intakeFromSourceForTime()));
   }
 
   public Command intakeFromGroundForTime() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return intakeFromGroundForTime(Constants.TrapElvConstants.INTAKE_BEAM_BREAK_DELAY_SEC);
   }
 
   public Command intakeFromGroundForTime(double seconds) {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return Commands.deadline(new WaitCommand(seconds), intakeGround());
   }
 
   public Command intakeFromSourceForTime() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return intakeFromSourceForTime(Constants.TrapElvConstants.SOURCE_BEAM_BREAK_DELAY_SEC);
   }
 
   public Command intakeFromSourceForTime(double seconds) {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return Commands.deadline(new WaitCommand(seconds), intakeSource());
   }
 

@@ -2,6 +2,7 @@ package frc.robot.subsystems.climberSubsystem;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -19,7 +20,7 @@ public class ClimberCommandFactory {
   }
 
   public Command raise() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     Timer minTime = new Timer();
     return initalRaise()
         .andThen(
@@ -42,13 +43,13 @@ public class ClimberCommandFactory {
   }
 
   public Command initalRaise() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return new InstantCommand(() -> subsystem.applyPercent(ClimberConstants.INITAL_RAISE_PERCENT))
         .andThen(new WaitCommand(ClimberConstants.BREAK_STATIC_TIME));
   }
 
   public Command clip() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return breakStatic()
         .andThen(
             subsystem.startEnd(
@@ -56,13 +57,13 @@ public class ClimberCommandFactory {
   }
 
   public Command breakStatic() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return new InstantCommand(() -> subsystem.applyPercent(ClimberConstants.BREAK_STATIC_PERCENT))
         .andThen(new WaitCommand(ClimberConstants.BREAK_STATIC_TIME));
   }
 
   public Command climb() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
 
     Runnable init =
         () -> {

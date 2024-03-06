@@ -22,7 +22,7 @@ public class ShooterCommandFactory {
   }
 
   public Command intakeSource() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return subsystem.startEnd(
         () -> {
           subsystem.setShooterSpeeds(ShooterConstants.SHOOTER_SOURCE_INTAKE);
@@ -31,12 +31,12 @@ public class ShooterCommandFactory {
   }
 
   public Command intakeSourceForTime() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return Commands.deadline(new WaitCommand(ShooterConstants.INTAKE_DELAY_SEC), intakeSource());
   }
 
   public Command intakeSpeakerSource() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return intakeSource().until(subsystem.getBeamBreak()).andThen(intakeSourceForTime());
   }
 
@@ -45,7 +45,7 @@ public class ShooterCommandFactory {
   // Required to be called repeatedly; consider pub-sub for LimelightGetDistance() or equivalent
   // method to save a method call
   public Command revShooter() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return new FunctionalCommand(
         () -> {
           subsystem.setShooterSpeeds(
@@ -59,7 +59,7 @@ public class ShooterCommandFactory {
 
   // Idle shooter command; for default command purposes
   public Command shooterIdle() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return subsystem
         .run(
             () -> {
@@ -74,7 +74,7 @@ public class ShooterCommandFactory {
   }
 
   public Command outtake() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return subsystem.startEnd(() -> subsystem.requestPercent(-1), subsystem::stop);
   }
 }

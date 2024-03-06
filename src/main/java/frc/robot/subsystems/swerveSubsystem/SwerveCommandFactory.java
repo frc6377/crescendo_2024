@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
@@ -26,7 +27,7 @@ public class SwerveCommandFactory {
   }
 
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return subsystem
         .run(() -> subsystem.setControl(requestSupplier.get()))
         .withName("Request Supplier");
@@ -41,7 +42,7 @@ public class SwerveCommandFactory {
    * @return A command that will point in the specified direction until interupted
    */
   public Command pointInDirection(Rotation2d angleToPoint, Supplier<DriveRequest> input) {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return pointDrive(() -> angleToPoint.getDegrees(), input).withName("Pointing in direction");
   }
 
@@ -54,7 +55,7 @@ public class SwerveCommandFactory {
    * @return A command that will point at the specified location until interupted
    */
   public Command pointAtLocation(final Translation2d target, final Supplier<DriveRequest> input) {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     final DoubleSupplier getAngleToTarget =
         () -> {
           Translation2d delta = subsystem.getState().Pose.getTranslation().minus(target);
@@ -73,7 +74,7 @@ public class SwerveCommandFactory {
    */
   public Command pointDrive(
       final DoubleSupplier targetAngleProvider, final Supplier<DriveRequest> input) {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     final ProfiledPIDController pid =
         new ProfiledPIDController(
             Constants.SwerveDriveConstants.TURN_kP,
@@ -118,7 +119,7 @@ public class SwerveCommandFactory {
    * @return A command that rotates to attempts to zero the error given.
    */
   public Command rotationDrive(final Supplier<Rotation2d> err, final Supplier<DriveRequest> input) {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     final PIDController pid =
         new PIDController(
             Constants.SwerveDriveConstants.TURN_kP, 0, Constants.SwerveDriveConstants.TURN_kD);
@@ -142,7 +143,7 @@ public class SwerveCommandFactory {
   }
 
   public Command robotOrientedDrive(final Supplier<DriveRequest> requestSupplier) {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     final Runnable command =
         () -> {
           DriveRequest driveRequest = requestSupplier.get();
@@ -160,7 +161,7 @@ public class SwerveCommandFactory {
   }
 
   public Command fieldOrientedDrive(final Supplier<DriveRequest> requestSupplier) {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     final Runnable command =
         () -> {
           DriveRequest driveRequest = requestSupplier.get();
@@ -183,7 +184,7 @@ public class SwerveCommandFactory {
   }
 
   public Command zeroDriveTrain() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return subsystem.runOnce(
         () ->
             subsystem.seedFieldRelative(

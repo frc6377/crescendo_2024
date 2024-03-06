@@ -20,7 +20,7 @@ public class TurretCommandFactory {
   }
 
   public Command stowTurret() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return new InstantCommand(
             () ->
                 subsystem.setTurretPos(
@@ -34,7 +34,7 @@ public class TurretCommandFactory {
   }
 
   public Command pickup() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return new InstantCommand(
             () ->
                 subsystem.setTurretPos(
@@ -53,7 +53,7 @@ public class TurretCommandFactory {
    * @return a command that sets the current position as true zero
    */
   public Command zeroZeroing() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return Commands.runOnce(
         () -> {
           MagnetSensorConfigs cfg = new MagnetSensorConfigs();
@@ -95,12 +95,12 @@ public class TurretCommandFactory {
   }
 
   public Command zeroTurretCommand() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return Commands.runOnce(() -> subsystem.zeroTurret(), subsystem).withName("ZeroTurretCommand");
   }
 
   public Command moveUpwards() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return subsystem.run(() -> subsystem.moveUp()).withName("moveShooterUp");
   }
 
@@ -110,14 +110,14 @@ public class TurretCommandFactory {
   }
 
   public Command idleTurret() {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return subsystem
         .runEnd(() -> subsystem.holdPosition(), subsystem::stopTurret)
         .withName("idleTurret");
   }
 
   public Command testTurretCommand(double degrees) {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return subsystem
         .runEnd(() -> subsystem.setTurretPos(Math.toRadians(degrees)), subsystem::stopTurret)
         .withName("TestTurret");
