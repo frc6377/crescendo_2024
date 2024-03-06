@@ -10,6 +10,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.utilities.DebugEntry;
 
@@ -49,6 +50,7 @@ public class ClimberSubsystem extends SubsystemBase {
     pidController.setI(ClimberConstants.CURRENT_PID[1]);
     pidController.setD(ClimberConstants.CURRENT_PID[2]);
     double armPosition;
+    motor.setClosedLoopRampRate(Constants.RAMP_RATE);
 
     armPosition = motor.getAbsoluteEncoder().getPosition();
 

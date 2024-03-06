@@ -109,6 +109,7 @@ public class TurretSubsystem extends SubsystemBase {
     turretMotor.restoreFactoryDefaults();
     turretMotor.setInverted(Constants.TurretConstants.IS_MOTOR_INVERTED);
     turretMotor.setSmartCurrentLimit(Constants.TurretConstants.TURRET_SMART_CURRENT_LIMIT);
+    turretMotor.setClosedLoopRampRate(Constants.RAMP_RATE);
     turretMotor.setSoftLimit(
         CANSparkMax.SoftLimitDirection.kReverse,
         (float) TurretConstants.TURRET_MIN_ANGLE_ROTATIONS);
@@ -157,6 +158,7 @@ public class TurretSubsystem extends SubsystemBase {
         CANSparkMax.SoftLimitDirection.kForward, (float) TurretConstants.PITCH_MAX_ANGLE_ROTATIONS);
     pitchMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
     pitchMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
+    pitchMotor.setClosedLoopRampRate(Constants.RAMP_RATE);
     pitchPIDController =
         new PIDController(
             Constants.TurretConstants.PITCH_KP,

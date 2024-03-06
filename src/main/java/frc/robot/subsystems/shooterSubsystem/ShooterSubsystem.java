@@ -69,6 +69,9 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterRightMotor.restoreFactoryDefaults();
     shooterRightMotor.setSmartCurrentLimit(50);
 
+    shooterLeftMotor.setClosedLoopRampRate(5);
+    shooterRightMotor.setClosedLoopRampRate(5);
+
     shooterLeftMotor.setIdleMode(IdleMode.kCoast);
     shooterRightMotor.setIdleMode(IdleMode.kCoast);
 
