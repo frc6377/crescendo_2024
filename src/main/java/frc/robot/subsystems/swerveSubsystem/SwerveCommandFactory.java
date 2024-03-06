@@ -9,16 +9,16 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.Constants;
+import frc.robot.Constants.DriverConstants;
+import frc.robot.Constants.FieldConstants;
+import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem.DriveRequest;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -196,14 +196,14 @@ public class SwerveCommandFactory {
                     subsystem.getState().Pose.getTranslation(), Rotation2d.fromDegrees(180))));
   }
 
-  public Command assistedDriving(){
+  public Command assistedDriving(Supplier<DriveRequest> requestSupplier, RobotStateManager RSM) {
     /*
      * 4 Assisted Drives
-     * 
+     *
      * 1. Auto target speaker
      * 2. Auto target amp
      * 3. Point at source
-     * 
+     *
      * Decision flow:
      * is on near side?
      * yes{
@@ -226,26 +226,43 @@ public class SwerveCommandFactory {
      * }
      */
 
-    BooleanSupplier onNearSide = ()-> false;
-    BooleanSupplier isAmpMode = ()-> false;
-    Command decider = Commands.either(
-      Commands.either(autoTargetAmp(), autoTargetSpeaker(), isAmpMode),
-      Commands.either(new InstantCommand(), autoTargetSource(), isAmpMode),
-      onNearSide
-    );
+    BooleanSupplier onNearSide = isOnNearSide();
+    BooleanSupplier isAmpMode = RSM.isAmpSupplier();
 
-    return new InstantCommand();
+    Command assistDriver =
+        Commands.either(
+            Commands.either(autoTargetAmp(requestSupplier, RSM), autoTargetSpeaker(requestSupplier, RSM), isAmpMode),
+            Commands.either(Commands.none(), autoTargetSource(requestSupplier, RSM), isAmpMode),
+            onNearSide);
+
+    return assistDriver;
   }
 
-  private Command autoTargetSource() {
-    return new InstantCommand().asProxy();
+  private BooleanSupplier isOnNearSide(){
+    return () -> subsystem.getState().Pose.getX() > FieldConstants.CENTERLINE_X;
   }
 
-  private Command autoTargetSpeaker() {
-    return new InstantCommand().asProxy();
+  private Command autoTargetSource(Supplier<DriveRequest> request, RobotStateManager RSM) {
+        return Commands.either(
+            pointInDirection(DriverConstants.RED_SOURCE_ROTATION, request),
+            pointInDirection(DriverConstants.BLUE_SOURCE_ROTATION, request),
+            () -> RSM.getAllianceColor() == AllianceColor.RED)
+        .asProxy();
   }
 
-  public Command autoTargetAmp(Supplier<DriveRequest> request, RobotStateManager RSM){
-    return Commands.either(pointInDirection(, request),pointInDirection(, request),RSM.getPlacementMode() ).asProxy();
+  private Command autoTargetSpeaker(Supplier<DriveRequest> request, RobotStateManager RSM) {
+    return Commands.either(
+            pointAtLocation(FieldConstants.RED_SPEAKER, request),
+            pointAtLocation(FieldConstants.BLUE_SPEAKER, request),
+            () -> RSM.getAllianceColor() == AllianceColor.RED)
+        .asProxy();
+  }
+
+  public Command autoTargetAmp(Supplier<DriveRequest> request, RobotStateManager RSM) {
+    return Commands.either(
+            pointInDirection(DriverConstants.RED_AMP_ROTATION, request),
+            pointInDirection(DriverConstants.BLUE_AMP_ROTATION, request),
+            () -> RSM.getAllianceColor() == AllianceColor.RED)
+        .asProxy();
   }
 }
