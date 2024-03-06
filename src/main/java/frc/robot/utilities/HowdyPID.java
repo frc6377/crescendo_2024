@@ -7,7 +7,9 @@ package frc.robot.utilities;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 
+import edu.wpi.first.math.MathSharedStore;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 /** Add your docs here. */
@@ -22,6 +24,9 @@ public class HowdyPID{
   private TunableNumber tuneI;
   private TunableNumber tuneD;
   private TunableNumber tuneIz;
+
+  private PIDController PIDController;
+  private SparkPIDController SparkPIDController;
 
   public HowdyPID(double p, double i, double d) {
     this.P = p;
@@ -45,6 +50,26 @@ public class HowdyPID{
     this.D = d;
     this.Iz = iz;
     this.FF = ff;
+  }
+
+  public void getAsSendable(SendableBuilder builder) {
+    builder.setSmartDashboardType("PIDController");
+    builder.addDoubleProperty("p", this::getCachedP, this::setP);
+    builder.addDoubleProperty("p", this::getCachedP, this::setP);
+    builder.addDoubleProperty("i", this::getCachedI, this::setI);
+    builder.addDoubleProperty("d", this::getCachedD, this::setD);
+    builder.addDoubleProperty("ff", this::getCachedFF, this::setFF);
+    builder.addDoubleProperty(
+        "izone",
+        this::getCachedIZone,
+        (double toSet) -> {
+          try {
+            setIZone(toSet);
+          } catch (IllegalArgumentException e) {
+            MathSharedStore.reportError(
+                "IZone must be a non-negative number!", e.getStackTrace());
+          }
+        });
   }
 
   public void createTunableNumbers(String name, CANSparkMax motor, Subsystem subsystem) {
@@ -77,7 +102,7 @@ public class HowdyPID{
             name.concat(" Iz"), this.P, iz -> controller.setIZone(iz), subsystem);
   }
 
-  public SparkPIDController getPidController(CANSparkMax motor) {
+  public SparkPIDController getSparkPidController(CANSparkMax motor) {
     SparkPIDController controller = motor.getPIDController();
     controller.setP(this.P);
     controller.setI(this.I);
