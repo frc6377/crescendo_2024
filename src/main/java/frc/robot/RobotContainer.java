@@ -57,10 +57,6 @@ import java.util.function.Supplier;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private static final double MaxSpeed = 6; // 6 meters per second desired top speed
-  private static final double MaxAngula9hrRate =
-      Math.PI; // Half a rotation per second max angular velocity
-  private final boolean isRed = true;
   private final RobotStateManager robotStateManager = new RobotStateManager();
 
   // The robot's subsystems and commands are defined here...
@@ -69,7 +65,6 @@ public class RobotContainer {
   private final TriggerSubsystem triggerSubsystem;
   private final TurretSubsystem turretSubsystem;
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
   private final SwerveSubsystem drivetrain;
   private final VisionSubsystem visionSubsystem;
 
