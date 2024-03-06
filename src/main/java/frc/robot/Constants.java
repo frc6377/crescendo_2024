@@ -268,7 +268,7 @@ public final class Constants {
     public static final double BREAK_STATIC_PERCENT = -0.3;
     public static final double BREAK_STATIC_TIME = 0.1;
   }
-  
+
   public static class FieldConstants {
     public static final Translation2d RED_SPEAKER = new Translation2d(16.579342, 5.547868);
     public static final Translation2d BLUE_SPEAKER = new Translation2d(-0.0381, 5.547868);
