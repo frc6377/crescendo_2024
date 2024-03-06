@@ -1,5 +1,5 @@
-import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.ShooterSubsystem.SpeakerConfig;
+import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem;
+import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
 import java.util.Arrays;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,13 +13,14 @@ public class TestShooterSubsystem {
     SpeakerConfig speedsPair;
     double[] speedsArray = {0, 0};
     double[][] speakerConfigListTest = {
-      {-100, 250, 250},
-      {0, 250, 250},
+      {-100, 2350, 1950},
+      {0, 2350, 1950},
       {40, 350, 350},
       {195, 500, 500},
       {290, 700, 700},
       {10000, 700, 700}
     };
+    ;
     double[] configSpeeds;
 
     for (int i = 0; i < speakerConfigListTest.length; i++) {
@@ -29,6 +30,10 @@ public class TestShooterSubsystem {
       configSpeeds = arraySlice(speakerConfigListTest[i], 1, 2);
       Assertions.assertArrayEquals(configSpeeds, speedsArray);
     }
+  }
+
+  private double[] toSpeedPair(SpeakerConfig cfg) {
+    return new double[] {cfg.getSpeedLeftInRPM(), cfg.getSpeedRightInRPM()};
   }
 
   public double[] arraySlice(double[] array, int startIndex, int endIndex) {

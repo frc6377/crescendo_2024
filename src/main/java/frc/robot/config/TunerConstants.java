@@ -7,7 +7,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstantsFactory;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem;
 
 public class TunerConstants {
   // Both sets of gains need to be tuned to your individual robot.
@@ -31,7 +31,7 @@ public class TunerConstants {
 
   // The stator current at which the wheels start to slip;
   // This needs to be tuned to your individual robot
-  private static final double kSlipCurrentA = 300.0;
+  private static final double kSlipCurrentA = 80.0;
 
   // Theoretical free speed (m/s) at 12v applied output;
   // This needs to be tuned to your individual robot
