@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.enabledSubsystems;
 import frc.robot.config.DynamicRobotConfig;
+import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.climberSubsystem.ClimberCommandFactory;
 import frc.robot.subsystems.climberSubsystem.ClimberSubsystem;
@@ -216,7 +217,7 @@ public class RobotContainer {
                 robotStateManager.isAmpSupplier()));
 
     OI.getButton(OI.Operator.switchToAmp).onTrue(robotStateManager.setAmpMode());
-    OI.getButton(OI.Operator.swtichToSpeaker).onTrue(robotStateManager.setSpeakerMode());
+    OI.getButton(OI.Operator.switchToSpeaker).onTrue(robotStateManager.setSpeakerMode());
 
     OI.getTrigger(OI.Driver.intake)
         .whileTrue(
@@ -324,6 +325,14 @@ public class RobotContainer {
   public void onExitDisabled() {
     if (Constants.enabledSubsystems.signalEnabled) {
       signalingSubsystem.clearLEDs();
+    }
+  }
+
+  public Translation2d feedSpeakerLocation() {
+    if (robotStateManager.getAllianceColor() == AllianceColor.BLUE) {
+      return Constants.FieldConstants.BLUE_SPEAKER;
+    } else {
+      return Constants.FieldConstants.RED_SPEAKER;
     }
   }
 

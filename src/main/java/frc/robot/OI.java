@@ -87,7 +87,7 @@ public class OI {
         new Control(XboxController.Axis.kLeftTrigger, "Fire", controller, 0.5);
     public static final Control prepareToFire =
         new Control(XboxController.Axis.kRightTrigger, "Rev/Prep to score", controller, 0.5);
-    public static final Control swtichToSpeaker =
+    public static final Control switchToSpeaker =
         new Control(XboxController.Button.kLeftBumper, "Speaker Mode", controller);
     public static final Control switchToAmp =
         new Control(XboxController.Button.kRightBumper, "Amp Mode", controller);
