@@ -542,7 +542,6 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   private void aimTurret() {
-    if (!Constants.enabledSubsystems.turretRotationEnabled) return;
     if (visionSubsystem != null) {
       int tagID =
           ((robotStateManager.getAllianceColor()
@@ -553,12 +552,17 @@ public class TurretSubsystem extends SubsystemBase {
       double visionTX = visionSubsystem.getTurretYaw(tagID);
       if (visionTX != 0) {
         // X & Rotation
-        setTurretPos(Math.toRadians(visionTX) + turretPosition);
+        if(Constants.enabledSubsystems.turretRotationEnabled){
+            setTurretPos(Math.toRadians(visionTX) + turretPosition);
+        }
 
         // Y & Tilting
-        double visionTY = visionSubsystem.getTurretPitch(tagID);
-        double distanceToTag = tyToDistanceFromTag(visionTY);
-        tagDistanceEntry.log(distanceToTag);
+        if(Constants.enabledSubsystems.turretPitchEnabled){
+            double visionTY = visionSubsystem.getTurretPitch(tagID);
+            double distanceToTag = tyToDistanceFromTag(visionTY);
+            tagDistanceEntry.log(distanceToTag);
+        }
+        
         // TODO: Add vertical tilt and use distance for it
 
         if (Math.abs(Math.toRadians(visionTX) + turretPosition)
