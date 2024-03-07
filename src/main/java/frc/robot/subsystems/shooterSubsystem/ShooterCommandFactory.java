@@ -71,13 +71,16 @@ public class ShooterCommandFactory {
   // Idle shooter command; for default command purposes
   public Command shooterIdle() {
     if (subsystem == null) return Commands.none();
-    return subsystem
-        .run(
-            () -> {
-              subsystem.stop();
-            })
-        .withName("Idle Shooter command")
-        .asProxy();
+    final Command command =
+        subsystem
+            .run(
+                () -> {
+                  subsystem.stop();
+                })
+            .withName("Idle Shooter command")
+            .asProxy();
+    command.addRequirements(subsystem);
+    return command;
   }
 
   public Command outtake() {

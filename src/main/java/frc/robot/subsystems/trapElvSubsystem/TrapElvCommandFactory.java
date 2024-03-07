@@ -18,10 +18,13 @@ public class TrapElvCommandFactory {
 
   public Command stowTrapElvCommand() {
     if (subsystem == null) return Commands.none();
-    return subsystem
-        .startEnd(() -> subsystem.stowTrapElv(), () -> {})
-        .withName("stowTrapElvCommand")
-        .asProxy();
+    final Command command =
+        subsystem
+            .startEnd(() -> subsystem.stowTrapElv(), () -> {})
+            .withName("stowTrapElvCommand")
+            .asProxy();
+    command.addRequirements(subsystem);
+    return command;
   }
 
   public Command setWristSource() {

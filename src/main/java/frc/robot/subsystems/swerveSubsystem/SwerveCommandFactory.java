@@ -167,20 +167,25 @@ public class SwerveCommandFactory {
 
   public Command fieldOrientedDrive(final Supplier<DriveRequest> requestSupplier) {
     if (subsystem == null) return Commands.none();
-    final Runnable command =
-        () -> {
-          DriveRequest driveRequest = requestSupplier.get();
-          SwerveRequest swerveRequest =
-              new SwerveRequest.FieldCentric()
-                  .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-                  .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-                  .withVelocityX(driveRequest.xSpeed() * SwerveSubsystem.maxSpeed)
-                  .withVelocityY(driveRequest.ySpeed() * SwerveSubsystem.maxSpeed)
-                  .withRotationalRate(driveRequest.alpha() * SwerveSubsystem.maxAngularRate);
-          subsystem.setControl(swerveRequest);
-        };
-
-    return subsystem.run(command).withName("fieldOrientedDrive").asProxy();
+    final Command command =
+        subsystem
+            .run(
+                () -> {
+                  DriveRequest driveRequest = requestSupplier.get();
+                  SwerveRequest swerveRequest =
+                      new SwerveRequest.FieldCentric()
+                          .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+                          .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+                          .withVelocityX(driveRequest.xSpeed() * SwerveSubsystem.maxSpeed)
+                          .withVelocityY(driveRequest.ySpeed() * SwerveSubsystem.maxSpeed)
+                          .withRotationalRate(
+                              driveRequest.alpha() * SwerveSubsystem.maxAngularRate);
+                  subsystem.setControl(swerveRequest);
+                })
+            .withName("fieldOrientedDrive")
+            .asProxy();
+    command.addRequirements(subsystem);
+    return command;
   }
 
   public void setDefaultCommand(Command defaultCommand) {

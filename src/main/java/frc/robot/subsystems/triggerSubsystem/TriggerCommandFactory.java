@@ -17,7 +17,10 @@ public class TriggerCommandFactory {
   }
 
   public Command getHoldCommand() {
-    return buildCommand(TriggerConstants.HOLD_PERCENTAGE).withName("getHoldCommand").asProxy();
+    final Command command =
+        buildCommand(TriggerConstants.HOLD_PERCENTAGE).withName("getHoldCommand").asProxy();
+    command.addRequirements(subsystem);
+    return command;
   }
 
   public Command getShootCommand() {
