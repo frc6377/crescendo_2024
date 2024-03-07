@@ -24,6 +24,7 @@ public class HowdyPID{
   private TunableNumber tuneI;
   private TunableNumber tuneD;
   private TunableNumber tuneIz;
+  private TunableNumber tuneFF;
 
   private PIDController PIDController;
   private SparkPIDController SparkPIDController;
@@ -52,39 +53,20 @@ public class HowdyPID{
     this.FF = ff;
   }
 
-  public void getAsSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("PIDController");
-    builder.addDoubleProperty("p", this::getCachedP, this::setP);
-    builder.addDoubleProperty("p", this::getCachedP, this::setP);
-    builder.addDoubleProperty("i", this::getCachedI, this::setI);
-    builder.addDoubleProperty("d", this::getCachedD, this::setD);
-    builder.addDoubleProperty("ff", this::getCachedFF, this::setFF);
-    builder.addDoubleProperty(
-        "izone",
-        this::getCachedIZone,
-        (double toSet) -> {
-          try {
-            setIZone(toSet);
-          } catch (IllegalArgumentException e) {
-            MathSharedStore.reportError(
-                "IZone must be a non-negative number!", e.getStackTrace());
-          }
-        });
-  }
-
   public void createTunableNumbers(String name, CANSparkMax motor, Subsystem subsystem) {
     this.tuneP =
         new TunableNumber(
             name.concat(" P"), this.P, p -> motor.getPIDController().setP(p), subsystem);
     this.tuneI =
         new TunableNumber(
-            name.concat(" I"), this.P, i -> motor.getPIDController().setI(i), subsystem);
+            name.concat(" I"), this.I, i -> motor.getPIDController().setI(i), subsystem);
     this.tuneD =
         new TunableNumber(
-            name.concat(" D"), this.P, d -> motor.getPIDController().setD(d), subsystem);
+            name.concat(" D"), this.D, d -> motor.getPIDController().setD(d), subsystem);
     this.tuneIz =
         new TunableNumber(
-            name.concat(" Iz"), this.P, iz -> motor.getPIDController().setIZone(iz), subsystem);
+            name.concat(" Iz"), this.Iz, iz -> motor.getPIDController().setIZone(iz), subsystem);
+    this.tuneFF = new TunableNumber(name.concat(" FF"), this.FF, ff -> motor.getPIDController().setFF(ff), subsystem);
   }
 
   public void createTunableNumbers(String name, PIDController controller, Subsystem subsystem) {
@@ -93,13 +75,13 @@ public class HowdyPID{
             name.concat(" P"), this.P, p -> controller.setP(p), subsystem);
     this.tuneI =
         new TunableNumber(
-            name.concat(" I"), this.P, i -> controller.setI(i), subsystem);
+            name.concat(" I"), this.I, i -> controller.setI(i), subsystem);
     this.tuneD =
         new TunableNumber(
-            name.concat(" D"), this.P, d -> controller.setD(d), subsystem);
+            name.concat(" D"), this.D, d -> controller.setD(d), subsystem);
     this.tuneIz =
         new TunableNumber(
-            name.concat(" Iz"), this.P, iz -> controller.setIZone(iz), subsystem);
+            name.concat(" Iz"), this.Iz, iz -> controller.setIZone(iz), subsystem);
   }
 
   public SparkPIDController getSparkPidController(CANSparkMax motor) {
