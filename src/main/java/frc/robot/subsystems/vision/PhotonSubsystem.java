@@ -171,46 +171,47 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   }
 
   public void periodic() {
-    if (Robot.isReal()) {
-      mainResult = mainCamera.getLatestResult();
-      if (mainResult.hasTargets()) {
-        List<PhotonTrackedTarget> targets = mainResult.getTargets();
-        if (targets.size() > 1) {
-          EstimatedRobotPose newPose = getPVEstimatedPose();
-          if ((newPose.estimatedPose.getX() > 12) || (newPose.estimatedPose.getX() < 4.54)) {
-            if (checkPoseValidity(newPose)) {
-              lastPose = newPose;
-            }
-            measurementsUsed++;
-            measurementConsumer.accept(getPose2d(), getTime());
-            if (measurementsUsed % 100 == 0) {
-              measurementEntry.log((double) measurementsUsed);
-            }
-          }
+    if (!Robot.isReal()) return;
+
+    mainResult = mainCamera.getLatestResult();
+    if (!mainResult.hasTargets()) return;
+
+    List<PhotonTrackedTarget> targets = mainResult.getTargets();
+    if (targets.size() > 1) {
+      EstimatedRobotPose newPose = getPVEstimatedPose();
+      if ((newPose.estimatedPose.getX() > 12) || (newPose.estimatedPose.getX() < 4.54)) {
+        if (checkPoseValidity(newPose)) {
+          lastPose = newPose;
         }
-        // logging stuff
-        if (!Robot.isCompetition) {
-          for (PhotonTrackedTarget target : targets) {
-            if (target.getFiducialId() == 3) {
-              Pose3d botpose = this.getPose3d();
-              double distanceToTag3 =
-                  Math.sqrt(
-                      Math.pow(16.579342 - botpose.getX(), 2)
-                          + Math.pow(4.982718 - botpose.getY(), 2)
-                          + Math.pow(1.451102 - botpose.getZ(), 2));
-              distanceEntryTag3.log(distanceToTag3);
-            } else if (target.getFiducialId() == 4) {
-              Pose3d botpose = this.getPose3d();
-              double distanceToTag4 =
-                  Math.sqrt(
-                      Math.pow(16.579342 - botpose.getX(), 2)
-                          + Math.pow(5.547868 - botpose.getY(), 2)
-                          + Math.pow(1.451102 - botpose.getZ(), 2));
-              distanceEntryTag4.log(distanceToTag4);
-            }
-          }
+        measurementsUsed++;
+        measurementConsumer.accept(getPose2d(), getTime());
+        if (measurementsUsed % 100 == 0) {
+          measurementEntry.log((double) measurementsUsed);
         }
       }
     }
+    // logging stuff
+    if(Robot.isCompetition) return;
+
+    for (PhotonTrackedTarget target : targets) {
+      if (target.getFiducialId() == 3) {
+        Pose3d botpose = this.getPose3d();
+        double distanceToTag3 =
+            Math.sqrt(
+                Math.pow(16.579342 - botpose.getX(), 2)
+                    + Math.pow(4.982718 - botpose.getY(), 2)
+                    + Math.pow(1.451102 - botpose.getZ(), 2));
+        distanceEntryTag3.log(distanceToTag3);
+      } else if (target.getFiducialId() == 4) {
+        Pose3d botpose = this.getPose3d();
+        double distanceToTag4 =
+            Math.sqrt(
+                Math.pow(16.579342 - botpose.getX(), 2)
+                    + Math.pow(5.547868 - botpose.getY(), 2)
+                    + Math.pow(1.451102 - botpose.getZ(), 2));
+        distanceEntryTag4.log(distanceToTag4);
+      }
+    }
+  
   }
 }
