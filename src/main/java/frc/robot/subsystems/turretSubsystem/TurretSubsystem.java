@@ -261,7 +261,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public double calculateTurretPosition() {
-
+    if (!Constants.enabledSubsystems.turretRotationEnabled) return 0;
     double encoderPosition =
         lowGearCANcoder.getPosition().getValueAsDouble()
             / Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO;
@@ -271,14 +271,14 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   private double calculatePitchPosition() {
-
+    if (!Constants.enabledSubsystems.turretPitchEnabled) return 0;
     return Math.toRadians(
         (pitchEncoder.getPosition() * 360) * Constants.TurretConstants.PITCH_CONVERSION_FACTOR);
   }
 
   /** Will calculate the current turret position and update encoders and motors off of it. */
   public void zeroTurret() {
-
+    if (!Constants.enabledSubsystems.turretRotationEnabled) return;
     double lowGearPosition = lowGearCANcoder.getAbsolutePosition().getValue().doubleValue();
     double highGearPosition = highGearCANcoder.getAbsolutePosition().getValue().doubleValue();
     Rotation2d turretRotation = encoderPositionsToTurretRotation(lowGearPosition, highGearPosition);
@@ -304,7 +304,7 @@ public class TurretSubsystem extends SubsystemBase {
    */
   public static Rotation2d encoderPositionsToTurretRotation(
       double lowGearCANcoderPosition, double highGearCANcoderPosition) {
-
+    if (!Constants.enabledSubsystems.turretRotationEnabled) return new Rotation2d(0);
     // This equation is based off of
     // https://www.geeksforgeeks.org/implementation-of-chinese-remainder-theorem-inverse-modulo-based-implementation/
     // It is accurate to with in 3.6 deg
@@ -355,11 +355,15 @@ public class TurretSubsystem extends SubsystemBase {
 
   private static double fineTuneTurretRotation(
       double roughPosition, double divisionSize, double CANCoderAngle) {
+    if (!Constants.enabledSubsystems.turretRotationEnabled) return 0;
+
     int division = (int) ((roughPosition / divisionSize));
     return divisionSize * division + CANCoderAngle * divisionSize;
   }
 
   public void setTurretPos(double setpoint) {
+    if (!Constants.enabledSubsystems.turretRotationEnabled) return;
+
     turretGoalPositionEntry.log(setpoint);
     turretMotor.set(
         turretPIDController.calculate(
@@ -371,6 +375,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public void setPitchPos(double setpoint) {
+    if (!Constants.enabledSubsystems.turretPitchEnabled) return;
 
     pitchGoalPositionEntry.log(setpoint);
     pitchMotor.setVoltage(
@@ -384,28 +389,32 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public void holdPosition() {
-    setTurretPos(0);
-    setPitchPos(0);
+    if(Constants.enabledSubsystems.turretRotationEnabled) setTurretPos(0);
+    if(Constants.enabledSubsystems.turretPitchEnabled) setPitchPos(0);
   }
 
   public void moveUp() {
-    setTurretPos(turretPosition);
-    setPitchPos(30);
+    if(Constants.enabledSubsystems.turretRotationEnabled) setTurretPos(turretPosition);
+    if(Constants.enabledSubsystems.turretPitchEnabled) setPitchPos(30);
   }
 
   public void updateTurretPosition() {
+    if(!Constants.enabledSubsystems.turretRotationEnabled) return;
     turretPosition = calculateTurretPosition();
   }
 
   private void updatePitchPosition() {
+    if(!Constants.enabledSubsystems.turretPitchEnabled) return;
     pitchPosition = calculatePitchPosition();
   }
 
   public double getTurretPos() {
+    if(!Constants.enabledSubsystems.turretRotationEnabled) return 0;
     return turretPosition; // returns the absolute encoder position in radians
   }
 
   public double getTurretVel() {
+    if(!Constants.enabledSubsystems.turretRotationEnabled) return 0;
     return turretVelocity;
   }
 
@@ -420,13 +429,16 @@ public class TurretSubsystem extends SubsystemBase {
       double visionTX = visionSubsystem.getTurretYaw(tagID);
       if (visionTX != 0) {
         // X & Rotation
-        setTurretPos(Math.toRadians(visionTX) + turretPosition);
+        if(Constants.enabledSubsystems.turretRotationEnabled) {
+          setTurretPos(Math.toRadians(visionTX) + turretPosition);
+        }
 
         // Y & Tilting
-        double visionTY = visionSubsystem.getTurretPitch(tagID);
-        double distanceToTag = tyToDistanceFromTag(visionTY);
-        tagDistanceEntry.log(distanceToTag);
-        // TODO: Add vertical tilt and use distance for it
+        if(Constants.enabledSubsystems.turretPitchEnabled){
+          double visionTY = visionSubsystem.getTurretPitch(tagID);
+          double distanceToTag = tyToDistanceFromTag(visionTY);
+          tagDistanceEntry.log(distanceToTag);
+        }
 
         if (Math.abs(Math.toRadians(visionTX) + turretPosition)
             > Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES)) {
