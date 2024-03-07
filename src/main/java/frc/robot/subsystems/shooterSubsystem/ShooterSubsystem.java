@@ -194,7 +194,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   // Speed in RPM. Left is index 0, right is index 1.
-  public SpeakerConfig setShooterSpeeds(SpeakerConfig speeds) {
+  protected SpeakerConfig setShooterSpeeds(SpeakerConfig speeds) {
     targetSpeeds = speeds;
 
     shooterLeftMotor
@@ -255,7 +255,7 @@ public class ShooterSubsystem extends SubsystemBase {
     return speeds;
   }
 
-  public void requestPercent(double percent) {
+  protected void requestPercent(double percent) {
     shooterRightMotor.set(percent);
     shooterLeftMotor.set(percent);
   }
@@ -285,6 +285,30 @@ public class ShooterSubsystem extends SubsystemBase {
     public double getSpeedRightInRPM() {
       return speedRightInRPM;
     }
+
+    @Override
+    public boolean equals(Object object) {
+      if (object == null) {
+        return false;
+      }
+      if (object.getClass() != this.getClass()) {
+        return false;
+      }
+
+      final SpeakerConfig otherConfig = (SpeakerConfig) object;
+
+      if (this.distanceInInches != otherConfig.distanceInInches) {
+        return false;
+      }
+      if (this.speedLeftInRPM != otherConfig.speedLeftInRPM) {
+        return false;
+      }
+      if (this.speedRightInRPM != otherConfig.speedRightInRPM) {
+        return false;
+      }
+
+      return true;
+    }
   }
 
   // Motor RPM, NOT roller RPM
@@ -295,18 +319,20 @@ public class ShooterSubsystem extends SubsystemBase {
     new SpeakerConfig(290, 700, 700)
   };
 
-  private static final SpeakerConfig speakerConfigIdle =
+  public static final SpeakerConfig speakerConfigIdle =
       new SpeakerConfig(
           -1,
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_LEFT,
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT);
 
-  public BooleanSupplier getBeamBreak() {
+  protected BooleanSupplier getBeamBreak() {
     return beamBreak::get;
   }
 
-  public void stop() {
-    shooterRightMotor.set(0);
+  protected void stopAndLogMotors() {
     shooterLeftMotor.set(0);
+    shooterRightMotor.set(0);
+    leftMotorTargetSpeedEntry.log(0d);
+    rightMotorTargetSpeedEntry.log(0d);
   }
 }

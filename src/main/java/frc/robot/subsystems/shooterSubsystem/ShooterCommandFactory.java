@@ -13,8 +13,8 @@ import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
 public class ShooterCommandFactory {
   private final ShooterSubsystem subsystem;
   private ShuffleboardTab shooterTab = Shuffleboard.getTab("ShooterSubsystem");
-  private GenericEntry targetRPM = shooterTab.add("Target RPM", 2750).getEntry();
-  private GenericEntry rightTargetRPM = shooterTab.add("right RPM", 2350).getEntry();
+  private GenericEntry leftTargetRPM = shooterTab.add("Left motor target RPM", 2750).getEntry();
+  private GenericEntry rightTargetRPM = shooterTab.add("Right motor target RPM", 2350).getEntry();
 
   public ShooterCommandFactory(ShooterSubsystem subsystem) {
     this.subsystem = subsystem;
@@ -48,7 +48,7 @@ public class ShooterCommandFactory {
     return new FunctionalCommand(
         () -> {
           subsystem.setShooterSpeeds(
-              new SpeakerConfig(-1, targetRPM.getDouble(4000), rightTargetRPM.getDouble(4000)));
+              new SpeakerConfig(-1, leftTargetRPM.getDouble(4000), rightTargetRPM.getDouble(4000)));
         },
         () -> {},
         (a) -> {},
@@ -56,15 +56,15 @@ public class ShooterCommandFactory {
         subsystem);
   }
 
-  // Idle shooter command; for default command purposes
+  // Idle shooter command
   public Command shooterIdle() {
     if (subsystem == null) return Commands.none();
     return subsystem
         .run(
             () -> {
-              subsystem.stop();
+              subsystem.stopAndLogMotors();
             })
-        .withName("Idle Shooter command");
+        .withName("Idle shooter command");
   }
 
   public void setDefaultCommand(Command defaultCommand) {
@@ -74,6 +74,6 @@ public class ShooterCommandFactory {
 
   public Command outtake() {
     if (subsystem == null) return Commands.none();
-    return subsystem.startEnd(() -> subsystem.requestPercent(-1), subsystem::stop);
+    return subsystem.startEnd(() -> subsystem.requestPercent(-1), subsystem::stopAndLogMotors);
   }
 }
