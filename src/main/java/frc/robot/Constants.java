@@ -273,6 +273,7 @@ public final class Constants {
   public static class FieldConstants {
     public static final Translation2d RED_SPEAKER = new Translation2d(16.579342, 5.547868);
     public static final Translation2d BLUE_SPEAKER = new Translation2d(-0.0381, 5.547868);
+    public static final double CENTERLINE_X = 0;
   }
 
   public static class enabledSubsystems {
@@ -303,11 +304,5 @@ public final class Constants {
     public static final Rotation2d BLUE_AMP_ROTATION = null;
     public static final Rotation2d BLUE_SOURCE_ROTATION = null;
     public static final Rotation2d RED_SOURCE_ROTATION = null;
-  }
-
-  public static class FieldConstants {
-    public static final Translation2d RED_SPEAKER = new Translation2d(16.579342, 5.547868);
-    public static final Translation2d BLUE_SPEAKER = new Translation2d(-0.0381, 5.547868);
-    public static final double CENTERLINE_X = 0;
   }
 }
