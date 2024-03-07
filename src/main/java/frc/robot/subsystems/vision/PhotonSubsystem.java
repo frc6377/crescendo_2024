@@ -25,6 +25,9 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
+
+  private final boolean TURRET_CAMERA_ENABLED = false;
+
   private int measurementsUsed = 0;
   private DebugEntry<Double> measurementEntry = new DebugEntry<Double>(0.0, "measurements", this);
 
@@ -61,13 +64,18 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
                 limelightConfig.limelightPitchRadians,
                 limelightConfig.limelightYawRadians));
     mainCamera = new PhotonCamera(Constants.VisionConstants.MAIN_CAMERA_NAME);
-    turretCamera = new PhotonCamera(Constants.VisionConstants.TURRET_CAMERA_NAME);
     mainResult = mainCamera.getLatestResult();
-    turretResult = turretCamera.getLatestResult();
     aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     poseEstimator =
         new PhotonPoseEstimator(
             aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, mainCamera, robotToCam);
+    if (TURRET_CAMERA_ENABLED) {
+      turretCamera = new PhotonCamera(Constants.VisionConstants.TURRET_CAMERA_NAME);
+      turretResult = turretCamera.getLatestResult();
+    } else {
+      turretCamera = null;
+      turretResult = null;
+    }
   }
 
   private EstimatedRobotPose getPVEstimatedPose() {
@@ -130,7 +138,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
         }
       }
       return 0;
-    } else {
+    } else if (TURRET_CAMERA_ENABLED) {
       turretResult = turretCamera.getLatestResult();
       if (turretResult.hasTargets()) {
         List<PhotonTrackedTarget> targets = turretResult.getTargets();
@@ -142,6 +150,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       }
       return 0;
     }
+    return 0;
   }
 
   public double getTagPitch(int id, boolean isMain) {
@@ -156,7 +165,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
         }
       }
       return 0;
-    } else {
+    } else if (TURRET_CAMERA_ENABLED) {
       turretResult = turretCamera.getLatestResult();
       if (turretResult.hasTargets()) {
         List<PhotonTrackedTarget> targets = turretResult.getTargets();
@@ -168,6 +177,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       }
       return 0;
     }
+    return 0;
   }
 
   public void periodic() {
