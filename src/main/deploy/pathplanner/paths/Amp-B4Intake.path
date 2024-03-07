@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 1.85,
-        "y": 7.4
+        "y": 7.3
       },
       "isLocked": false,
       "linkedName": null
@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 8.2,
-        "y": 7.45
+        "y": 5.775
       },
       "prevControl": {
-        "x": 6.999999999999999,
-        "y": 7.45
+        "x": 7.199999999999999,
+        "y": 5.775
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.6,
+      "waypointRelativePos": 0.5,
       "rotationDegrees": 0.0,
       "rotateFast": false
     }

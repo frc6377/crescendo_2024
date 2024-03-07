@@ -36,8 +36,8 @@ public class OI {
         new Control(XboxController.Axis.kRightTrigger, "Intake", controller, 0.5);
     public static final Control useRod =
         new Control(XboxController.Button.kLeftBumper, "ROD", controller);
-    public static final Control RB =
-        new Control(XboxController.Button.kRightBumper, null, controller);
+    public static final Control highGear =
+        new Control(XboxController.Button.kRightBumper, "High gear", controller);
 
     // Start, End & Left/Right stick buttons
     public static final Control resetRotationButton =
@@ -52,7 +52,7 @@ public class OI {
     private static final ControlCurve xTranslationCurve = new ControlCurve(1, 0, 0, 0.0, true);
     private static final ControlCurve yTranslationCurve = new ControlCurve(1, 0, 0, 0.0);
     public static final ControlCurve translationMagnitudeCurve = new ControlCurve(1, 0, 1, 0.1);
-    public static final ControlCurve rotationCurve = new ControlCurve(0.8, 0, 1, 0.1, true);
+    public static final ControlCurve rotationCurve = new ControlCurve(0.8, 0, 1, 0, true);
 
     // Joystick Axes
     public static final Control xTranslationAxis =
@@ -77,7 +77,7 @@ public class OI {
         new Control(XboxController.Button.kA, "Retract Climber", controller);
     public static final Control latchClimber =
         new Control(XboxController.Button.kB, "Latch Climber", controller);
-    public static final Control dumb =
+    public static final Control simple =
         new Control(XboxController.Button.kX, "Dumb Behavior", controller);
     public static final Control prepClimb =
         new Control(XboxController.Button.kY, "Prepare Climb", controller);
@@ -233,17 +233,18 @@ public class OI {
     }
 
     private void putControl() {
-      if (getAction() != null) {
-        if (controller.getPort() == driverJoystickPort) {
-          driverControlsLayout.add(
-              "Driver " + getType().toString() + " " + String.valueOf(getId()),
-              type.toString() + " " + getName() + ": " + getAction());
-        }
-        if (controller.getPort() == operatorJoystickPort) {
-          operatorControlsLayout.add(
-              "Operator " + getType().toString() + " " + String.valueOf(getId()),
-              type.toString() + " " + getName() + ": " + getAction());
-        }
+      if (getAction() == null) return;
+
+      if (controller.getPort() == driverJoystickPort) {
+        driverControlsLayout.add(
+            "Driver " + getType().toString() + " " + String.valueOf(getId()),
+            type.toString() + " " + getName() + ": " + getAction());
+      }
+
+      if (controller.getPort() == operatorJoystickPort) {
+        operatorControlsLayout.add(
+            "Operator " + getType().toString() + " " + String.valueOf(getId()),
+            type.toString() + " " + getName() + ": " + getAction());
       }
     }
   }
