@@ -173,27 +173,15 @@ public class TrapElvSubsystem extends SubsystemBase {
 
       baseMotor1 = new CANSparkMaxSim(TrapElvConstants.BASE_MOTOR1_ID, MotorType.kBrushless);
       baseMotor1.restoreFactoryDefaults();
-      baseMotor1.getPIDController().setP(TrapElvConstants.BASE_PID[0]);
-      baseMotor1.getPIDController().setI(TrapElvConstants.BASE_PID[1]);
-      baseMotor1.getPIDController().setD(TrapElvConstants.BASE_PID[2]);
-      baseMotor1.getPIDController().setIZone(TrapElvConstants.BASE_PID[3]);
-      baseMotor1.getPIDController().setFF(TrapElvConstants.BASE_PID[4]);
+      baseMotor1 = TrapElvConstants.BASE_PID.getSparkPidController(baseMotor1);
 
       baseMotor2 = new CANSparkMax(TrapElvConstants.BASE_MOTOR2_ID, MotorType.kBrushless);
       baseMotor2.restoreFactoryDefaults();
-      baseMotor2.getPIDController().setP(TrapElvConstants.BASE_PID[0]);
-      baseMotor2.getPIDController().setI(TrapElvConstants.BASE_PID[1]);
-      baseMotor2.getPIDController().setD(TrapElvConstants.BASE_PID[2]);
-      baseMotor2.getPIDController().setIZone(TrapElvConstants.BASE_PID[3]);
-      baseMotor2.getPIDController().setFF(TrapElvConstants.BASE_PID[4]);
+      baseMotor2 = TrapElvConstants.BASE_PID.getSparkPidController(baseMotor2);
 
       scoringMotor = new CANSparkMaxSim(TrapElvConstants.SCORING_MOTOR_ID, MotorType.kBrushless);
       scoringMotor.restoreFactoryDefaults();
-      scoringMotor.getPIDController().setP(TrapElvConstants.SCORING_PID[0]);
-      scoringMotor.getPIDController().setI(TrapElvConstants.SCORING_PID[1]);
-      scoringMotor.getPIDController().setD(TrapElvConstants.SCORING_PID[2]);
-      scoringMotor.getPIDController().setIZone(TrapElvConstants.SCORING_PID[3]);
-      scoringMotor.getPIDController().setFF(TrapElvConstants.SCORING_PID[4]);
+      scoringMotor = TrapElvConstants.SCORING_PID.getSparkPidController(scoringMotor);
     }
 
     // Simulation

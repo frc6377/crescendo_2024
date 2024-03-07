@@ -40,29 +40,18 @@ import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.HowdyMath;
-import frc.robot.utilities.TunableNumber;
 
 public class TurretSubsystem extends SubsystemBase {
   private final CANSparkMax turretMotor;
   private final PIDController turretPIDController;
-  private TunableNumber turretP;
-  private TunableNumber turretI;
-  private TunableNumber turretD;
-  private TunableNumber turretIZ;
 
   private final CANSparkMaxSim pitchMotor;
   private final PIDController pitchPIDController;
   private final ArmFeedforward pitchFeedForward;
-  private TunableNumber pitchKP;
-  private TunableNumber pitchKI;
-  private TunableNumber pitchKD;
-  private TunableNumber pitchKIZ;
 
   private final CANcoder highGearCANcoder;
   private final CANcoder lowGearCANcoder;
   private final SparkAbsoluteEncoder pitchEncoder;
-  private double trueZeroLowGearOffset;
-  private double trueZeroHighGearOffset;
 
   private double turretPosition;
   private double turretVelocity;
@@ -117,36 +106,8 @@ public class TurretSubsystem extends SubsystemBase {
         (float) TurretConstants.TURRET_MAX_ANGLE_ROTATIONS);
     turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
     turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
-    turretPIDController =
-        new PIDController(
-            Constants.TurretConstants.TURRET_KP,
-            Constants.TurretConstants.TURRET_KI,
-            Constants.TurretConstants.TURRET_KD);
-    turretPIDController.setIZone(Constants.TurretConstants.TURRET_KIZ);
-    turretP =
-        new TunableNumber(
-            "Turret P",
-            Constants.TurretConstants.TURRET_KP,
-            p -> turretPIDController.setP(p),
-            this);
-    turretI =
-        new TunableNumber(
-            "Turret I",
-            Constants.TurretConstants.TURRET_KI,
-            i -> turretPIDController.setI(i),
-            this);
-    turretD =
-        new TunableNumber(
-            "Turret D",
-            Constants.TurretConstants.TURRET_KD,
-            d -> turretPIDController.setD(d),
-            this);
-    turretIZ =
-        new TunableNumber(
-            "Turret IZ",
-            Constants.TurretConstants.TURRET_KIZ,
-            iz -> turretPIDController.setIZone(iz),
-            this);
+    turretPIDController = TurretConstants.TURRET_PID.getPIDController();
+    TurretConstants.TURRET_PID.createTunableNumbers("Turret Motor", turretPIDController, this);
 
     pitchMotor = new CANSparkMaxSim(Constants.TurretConstants.PITCH_MOTOR_ID, MotorType.kBrushless);
     pitchMotor.restoreFactoryDefaults();
@@ -157,33 +118,9 @@ public class TurretSubsystem extends SubsystemBase {
         CANSparkMax.SoftLimitDirection.kForward, (float) TurretConstants.PITCH_MAX_ANGLE_ROTATIONS);
     pitchMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
     pitchMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
-    pitchPIDController =
-        new PIDController(
-            Constants.TurretConstants.PITCH_KP,
-            Constants.TurretConstants.PITCH_KI,
-            Constants.TurretConstants.PITCH_KD);
-    pitchPIDController.setIZone(Constants.TurretConstants.PITCH_KIZ);
-    pitchKP =
-        new TunableNumber(
-            "Pitch P", Constants.TurretConstants.TURRET_KP, p -> turretPIDController.setP(p), this);
-    pitchKI =
-        new TunableNumber(
-            "Pitch I", Constants.TurretConstants.TURRET_KI, i -> turretPIDController.setI(i), this);
-    pitchKD =
-        new TunableNumber(
-            "Pitch D", Constants.TurretConstants.TURRET_KD, d -> turretPIDController.setD(d), this);
-    pitchKIZ =
-        new TunableNumber(
-            "Pitch IZ",
-            Constants.TurretConstants.TURRET_KIZ,
-            iz -> turretPIDController.setIZone(iz),
-            this);
-    pitchFeedForward =
-        new ArmFeedforward(
-            Constants.TurretConstants.PITCH_KS,
-            Constants.TurretConstants.PITCH_KG,
-            Constants.TurretConstants.PITCH_KV,
-            Constants.TurretConstants.PITCH_KA);
+    pitchPIDController = TurretConstants.PITCH_PID.getPIDController();
+    TurretConstants.PITCH_PID.createTunableNumbers("Pitch Motor", pitchPIDController, this);
+    pitchFeedForward = TurretConstants.PITCH_FF.getArmFeedforward();
 
     // Encoders
     highGearCANcoder = new CANcoder(Constants.TurretConstants.highGearCAN_CODER_ID);
