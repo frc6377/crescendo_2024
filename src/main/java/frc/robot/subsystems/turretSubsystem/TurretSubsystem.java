@@ -278,7 +278,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   /** Will calculate the current turret position and update encoders and motors off of it. */
   public void zeroTurret() {
-    if (!Constants.enabledSubsystems.turretRotationEnabled) return;
+    if (!Constants.enabledSubsystems.turretRotationEnabled && Robot.isReal()) return;
     double lowGearPosition = lowGearCANcoder.getAbsolutePosition().getValue().doubleValue();
     double highGearPosition = highGearCANcoder.getAbsolutePosition().getValue().doubleValue();
     Rotation2d turretRotation = encoderPositionsToTurretRotation(lowGearPosition, highGearPosition);
