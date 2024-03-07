@@ -32,18 +32,18 @@ import frc.robot.Constants.TrapElvConstants;
 import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.TOFSensorSimple;
-import frc.robot.utilities.TunableNumber;
 import java.util.function.BooleanSupplier;
 
 public class TrapElvSubsystem extends SubsystemBase {
   private final boolean isElv = false;
-  // TODO: position, zero wrist, encoder logging, change pids
+
   // Wrist motors
   private final CANSparkMaxSim wristMotor;
   private double wristStateGoal;
   private final PIDController wristPIDController;
   private final ArmFeedforward wristFeedforward;
 
+  // Roller Motor
   private final CANSparkMax rollerMotor;
 
   // Elevator motors
@@ -91,10 +91,6 @@ public class TrapElvSubsystem extends SubsystemBase {
   private DebugEntry<Double> wristGoal;
   private DebugEntry<String> currentWristStateEntry;
 
-  private TunableNumber wristP;
-  private TunableNumber wristI;
-  private TunableNumber wristD;
-
   private double FF;
 
   // States
@@ -138,26 +134,23 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   /** Creates a new TrapArm. */
   public TrapElvSubsystem() {
-
     // Wrist
     wristMotor = new CANSparkMaxSim(TrapElvConstants.WRIST_MOTOR_ID, MotorType.kBrushless);
     wristMotor.restoreFactoryDefaults();
     wristMotor.clearFaults();
 
     wristMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
-    wristPIDController =
-        new PIDController(
-            TrapElvConstants.WRIST_PID[0],
-            TrapElvConstants.WRIST_PID[1],
-            TrapElvConstants.WRIST_PID[2]);
-    wristPIDController.setIZone(TrapElvConstants.WRIST_PID[3]);
-    wristFeedforward =
-        new ArmFeedforward(
-            TrapElvConstants.WRIST_FF[0],
-            TrapElvConstants.WRIST_FF[1],
-            TrapElvConstants.WRIST_FF[2],
-            TrapElvConstants.WRIST_FF[3]);
+    wristPIDController = TrapElvConstants.WRIST_PID.getPIDController();
+    TrapElvConstants.WRIST_PID.createTunableNumbers("Wrist Motor", wristPIDController, this);
+
+    wristFeedforward = TrapElvConstants.WRIST_FF.getArmFeedforward();
+
     wristStateGoal = TrapElvState.STOWED.getWristPose();
+
+    wristEncoder = wristMotor.getAbsoluteEncoder();
+    wristEncoder.setPositionConversionFactor(1);
+    wristEncoder.setInverted(false);
+    wristEncoder.setZeroOffset(TrapElvConstants.WRIST_ZERO_OFFSET);
 
     rollerMotor = new CANSparkMax(TrapElvConstants.ROLLER_MOTOR_ID, MotorType.kBrushed);
     rollerMotor.restoreFactoryDefaults();
@@ -165,11 +158,6 @@ public class TrapElvSubsystem extends SubsystemBase {
     sourceBreak =
         new TOFSensorSimple(TrapElvConstants.SOURCE_BREAK_ID, TrapElvConstants.BREAK_THRESHOLD_MM);
     groundBreak = new DigitalInput(TrapElvConstants.GROUND_BREAK_ID);
-
-    wristEncoder = wristMotor.getAbsoluteEncoder();
-    wristEncoder.setPositionConversionFactor(1);
-    wristEncoder.setInverted(false);
-    wristEncoder.setZeroOffset(TrapElvConstants.WRIST_ZERO_OFFSET);
 
     currentWristState = TrapElvState.STOWED;
 
@@ -265,17 +253,6 @@ public class TrapElvSubsystem extends SubsystemBase {
 
       TrapElvTab.add("Trap Arm Mech", elvMechanism).withPosition(7, 7);
     }
-
-    // SmartDashboard
-    wristP =
-        new TunableNumber(
-            "Wrist P", TrapElvConstants.WRIST_PID[0], P -> wristPIDController.setP(P), this);
-    wristI =
-        new TunableNumber(
-            "Wrist I", TrapElvConstants.WRIST_PID[1], I -> wristPIDController.setI(I), this);
-    wristD =
-        new TunableNumber(
-            "Wrist D", TrapElvConstants.WRIST_PID[2], D -> wristPIDController.setD(D), this);
 
     sourceLog = new DebugEntry<Boolean>(sourceBreak.get(), "Source Beam Break", this);
     groundLog = new DebugEntry<Boolean>(groundBreak.get(), "Ground Beam Break", this);

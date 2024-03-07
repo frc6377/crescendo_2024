@@ -7,6 +7,8 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
+import frc.robot.utilities.HowdyFF;
+import frc.robot.utilities.HowdyPID;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -195,8 +197,8 @@ public final class Constants {
     public static final int SOURCE_BREAK_ID = 2;
     public static final int GROUND_BREAK_ID = 3;
 
-    public static final double[] WRIST_PID = {0.03, 0, 0, 0};
-    public static final double[] WRIST_FF = {0, 0.54, 4.29, 0.05}; // kS, kG, kV, kA
+    public static final HowdyPID WRIST_PID = new HowdyPID(0.03, 0, 0);
+    public static final HowdyFF WRIST_FF = new HowdyFF(0, 0.54, 4.28, 0.05);
 
     public static final double WRIST_MIN_ANGLE = Units.degreesToRadians(-90); // RADS
     public static final double WRIST_MAX_ANGLE = Units.degreesToRadians(270); // RADS
