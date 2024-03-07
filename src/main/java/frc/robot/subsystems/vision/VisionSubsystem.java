@@ -1,11 +1,11 @@
 package frc.robot.subsystems.vision;
 
 public interface VisionSubsystem {
-  public default double getTurretYaw(int id) {
+  public default double getTagYaw(int id, boolean isMain) {
     return 0;
   }
 
-  public default double getTurretPitch(int id) {
+  public default double getTagPitch(int id, boolean isMain) {
     return 0;
   }
 }

@@ -118,30 +118,56 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
     }
   }
 
-  public double getTurretYaw(int id) {
-    turretResult = turretCamera.getLatestResult();
-    if (turretResult.hasTargets()) {
-      List<PhotonTrackedTarget> targets = turretResult.getTargets();
-      for (PhotonTrackedTarget target : targets) {
-        if (target.getFiducialId() == id) {
-          return target.getYaw();
+  public double getTagYaw(int id, boolean isMain) {
+    if (isMain) {
+      mainResult = mainCamera.getLatestResult();
+      if (mainResult.hasTargets()) {
+        List<PhotonTrackedTarget> targets = mainResult.getTargets();
+        for (PhotonTrackedTarget target : targets) {
+          if (target.getFiducialId() == id) {
+            return target.getYaw();
+          }
         }
       }
+      return 0;
+    } else {
+      turretResult = turretCamera.getLatestResult();
+      if (turretResult.hasTargets()) {
+        List<PhotonTrackedTarget> targets = turretResult.getTargets();
+        for (PhotonTrackedTarget target : targets) {
+          if (target.getFiducialId() == id) {
+            return target.getYaw();
+          }
+        }
+      }
+      return 0;
     }
-    return 0;
   }
 
-  public double getTurretPitch(int id) {
-    turretResult = turretCamera.getLatestResult();
-    if (turretResult.hasTargets()) {
-      List<PhotonTrackedTarget> targets = turretResult.getTargets();
-      for (PhotonTrackedTarget target : targets) {
-        if (target.getFiducialId() == id) {
-          return target.getPitch();
+  public double getTagPitch(int id, boolean isMain) {
+    if (isMain) {
+      mainResult = mainCamera.getLatestResult();
+      if (mainResult.hasTargets()) {
+        List<PhotonTrackedTarget> targets = mainResult.getTargets();
+        for (PhotonTrackedTarget target : targets) {
+          if (target.getFiducialId() == id) {
+            return target.getPitch();
+          }
         }
       }
+      return 0;
+    } else {
+      turretResult = turretCamera.getLatestResult();
+      if (turretResult.hasTargets()) {
+        List<PhotonTrackedTarget> targets = turretResult.getTargets();
+        for (PhotonTrackedTarget target : targets) {
+          if (target.getFiducialId() == id) {
+            return target.getPitch();
+          }
+        }
+      }
+      return 0;
     }
-    return 0;
   }
 
   public void periodic() {
