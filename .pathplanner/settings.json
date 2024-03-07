@@ -1,6 +1,6 @@
 {
-  "robotWidth": 0.9,
-  "robotLength": 0.9,
+  "robotWidth": 0.61,
+  "robotLength": 0.61,
   "holonomicMode": true,
   "pathFolders": [
     "Amp Side 5 Note with amp scoring",
@@ -12,5 +12,6 @@
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
-  "defaultMaxAngAccel": 720.0
+  "defaultMaxAngAccel": 720.0,
+  "maxModuleSpeed": 4.5
 }

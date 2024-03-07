@@ -1,9 +1,11 @@
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+public interface VisionSubsystem {
+  public default double getTurretYaw(int id) {
+    return 0;
+  }
 
-public abstract class VisionSubsystem extends SubsystemBase {
-  public abstract double getTurretYaw(int id);
-
-  public abstract double getTurretPitch(int id);
+  public default double getTurretPitch(int id) {
+    return 0;
+  }
 }
