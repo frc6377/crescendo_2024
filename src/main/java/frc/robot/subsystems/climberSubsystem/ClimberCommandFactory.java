@@ -61,7 +61,7 @@ public class ClimberCommandFactory {
   }
 
   public Command breakStatic() {
-    // return new InstantCommand();
+    if (subsystem == null) return new InstantCommand();
     return new InstantCommand(() -> subsystem.applyPercent(ClimberConstants.BREAK_STATIC_PERCENT))
         .andThen(new WaitCommand(ClimberConstants.BREAK_STATIC_TIME))
         .withName("breakStatic")
