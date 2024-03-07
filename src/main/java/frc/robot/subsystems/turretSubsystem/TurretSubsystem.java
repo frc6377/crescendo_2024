@@ -389,32 +389,32 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public void holdPosition() {
-    if(Constants.enabledSubsystems.turretRotationEnabled) setTurretPos(0);
-    if(Constants.enabledSubsystems.turretPitchEnabled) setPitchPos(0);
+    if (Constants.enabledSubsystems.turretRotationEnabled) setTurretPos(0);
+    if (Constants.enabledSubsystems.turretPitchEnabled) setPitchPos(0);
   }
 
   public void moveUp() {
-    if(Constants.enabledSubsystems.turretRotationEnabled) setTurretPos(turretPosition);
-    if(Constants.enabledSubsystems.turretPitchEnabled) setPitchPos(30);
+    if (Constants.enabledSubsystems.turretRotationEnabled) setTurretPos(turretPosition);
+    if (Constants.enabledSubsystems.turretPitchEnabled) setPitchPos(30);
   }
 
   public void updateTurretPosition() {
-    if(!Constants.enabledSubsystems.turretRotationEnabled) return;
+    if (!Constants.enabledSubsystems.turretRotationEnabled) return;
     turretPosition = calculateTurretPosition();
   }
 
   private void updatePitchPosition() {
-    if(!Constants.enabledSubsystems.turretPitchEnabled) return;
+    if (!Constants.enabledSubsystems.turretPitchEnabled) return;
     pitchPosition = calculatePitchPosition();
   }
 
   public double getTurretPos() {
-    if(!Constants.enabledSubsystems.turretRotationEnabled) return 0;
+    if (!Constants.enabledSubsystems.turretRotationEnabled) return 0;
     return turretPosition; // returns the absolute encoder position in radians
   }
 
   public double getTurretVel() {
-    if(!Constants.enabledSubsystems.turretRotationEnabled) return 0;
+    if (!Constants.enabledSubsystems.turretRotationEnabled) return 0;
     return turretVelocity;
   }
 
@@ -429,12 +429,12 @@ public class TurretSubsystem extends SubsystemBase {
       double visionTX = visionSubsystem.getTurretYaw(tagID);
       if (visionTX != 0) {
         // X & Rotation
-        if(Constants.enabledSubsystems.turretRotationEnabled) {
+        if (Constants.enabledSubsystems.turretRotationEnabled) {
           setTurretPos(Math.toRadians(visionTX) + turretPosition);
         }
 
         // Y & Tilting
-        if(Constants.enabledSubsystems.turretPitchEnabled){
+        if (Constants.enabledSubsystems.turretPitchEnabled) {
           double visionTY = visionSubsystem.getTurretPitch(tagID);
           double distanceToTag = tyToDistanceFromTag(visionTY);
           tagDistanceEntry.log(distanceToTag);
