@@ -125,7 +125,6 @@ public final class Constants {
     public static final int SPEAKER_TAG_ID_BLUE = 7;
 
     // PID coefficients
-    public static final HowdyPID OTHER_PID = new HowdyPID(0.25, 0.001, 0);
     public static final double KMAXOUTPUT = 1;
     public static final double KMINOUTPUT = -1;
     public static final int MAX_TURRET_ANGLE_DEGREES = 110;
@@ -262,7 +261,7 @@ public final class Constants {
     public static final boolean signalEnabled = false;
     public static final boolean shooterEnabled = true;
     public static final boolean triggerEnabled = true;
-    public static final boolean turretEnabled = false;
+    public static final boolean turretEnabled = true;
     public static final boolean climberEnabled = true;
   }
 
