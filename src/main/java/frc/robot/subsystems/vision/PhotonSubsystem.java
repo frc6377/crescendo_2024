@@ -201,7 +201,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       }
     }
     // logging stuff
-    if(Robot.isCompetition) return;
+    if (Robot.isCompetition) return;
 
     for (PhotonTrackedTarget target : targets) {
       if (target.getFiducialId() == 3) {
@@ -222,6 +222,5 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
         distanceEntryTag4.log(distanceToTag4);
       }
     }
-  
   }
 }
