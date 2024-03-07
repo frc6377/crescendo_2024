@@ -69,7 +69,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
     poseEstimator =
         new PhotonPoseEstimator(
             aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, mainCamera, robotToCam);
-    if(TURRET_CAMERA_ENABLED) {
+    if (TURRET_CAMERA_ENABLED) {
       turretCamera = new PhotonCamera(Constants.VisionConstants.TURRET_CAMERA_NAME);
       turretResult = turretCamera.getLatestResult();
     } else {
