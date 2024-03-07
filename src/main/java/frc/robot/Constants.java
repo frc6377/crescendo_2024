@@ -76,9 +76,9 @@ public final class Constants {
     public static final double SHOOTER_RIGHT_GEARING = 0.4; // Unitless
     public static final double SHOOTER_RIGHT_MOMENT = 0.000848475500006; // Placeholder; in kg*m^2
     public static final SpeakerConfig SHOOTER_SOURCE_INTAKE = new SpeakerConfig(-1, -1500, -1500);
-    public static final double INTAKE_DELAY_SEC = 10;
+    public static final double INTAKE_DELAY_SEC = 0;
     public static final int BEAM_BREAK_ID = 1;
-    public static final double BEAM_BREAK_THRESHOLD = 0;
+    public static final double BEAM_BREAK_THRESHOLD = 150;
   }
 
   public static class TurretConstants {

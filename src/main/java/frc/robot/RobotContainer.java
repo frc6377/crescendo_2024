@@ -262,7 +262,8 @@ public class RobotContainer {
 
   private Command intakeSpeaker() {
     return Commands.parallel(
-        shooterCommandFactory.intakeSpeakerSource(), triggerCommandFactory.getLoadCommand());
+        intakeCommandFactory.intakeSpeakerCommandSmart(shooterSubsystem.getBeamBreak()),
+        triggerCommandFactory.getLoadCommand());
   }
 
   private Command intakeAmp() {

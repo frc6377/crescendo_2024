@@ -3,7 +3,10 @@ package frc.robot.subsystems.intakeSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.stateManagement.PlacementMode;
+import java.util.function.BooleanSupplier;
 
 public class IntakeCommandFactory {
   private final IntakeSubsystem subsystem;
@@ -27,6 +30,17 @@ public class IntakeCommandFactory {
   public Command getSpeakerIntakeCommand() {
     if (subsystem == null) return Commands.none();
     return buildIntakeCommand(true).withName("getSpeakerIntakeCommnad");
+  }
+
+  public Command intakeSourceForTime() {
+    if (subsystem == null) return Commands.none();
+    return Commands.deadline(
+        new WaitCommand(ShooterConstants.INTAKE_DELAY_SEC), getSpeakerIntakeCommand());
+  }
+
+  public Command intakeSpeakerCommandSmart(BooleanSupplier tof) {
+    if (subsystem == null) return Commands.none();
+    return getSpeakerIntakeCommand().until(tof).andThen(intakeSourceForTime());
   }
 
   public Command getAmpIntakeCommand() {
