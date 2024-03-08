@@ -27,7 +27,7 @@ public class SwerveCommandFactory {
   }
 
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return subsystem
         .run(() -> subsystem.setControl(requestSupplier.get()))
         .withName("Request Supplier")
@@ -44,7 +44,7 @@ public class SwerveCommandFactory {
    * @return A command that will point in the specified direction until interupted
    */
   public Command pointInDirection(Rotation2d angleToPoint, Supplier<DriveRequest> input) {
-    if (subsystem == null) return new InstantCommand();
+    if (subsystem == null) return Commands.none();
     return pointDrive(() -> angleToPoint.getDegrees(), input)
         .withName("Pointing In Direction")
         .asProxy();
