@@ -76,9 +76,7 @@ public class ShooterCommandFactory {
                 () -> {
                   subsystem.stop();
                 })
-            .withName("Idle Shooter command")
-            .asProxy();
-    command.addRequirements(subsystem);
+            .withName("Idle Shooter command");
     return command;
   }
 

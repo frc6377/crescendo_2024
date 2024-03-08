@@ -21,9 +21,7 @@ public class TrapElvCommandFactory {
     final Command command =
         subsystem
             .startEnd(() -> subsystem.stowTrapElv(), () -> {})
-            .withName("stowTrapElvCommand")
-            .asProxy();
-    command.addRequirements(subsystem);
+            .withName("stowTrapElvCommand");
     return command;
   }
 

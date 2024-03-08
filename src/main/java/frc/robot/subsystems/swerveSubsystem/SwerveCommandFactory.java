@@ -181,9 +181,7 @@ public class SwerveCommandFactory {
                               driveRequest.alpha() * SwerveSubsystem.maxAngularRate);
                   subsystem.setControl(swerveRequest);
                 })
-            .withName("fieldOrientedDrive")
-            .asProxy();
-    command.addRequirements(subsystem);
+            .withName("fieldOrientedDrive");
     return command;
   }
 
