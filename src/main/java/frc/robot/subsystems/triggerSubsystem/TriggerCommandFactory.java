@@ -36,7 +36,6 @@ public class TriggerCommandFactory {
     if (subsystem == null) return Commands.none();
     return new StartEndCommand(
             () -> subsystem.setSpeed(speed), () -> subsystem.setSpeed(0), subsystem)
-        .withName("buildCommand")
-        .asProxy();
+        .withName("buildCommand");
   }
 }

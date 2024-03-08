@@ -44,8 +44,7 @@ public class IntakeCommandFactory {
             isSpeaker ? subsystem::speakerIntake : subsystem::ampIntake,
             subsystem::stopMotors,
             subsystem)
-        .withName("Build Intake Command")
-        .asProxy();
+        .withName("Build Intake Command");
   }
 
   public void setDefaultCommand(Command defaultCommand) {
