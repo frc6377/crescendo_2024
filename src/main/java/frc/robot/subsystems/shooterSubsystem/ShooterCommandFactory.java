@@ -13,8 +13,8 @@ import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
 public class ShooterCommandFactory {
   private final ShooterSubsystem subsystem;
   private ShuffleboardTab shooterTab = Shuffleboard.getTab("ShooterSubsystem");
-  private GenericEntry targetRPM = shooterTab.add("Target RPM", 2750).getEntry();
-  private GenericEntry rightTargetRPM = shooterTab.add("right RPM", 2350).getEntry();
+  private GenericEntry targetRPM = shooterTab.add("Target RPM", 3050).getEntry();
+  private GenericEntry rightTargetRPM = shooterTab.add("right RPM", 2250).getEntry();
 
   public ShooterCommandFactory(ShooterSubsystem subsystem) {
     this.subsystem = subsystem;

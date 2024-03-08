@@ -227,7 +227,7 @@ public class RobotContainer {
         .whileTrue(
             Commands.either(
                 intakeCommandFactory.reverseIntakeCommand(),
-                shooterCommandFactory.outtake().asProxy(),
+                shooterOuttake(),
                 robotStateManager.isAmpSupplier()));
 
     OI.getButton(OI.Driver.intakeSource).whileTrue(trapElvCommandFactory.wristintakeSource());
@@ -239,6 +239,13 @@ public class RobotContainer {
     OI.getButton(OI.Operator.latchClimber).onTrue(climberCommandFactory.clip());
 
     OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
+  }
+
+  private Command shooterOuttake() {
+
+    return Commands.parallel(
+            triggerCommandFactory.getEjectCommand(), intakeCommandFactory.reverseIntakeCommand())
+        .asProxy();
   }
 
   private void configDriverFeedBack() {
@@ -263,7 +270,7 @@ public class RobotContainer {
   private Command intakeSpeaker() {
     return Commands.parallel(
         intakeCommandFactory.intakeSpeakerCommandSmart(shooterSubsystem.getBeamBreak()),
-        triggerCommandFactory.getLoadCommand());
+        triggerCommandFactory.getGroundLoadCommand(shooterSubsystem.getBeamBreak()));
   }
 
   private Command intakeAmp() {
