@@ -278,7 +278,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   /** Will calculate the current turret position and update encoders and motors off of it. */
   public void zeroTurret() {
-    if (!Constants.enabledSubsystems.turretRotationEnabled && Robot.isReal()) return;
+    if (!Constants.enabledSubsystems.turretRotationEnabled) return;
     double lowGearPosition = lowGearCANcoder.getAbsolutePosition().getValue().doubleValue();
     double highGearPosition = highGearCANcoder.getAbsolutePosition().getValue().doubleValue();
     Rotation2d turretRotation = encoderPositionsToTurretRotation(lowGearPosition, highGearPosition);
@@ -304,7 +304,6 @@ public class TurretSubsystem extends SubsystemBase {
    */
   public static Rotation2d encoderPositionsToTurretRotation(
       double lowGearCANcoderPosition, double highGearCANcoderPosition) {
-    if (!Constants.enabledSubsystems.turretRotationEnabled) return new Rotation2d(0);
     // This equation is based off of
     // https://www.geeksforgeeks.org/implementation-of-chinese-remainder-theorem-inverse-modulo-based-implementation/
     // It is accurate to with in 3.6 deg
@@ -355,7 +354,6 @@ public class TurretSubsystem extends SubsystemBase {
 
   private static double fineTuneTurretRotation(
       double roughPosition, double divisionSize, double CANCoderAngle) {
-    if (!Constants.enabledSubsystems.turretRotationEnabled) return 0;
 
     int division = (int) ((roughPosition / divisionSize));
     return divisionSize * division + CANCoderAngle * divisionSize;
