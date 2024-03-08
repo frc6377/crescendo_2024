@@ -1,6 +1,7 @@
 package frc.robot.subsystems.climberSubsystem;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -17,6 +18,7 @@ public class ClimberCommandFactory {
 
   public ClimberCommandFactory(ClimberSubsystem subsystem) {
     this.subsystem = subsystem;
+    if (subsystem != null) Shuffleboard.getTab(subsystem.getName()).add(subsystem);
   }
 
   public Command raise() {

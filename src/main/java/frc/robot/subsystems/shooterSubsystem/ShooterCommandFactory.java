@@ -18,6 +18,7 @@ public class ShooterCommandFactory {
 
   public ShooterCommandFactory(ShooterSubsystem subsystem) {
     this.subsystem = subsystem;
+    if (subsystem != null) Shuffleboard.getTab(subsystem.getName()).add(subsystem);
   }
 
   public Command intakeSource() {

@@ -29,7 +29,6 @@ public class SwerveCommandFactory {
     if (subsystem == null) return Commands.none();
     return subsystem
         .run(() -> subsystem.setControl(requestSupplier.get()))
-        .withName("Request Supplier")
         .withName("applyRequest")
         .asProxy();
   }
