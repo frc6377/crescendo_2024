@@ -58,10 +58,10 @@ public final class Constants {
     public static final double SHOOTER_LEFT_D = 0;
     public static final double SHOOTER_LEFT_FF = 0;
 
-    public static final double SHOOTER_P = 0.001;
-    public static final double SHOOTER_I = 0.00000035;
-    public static final double SHOOTER_D = 0;
-    public static final double SHOOTER_FF = 0;
+    public static final double SHOOTER_RIGHT_P = 0.001;
+    public static final double SHOOTER_RIGHT_I = 0.00000035;
+    public static final double SHOOTER_RIGHT_D = 0;
+    public static final double SHOOTER_RIGHT_FF = 0;
 
     // Motor RPM, NOT roller RPM
     public static final double SHOOTER_IDLE_SPEED_LEFT = 400; // Placeholder; in RPM
@@ -75,8 +75,10 @@ public final class Constants {
 
     public static final double SHOOTER_RIGHT_GEARING = 0.4; // Unitless
     public static final double SHOOTER_RIGHT_MOMENT = 0.000848475500006; // Placeholder; in kg*m^2
+
     public static final SpeakerConfig SHOOTER_SOURCE_INTAKE = new SpeakerConfig(-1, -1500, -1500);
     public static final double INTAKE_DELAY_SEC = 10;
+
     public static final int BEAM_BREAK_ID = 1;
     public static final double BEAM_BREAK_THRESHOLD = 0;
   }
