@@ -78,7 +78,7 @@ public class LimelightSubsystem extends SubsystemBase implements VisionSubsystem
         - (LimelightHelpers.getLatency_Pipeline("") / 1000.0);
   }
 
-  public double getTurretYaw(int ID) {
+  public double getTagYaw(int ID, boolean isMain) {
     if (ID
         == ((robotStateManager.getAllianceColor() == AllianceColor.BLUE)
             ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
@@ -88,7 +88,7 @@ public class LimelightSubsystem extends SubsystemBase implements VisionSubsystem
     return 0;
   }
 
-  public double getTurretPitch(int ID) {
+  public double getTagPitch(int ID, boolean isMain) {
     if (ID
         == ((robotStateManager.getAllianceColor() == AllianceColor.BLUE)
             ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE

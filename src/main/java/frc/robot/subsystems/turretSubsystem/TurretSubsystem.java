@@ -417,13 +417,13 @@ public class TurretSubsystem extends SubsystemBase {
                       .BLUE) // Default to red because that's the color on our test field
               ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
               : Constants.TurretConstants.SPEAKER_TAG_ID_RED);
-      double visionTX = visionSubsystem.getTurretYaw(tagID);
+      double visionTX = visionSubsystem.getTagYaw(tagID, false);
       if (visionTX != 0) {
         // X & Rotation
         setTurretPos(Math.toRadians(visionTX) + turretPosition);
 
         // Y & Tilting
-        double visionTY = visionSubsystem.getTurretPitch(tagID);
+        double visionTY = visionSubsystem.getTagPitch(tagID, false);
         double distanceToTag = tyToDistanceFromTag(visionTY);
         tagDistanceEntry.log(distanceToTag);
         // TODO: Add vertical tilt and use distance for it

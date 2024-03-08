@@ -25,6 +25,9 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
+
+  private final boolean TURRET_CAMERA_ENABLED = false;
+
   private int measurementsUsed = 0;
   private DebugEntry<Double> measurementEntry = new DebugEntry<Double>(0.0, "measurements", this);
 
@@ -61,13 +64,18 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
                 limelightConfig.limelightPitchRadians,
                 limelightConfig.limelightYawRadians));
     mainCamera = new PhotonCamera(Constants.VisionConstants.MAIN_CAMERA_NAME);
-    turretCamera = new PhotonCamera(Constants.VisionConstants.TURRET_CAMERA_NAME);
     mainResult = mainCamera.getLatestResult();
-    turretResult = turretCamera.getLatestResult();
     aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     poseEstimator =
         new PhotonPoseEstimator(
             aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, mainCamera, robotToCam);
+    if (TURRET_CAMERA_ENABLED) {
+      turretCamera = new PhotonCamera(Constants.VisionConstants.TURRET_CAMERA_NAME);
+      turretResult = turretCamera.getLatestResult();
+    } else {
+      turretCamera = null;
+      turretResult = null;
+    }
   }
 
   private EstimatedRobotPose getPVEstimatedPose() {
@@ -118,72 +126,100 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
     }
   }
 
-  public double getTurretYaw(int id) {
-    turretResult = turretCamera.getLatestResult();
-    if (turretResult.hasTargets()) {
-      List<PhotonTrackedTarget> targets = turretResult.getTargets();
-      for (PhotonTrackedTarget target : targets) {
-        if (target.getFiducialId() == id) {
-          return target.getYaw();
+  public double getTagYaw(int id, boolean isMain) {
+    if (isMain) {
+      mainResult = mainCamera.getLatestResult();
+      if (mainResult.hasTargets()) {
+        List<PhotonTrackedTarget> targets = mainResult.getTargets();
+        for (PhotonTrackedTarget target : targets) {
+          if (target.getFiducialId() == id) {
+            return target.getYaw();
+          }
         }
       }
+      return 0;
+    } else if (TURRET_CAMERA_ENABLED) {
+      turretResult = turretCamera.getLatestResult();
+      if (turretResult.hasTargets()) {
+        List<PhotonTrackedTarget> targets = turretResult.getTargets();
+        for (PhotonTrackedTarget target : targets) {
+          if (target.getFiducialId() == id) {
+            return target.getYaw();
+          }
+        }
+      }
+      return 0;
     }
     return 0;
   }
 
-  public double getTurretPitch(int id) {
-    turretResult = turretCamera.getLatestResult();
-    if (turretResult.hasTargets()) {
-      List<PhotonTrackedTarget> targets = turretResult.getTargets();
-      for (PhotonTrackedTarget target : targets) {
-        if (target.getFiducialId() == id) {
-          return target.getPitch();
+  public double getTagPitch(int id, boolean isMain) {
+    if (isMain) {
+      mainResult = mainCamera.getLatestResult();
+      if (mainResult.hasTargets()) {
+        List<PhotonTrackedTarget> targets = mainResult.getTargets();
+        for (PhotonTrackedTarget target : targets) {
+          if (target.getFiducialId() == id) {
+            return target.getPitch();
+          }
         }
       }
+      return 0;
+    } else if (TURRET_CAMERA_ENABLED) {
+      turretResult = turretCamera.getLatestResult();
+      if (turretResult.hasTargets()) {
+        List<PhotonTrackedTarget> targets = turretResult.getTargets();
+        for (PhotonTrackedTarget target : targets) {
+          if (target.getFiducialId() == id) {
+            return target.getPitch();
+          }
+        }
+      }
+      return 0;
     }
     return 0;
   }
 
   public void periodic() {
-    if (Robot.isReal()) {
-      mainResult = mainCamera.getLatestResult();
-      if (mainResult.hasTargets()) {
-        List<PhotonTrackedTarget> targets = mainResult.getTargets();
-        if (targets.size() > 1) {
-          EstimatedRobotPose newPose = getPVEstimatedPose();
-          if ((newPose.estimatedPose.getX() > 12) || (newPose.estimatedPose.getX() < 4.54)) {
-            if (checkPoseValidity(newPose)) {
-              lastPose = newPose;
-            }
-            measurementsUsed++;
-            measurementConsumer.accept(getPose2d(), getTime());
-            if (measurementsUsed % 100 == 0) {
-              measurementEntry.log((double) measurementsUsed);
-            }
-          }
+    if (!Robot.isReal()) return;
+
+    mainResult = mainCamera.getLatestResult();
+    if (!mainResult.hasTargets()) return;
+
+    List<PhotonTrackedTarget> targets = mainResult.getTargets();
+    if (targets.size() > 1) {
+      EstimatedRobotPose newPose = getPVEstimatedPose();
+      if ((newPose.estimatedPose.getX() > 12) || (newPose.estimatedPose.getX() < 4.54)) {
+        if (checkPoseValidity(newPose)) {
+          lastPose = newPose;
         }
-        // logging stuff
-        if (!Robot.isCompetition) {
-          for (PhotonTrackedTarget target : targets) {
-            if (target.getFiducialId() == 3) {
-              Pose3d botpose = this.getPose3d();
-              double distanceToTag3 =
-                  Math.sqrt(
-                      Math.pow(16.579342 - botpose.getX(), 2)
-                          + Math.pow(4.982718 - botpose.getY(), 2)
-                          + Math.pow(1.451102 - botpose.getZ(), 2));
-              distanceEntryTag3.log(distanceToTag3);
-            } else if (target.getFiducialId() == 4) {
-              Pose3d botpose = this.getPose3d();
-              double distanceToTag4 =
-                  Math.sqrt(
-                      Math.pow(16.579342 - botpose.getX(), 2)
-                          + Math.pow(5.547868 - botpose.getY(), 2)
-                          + Math.pow(1.451102 - botpose.getZ(), 2));
-              distanceEntryTag4.log(distanceToTag4);
-            }
-          }
+        measurementsUsed++;
+        measurementConsumer.accept(getPose2d(), getTime());
+        if (measurementsUsed % 100 == 0) {
+          measurementEntry.log((double) measurementsUsed);
         }
+      }
+    }
+    // logging stuff
+    if (Robot.isCompetition) return;
+
+    for (PhotonTrackedTarget target : targets) {
+      if (target.getFiducialId() == 3) {
+        Pose3d botpose = this.getPose3d();
+        double distanceToTag3 =
+            Math.sqrt(
+                Math.pow(16.579342 - botpose.getX(), 2)
+                    + Math.pow(4.982718 - botpose.getY(), 2)
+                    + Math.pow(1.451102 - botpose.getZ(), 2));
+        distanceEntryTag3.log(distanceToTag3);
+      } else if (target.getFiducialId() == 4) {
+        Pose3d botpose = this.getPose3d();
+        double distanceToTag4 =
+            Math.sqrt(
+                Math.pow(16.579342 - botpose.getX(), 2)
+                    + Math.pow(5.547868 - botpose.getY(), 2)
+                    + Math.pow(1.451102 - botpose.getZ(), 2));
+        distanceEntryTag4.log(distanceToTag4);
       }
     }
   }
