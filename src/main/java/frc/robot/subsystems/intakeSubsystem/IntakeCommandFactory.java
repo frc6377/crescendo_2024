@@ -1,6 +1,5 @@
 package frc.robot.subsystems.intakeSubsystem;
 
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -11,7 +10,6 @@ public class IntakeCommandFactory {
 
   public IntakeCommandFactory(IntakeSubsystem subsystem) {
     this.subsystem = subsystem;
-    if (subsystem != null) Shuffleboard.getTab(subsystem.getName()).add(subsystem);
   }
 
   public Command reverseIntakeCommand() {

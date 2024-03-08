@@ -99,6 +99,7 @@ public class TurretSubsystem extends SubsystemBase {
       new DebugEntry<Double>(0.0, "Turret Motor Output", this);
   private final DebugEntry<Double> tagDistanceEntry =
       new DebugEntry<Double>(0.0, "LastMeasuredTagDistance", this);
+  private DebugEntry<String> currentCommand;
 
   private final RobotStateManager robotStateManager;
   private final VisionSubsystem visionSubsystem;
@@ -253,6 +254,8 @@ public class TurretSubsystem extends SubsystemBase {
           pitchRoot.append(new MechanismLigament2d("Pitch", 2, 0, 5, new Color8Bit(Color.kBlue)));
       turretTab.add("Pitch", pitchMech);
     }
+
+    currentCommand = new DebugEntry<String>("none", "current Command", this);
   }
 
   public void stopTurret() {
@@ -490,6 +493,8 @@ public class TurretSubsystem extends SubsystemBase {
     pitchVelocityEntry.log(pitchVelocity);
 
     motorOutputEntry.log(turretMotor.get());
+
+    if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
   }
 
   @Override

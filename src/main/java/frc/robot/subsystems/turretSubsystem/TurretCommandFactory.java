@@ -3,7 +3,6 @@ package frc.robot.subsystems.turretSubsystem;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -18,7 +17,6 @@ public class TurretCommandFactory {
 
   public TurretCommandFactory(TurretSubsystem subsystem) {
     this.subsystem = subsystem;
-    if (subsystem != null) Shuffleboard.getTab(subsystem.getName()).add(subsystem);
   }
 
   public Command stowTurret() {
