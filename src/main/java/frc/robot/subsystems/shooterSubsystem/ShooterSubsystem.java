@@ -22,8 +22,8 @@ import java.util.function.BooleanSupplier;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-  private CANSparkMaxSim shooterLeftMotor;
-  private CANSparkMaxSim shooterRightMotor;
+  private final CANSparkMaxSim shooterLeftMotor;
+  private final CANSparkMaxSim shooterRightMotor;
 
   private final RelativeEncoder shooterLeftMotorEncoder;
   private final RelativeEncoder shooterRightMotorEncoder;

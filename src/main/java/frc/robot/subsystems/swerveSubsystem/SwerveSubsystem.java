@@ -35,7 +35,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   private static final double kSimLoopPeriod = 0.005; // 5 ms
   public static final double maxSpeed = Units.feetToMeters(18.2); // Desired top speed
   public static final double maxAngularRate =
-      Math.PI * 4; // Max angular velocity in radians per second
+      Math.PI * 4; // Max angular velocity in rads/sec
   private final double drivetrainRadius;
   private final Telemetry telemetry = new Telemetry(maxSpeed);
 

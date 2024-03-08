@@ -13,8 +13,8 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.utilities.DebugEntry;
 
 public class IntakeSubsystem extends SubsystemBase {
-  private TalonFX intakeMotor;
-  private CANSparkMax chooserMotor;
+  private final TalonFX intakeMotor;
+  private final CANSparkMax chooserMotor;
   private DebugEntry<Double> intakeOutput;
   private DebugEntry<Double> chooserOutput;
 
