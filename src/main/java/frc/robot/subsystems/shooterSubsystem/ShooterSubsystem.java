@@ -74,8 +74,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     shooterLeftMotor.setInverted(true);
 
-    shooterLeftMotor = ShooterConstants.SHOOTER_PID.getSparkPidController(shooterLeftMotor);
-    shooterRightMotor = ShooterConstants.SHOOTER_PID.getSparkPidController(shooterRightMotor);
+    ShooterConstants.SHOOTER_PID.setSparkPidController(shooterLeftMotor);
+    ShooterConstants.SHOOTER_PID.setSparkPidController(shooterRightMotor);
 
     if (!Robot.isCompetition) {
       shooterTab.add("Shooter Right PID", shooterRightMotor.getPIDController());

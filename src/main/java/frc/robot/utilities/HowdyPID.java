@@ -6,7 +6,6 @@ package frc.robot.utilities;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxSim;
-import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
@@ -23,9 +22,6 @@ public class HowdyPID {
   private TunableNumber tuneD;
   private TunableNumber tuneIz;
   private TunableNumber tuneFF;
-
-  private PIDController PIDController;
-  private SparkPIDController SparkPIDController;
 
   public HowdyPID(double p, double i, double d) {
     this.P = p;
@@ -77,22 +73,20 @@ public class HowdyPID {
         new TunableNumber(name.concat(" Iz"), this.Iz, iz -> controller.setIZone(iz), subsystem);
   }
 
-  public CANSparkMax getSparkPidController(CANSparkMax motor) {
+  public void getSparkPidController(CANSparkMax motor) {
     motor.getPIDController().setP(this.P);
     motor.getPIDController().setI(this.I);
     motor.getPIDController().setD(this.D);
     motor.getPIDController().setIZone(this.Iz);
     motor.getPIDController().setFF(this.FF);
-    return motor;
   }
 
-  public CANSparkMaxSim getSparkPidController(CANSparkMaxSim motor) {
+  public void setSparkPidController(CANSparkMaxSim motor) {
     motor.getPIDController().setP(this.P);
     motor.getPIDController().setI(this.I);
     motor.getPIDController().setD(this.D);
     motor.getPIDController().setIZone(this.Iz);
     motor.getPIDController().setFF(this.FF);
-    return motor;
   }
 
   public PIDController getPIDController() {

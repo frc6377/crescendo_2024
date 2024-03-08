@@ -173,15 +173,15 @@ public class TrapElvSubsystem extends SubsystemBase {
 
       baseMotor1 = new CANSparkMaxSim(TrapElvConstants.BASE_MOTOR1_ID, MotorType.kBrushless);
       baseMotor1.restoreFactoryDefaults();
-      baseMotor1 = TrapElvConstants.BASE_PID.getSparkPidController(baseMotor1);
+      TrapElvConstants.BASE_PID.setSparkPidController(baseMotor1);
 
       baseMotor2 = new CANSparkMax(TrapElvConstants.BASE_MOTOR2_ID, MotorType.kBrushless);
       baseMotor2.restoreFactoryDefaults();
-      baseMotor2 = TrapElvConstants.BASE_PID.getSparkPidController(baseMotor2);
+      TrapElvConstants.BASE_PID.getSparkPidController(baseMotor2);
 
       scoringMotor = new CANSparkMaxSim(TrapElvConstants.SCORING_MOTOR_ID, MotorType.kBrushless);
       scoringMotor.restoreFactoryDefaults();
-      scoringMotor = TrapElvConstants.SCORING_PID.getSparkPidController(scoringMotor);
+      TrapElvConstants.SCORING_PID.setSparkPidController(scoringMotor);
     }
 
     // Simulation
