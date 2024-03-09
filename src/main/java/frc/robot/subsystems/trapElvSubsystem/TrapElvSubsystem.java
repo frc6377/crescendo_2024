@@ -84,12 +84,12 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   private ShuffleboardTab TrapElvTab = Shuffleboard.getTab(this.getName());
 
-  private DebugEntry<Double> currentPositionEntry;
+  private DebugEntry<Double> WristPositionEntry;
   private DebugEntry<Boolean> isWristRollerRunning;
   private DebugEntry<Double> FFOutput;
   private DebugEntry<Double> wristOutput;
   private DebugEntry<Double> wristGoal;
-  private DebugEntry<String> currentWristStateEntry;
+  private DebugEntry<String> WristStateEntry;
   private DebugEntry<String> currentCommand;
 
   private double FF;
@@ -166,8 +166,6 @@ public class TrapElvSubsystem extends SubsystemBase {
     if (isElv) {
       baseLimit = new DigitalInput(TrapElvConstants.BASE_BREAK_ID);
       scoringLimit = new DigitalInput(TrapElvConstants.SCORING_BREAK_ID);
-      baseLog = new DebugEntry<Boolean>(baseLimit.get(), "Base Limit Switch", this);
-      scoringLog = new DebugEntry<Boolean>(scoringLimit.get(), "Scoring Limit Switch", this);
 
       baseMotorOffset1 = 0.0;
       baseMotorOffset2 = 0.0;
@@ -183,6 +181,9 @@ public class TrapElvSubsystem extends SubsystemBase {
       scoringMotor = new CANSparkMaxSim(TrapElvConstants.SCORING_MOTOR_ID, MotorType.kBrushless);
       scoringMotor.restoreFactoryDefaults();
       TrapElvConstants.SCORING_PID.setSparkPidController(scoringMotor);
+
+      baseLog = new DebugEntry<Boolean>(baseLimit.get(), "Base Limit Switch", this);
+      scoringLog = new DebugEntry<Boolean>(scoringLimit.get(), "Scoring Limit Switch", this);
     }
 
     // Simulation
@@ -243,16 +244,18 @@ public class TrapElvSubsystem extends SubsystemBase {
       TrapElvTab.add("Trap Arm Mech", elvMechanism).withPosition(7, 7);
     }
 
-    sourceLog = new DebugEntry<Boolean>(sourceBreak.get(), "Source Beam Break", this);
-    groundLog = new DebugEntry<Boolean>(groundBreak.get(), "Ground Beam Break", this);
-    currentPositionEntry = new DebugEntry<>(getWristEncoderPos(), "Current wrist Position", this);
+    wristGoal =
+        new DebugEntry<Double>(wristStateGoal, "Wrist Goal", this)
+            .withPosition(1, 1)
+            .withSize(2, 1);
+    WristPositionEntry = new DebugEntry<>(getWristEncoderPos(), "wrist Position", this);
+    WristStateEntry = new DebugEntry<String>(TrapElvState.STOWED.name(), "Wrist State", this);
+
+    sourceLog = new DebugEntry<Boolean>(sourceBreak.get(), "Source BB", this);
+    groundLog = new DebugEntry<Boolean>(groundBreak.get(), "Ground BB", this);
     isWristRollerRunning = new DebugEntry<Boolean>(false, "Wrist Rollers", this);
     FFOutput = new DebugEntry<Double>(0.0, "FF Output", this);
     wristOutput = new DebugEntry<Double>(0.0, "Wrist Motor Output", this);
-    wristOutput = new DebugEntry<Double>(0.0, "Wrist Motor Output", this);
-    wristGoal = new DebugEntry<Double>(wristStateGoal, "Wrist Goal", this);
-    currentWristStateEntry =
-        new DebugEntry<String>(TrapElvState.STOWED.name(), "Current Wrist State", this);
     currentCommand = new DebugEntry<String>("none", "current Command", this);
   }
 
@@ -298,7 +301,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   // Void Functions
   public void setWristState(TrapElvState state) {
     currentWristState = state;
-    currentWristStateEntry.log(currentWristState.name());
+    WristStateEntry.log(currentWristState.name());
     wristStateGoal = state.getWristPose();
     wristGoal.log(wristStateGoal);
     if (isElv) {
@@ -335,7 +338,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    currentPositionEntry.log(getWristEncoderPos());
+    WristPositionEntry.log(getWristEncoderPos());
     sourceLog.log(sourceBreak.get());
     groundLog.log(groundBreak.get());
     sourceBreak.getMilliMeters();
