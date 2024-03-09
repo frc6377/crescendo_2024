@@ -13,15 +13,17 @@ public class TriggerCommandFactory {
   }
 
   public Command getLoadCommand() {
-    return buildCommand(TriggerConstants.LOAD_PERCENTAGE).withName("getLoadCommand");
+    return buildCommand(TriggerConstants.LOAD_PERCENTAGE).withName("getLoadCommand").asProxy();
   }
 
   public Command getHoldCommand() {
-    return buildCommand(TriggerConstants.HOLD_PERCENTAGE).withName("getHoldCommand");
+    final Command command =
+        buildCommand(TriggerConstants.HOLD_PERCENTAGE).withName("getHoldCommand");
+    return command;
   }
 
   public Command getShootCommand() {
-    return buildCommand(TriggerConstants.SHOOT_PERCENTAGE).withName("getShootCommand");
+    return buildCommand(TriggerConstants.SHOOT_PERCENTAGE).withName("getShootCommand").asProxy();
   }
 
   public void setDefaultCommand(Command defaultCommand) {
@@ -32,6 +34,7 @@ public class TriggerCommandFactory {
   private Command buildCommand(double speed) {
     if (subsystem == null) return Commands.none();
     return new StartEndCommand(
-        () -> subsystem.setSpeed(speed), () -> subsystem.setSpeed(0), subsystem);
+            () -> subsystem.setSpeed(speed), () -> subsystem.setSpeed(0), subsystem)
+        .withName("buildCommand");
   }
 }
