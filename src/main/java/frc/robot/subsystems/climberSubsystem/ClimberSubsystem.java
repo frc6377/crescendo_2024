@@ -53,18 +53,15 @@ public class ClimberSubsystem extends SubsystemBase {
     double armPosition;
 
     armPosition = motor.getAbsoluteEncoder().getPosition();
-
+    if(armPosition>0.5) {
+      armPosition = armPosition-1;
+    }
     motor.setSoftLimit(
         SoftLimitDirection.kForward,
         (float) (Units.degreesToRotations(135) * ClimberConstants.GEAR_RATIO));
     motor.setSoftLimit(SoftLimitDirection.kReverse, 0);
     double motorPosition = armPosition * ClimberConstants.GEAR_RATIO;
-    if (Math.abs(motorPosition) > 10) {
-      motor.getEncoder().setPosition(0);
-    } else {
-      motor.getEncoder().setPosition(motorPosition);
-    }
-
+    motor.getEncoder().setPosition(motorPosition);
     motor.setInverted(invert);
     motor.setSmartCurrentLimit(40);
   }
