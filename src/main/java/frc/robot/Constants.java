@@ -261,7 +261,7 @@ public final class Constants {
     public static final boolean signalEnabled = false;
     public static final boolean shooterEnabled = true;
     public static final boolean triggerEnabled = true;
-    public static final boolean turretEnabled = true;
+    public static final boolean turretEnabled = false;
     public static final boolean climberEnabled = true;
   }
 
