@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
 
@@ -75,5 +76,10 @@ public class ShooterCommandFactory {
   public Command outtake() {
     if (subsystem == null) return Commands.none();
     return subsystem.startEnd(() -> subsystem.requestPercent(-1), subsystem::stop);
+  }
+
+  public Trigger isShooterReadyTrigger() {
+    if (subsystem == null) return new Trigger(() -> false);
+    return new Trigger(subsystem::isShooterReady);
   }
 }

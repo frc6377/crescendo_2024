@@ -252,7 +252,8 @@ public class RobotContainer {
             Commands.startEnd(
                 () -> OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
                 () -> OI.Driver.setRumble(0)));
-    new Trigger(shooterSubsystem::isShooterReady)
+    shooterCommandFactory
+        .isShooterReadyTrigger()
         .whileTrue(
             Commands.startEnd(
                 () -> OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
