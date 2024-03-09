@@ -48,21 +48,19 @@ public class DebugEntry<T> {
       DriverStation.reportWarning("Unsupported data type.", false);
     }
 
-    if (localEntry != null) {
-      if (!Robot.isCompetition) {
-        networkTab = Shuffleboard.getTab(subsystem.getName());
+    if (!Robot.isCompetition && localEntry != null) {
+      networkTab = Shuffleboard.getTab(subsystem.getName());
 
-        if (!entries.containsKey(name)) {
-          networkEntry = networkTab.add(name, defaultValue);
-          entries.put(name, networkEntry);
-        } else {
-          String errorMessage =
-              "Duplicate ShuffleboardEntry on " + networkTab.getTitle() + " tab: " + name;
-          DriverStation.reportError(errorMessage, false);
-        }
+      if (!entries.containsKey(name)) {
+        networkEntry = networkTab.add(name, defaultValue);
+        entries.put(name, networkEntry);
+      } else {
+        String errorMessage =
+            "Duplicate ShuffleboardEntry on " + networkTab.getTitle() + " tab: " + name;
+        DriverStation.reportError(errorMessage, false);
       }
-      localConsumer.accept(defaultValue);
     }
+    localConsumer.accept(defaultValue);
   }
 
   public DebugEntry<T> withPosition(int colIndex, int rowIndex) {

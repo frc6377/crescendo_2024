@@ -90,7 +90,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   private DebugEntry<Double> wristOutput;
   private DebugEntry<Double> wristGoal;
   private DebugEntry<String> WristStateEntry;
-  private DebugEntry<String> currentCommand;
+  private DebugEntry<String> wristCurrentCommand;
 
   private double FF;
 
@@ -246,17 +246,25 @@ public class TrapElvSubsystem extends SubsystemBase {
 
     wristGoal =
         new DebugEntry<Double>(wristStateGoal, "Wrist Goal", this)
-            .withPosition(1, 1)
+            .withPosition(0, 0)
             .withSize(2, 1);
-    WristPositionEntry = new DebugEntry<>(getWristEncoderPos(), "wrist Position", this);
-    WristStateEntry = new DebugEntry<String>(TrapElvState.STOWED.name(), "Wrist State", this);
+    WristPositionEntry =
+        new DebugEntry<>(getWristEncoderPos(), "wrist Position", this)
+            .withPosition(2, 0)
+            .withSize(2, 1);
+    WristStateEntry =
+        new DebugEntry<String>(TrapElvState.STOWED.name(), "Wrist State", this)
+            .withPosition(0, 1)
+            .withSize(2, 1);
+    wristOutput =
+        new DebugEntry<Double>(0.0, "Wrist Motor Output", this).withPosition(2, 1).withSize(2, 1);
+    FFOutput = new DebugEntry<Double>(0.0, "FF Output", this).withPosition(5, 1).withSize(2, 1);
+    sourceLog = new DebugEntry<Boolean>(sourceBreak.get(), "Source BB", this).withPosition(0, 2);
+    groundLog = new DebugEntry<Boolean>(groundBreak.get(), "Ground BB", this).withPosition(1, 2);
+    isWristRollerRunning = new DebugEntry<Boolean>(false, "Wrist Rollers", this).withPosition(2, 2);
 
-    sourceLog = new DebugEntry<Boolean>(sourceBreak.get(), "Source BB", this);
-    groundLog = new DebugEntry<Boolean>(groundBreak.get(), "Ground BB", this);
-    isWristRollerRunning = new DebugEntry<Boolean>(false, "Wrist Rollers", this);
-    FFOutput = new DebugEntry<Double>(0.0, "FF Output", this);
-    wristOutput = new DebugEntry<Double>(0.0, "Wrist Motor Output", this);
-    currentCommand = new DebugEntry<String>("none", "current Command", this);
+    wristCurrentCommand =
+        new DebugEntry<String>("none", "current Command", this).withPosition(4, 4);
   }
 
   // Boolean Suppliers
@@ -361,7 +369,8 @@ public class TrapElvSubsystem extends SubsystemBase {
       scoringLog.log(sourceBreak.get());
     }
 
-    if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
+    if (this.getCurrentCommand() != null)
+      wristCurrentCommand.log(this.getCurrentCommand().getName());
   }
 
   @Override
