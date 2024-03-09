@@ -4,7 +4,6 @@
 
 package frc.robot.utilities;
 
-import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.playingwithfusion.TimeOfFlight;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -24,7 +23,9 @@ public class TOFSensorSimple {
 
   public TOFSensorSimple(int ID, double threshold, Subsystem subsystem) {
     sensor = new TimeOfFlight(ID);
-    TOFDistance = new DebugEntry<Double>(this.getMilliMeters(), "TOF sensor " + ID + " distance (mm)", subsystem);
+    TOFDistance =
+        new DebugEntry<Double>(
+            this.getMilliMeters(), "TOF sensor " + ID + " distance (mm)", subsystem);
     TOFBroken = new DebugEntry<Boolean>(this.get(), "TOF sensor " + ID + " broken", subsystem);
     this.threshold = threshold; // in mm
     this.id = ID;

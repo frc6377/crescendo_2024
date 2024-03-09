@@ -61,7 +61,8 @@ public class ShooterSubsystem extends SubsystemBase {
         new CANSparkMaxSim(Constants.ShooterConstants.SHOOTER_MOTOR_RIGHT_ID, MotorType.kBrushless);
 
     beamBreak =
-        new TOFSensorSimple(ShooterConstants.BEAM_BREAK_ID, ShooterConstants.BEAM_BREAK_THRESHOLD);
+        new TOFSensorSimple(
+            ShooterConstants.BEAM_BREAK_ID, ShooterConstants.BEAM_BREAK_THRESHOLD, this);
 
     shooterLeftMotor.restoreFactoryDefaults();
     shooterLeftMotor.setSmartCurrentLimit(50);
