@@ -18,7 +18,6 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.TOFSensorSimple;
-import java.util.function.BooleanSupplier;
 
 public class ShooterSubsystem extends SubsystemBase {
 
