@@ -128,7 +128,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
         }
       }
     }
-    return 0;
+    return -1;
   }
 
   public double getTurretPitch(int id) {
@@ -141,7 +141,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
         }
       }
     }
-    return 0;
+    return -1;
   }
 
   public void periodic() {

@@ -142,11 +142,13 @@ public class RobotContainer {
     }
     trapElvCommandFactory = new TrapElvCommandFactory(trapElvSubsystem);
     if (enabledSubsystems.turretRotationEnabled || enabledSubsystems.turretPitchEnabled) {
-      turretSubsystem = new TurretSubsystem(robotStateManager, null);
+      turretSubsystem = new TurretSubsystem(robotStateManager, visionSubsystem);
     } else {
       turretSubsystem = null;
     }
-    turretCommandFactory = new TurretCommandFactory(turretSubsystem);
+    turretCommandFactory =
+        new TurretCommandFactory(
+            turretSubsystem, () -> drivetrain.getState().Pose, robotStateManager);
     if (enabledSubsystems.climberEnabled) {
       climberSubsystem = new ClimberSubsystem();
     } else {
@@ -232,8 +234,6 @@ public class RobotContainer {
 
     OI.getButton(OI.Driver.intakeSource).whileTrue(trapElvCommandFactory.wristintakeSource());
 
-    OI.getButton(OI.Driver.speakerSource).whileTrue(speakerSource());
-
     OI.getButton(OI.Operator.prepClimb).onTrue(climberCommandFactory.raise());
 
     OI.getButton(OI.Operator.latchClimber).onTrue(climberCommandFactory.clip());
@@ -262,11 +262,6 @@ public class RobotContainer {
                 () -> OI.Operator.setRumble(0)));
   }
 
-  private Command speakerSource() {
-    return Commands.parallel(
-        shooterCommandFactory.intakeSource(), triggerCommandFactory.getLoadCommand());
-  }
-
   private Command intakeSpeaker() {
     return Commands.parallel(
         intakeCommandFactory.intakeSpeakerCommandSmart(shooterSubsystem.getBeamBreak()),
@@ -291,7 +286,7 @@ public class RobotContainer {
 
   private Command prepareToScoreSpeaker() {
     return Commands.parallel(
-        turretCommandFactory.getAimTurretCommand(), shooterCommandFactory.revShooter());
+        turretCommandFactory.aimTurretCommand(), shooterCommandFactory.revShooter());
   }
 
   private Command shootAuton() {

@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem.DriveRequest;
+import frc.robot.utilities.HowdyMath;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -58,12 +59,12 @@ public class SwerveCommandFactory {
    */
   public Command pointAtLocation(final Translation2d target, final Supplier<DriveRequest> input) {
     if (subsystem == null) return Commands.none();
-    final DoubleSupplier getAngleToTarget =
-        () -> {
-          Translation2d delta = subsystem.getState().Pose.getTranslation().minus(target);
-          return new Rotation2d(delta.getX(), delta.getY()).getDegrees();
-        };
-    return pointDrive(getAngleToTarget, input).withName("Pointing at location").asProxy();
+    final Supplier<Rotation2d> getAngleToTarget =
+        HowdyMath.getAngleToTargetContinous(
+            () -> subsystem.getState().Pose.getTranslation(), target);
+    return pointDrive(() -> getAngleToTarget.get().getDegrees(), input)
+        .withName("Pointing at location")
+        .asProxy();
   }
 
   /**

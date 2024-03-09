@@ -3,33 +3,45 @@ package frc.robot.subsystems.turretSubsystem;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.config.TurretZeroConfig;
+import frc.robot.stateManagement.RobotStateManager;
+import frc.robot.subsystems.vision.VisionSubsystem;
+import frc.robot.utilities.HowdyMath;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 public class TurretCommandFactory {
   final TurretSubsystem subsystem;
+  final VisionSubsystem visionSubsystem;
+  final Supplier<Pose2d> robotPosition;
+  final RobotStateManager RSM;
 
-  public TurretCommandFactory(TurretSubsystem subsystem) {
+  public TurretCommandFactory(
+      TurretSubsystem subsystem,
+      Supplier<Pose2d> robotPosition,
+      RobotStateManager robotStateManager) {
     this.subsystem = subsystem;
+    this.visionSubsystem = subsystem.getVisionSubsystem();
+    this.robotPosition = robotPosition;
+    RSM = robotStateManager;
   }
 
   public Command stowTurret() {
     if (subsystem == null) return Commands.none();
     return new InstantCommand(
-            () ->
-                subsystem.setTurretPos(
-                    Math.toRadians(Constants.TurretConstants.TURRET_STOWED_ANGLE)))
-        .alongWith(
-            new InstantCommand(
-                () ->
-                    subsystem.setPitchPos(
-                        Math.toRadians(Constants.TurretConstants.PITCH_STOWED_ANGLE))))
+            () -> {
+              subsystem.setTurretPos(Math.toRadians(Constants.TurretConstants.TURRET_STOWED_ANGLE));
+              subsystem.setPitchPos(Math.toRadians(Constants.TurretConstants.PITCH_STOWED_ANGLE));
+            })
         .withName("StowTurretCommand")
         .asProxy();
   }
@@ -37,14 +49,10 @@ public class TurretCommandFactory {
   public Command pickup() {
     if (subsystem == null) return Commands.none();
     return new InstantCommand(
-            () ->
-                subsystem.setTurretPos(
-                    Math.toRadians(Constants.TurretConstants.TURRET_PICKUP_ANGLE)))
-        .alongWith(
-            new InstantCommand(
-                () ->
-                    subsystem.setPitchPos(
-                        Math.toRadians(Constants.TurretConstants.PITCH_PICKUP_ANGLE))))
+            () -> {
+              subsystem.setTurretPos(Math.toRadians(Constants.TurretConstants.TURRET_PICKUP_ANGLE));
+              subsystem.setPitchPos(Math.toRadians(Constants.TurretConstants.PITCH_PICKUP_ANGLE));
+            })
         .withName("pickup")
         .asProxy();
   }
@@ -105,30 +113,37 @@ public class TurretCommandFactory {
         .asProxy();
   }
 
-  public Command moveUpwards() {
-    if (subsystem == null) return Commands.none();
-    return subsystem.run(() -> subsystem.moveUp()).withName("moveShooterUp").asProxy();
-  }
-
-  public Command getAimTurretCommand() {
-    if (subsystem == null) return new StartEndCommand(() -> {}, () -> {});
-    return subsystem.run(() -> subsystem.aimTurret()).withName("AimTurretCommand").asProxy();
-  }
-
-  public Command idleTurret() {
-    if (subsystem == null) return Commands.none();
-    return subsystem
-        .runEnd(() -> subsystem.holdPosition(), subsystem::stopTurret)
-        .withName("idleTurret")
-        .asProxy();
-  }
-
   public Command testTurretCommand(double degrees) {
     if (subsystem == null) return Commands.none();
     return subsystem
         .runEnd(() -> subsystem.setTurretPos(Math.toRadians(degrees)), subsystem::stopTurret)
         .withName("TestTurret")
         .asProxy();
+  }
+
+  public Command aimTurretCommand() {
+    if (subsystem == null) return Commands.none();
+
+    final DoubleSupplier visionSupplier = () -> visionSubsystem.getTurretYaw(0);
+    final PIDController azimuthPIDController = TurretConstants.VISION_PID.getPIDController();
+    final Supplier<Rotation2d> odometryAngle =
+        HowdyMath.getAngleToTargetContinous(
+            () -> robotPosition.get().getTranslation(),
+            RSM.getAllianceColor().getSpeakerLocation());
+    azimuthPIDController.setSetpoint(0);
+
+    return subsystem.run(
+        () -> {
+          double visionMeasure = visionSupplier.getAsDouble();
+          if (visionMeasure == -1) {
+            // No vision for targeting
+            subsystem.setTurretPos(
+                odometryAngle.get().minus(robotPosition.get().getRotation()).getRadians());
+          } else {
+            // Using vision
+            subsystem.setTurretPos(visionMeasure + subsystem.getTurretPos());
+          }
+        });
   }
 
   public void setDefaultCommand(Command defaultCommand) {

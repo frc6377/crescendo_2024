@@ -15,7 +15,6 @@ import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -32,10 +31,10 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.TurretConstants;
+import frc.robot.Constants.enabledSubsystems;
 import frc.robot.Robot;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.config.TurretZeroConfig;
-import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.DebugEntry;
@@ -86,9 +85,6 @@ public class TurretSubsystem extends SubsystemBase {
       new DebugEntry<Double>(pitchVelocity, "Pitch Velocity", this);
   private final DebugEntry<Double> motorOutputEntry =
       new DebugEntry<Double>(0.0, "Turret Motor Output", this);
-  private final DebugEntry<Double> tagDistanceEntry =
-      new DebugEntry<Double>(0.0, "LastMeasuredTagDistance", this);
-  private DebugEntry<String> currentCommand;
 
   private final RobotStateManager robotStateManager;
   private final VisionSubsystem visionSubsystem;
@@ -143,64 +139,76 @@ public class TurretSubsystem extends SubsystemBase {
 
     if (Robot.isReal()) {
       zeroTurret();
+    } else {
+      simulationInit();
     }
 
     this.robotStateManager = robotStateManager;
     this.visionSubsystem = visionSubsystem;
+  }
 
-    // Simulation
-    if (Robot.isSimulation()) {
-      // Turret
-      simTurretEncoder =
-          new SimDeviceSim(
-              "CANEncoder:CANCoder (v6)", Constants.TurretConstants.highGearCAN_CODER_ID);
-      simTurretPos = simTurretEncoder.getDouble("rawPositionInput");
-      turretSim =
-          new SingleJointedArmSim(
-              DCMotor.getNEO(1),
-              1 / Constants.TurretConstants.TURRET_MOTOR_TURRET_RATIO,
-              3.5 * 0.1016 * 0.1016 / 3,
-              0.1016,
-              -Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES),
-              Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES),
-              false,
-              0);
-      turretMech = new Mechanism2d(4, 4);
-      turretRoot = turretMech.getRoot("Root", 2, 2);
-      turretAngleSim =
-          turretRoot.append(new MechanismLigament2d("Turret", 2, 0, 5, new Color8Bit(Color.kRed)));
-      turretTab.add("Turret", turretMech);
+  @Override
+  public void periodic() {
+    updateTurretPosition();
+    updatePitchPosition();
+    updateTelemetry();
 
-      // pitch
-      pitchSim =
-          new SingleJointedArmSim(
-              DCMotor.getNEO(1),
-              Constants.TurretConstants.PITCH_CONVERSION_FACTOR,
-              Constants.TurretConstants.SHOOTER_MASS
-                  * Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY
-                  * Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY
-                  / 3,
-              Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY,
-              Math.toRadians(Constants.TurretConstants.PITCH_MIN_ANGLE_DEGREES),
-              Math.toRadians(Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES),
-              true,
-              0);
-      pitchMech = new Mechanism2d(4, 4);
-      pitchRoot = pitchMech.getRoot("Root", 2, 2);
-      pitchAngleSim =
-          pitchRoot.append(new MechanismLigament2d("Pitch", 2, 0, 5, new Color8Bit(Color.kBlue)));
-      turretTab.add("Pitch", pitchMech);
-    }
+    motorOutputEntry.log(turretMotor.get());
+  }
 
-    currentCommand = new DebugEntry<String>("none", "current Command", this);
+  private void updateTurretPosition() {
+    if (!Constants.enabledSubsystems.turretRotationEnabled) return;
+    turretPosition = getTurretRotation();
+    turretMotor.set(turretPIDController.calculate(turretPosition));
+  }
+
+  private void updatePitchPosition() {
+    if (!Constants.enabledSubsystems.turretPitchEnabled) return;
+    pitchPosition = getTurretPitch();
+    pitchMotor.set(
+        pitchPIDController.calculate(pitchPosition)
+            + pitchFeedForward.calculate(turretPosition, 0));
+  }
+
+  // ----------------------------- Setters -----------------------------
+
+  public void setTurretPos(double setpoint) {
+    if (!Constants.enabledSubsystems.turretRotationEnabled) return;
+    turretGoalPositionEntry.log(setpoint);
+    turretPIDController.setSetpoint(
+        MathUtil.clamp(
+            setpoint,
+            Math.toRadians(Constants.TurretConstants.TURRET_MIN_ANGLE_DEGREES),
+            Math.toRadians(Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES)));
+  }
+
+  public void setPitchPos(double setpoint) {
+    if (!Constants.enabledSubsystems.turretPitchEnabled) return;
+    pitchGoalPositionEntry.log(setpoint);
+    pitchPIDController.setSetpoint(
+        MathUtil.clamp(
+            setpoint,
+            Math.toRadians(Constants.TurretConstants.PITCH_MIN_ANGLE_DEGREES),
+            Math.toRadians(Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES)));
   }
 
   public void stopTurret() {
-
-    turretMotor.stopMotor();
+    if (enabledSubsystems.turretPitchEnabled) pitchMotor.stopMotor();
+    if (enabledSubsystems.turretRotationEnabled) turretMotor.stopMotor();
   }
 
-  public double calculateTurretPosition() {
+  // ----------------------------- Getters -----------------------------
+
+  protected VisionSubsystem getVisionSubsystem() {
+    return visionSubsystem;
+  }
+
+  /**
+   * Returns the turret rotation in radians.
+   *
+   * @return the turret rotation in radians.
+   */
+  public double getTurretRotation() {
     if (!Constants.enabledSubsystems.turretRotationEnabled) return 0;
     double encoderPosition =
         lowGearCANcoder.getPosition().getValueAsDouble()
@@ -210,11 +218,36 @@ public class TurretSubsystem extends SubsystemBase {
         * 2;
   }
 
-  private double calculatePitchPosition() {
+  /**
+   * Returns the turret pitch in radians.
+   *
+   * @return the turret pitch in radians.
+   */
+  private double getTurretPitch() {
     if (!Constants.enabledSubsystems.turretPitchEnabled) return 0;
-    return Math.toRadians(
-        (pitchEncoder.getPosition() * 360) * Constants.TurretConstants.PITCH_CONVERSION_FACTOR);
+    return Units.rotationsToRadians(
+        pitchEncoder.getPosition() * Constants.TurretConstants.PITCH_CONVERSION_FACTOR);
   }
+
+  public double getTurretPos() {
+    if (!Constants.enabledSubsystems.turretRotationEnabled) return 0;
+    return turretPosition; // returns the absolute encoder position in radians
+  }
+
+  public double getTurretVel() {
+    if (!Constants.enabledSubsystems.turretRotationEnabled) return 0;
+    return turretVelocity;
+  }
+
+  protected CANcoder getLowGearCANCoder() {
+    return lowGearCANcoder;
+  }
+
+  protected CANcoder getHighGearCANCoder() {
+    return highGearCANcoder;
+  }
+
+  // ----------------------------- Zeroing -----------------------------
 
   /** Will calculate the current turret position and update encoders and motors off of it. */
   public void zeroTurret() {
@@ -299,149 +332,49 @@ public class TurretSubsystem extends SubsystemBase {
     return divisionSize * division + CANCoderAngle * divisionSize;
   }
 
-  public void setTurretPos(double setpoint) {
-    if (!Constants.enabledSubsystems.turretRotationEnabled) return;
+  // ----------------------------- Simulation -----------------------------
 
-    turretGoalPositionEntry.log(setpoint);
-    turretMotor.set(
-        turretPIDController.calculate(
-            turretPosition,
-            MathUtil.clamp(
-                setpoint,
-                Math.toRadians(Constants.TurretConstants.TURRET_MIN_ANGLE_DEGREES),
-                Math.toRadians(Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES))));
-  }
+  public void simulationInit() {
+    // Turret
+    simTurretEncoder =
+        new SimDeviceSim(
+            "CANEncoder:CANCoder (v6)", Constants.TurretConstants.highGearCAN_CODER_ID);
+    simTurretPos = simTurretEncoder.getDouble("rawPositionInput");
+    turretSim =
+        new SingleJointedArmSim(
+            DCMotor.getNEO(1),
+            1 / Constants.TurretConstants.TURRET_MOTOR_TURRET_RATIO,
+            3.5 * 0.1016 * 0.1016 / 3,
+            0.1016,
+            -Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES),
+            Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES),
+            false,
+            0);
+    turretMech = new Mechanism2d(4, 4);
+    turretRoot = turretMech.getRoot("Root", 2, 2);
+    turretAngleSim =
+        turretRoot.append(new MechanismLigament2d("Turret", 2, 0, 5, new Color8Bit(Color.kRed)));
+    turretTab.add("Turret", turretMech);
 
-  public void setPitchPos(double setpoint) {
-    if (!Constants.enabledSubsystems.turretPitchEnabled) return;
-
-    pitchGoalPositionEntry.log(setpoint);
-    pitchMotor.setVoltage(
-        pitchPIDController.calculate(
-                pitchPosition,
-                MathUtil.clamp(
-                    setpoint,
-                    Math.toRadians(Constants.TurretConstants.PITCH_MIN_ANGLE_DEGREES),
-                    Math.toRadians(Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES)))
-            + pitchFeedForward.calculate(turretPosition, 0));
-  }
-
-  public void holdPosition() {
-    if (Constants.enabledSubsystems.turretRotationEnabled) setTurretPos(0);
-    if (Constants.enabledSubsystems.turretPitchEnabled) setPitchPos(0);
-  }
-
-  public void moveUp() {
-    if (Constants.enabledSubsystems.turretRotationEnabled) setTurretPos(turretPosition);
-    if (Constants.enabledSubsystems.turretPitchEnabled) setPitchPos(30);
-  }
-
-  public void updateTurretPosition() {
-    if (!Constants.enabledSubsystems.turretRotationEnabled) return;
-    turretPosition = calculateTurretPosition();
-  }
-
-  private void updatePitchPosition() {
-    if (!Constants.enabledSubsystems.turretPitchEnabled) return;
-    pitchPosition = calculatePitchPosition();
-  }
-
-  public double getTurretPos() {
-    if (!Constants.enabledSubsystems.turretRotationEnabled) return 0;
-    return turretPosition; // returns the absolute encoder position in radians
-  }
-
-  public double getTurretVel() {
-    if (!Constants.enabledSubsystems.turretRotationEnabled) return 0;
-    return turretVelocity;
-  }
-
-  public void aimTurret() {
-    if (visionSubsystem != null) {
-      int tagID =
-          ((robotStateManager.getAllianceColor()
-                  == AllianceColor
-                      .BLUE) // Default to red because that's the color on our test field
-              ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
-              : Constants.TurretConstants.SPEAKER_TAG_ID_RED);
-      double visionTX = visionSubsystem.getTurretYaw(tagID);
-      if (visionTX != 0) {
-        // X & Rotation
-        if (Constants.enabledSubsystems.turretRotationEnabled) {
-          setTurretPos(Math.toRadians(visionTX) + turretPosition);
-        }
-
-        // Y & Tilting
-        if (Constants.enabledSubsystems.turretPitchEnabled) {
-          double visionTY = visionSubsystem.getTurretPitch(tagID);
-          double distanceToTag = tyToDistanceFromTag(visionTY);
-          tagDistanceEntry.log(distanceToTag);
-        }
-
-        if (Math.abs(Math.toRadians(visionTX) + turretPosition)
-            > Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES)) {
-          // TODO: Make turret rotate the drivebase if necessary and driver thinks it's a good idea
-        }
-      }
-    } else {
-      // TODO: Make turret default to using odometry
-      setTurretPos(60);
-    }
-  }
-
-  private void aimTurretOdometry(Pose2d robotPos, Pose2d targetPos) {
-    setTurretPos(getTurretRotationFromOdometry(robotPos, targetPos));
-  }
-
-  /**
-   * Calculates the distance to the tag centered on the speaker from the angle that the limelight
-   * sees it
-   *
-   * @param ty The ty output by the limelight (degrees)
-   * @return The distance from the tag (meters)
-   */
-  private double tyToDistanceFromTag(double ty) {
-    DynamicRobotConfig dynamicRobotConfig = new DynamicRobotConfig();
-    double tagTheta = Math.toRadians(ty) + dynamicRobotConfig.getLimelightConfig().limelightYMeters;
-    double height =
-        Constants.TurretConstants.SPEAKER_TAG_CENTER_HEIGHT_METERS
-            - dynamicRobotConfig.getLimelightConfig()
-                .limelightZMeters; // TODO: Change these alphabot constants to be turret
-    // constants whenever the robot is built
-    double distance = height / Math.tan(tagTheta);
-    return distance;
-  }
-
-  /**
-   * Calculates the pitch the shooter should be angled at to fire a given distance.
-   *
-   * @param distance The distance from the speaker in meters
-   * @return The shooter pitch in degrees
-   */
-  private double distanceToShootingPitch(double distance) {
-    return 4; // TODO: Make and use a real formula(use testing, not physics)
-  }
-
-  @Override
-  public void periodic() {
-    updateTurretPosition();
-    turretVelocity =
-        (lowGearCANcoder.getVelocity().getValueAsDouble()
-                * Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO)
-            * 60; // changing from rotations per second to rotations per minute or rpm
-    turretPositionEntry.log(turretPosition);
-    turretVelocityEntry.log(turretVelocity);
-
-    updatePitchPosition();
-    pitchVelocity =
-        pitchEncoder.getVelocity()
-            * 60; // changing from rotations per second to rotations per minute or rpm
-    pitchPositionEntry.log(pitchPosition);
-    pitchVelocityEntry.log(pitchVelocity);
-
-    motorOutputEntry.log(turretMotor.get());
-
-    if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
+    // pitch
+    pitchSim =
+        new SingleJointedArmSim(
+            DCMotor.getNEO(1),
+            Constants.TurretConstants.PITCH_CONVERSION_FACTOR,
+            Constants.TurretConstants.SHOOTER_MASS
+                * Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY
+                * Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY
+                / 3,
+            Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY,
+            Math.toRadians(Constants.TurretConstants.PITCH_MIN_ANGLE_DEGREES),
+            Math.toRadians(Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES),
+            true,
+            0);
+    pitchMech = new Mechanism2d(4, 4);
+    pitchRoot = pitchMech.getRoot("Root", 2, 2);
+    pitchAngleSim =
+        pitchRoot.append(new MechanismLigament2d("Pitch", 2, 0, 5, new Color8Bit(Color.kBlue)));
+    turretTab.add("Pitch", pitchMech);
   }
 
   @Override
@@ -459,16 +392,26 @@ public class TurretSubsystem extends SubsystemBase {
     pitchMotor.setAbsolutePosition(Units.radiansToRotations(pitchSim.getAngleRads()));
   }
 
-  private double getTurretRotationFromOdometry(Pose2d robotPos, Pose2d targetPos) {
-    return Math.atan2(robotPos.getY() - targetPos.getY(), robotPos.getX() - targetPos.getX())
-        + robotPos.getRotation().getRadians();
+  private void updateTelemetry() {
+    if (enabledSubsystems.turretRotationEnabled) {
+      turretVelocity =
+          (lowGearCANcoder.getVelocity().getValueAsDouble()
+                  * Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO)
+              * 60; // changing from rotations per second to rotations per minute or rpm
+      turretPositionEntry.log(turretPosition);
+      turretVelocityEntry.log(turretVelocity);
+    }
+    if (enabledSubsystems.turretPitchEnabled) {
+      pitchVelocity =
+          pitchEncoder.getVelocity()
+              * 60; // changing from rotations per second to rotations per minute or rpm
+      pitchPositionEntry.log(pitchPosition);
+      pitchVelocityEntry.log(pitchVelocity);
+    }
   }
 
-  protected CANcoder getLowGearCANCoder() {
-    return lowGearCANcoder;
-  }
-
-  protected CANcoder getHighGearCANCoder() {
-    return highGearCANcoder;
+  public void requestRotationOutput(double calculate) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'requestRotationOutput'");
   }
 }
