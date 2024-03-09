@@ -8,6 +8,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
+import frc.robot.utilities.HowdyFF;
+import frc.robot.utilities.HowdyPID;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -34,42 +36,35 @@ public final class Constants {
   public static class IntakeConstants {
     public static final int INTAKE_MOTOR_ID = 10;
     public static final int INTAKE_CHOOSER_ID = 14;
-    public static final double INTAKE_PERCENTAGE = 0.75;
-    public static final double CHOOSER_PERCENTAGE = 0.75;
+    public static final double INTAKE_PERCENTAGE = 0.25;
+    public static final double CHOOSER_PERCENTAGE = 1;
   }
 
   public static class TriggerConstants {
     public static final int MOTOR_ID = 15; // edit all constants when testing
-    public static final double LOAD_PERCENTAGE = -0.5; // used when intaking into the turret
+    public static final double LOAD_PERCENTAGE = -1; // used when intaking into the turret
     public static final double HOLD_PERCENTAGE =
         -0.05; // very slow motor speed in case note slips out of trigger
     public static final double SHOOT_PERCENTAGE =
         0.5; // used when feeding note into turret to fire (should be negative value because it
     // outtakes)
     public static final boolean MOTOR_INVERT = true;
+    public static final double EJECT_PERCENT = -0.25;
   }
 
   public static class ShooterConstants {
     public static final int SHOOTER_MOTOR_LEFT_ID = 1;
     public static final int SHOOTER_MOTOR_RIGHT_ID = 4;
 
-    // Placeholder values
-    public static final double SHOOTER_LEFT_P = 0.001;
-    public static final double SHOOTER_LEFT_I = 0.00000035;
-    public static final double SHOOTER_LEFT_D = 0;
-    public static final double SHOOTER_LEFT_FF = 0;
-
-    public static final double SHOOTER_P = 0.001;
-    public static final double SHOOTER_I = 0.00000035;
-    public static final double SHOOTER_D = 0;
-    public static final double SHOOTER_FF = 0;
+    // PID
+    public static final HowdyPID SHOOTER_PID = new HowdyPID(0.001, 0.00000035, 0);
 
     // Motor RPM, NOT roller RPM
     public static final double SHOOTER_IDLE_SPEED_LEFT = 400; // Placeholder; in RPM
     public static final double SHOOTER_IDLE_SPEED_RIGHT = 400; // Placeholder; in RPM
 
     public static final double SHOOTER_SPEED_TOLERANCE =
-        0.2; // Placeholder; speed must be within (1-n)v to (1+n)v to fire
+        0.05; // speed must be within (1-n)v to (1+n)v to fire
 
     public static final double SHOOTER_LEFT_GEARING = 0.4; // Unitless
     public static final double SHOOTER_LEFT_MOMENT = 0.000848475500006; // Placeholder; in kg*m^2
@@ -77,9 +72,9 @@ public final class Constants {
     public static final double SHOOTER_RIGHT_GEARING = 0.4; // Unitless
     public static final double SHOOTER_RIGHT_MOMENT = 0.000848475500006; // Placeholder; in kg*m^2
     public static final SpeakerConfig SHOOTER_SOURCE_INTAKE = new SpeakerConfig(-1, -1500, -1500);
-    public static final double INTAKE_DELAY_SEC = 10;
+    public static final double INTAKE_DELAY_SEC = 0;
     public static final int BEAM_BREAK_ID = 1;
-    public static final double BEAM_BREAK_THRESHOLD = 0;
+    public static final double BEAM_BREAK_THRESHOLD = 150;
   }
 
   public static class TurretConstants {
@@ -90,12 +85,8 @@ public final class Constants {
     public static final boolean IS_MOTOR_INVERTED = true;
 
     // PID coefficients
-    public static final double TURRET_KP =
-        0.125; // TODO: Change values when there's an actual real functional robot.
-    public static final double TURRET_KI = 0.001;
-    public static final double TURRET_KD = 0;
-    public static final double TURRET_KIZ = 0;
-    public static final double TURRET_KFF = 0;
+    // TODO: Change values when there's an actual real functional robot.
+    public static final HowdyPID TURRET_PID = new HowdyPID(0.125, 0.001, 0);
 
     public static final double TURRET_KMAXOUTPUT = 1;
     public static final double TURRET_KMINOUTPUT = -1;
@@ -106,16 +97,9 @@ public final class Constants {
     public static final double TURRET_CONVERSION_FACTOR = 0.25;
     public static final int TURRET_SMART_CURRENT_LIMIT = 40;
 
-    public static final double PITCH_KP =
-        175; // TODO: Change values when there's an actual real functional robot.
-    public static final double PITCH_KI = 0.001;
-    public static final double PITCH_KD = 0;
-    public static final double PITCH_KIZ = 0;
-    public static final double PITCH_KFF = 0;
-    public static final double PITCH_KS = 0;
-    public static final double PITCH_KV = 0.08;
-    public static final double PITCH_KG = 0.1;
-    public static final double PITCH_KA = 0;
+    // TODO: Change values when there's an actual real functional robot.
+    public static final HowdyPID PITCH_PID = new HowdyPID(175, 0.001, 0);
+    public static final HowdyFF PITCH_FF = new HowdyFF(0, 0.08, 0.1);
 
     public static final double PITCH_KMAXOUTPUT = 1;
     public static final double PITCH_KMINOUTPUT = -1;
@@ -143,11 +127,6 @@ public final class Constants {
     public static final int SPEAKER_TAG_ID_BLUE = 7;
 
     // PID coefficients
-    public static final double KP = 0.25;
-    public static final double KI = 0.001;
-    public static final double KD = 0;
-    public static final double KIZ = 0;
-    public static final double KFF = 0;
     public static final double KMAXOUTPUT = 1;
     public static final double KMINOUTPUT = -1;
     public static final int MAX_TURRET_ANGLE_DEGREES = 110;
@@ -196,8 +175,8 @@ public final class Constants {
     public static final int SOURCE_BREAK_ID = 2;
     public static final int GROUND_BREAK_ID = 3;
 
-    public static final double[] WRIST_PID = {0.03, 0, 0, 0};
-    public static final double[] WRIST_FF = {0, 0.54, 4.29, 0.05}; // kS, kG, kV, kA
+    public static final HowdyPID WRIST_PID = new HowdyPID(0.03, 0, 0);
+    public static final HowdyFF WRIST_FF = new HowdyFF(0, 0.54, 4.28, 0.05);
 
     public static final double WRIST_MIN_ANGLE = Units.degreesToRadians(-90); // RADS
     public static final double WRIST_MAX_ANGLE = Units.degreesToRadians(270); // RADS
@@ -223,8 +202,8 @@ public final class Constants {
     public static final int SCORING_BREAK_ID = 4;
 
     public static final double ELV_ZEROING_SPEED = 0.1; // Percent Power
-    public static final double[] BASE_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
-    public static final double[] SCORING_PID = {36e-3, 5e-7, 1e-4, 0.0, 2e-6};
+    public static final HowdyPID BASE_PID = new HowdyPID(36e-3, 5e-7, 1e-4, 0.0, 2e-6);
+    public static final HowdyPID SCORING_PID = new HowdyPID(36e-3, 5e-7, 1e-4, 0.0, 2e-6);
 
     public static final int ELV_GEAR_RATIO = 70;
     public static final double ELV_LIFT_MASS = 5.4; // kg
@@ -285,7 +264,8 @@ public final class Constants {
     public static final boolean signalEnabled = false;
     public static final boolean shooterEnabled = true;
     public static final boolean triggerEnabled = true;
-    public static final boolean turretEnabled = false;
+    public static final boolean turretRotationEnabled = false;
+    public static final boolean turretPitchEnabled = false;
     public static final boolean climberEnabled = true;
   }
 
