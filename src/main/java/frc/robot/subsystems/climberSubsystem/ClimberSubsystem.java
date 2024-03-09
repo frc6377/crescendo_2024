@@ -14,9 +14,10 @@ import frc.robot.Constants.ClimberConstants;
 import frc.robot.utilities.DebugEntry;
 
 public class ClimberSubsystem extends SubsystemBase {
+  private final CANSparkMax leftArmMotor;
+  private final CANSparkMax rightArmMotor;
+
   private PIDState pidState;
-  private CANSparkMax leftArmMotor;
-  private CANSparkMax rightArmMotor;
   private ShuffleboardTab climberTab = Shuffleboard.getTab(this.getName());
 
   private DebugEntry<Double> rightArmPoseEntry;
