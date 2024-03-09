@@ -163,8 +163,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     rollerMotor.restoreFactoryDefaults();
 
     sourceBreak =
-        new TOFSensorSimple(
-            TrapElvConstants.SOURCE_BREAK_ID, TrapElvConstants.BREAK_THRESHOLD_MM, this);
+        new TOFSensorSimple(TrapElvConstants.SOURCE_BREAK_ID, TrapElvConstants.BREAK_THRESHOLD_MM);
     groundBreak = new DigitalInput(TrapElvConstants.GROUND_BREAK_ID);
 
     wristEncoder = wristMotor.getAbsoluteEncoder();

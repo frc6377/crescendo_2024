@@ -46,6 +46,7 @@ public final class Constants {
         0.5; // used when feeding note into turret to fire (should be negative value because it
     // outtakes)
     public static final boolean MOTOR_INVERT = true;
+    public static final double EJECT_PERCENT = -0.25;
   }
 
   public static class ShooterConstants {

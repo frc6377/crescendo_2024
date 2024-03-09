@@ -49,6 +49,6 @@ public class TriggerCommandFactory {
   }
 
   public Command getEjectCommand() {
-    return buildCommand(-0.25);
+    return buildCommand(TriggerConstants.EJECT_PERCENT);
   }
 }
