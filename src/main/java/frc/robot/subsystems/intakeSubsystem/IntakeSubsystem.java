@@ -22,7 +22,7 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeMotor = new TalonFX(Constants.IntakeConstants.INTAKE_MOTOR_ID, "rio");
     chooserMotor =
         new CANSparkMax(
-            Constants.IntakeConstants.INTAKE_CHOOSER_ID, MotorType.kBrushless); // Bag Motor
+            Constants.IntakeConstants.INTAKE_CHOOSER_ID, MotorType.kBrushless); // NEO Motor
 
     chooserMotor.restoreFactoryDefaults();
     // intakeMotor.config
