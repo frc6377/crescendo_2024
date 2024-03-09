@@ -53,9 +53,7 @@ public class ClimberSubsystem extends SubsystemBase {
     double armPosition;
 
     armPosition = motor.getAbsoluteEncoder().getPosition();
-    if(armPosition>0.5) {
-      armPosition = armPosition-1;
-    }
+    if (armPosition > 0.5) armPosition -= 1;
     motor.setSoftLimit(
         SoftLimitDirection.kForward,
         (float) (Units.degreesToRotations(135) * ClimberConstants.GEAR_RATIO));
