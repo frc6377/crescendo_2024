@@ -5,6 +5,8 @@
 package frc.robot.utilities;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 /** Add your docs here. */
 public class HowdyFF {
@@ -45,5 +47,13 @@ public class HowdyFF {
 
   public ArmFeedforward getArmFeedforward() {
     return new ArmFeedforward(this.getKS(), this.getKG(), this.getKV(), this.getKA());
+  }
+
+  public ElevatorFeedforward getElevatorFeedforward() {
+    return new ElevatorFeedforward(this.getKS(), this.getKG(), this.getKV(), this.getKA());
+  }
+
+  public SimpleMotorFeedforward getSimpleMotorFeedforward() {
+    return new SimpleMotorFeedforward(this.getKS(), this.getKV(), this.getKA());
   }
 }

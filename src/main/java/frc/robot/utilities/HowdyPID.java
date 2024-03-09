@@ -73,7 +73,7 @@ public class HowdyPID {
         new TunableNumber(name.concat(" Iz"), this.Iz, iz -> controller.setIZone(iz), subsystem);
   }
 
-  public void getSparkPidController(CANSparkMax motor) {
+  public void setSparkPidController(CANSparkMax motor) {
     motor.getPIDController().setP(this.P);
     motor.getPIDController().setI(this.I);
     motor.getPIDController().setD(this.D);
