@@ -352,7 +352,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     if (Constants.enabledSubsystems.drivetrainEnabled) {
       return new WaitCommand(autoDelay.getDouble(0))
-          .andThen(autoChooser.getSelected())
+          .andThen(autoChooser.getSelected().asProxy())
           .withName("Get Auto Command")
           .andThen(
               new InstantCommand(
