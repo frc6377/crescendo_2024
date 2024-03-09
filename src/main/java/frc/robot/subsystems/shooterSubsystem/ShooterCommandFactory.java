@@ -48,7 +48,7 @@ public class ShooterCommandFactory {
     return new FunctionalCommand(
         () -> {
           subsystem.setShooterSpeeds(
-              new SpeakerConfig(-1, leftTargetRPM.getDouble(4000), rightTargetRPM.getDouble(4000)));
+              ShooterSubsystem.calculateShooterSpeeds(170)); // Amp shoot
         },
         () -> {},
         (a) -> {},
