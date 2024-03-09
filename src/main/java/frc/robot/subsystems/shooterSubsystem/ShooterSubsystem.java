@@ -78,14 +78,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     shooterLeftMotor.setInverted(true);
 
-    shooterLeftMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_P);
-    shooterLeftMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_I);
-    shooterLeftMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_D);
-    shooterLeftMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
-    shooterRightMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_P);
-    shooterRightMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_I);
-    shooterRightMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_D);
-    shooterRightMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
+    ShooterConstants.SHOOTER_PID.setSparkPidController(shooterLeftMotor);
+    ShooterConstants.SHOOTER_PID.setSparkPidController(shooterRightMotor);
 
     if (!Robot.isCompetition) {
       shooterTab.add("Shooter Right PID", shooterRightMotor.getPIDController());

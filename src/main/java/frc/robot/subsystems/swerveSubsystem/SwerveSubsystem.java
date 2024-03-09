@@ -35,13 +35,11 @@ import java.util.function.BiConsumer;
 public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   private static final double kSimLoopPeriod = 0.005; // 5 ms
   public static final double maxSpeed = Units.feetToMeters(18.2); // Desired top speed
-  public static final double maxAngularRate =
-      Math.PI * 4; // Max angular velocity in radians per second
+  public static final double maxAngularRate = Math.PI * 4; // Max angular velocity in rads/sec
   private final double drivetrainRadius;
   private final Telemetry telemetry = new Telemetry(maxSpeed);
 
   private static boolean isFieldOriented = true;
-  private static Rotation2d alignmentRotation = null;
 
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;

@@ -28,10 +28,14 @@ public class TOFSensorSimple {
     this.threshold = threshold; // in mm
   }
 
+  public int getID() {
+    return this.id;
+  }
+
   public double getMilliMeters() {
     if (!Robot.isCompetition) {}
 
-    return sensor.getRange();
+    return this.sensor.getRange();
   }
 
   public boolean get() {
@@ -39,7 +43,7 @@ public class TOFSensorSimple {
   }
 
   public boolean isBeamBroke() {
-    return getMilliMeters() < threshold;
+    return getMilliMeters() < this.threshold;
   }
 
   public Trigger beamBroken(Command action) {

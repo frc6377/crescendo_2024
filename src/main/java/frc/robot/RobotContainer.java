@@ -141,7 +141,7 @@ public class RobotContainer {
       trapElvSubsystem = null;
     }
     trapElvCommandFactory = new TrapElvCommandFactory(trapElvSubsystem);
-    if (enabledSubsystems.turretEnabled) {
+    if (enabledSubsystems.turretRotationEnabled || enabledSubsystems.turretPitchEnabled) {
       turretSubsystem = new TurretSubsystem(robotStateManager, null);
     } else {
       turretSubsystem = null;
