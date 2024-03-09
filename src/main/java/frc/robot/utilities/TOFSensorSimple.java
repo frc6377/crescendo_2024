@@ -4,25 +4,28 @@
 
 package frc.robot.utilities;
 
+import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.playingwithfusion.TimeOfFlight;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Robot;
 
 /** Add your docs here. */
 public class TOFSensorSimple {
   private static ShuffleboardTab sensorTab = Shuffleboard.getTab("sensors");
+  private DebugEntry<Double> TOFDistance;
+  private DebugEntry<Boolean> TOFBroken;
   private TimeOfFlight sensor;
   private double threshold;
   private int id;
 
-  public TOFSensorSimple(int ID, double threshold) {
+  public TOFSensorSimple(int ID, double threshold, Subsystem subsystem) {
     sensor = new TimeOfFlight(ID);
-    sensorTab.addDouble("tof sensor " + ID + " distance (mm)", this::getMilliMeters);
-    sensorTab.addBoolean("tof sensor " + ID + " broken", this::get);
-    // sensor.setRangingMode(RangingMode.Short, 100);
+    TOFDistance = new DebugEntry<Double>(this.getMilliMeters(), "TOF sensor " + ID + " distance (mm)", subsystem);
+    TOFBroken = new DebugEntry<Boolean>(this.get(), "TOF sensor " + ID + " broken", subsystem);
     this.threshold = threshold; // in mm
     this.id = ID;
   }
