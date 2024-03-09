@@ -297,7 +297,7 @@ public class RobotContainer {
   private Command shootAuton() {
     return Commands.deadline(
             Commands.waitUntil(() -> shooterSubsystem.isShooterReady())
-                .andThen(triggerCommandFactory.getShootCommand().withTimeout(3)),
+                .andThen(triggerCommandFactory.getShootCommand().until(shooterSubsystem.getBeamBreak().negate())),
             shooterCommandFactory.revShooter())
         .andThen(shooterCommandFactory.shooterIdle().withTimeout(.02));
   }
