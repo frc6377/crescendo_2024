@@ -428,6 +428,7 @@ public class TurretSubsystem extends SubsystemBase {
               ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
               : Constants.TurretConstants.SPEAKER_TAG_ID_RED);
       double visionTX = visionSubsystem.getTurretYaw(tagID);
+      double visionTY = visionSubsystem.getTurretPitch(tagID);
       if (visionTX != 0) {
         // X & Rotation
         if (Constants.enabledSubsystems.turretRotationEnabled) {
@@ -436,16 +437,16 @@ public class TurretSubsystem extends SubsystemBase {
 
         // Y & Tilting
         if (Constants.enabledSubsystems.turretPitchEnabled) {
-          double visionTY = visionSubsystem.getTurretPitch(tagID);
+
           double distanceToTag = tyToDistanceFromTag(visionTY);
           tagDistanceEntry.log(distanceToTag);
         }
 
-        if (visionSubsystem.getTurretPitch(tagID) == 0) {
-          setPitchPos(Constants.TurretConstants.defaultShotPitch);
-          setTurretPos(0);
+        // We are checking if vision is saying the pitch is zero
+        if (visionTY == 0) {
+          setPitchPos(Constants.TurretConstants.DEFAULT_SHOT_PITCH);
+          setTurretPos(Constants.TurretConstants.STRAIGHT_FORWARD);
         } else {
-          double visionTY = visionSubsystem.getTurretPitch(tagID);
           setPitchPos(distanceToShootingPitch(tyToDistanceFromTag(visionTY)));
         }
 

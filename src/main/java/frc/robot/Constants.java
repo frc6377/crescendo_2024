@@ -87,7 +87,8 @@ public final class Constants {
     public static final int PITCH_MOTOR_ID = 10;
     public static final int PITCH_ENCODER_ID = 1; // replace with actual ID
     public static final boolean IS_MOTOR_INVERTED = true;
-    public static final int defaultShotPitch = 40;
+    public static final int DEFAULT_SHOT_PITCH = 40;
+    public static final int STRAIGHT_FORWARD = 0;
 
     // PID coefficients
     public static final double TURRET_KP =
