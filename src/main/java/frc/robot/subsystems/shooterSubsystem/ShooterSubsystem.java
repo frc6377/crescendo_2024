@@ -122,7 +122,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     shooterTab.addDouble("Left Current", shooterLeftMotor::getOutputCurrent);
     shooterTab.addDouble("Right Current", shooterRightMotor::getOutputCurrent);
-    currentCommand = new DebugEntry<String>("none", "current Command", this);
+    currentCommand = new DebugEntry<String>("none", "Shooter Command", this);
   }
 
   @Override

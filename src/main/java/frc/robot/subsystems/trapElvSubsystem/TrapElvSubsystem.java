@@ -264,7 +264,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     isWristRollerRunning = new DebugEntry<Boolean>(false, "Wrist Rollers", this).withPosition(2, 2);
 
     wristCurrentCommand =
-        new DebugEntry<String>("none", "current Command", this).withPosition(4, 4);
+        new DebugEntry<String>("none", "Wrist Command", this).withPosition(4, 4);
   }
 
   // Boolean Suppliers

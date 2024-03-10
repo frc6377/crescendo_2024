@@ -30,7 +30,7 @@ public class IntakeSubsystem extends SubsystemBase {
     chooserMotor.setInverted(true);
     intakeOutput = new DebugEntry<Double>(0.0, "Intake Motor Ouput", this);
     chooserOutput = new DebugEntry<Double>(0.0, "Chooser Motor Output", this);
-    currentCommand = new DebugEntry<String>("none", "current Command", this);
+    currentCommand = new DebugEntry<String>("none", "Intake Command", this);
   }
 
   // TODO: Add check to make sure turret is below 45 degrees before running & add photogate when
