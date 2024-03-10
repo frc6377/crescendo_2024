@@ -275,6 +275,7 @@ public class SwerveCommandFactory {
             pointAtLocation(FieldConstants.RED_SPEAKER, request),
             pointAtLocation(FieldConstants.BLUE_SPEAKER, request),
             () -> RSM.getAllianceColor() == AllianceColor.RED)
+        .withName("Target Speaker")
         .asProxy();
   }
 
@@ -283,6 +284,7 @@ public class SwerveCommandFactory {
             pointInDirection(DriverConstants.RED_AMP_ROTATION, request),
             pointInDirection(DriverConstants.BLUE_AMP_ROTATION, request),
             () -> RSM.getAllianceColor() == AllianceColor.RED)
+        .withName("Target Amp")
         .asProxy();
   }
 }
