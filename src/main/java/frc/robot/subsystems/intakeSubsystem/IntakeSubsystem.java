@@ -13,22 +13,25 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.utilities.DebugEntry;
 
 public class IntakeSubsystem extends SubsystemBase {
-  private TalonFX intakeMotor;
-  private CANSparkMax chooserMotor;
+  private final TalonFX intakeMotor;
+  private final CANSparkMax chooserMotor;
   private DebugEntry<Double> intakeOutput;
   private DebugEntry<Double> chooserOutput;
+  private DebugEntry<String> currentCommand;
 
   public IntakeSubsystem() {
     intakeMotor = new TalonFX(Constants.IntakeConstants.INTAKE_MOTOR_ID, "rio");
     chooserMotor =
         new CANSparkMax(
-            Constants.IntakeConstants.INTAKE_CHOOSER_ID, MotorType.kBrushed); // Bag Motor
+            Constants.IntakeConstants.INTAKE_CHOOSER_ID, MotorType.kBrushless); // NEO Motor
+
     chooserMotor.restoreFactoryDefaults();
     // intakeMotor.config
-    chooserMotor.setSmartCurrentLimit(20);
+    chooserMotor.setSmartCurrentLimit(40);
     chooserMotor.setInverted(true);
     intakeOutput = new DebugEntry<Double>(0.0, "Intake Motor Ouput", this);
     chooserOutput = new DebugEntry<Double>(0.0, "Chooser Motor Output", this);
+    currentCommand = new DebugEntry<String>("none", "current Command", this);
   }
 
   // TODO: Add check to make sure turret is below 45 degrees before running & add photogate when
@@ -69,6 +72,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public void periodic() {
     intakeOutput.log(intakeMotor.get());
     chooserOutput.log(chooserMotor.getAppliedOutput());
+    if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
   }
 
   @Override

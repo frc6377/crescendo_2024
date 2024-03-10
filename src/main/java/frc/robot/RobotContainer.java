@@ -10,8 +10,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -141,7 +139,7 @@ public class RobotContainer {
       trapElvSubsystem = null;
     }
     trapElvCommandFactory = new TrapElvCommandFactory(trapElvSubsystem);
-    if (enabledSubsystems.turretEnabled) {
+    if (enabledSubsystems.turretRotationEnabled || enabledSubsystems.turretPitchEnabled) {
       turretSubsystem = new TurretSubsystem(robotStateManager, null);
     } else {
       turretSubsystem = null;
@@ -166,6 +164,10 @@ public class RobotContainer {
 
     configureBindings();
     configDriverFeedBack();
+  }
+
+  public SwerveSubsystem getDriveTrain() {
+    return drivetrain;
   }
 
   /**
@@ -200,7 +202,8 @@ public class RobotContainer {
     OI.getButton(OI.Driver.resetRotationButton)
         .onTrue(drivetrainCommandFactory.zeroDriveTrain().withName("Put Pose & Rotation on Field"));
 
-    OI.getButton(OI.Driver.useRod).whileTrue(drivetrainCommandFactory.robotOrientedDrive(input));
+    OI.getButton(OI.Driver.useRod)
+        .whileTrue(drivetrainCommandFactory.assistedDriving(input, robotStateManager));
 
     OI.getTrigger(OI.Operator.prepareToFire)
         .whileTrue(
@@ -227,7 +230,7 @@ public class RobotContainer {
         .whileTrue(
             Commands.either(
                 intakeCommandFactory.reverseIntakeCommand(),
-                shooterCommandFactory.outtake().asProxy(),
+                shooterOuttake(),
                 robotStateManager.isAmpSupplier()));
 
     OI.getButton(OI.Driver.intakeSource).whileTrue(trapElvCommandFactory.wristintakeSource());
@@ -239,6 +242,13 @@ public class RobotContainer {
     OI.getButton(OI.Operator.latchClimber).onTrue(climberCommandFactory.clip());
 
     OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
+  }
+
+  private Command shooterOuttake() {
+
+    return Commands.parallel(
+            triggerCommandFactory.getEjectCommand(), intakeCommandFactory.reverseIntakeCommand())
+        .asProxy();
   }
 
   private void configDriverFeedBack() {
@@ -262,7 +272,8 @@ public class RobotContainer {
 
   private Command intakeSpeaker() {
     return Commands.parallel(
-        shooterCommandFactory.intakeSpeakerSource(), triggerCommandFactory.getLoadCommand());
+        intakeCommandFactory.intakeSpeakerCommandSmart(shooterSubsystem.getBeamBreak()),
+        triggerCommandFactory.getGroundLoadCommand(shooterSubsystem.getBeamBreak()));
   }
 
   private Command intakeAmp() {
@@ -289,7 +300,10 @@ public class RobotContainer {
   private Command shootAuton() {
     return Commands.deadline(
             Commands.waitUntil(() -> shooterSubsystem.isShooterReady())
-                .andThen(triggerCommandFactory.getShootCommand().withTimeout(5)),
+                .andThen(
+                    triggerCommandFactory
+                        .getShootCommand()
+                        .until(shooterSubsystem.getBeamBreak().negate())),
             shooterCommandFactory.revShooter())
         .andThen(shooterCommandFactory.shooterIdle().withTimeout(.02));
   }
@@ -344,15 +358,8 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     if (Constants.enabledSubsystems.drivetrainEnabled) {
       return new WaitCommand(autoDelay.getDouble(0))
-          .andThen(autoChooser.getSelected())
-          .withName("Get Auto Command")
-          .andThen(
-              new InstantCommand(
-                  () -> {
-                    if (DriverStation.getAlliance().get() == Alliance.Red) {
-                      drivetrain.setOperatorPerspectiveForward(Rotation2d.fromRotations(0.5));
-                    }
-                  }));
+          .andThen(autoChooser.getSelected().asProxy())
+          .withName("Get Auto Command");
     }
     return null;
   }

@@ -24,6 +24,7 @@ import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.OI;
 import frc.robot.Robot;
 import frc.robot.Telemetry;
+import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.LimelightHelpers;
 import java.util.function.BiConsumer;
 
@@ -34,23 +35,24 @@ import java.util.function.BiConsumer;
 public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   private static final double kSimLoopPeriod = 0.005; // 5 ms
   public static final double maxSpeed = Units.feetToMeters(18.2); // Desired top speed
-  public static final double maxAngularRate =
-      Math.PI * 4; // Max angular velocity in radians per second
+  public static final double maxAngularRate = Math.PI * 4; // Max angular velocity in rads/sec
   private final double drivetrainRadius;
   private final Telemetry telemetry = new Telemetry(maxSpeed);
 
   private static boolean isFieldOriented = true;
-  private static Rotation2d alignmentRotation = null;
 
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
   private SwerveDriveKinematics kinematics;
+
+  private DebugEntry<String> currentCommand;
 
   public SwerveSubsystem(
       SwerveDrivetrainConstants driveTrainConstants,
       double OdometryUpdateFrequency,
       SwerveModuleConstants... modules) {
     super(driveTrainConstants, OdometryUpdateFrequency, modules);
+
     if (Utils.isSimulation()) {
       startSimThread();
     }
@@ -91,6 +93,8 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     } else {
       this.registerTelemetry(telemetry::realTelemetry);
     }
+
+    currentCommand = new DebugEntry<String>("none", "Current Command", this);
   }
 
   public SwerveSubsystem(
@@ -178,4 +182,9 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   }
 
   public record DriveInput(double x, double y, double alpha) {}
+
+  @Override
+  public void periodic() {
+    if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
+  }
 }

@@ -22,21 +22,30 @@ public class ShooterCommandFactory {
 
   public Command intakeSource() {
     if (subsystem == null) return Commands.none();
-    return subsystem.startEnd(
-        () -> {
-          subsystem.setShooterSpeeds(ShooterConstants.SHOOTER_SOURCE_INTAKE);
-        },
-        () -> {});
+    return subsystem
+        .startEnd(
+            () -> {
+              subsystem.setShooterSpeeds(ShooterConstants.SHOOTER_SOURCE_INTAKE);
+            },
+            () -> {})
+        .withName("intakeSource")
+        .asProxy();
   }
 
   public Command intakeSourceForTime() {
     if (subsystem == null) return Commands.none();
-    return Commands.deadline(new WaitCommand(ShooterConstants.INTAKE_DELAY_SEC), intakeSource());
+    return Commands.deadline(new WaitCommand(ShooterConstants.INTAKE_DELAY_SEC), intakeSource())
+        .withName("intakeSourceForTime")
+        .asProxy();
   }
 
   public Command intakeSpeakerSource() {
     if (subsystem == null) return Commands.none();
-    return intakeSource().until(subsystem.getBeamBreak()).andThen(intakeSourceForTime());
+    return intakeSource()
+        .until(subsystem.getBeamBreak())
+        .andThen(intakeSourceForTime())
+        .withName("intakeSpeakerSource")
+        .asProxy();
   }
 
   // Spins up the shooter, and requests feeding it when the rollers are within parameters.
@@ -59,21 +68,26 @@ public class ShooterCommandFactory {
   // Idle shooter command
   public Command shooterIdle() {
     if (subsystem == null) return Commands.none();
+    final Command command =
+        subsystem
+            .run(
+                () -> {
+                  subsystem.stopAndLogMotors();
+                })
+            .withName("Idle Shooter command");
+    return command;
+  }
+
+  public Command outtake() {
+    if (subsystem == null) return Commands.none();
     return subsystem
-        .run(
-            () -> {
-              subsystem.stopAndLogMotors();
-            })
-        .withName("Idle shooter command");
+        .startEnd(() -> subsystem.requestPercent(-1), subsystem::stopAndLogMotors)
+        .withName("Outtake command")
+        .asProxy();
   }
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
     subsystem.setDefaultCommand(defaultCommand);
-  }
-
-  public Command outtake() {
-    if (subsystem == null) return Commands.none();
-    return subsystem.startEnd(() -> subsystem.requestPercent(-1), subsystem::stopAndLogMotors);
   }
 }
