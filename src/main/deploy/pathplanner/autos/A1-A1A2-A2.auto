@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "A1-A1A2"
+            "pathName": "A1-A1A2 Shoot"
           }
         },
         {
@@ -30,7 +30,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "A1A2-A2"
+                  "pathName": "A1A2-A2 Intake"
                 }
               },
               {
@@ -53,6 +53,18 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "A2 Turn Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         }
       ]

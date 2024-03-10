@@ -2,15 +2,21 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.6,
-      "y": 4.5
+      "x": 0.37,
+      "y": 6.850839379282182
     },
-    "rotation": -60.0
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "A1-A1A2 Shoot"
+          }
+        },
         {
           "type": "named",
           "data": {
@@ -24,7 +30,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "C1Sub-E4Intake"
+                  "pathName": "A1A2-A2 Intake"
                 }
               },
               {
@@ -34,13 +40,13 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 2.0
+                        "waitTime": 4.0
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Amp Intake"
+                        "name": "Speaker Intake"
                       }
                     }
                   ]
@@ -52,13 +58,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "E4-E3Drop"
+            "pathName": "A2 Turn Shoot"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Amp"
+            "name": "Shoot"
           }
         },
         {
@@ -68,7 +74,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "E3-D4Intake"
+                  "pathName": "A2-B2 Intake"
                 }
               },
               {
@@ -78,63 +84,25 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 2.0
+                        "waitTime": 4.0
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Amp Intake"
+                        "name": "Speaker Intake"
                       }
                     }
                   ]
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "D4-D3Drop"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Amp"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "D3-C4Intake"
-                }
-              },
-              {
-                "type": "deadline",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 2.0
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Amp Intake"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
+            "name": "Shoot"
           }
         }
       ]
