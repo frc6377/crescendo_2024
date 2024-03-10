@@ -84,12 +84,12 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   private ShuffleboardTab TrapElvTab = Shuffleboard.getTab(this.getName());
 
-  private DebugEntry<Double> WristPositionEntry;
+  private DebugEntry<Double> wristPositionEntry;
   private DebugEntry<Boolean> isWristRollerRunning;
   private DebugEntry<Double> FFOutput;
   private DebugEntry<Double> wristOutput;
   private DebugEntry<Double> wristGoal;
-  private DebugEntry<String> WristStateEntry;
+  private DebugEntry<String> wristStateEntry;
   private DebugEntry<String> wristCurrentCommand;
 
   private double FF;
@@ -248,11 +248,11 @@ public class TrapElvSubsystem extends SubsystemBase {
         new DebugEntry<Double>(wristStateGoal, "Wrist Goal", this)
             .withPosition(0, 0)
             .withSize(2, 1);
-    WristPositionEntry =
+    wristPositionEntry =
         new DebugEntry<>(getWristEncoderPos(), "wrist Position", this)
             .withPosition(2, 0)
             .withSize(2, 1);
-    WristStateEntry =
+    wristStateEntry =
         new DebugEntry<String>(TrapElvState.STOWED.name(), "Wrist State", this)
             .withPosition(0, 1)
             .withSize(2, 1);
@@ -309,7 +309,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   // Void Functions
   public void setWristState(TrapElvState state) {
     currentWristState = state;
-    WristStateEntry.log(currentWristState.name());
+    wristStateEntry.log(currentWristState.name());
     wristStateGoal = state.getWristPose();
     wristGoal.log(wristStateGoal);
     if (isElv) {
@@ -346,7 +346,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    WristPositionEntry.log(getWristEncoderPos());
+    wristPositionEntry.log(getWristEncoderPos());
     sourceLog.log(sourceBreak.get());
     groundLog.log(groundBreak.get());
     sourceBreak.getMilliMeters();
