@@ -60,7 +60,7 @@ public class DebugEntry<T> {
         DriverStation.reportError(errorMessage, false);
       }
     }
-    localConsumer.accept(defaultValue);
+    if (localEntry != null) localConsumer.accept(defaultValue);
   }
 
   public DebugEntry<T> withPosition(int colIndex, int rowIndex) {
