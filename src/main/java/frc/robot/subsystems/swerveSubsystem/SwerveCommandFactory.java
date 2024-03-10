@@ -256,7 +256,8 @@ public class SwerveCommandFactory {
             pointInDirection(DriverConstants.RED_SOURCE_ROTATION, request),
             pointInDirection(DriverConstants.BLUE_SOURCE_ROTATION, request),
             () -> RSM.getAllianceColor() == AllianceColor.RED)
-        .asProxy();
+            .withName("Target Source")
+            .asProxy();
   }
 
   private Command autoTargetSpeaker(Supplier<DriveRequest> request, RobotStateManager RSM) {
