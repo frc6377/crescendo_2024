@@ -245,17 +245,17 @@ public class RobotContainer {
   }
 
   private void configDriverFeedBack() {
-    // new Trigger(trapElvCommandFactory.getSourceBreak())
-    //     .and(OI.getTrigger(OI.Driver.intake))
-    //     .whileTrue(
-    //         Commands.startEnd(
-    //             () -> OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
-    //             () -> OI.Driver.setRumble(0)));
-    // new Trigger(shooterSubsystem::isShooterReady)
-    //     .whileTrue(
-    //         Commands.startEnd(
-    //             () -> OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
-    //             () -> OI.Operator.setRumble(0)));
+    new Trigger(trapElvCommandFactory.getSourceBreak())
+        .and(OI.getTrigger(OI.Driver.intake))
+        .whileTrue(
+            Commands.startEnd(
+                () -> OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
+                () -> OI.Driver.setRumble(0)));
+    new Trigger(shooterSubsystem::isShooterReady)
+        .whileTrue(
+            Commands.startEnd(
+                () -> OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
+                () -> OI.Operator.setRumble(0)));
   }
 
   private Command speakerSource() {
@@ -264,16 +264,14 @@ public class RobotContainer {
   }
 
   private Command intakeSpeaker() {
-    return Commands.none();
-    // return Commands.parallel(
-    //     intakeCommandFactory.intakeSpeakerCommandSmart(shooterSubsystem.getBeamBreak()),
-    //     triggerCommandFactory.getGroundLoadCommand(shooterSubsystem.getBeamBreak()));
+    return Commands.parallel(
+        shooterCommandFactory.intakeSpeakerSource(), triggerCommandFactory.getLoadCommand());
   }
 
   private Command intakeAmp() {
     return Commands.parallel(
             trapElvCommandFactory.intakeGround(), intakeCommandFactory.getAmpIntakeCommand())
-        // .until(trapElvCommandFactory.getSourceBreak())
+        .until(trapElvCommandFactory.getSourceBreak())
         .andThen(trapElvCommandFactory.intakeFromGroundForTime());
   }
 

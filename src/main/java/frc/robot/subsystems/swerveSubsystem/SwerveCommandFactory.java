@@ -226,10 +226,10 @@ public class SwerveCommandFactory {
      * }
      */
 
-    BooleanSupplier onNearSide = isOnNearSide(() -> RSM.getAllianceColor() == AllianceColor.RED);
-    BooleanSupplier isAmpMode = RSM.isAmpSupplier();
+    final BooleanSupplier onNearSide = isOnNearSide(() -> RSM.getAllianceColor() == AllianceColor.RED);
+    final BooleanSupplier isAmpMode = RSM.isAmpSupplier();
 
-    Command assistDriver =
+    final Command assistDriver =
         Commands.either(
             Commands.either(
                 autoTargetAmp(requestSupplier, RSM),
