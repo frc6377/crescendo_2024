@@ -428,7 +428,6 @@ public class TurretSubsystem extends SubsystemBase {
               ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
               : Constants.TurretConstants.SPEAKER_TAG_ID_RED);
       double visionTX = visionSubsystem.getTurretYaw(tagID);
-      double visionTY = visionSubsystem.getTurretPitch(tagID);
       if (visionTX != 0) {
         // X & Rotation
         if (Constants.enabledSubsystems.turretRotationEnabled) {
@@ -437,16 +436,9 @@ public class TurretSubsystem extends SubsystemBase {
 
         // Y & Tilting
         if (Constants.enabledSubsystems.turretPitchEnabled) {
-
+          double visionTY = visionSubsystem.getTurretPitch(tagID);
           double distanceToTag = tyToDistanceFromTag(visionTY);
           tagDistanceEntry.log(distanceToTag);
-        }
-
-        // We are checking if vision is saying the pitch is zero
-        if (visionTY == 0) {
-          setPitchPos(Constants.TurretConstants.DEFAULT_SHOT_PITCH);
-          setTurretPos(Constants.TurretConstants.STRAIGHT_FORWARD);
-        } else {
           setPitchPos(distanceToShootingPitch(tyToDistanceFromTag(visionTY)));
         }
 
@@ -457,7 +449,14 @@ public class TurretSubsystem extends SubsystemBase {
       }
     } else {
       // TODO: Make turret default to using odometry
-      setTurretPos(60);
+      // If we don't see any tags it might mean we're right next to the speaker so it'll go to
+      // default shooting position
+      if (Constants.enabledSubsystems.turretRotationEnabled) {
+        setTurretPos(Constants.TurretConstants.DEFAULT_SHOT_ROTATION);
+      }
+      if (Constants.enabledSubsystems.turretPitchEnabled) {
+        setPitchPos(Constants.TurretConstants.DEFAULT_SHOT_PITCH);
+      }
     }
   }
 
