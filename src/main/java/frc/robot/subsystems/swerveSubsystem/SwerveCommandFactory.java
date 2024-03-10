@@ -226,7 +226,8 @@ public class SwerveCommandFactory {
      * }
      */
 
-    final BooleanSupplier onNearSide = isOnNearSide(() -> RSM.getAllianceColor() == AllianceColor.RED);
+    final BooleanSupplier onNearSide =
+        isOnNearSide(() -> RSM.getAllianceColor() == AllianceColor.RED);
     final BooleanSupplier isAmpMode = RSM.isAmpSupplier();
 
     final Command assistDriver =
@@ -256,8 +257,8 @@ public class SwerveCommandFactory {
             pointInDirection(DriverConstants.RED_SOURCE_ROTATION, request),
             pointInDirection(DriverConstants.BLUE_SOURCE_ROTATION, request),
             () -> RSM.getAllianceColor() == AllianceColor.RED)
-            .withName("Target Source")
-            .asProxy();
+        .withName("Target Source")
+        .asProxy();
   }
 
   private Command autoTargetSpeaker(Supplier<DriveRequest> request, RobotStateManager RSM) {
