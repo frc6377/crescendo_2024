@@ -57,7 +57,7 @@ public final class Constants {
     public static final int SHOOTER_MOTOR_RIGHT_ID = 4;
 
     // PID
-    public static final HowdyPID SHOOTER_PID = new HowdyPID(0.001, 0.00000035, 0);
+    public static final HowdyPID SHOOTER_PID = new HowdyPID(0.0003, 0, 0,0,0.0002);
 
     // Motor RPM, NOT roller RPM
     public static final double SHOOTER_IDLE_SPEED_LEFT = 400; // Placeholder; in RPM
@@ -256,17 +256,17 @@ public final class Constants {
   }
 
   public static class enabledSubsystems {
-    public static final boolean intakeEnabled = true;
-    public static final boolean drivetrainEnabled = true;
-    public static final boolean visionEnabled = true;
-    public static final boolean usingPhoton = true;
-    public static final boolean elvEnabled = true;
+    public static final boolean intakeEnabled = false;
+    public static final boolean drivetrainEnabled = false;
+    public static final boolean visionEnabled = false;
+    public static final boolean usingPhoton = false;
+    public static final boolean elvEnabled = false;
     public static final boolean signalEnabled = false;
     public static final boolean shooterEnabled = true;
-    public static final boolean triggerEnabled = true;
+    public static final boolean triggerEnabled = false;
     public static final boolean turretRotationEnabled = false;
     public static final boolean turretPitchEnabled = false;
-    public static final boolean climberEnabled = true;
+    public static final boolean climberEnabled = false;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
