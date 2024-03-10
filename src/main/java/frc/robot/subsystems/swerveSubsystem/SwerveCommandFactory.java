@@ -237,7 +237,7 @@ public class SwerveCommandFactory {
      * }
      */
 
-    BooleanSupplier onNearSide = isOnNearSide();
+    BooleanSupplier onNearSide = isOnNearSide(() -> RSM.getAllianceColor() == AllianceColor.RED);
     BooleanSupplier isAmpMode = RSM.isAmpSupplier();
 
     Command assistDriver =
@@ -252,8 +252,14 @@ public class SwerveCommandFactory {
     return assistDriver;
   }
 
-  private BooleanSupplier isOnNearSide() {
-    return () -> subsystem.getState().Pose.getX() > FieldConstants.CENTERLINE_X;
+  private BooleanSupplier isOnNearSide(BooleanSupplier isRed) {
+    return () -> {
+      boolean isNear =
+          subsystem.getState().Pose.getX() > FieldConstants.CENTERLINE_X_APPROX
+              ^ !isRed.getAsBoolean();
+      SmartDashboard.putBoolean("nearSide", isNear);
+      return isNear;
+    };
   }
 
   private Command autoTargetSource(Supplier<DriveRequest> request, RobotStateManager RSM) {

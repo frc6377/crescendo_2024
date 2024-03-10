@@ -10,8 +10,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -168,6 +166,10 @@ public class RobotContainer {
     configDriverFeedBack();
   }
 
+  public SwerveSubsystem getDriveTrain() {
+    return drivetrain;
+  }
+
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
@@ -200,7 +202,8 @@ public class RobotContainer {
     OI.getButton(OI.Driver.resetRotationButton)
         .onTrue(drivetrainCommandFactory.zeroDriveTrain().withName("Put Pose & Rotation on Field"));
 
-    OI.getButton(OI.Driver.useRod).whileTrue(drivetrainCommandFactory.robotOrientedDrive(input));
+    OI.getButton(OI.Driver.useRod)
+        .whileTrue(drivetrainCommandFactory.assistedDriving(input, robotStateManager));
 
     OI.getTrigger(OI.Operator.prepareToFire)
         .whileTrue(
@@ -249,17 +252,17 @@ public class RobotContainer {
   }
 
   private void configDriverFeedBack() {
-    new Trigger(trapElvCommandFactory.getSourceBreak())
-        .and(OI.getTrigger(OI.Driver.intake))
-        .whileTrue(
-            Commands.startEnd(
-                () -> OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
-                () -> OI.Driver.setRumble(0)));
-    new Trigger(shooterSubsystem::isShooterReady)
-        .whileTrue(
-            Commands.startEnd(
-                () -> OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
-                () -> OI.Operator.setRumble(0)));
+    // new Trigger(trapElvCommandFactory.getSourceBreak())
+    //     .and(OI.getTrigger(OI.Driver.intake))
+    //     .whileTrue(
+    //         Commands.startEnd(
+    //             () -> OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
+    //             () -> OI.Driver.setRumble(0)));
+    // new Trigger(shooterSubsystem::isShooterReady)
+    //     .whileTrue(
+    //         Commands.startEnd(
+    //             () -> OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
+    //             () -> OI.Operator.setRumble(0)));
   }
 
   private Command speakerSource() {
@@ -268,15 +271,16 @@ public class RobotContainer {
   }
 
   private Command intakeSpeaker() {
-    return Commands.parallel(
-        intakeCommandFactory.intakeSpeakerCommandSmart(shooterSubsystem.getBeamBreak()),
-        triggerCommandFactory.getGroundLoadCommand(shooterSubsystem.getBeamBreak()));
+    return Commands.none();
+    // return Commands.parallel(
+    //     intakeCommandFactory.intakeSpeakerCommandSmart(shooterSubsystem.getBeamBreak()),
+    //     triggerCommandFactory.getGroundLoadCommand(shooterSubsystem.getBeamBreak()));
   }
 
   private Command intakeAmp() {
     return Commands.parallel(
             trapElvCommandFactory.intakeGround(), intakeCommandFactory.getAmpIntakeCommand())
-        .until(trapElvCommandFactory.getSourceBreak())
+        // .until(trapElvCommandFactory.getSourceBreak())
         .andThen(trapElvCommandFactory.intakeFromGroundForTime());
   }
 
@@ -297,10 +301,7 @@ public class RobotContainer {
   private Command shootAuton() {
     return Commands.deadline(
             Commands.waitUntil(() -> shooterSubsystem.isShooterReady())
-                .andThen(
-                    triggerCommandFactory
-                        .getShootCommand()
-                        .until(shooterSubsystem.getBeamBreak().negate())),
+                .andThen(triggerCommandFactory.getShootCommand()),
             shooterCommandFactory.revShooter())
         .andThen(shooterCommandFactory.shooterIdle().withTimeout(.02));
   }
@@ -356,14 +357,7 @@ public class RobotContainer {
     if (Constants.enabledSubsystems.drivetrainEnabled) {
       return new WaitCommand(autoDelay.getDouble(0))
           .andThen(autoChooser.getSelected().asProxy())
-          .withName("Get Auto Command")
-          .andThen(
-              new InstantCommand(
-                  () -> {
-                    if (DriverStation.getAlliance().get() == Alliance.Red) {
-                      drivetrain.setOperatorPerspectiveForward(Rotation2d.fromRotations(0.5));
-                    }
-                  }));
+          .withName("Get Auto Command");
     }
     return null;
   }

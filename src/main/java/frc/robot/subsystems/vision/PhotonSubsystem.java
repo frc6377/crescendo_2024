@@ -50,6 +50,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
     this.measurementConsumer = measurementConsumer;
     this.dynamicRobotConfig = new DynamicRobotConfig();
     limelightConfig = dynamicRobotConfig.getLimelightConfig();
+    lastPose = new EstimatedRobotPose(new Pose3d(), 0, null, null);
     robotToCam =
         new Transform3d(
             new Translation3d(
