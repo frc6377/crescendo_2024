@@ -263,8 +263,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     groundLog = new DebugEntry<Boolean>(groundBreak.get(), "Ground BB", this).withPosition(1, 2);
     isWristRollerRunning = new DebugEntry<Boolean>(false, "Wrist Rollers", this).withPosition(2, 2);
 
-    wristCurrentCommand =
-        new DebugEntry<String>("none", "Wrist Command", this).withPosition(4, 4);
+    wristCurrentCommand = new DebugEntry<String>("none", "Wrist Command", this).withPosition(4, 4);
   }
 
   // Boolean Suppliers
