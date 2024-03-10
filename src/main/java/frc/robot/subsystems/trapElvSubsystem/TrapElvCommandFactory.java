@@ -142,11 +142,13 @@ public class TrapElvCommandFactory {
   public Command scoreAMP() {
     if (subsystem == null) return Commands.none();
     return subsystem
-        .startEnd(
+        .runEnd(
             () -> {
               subsystem.setRoller(TrapElvConstants.ROLLER_SPEED);
             },
-            () -> {})
+            () -> {
+              subsystem.setRoller(0);
+            })
         .withName("Score Amp")
         .asProxy();
   }

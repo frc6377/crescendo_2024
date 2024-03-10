@@ -243,7 +243,7 @@ public class TrapElvSubsystem extends SubsystemBase {
       TrapElvTab.add("Trap Arm Mech", elvMechanism).withPosition(7, 7);
     }
 
-    sourceLog = new DebugEntry<Boolean>(sourceBreak.get(), "Source Beam Break", this);
+    sourceLog = new DebugEntry<Boolean>(sourceBreak.isBeamBroke(), "Source Beam Break", this);
     groundLog = new DebugEntry<Boolean>(groundBreak.get(), "Ground Beam Break", this);
     currentPositionEntry = new DebugEntry<>(getWristEncoderPos(), "Current wrist Position", this);
     isWristRollerRunning = new DebugEntry<Boolean>(false, "Wrist Rollers", this);
@@ -258,7 +258,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   // Boolean Suppliers
   public BooleanSupplier getSourceBreak() {
 
-    return () -> sourceBreak.get();
+    return () -> sourceBreak.isBeamBroke();
   }
 
   public BooleanSupplier getGroundBreak() {
@@ -335,7 +335,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     currentPositionEntry.log(getWristEncoderPos());
-    sourceLog.log(sourceBreak.get());
+    sourceLog.log(sourceBreak.isBeamBroke());
     groundLog.log(groundBreak.get());
     sourceBreak.getMilliMeters();
 
@@ -354,7 +354,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
     if (isElv) {
       baseLog.log(baseLimit.get());
-      scoringLog.log(sourceBreak.get());
+      scoringLog.log(sourceBreak.isBeamBroke());
     }
 
     if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());

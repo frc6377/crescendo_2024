@@ -23,7 +23,7 @@ public class TOFSensorSimple {
     sensor = new TimeOfFlight(this.id);
     if (!Robot.isCompetition) {
       sensorTab.addDouble("tof sensor " + this.id + " distance (mm)", this::getMilliMeters);
-      sensorTab.addBoolean("tof sensor " + this.id + " broken", this::get);
+      sensorTab.addBoolean("tof sensor " + this.id + " broken", this::isBeamBroke);
     }
     this.threshold = threshold; // in mm
   }
@@ -36,10 +36,6 @@ public class TOFSensorSimple {
     if (!Robot.isCompetition) {}
 
     return this.sensor.getRange();
-  }
-
-  public boolean get() {
-    return isBeamBroke();
   }
 
   public boolean isBeamBroke() {
