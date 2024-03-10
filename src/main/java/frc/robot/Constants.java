@@ -46,7 +46,7 @@ public final class Constants {
     public static final double HOLD_PERCENTAGE =
         -0.05; // very slow motor speed in case note slips out of trigger
     public static final double SHOOT_PERCENTAGE =
-        0.5; // used when feeding note into turret to fire (should be negative value because it
+        1; // used when feeding note into turret to fire (should be negative value because it
     // outtakes)
     public static final boolean MOTOR_INVERT = true;
     public static final double EJECT_PERCENT = -0.25;
@@ -57,7 +57,7 @@ public final class Constants {
     public static final int SHOOTER_MOTOR_RIGHT_ID = 4;
 
     // PID
-    public static final HowdyPID SHOOTER_PID = new HowdyPID(0.0003, 0, 0,0,0.0002);
+    public static final HowdyPID SHOOTER_PID = new HowdyPID(0.0003, 0, 0, 0, 0.0002);
 
     // Motor RPM, NOT roller RPM
     public static final double SHOOTER_IDLE_SPEED_LEFT = 400; // Placeholder; in RPM
