@@ -249,7 +249,6 @@ public class TrapElvSubsystem extends SubsystemBase {
     isWristRollerRunning = new DebugEntry<Boolean>(false, "Wrist Rollers", this);
     FFOutput = new DebugEntry<Double>(0.0, "FF Output", this);
     wristOutput = new DebugEntry<Double>(0.0, "Wrist Motor Output", this);
-    wristOutput = new DebugEntry<Double>(0.0, "Wrist Motor Output", this);
     wristGoal = new DebugEntry<Double>(wristStateGoal, "Wrist Goal", this);
     currentWristStateEntry =
         new DebugEntry<String>(TrapElvState.STOWED.name(), "Current Wrist State", this);

@@ -5,21 +5,27 @@
 package frc.robot.utilities;
 
 import com.playingwithfusion.TimeOfFlight;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Robot;
 
 /** Add your docs here. */
 public class TOFSensorSimple {
+  private static ShuffleboardTab sensorTab = Shuffleboard.getTab("sensors");
   private TimeOfFlight sensor;
   private double threshold;
   private int id;
 
   public TOFSensorSimple(int ID, double threshold) {
-    sensor = new TimeOfFlight(ID);
-    // sensor.setRangingMode(RangingMode.Short, 100);
-    this.threshold = threshold; // in mm
     this.id = ID;
+    sensor = new TimeOfFlight(this.id);
+    if (!Robot.isCompetition) {
+      sensorTab.addDouble("tof sensor " + this.id + " distance (mm)", this::getMilliMeters);
+      sensorTab.addBoolean("tof sensor " + this.id + " broken", this::get);
+    }
+    this.threshold = threshold; // in mm
   }
 
   public int getID() {

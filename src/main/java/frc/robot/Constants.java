@@ -36,19 +36,20 @@ public final class Constants {
   public static class IntakeConstants {
     public static final int INTAKE_MOTOR_ID = 10;
     public static final int INTAKE_CHOOSER_ID = 14;
-    public static final double INTAKE_PERCENTAGE = 0.75;
-    public static final double CHOOSER_PERCENTAGE = 0.75;
+    public static final double INTAKE_PERCENTAGE = 0.25;
+    public static final double CHOOSER_PERCENTAGE = 1;
   }
 
   public static class TriggerConstants {
     public static final int MOTOR_ID = 15; // edit all constants when testing
-    public static final double LOAD_PERCENTAGE = -0.5; // used when intaking into the turret
+    public static final double LOAD_PERCENTAGE = -1; // used when intaking into the turret
     public static final double HOLD_PERCENTAGE =
         -0.05; // very slow motor speed in case note slips out of trigger
     public static final double SHOOT_PERCENTAGE =
         0.5; // used when feeding note into turret to fire (should be negative value because it
     // outtakes)
     public static final boolean MOTOR_INVERT = true;
+    public static final double EJECT_PERCENT = -0.25;
   }
 
   public static class ShooterConstants {
@@ -63,7 +64,7 @@ public final class Constants {
     public static final double SHOOTER_IDLE_SPEED_RIGHT = 400; // Placeholder; in RPM
 
     public static final double SHOOTER_SPEED_TOLERANCE =
-        0.2; // Placeholder; speed must be within (1-n)v to (1+n)v to fire
+        0.05; // speed must be within (1-n)v to (1+n)v to fire
 
     public static final double SHOOTER_LEFT_GEARING = 0.4; // Unitless
     public static final double SHOOTER_LEFT_MOMENT = 0.000848475500006; // Placeholder; in kg*m^2
@@ -71,9 +72,9 @@ public final class Constants {
     public static final double SHOOTER_RIGHT_GEARING = 0.4; // Unitless
     public static final double SHOOTER_RIGHT_MOMENT = 0.000848475500006; // Placeholder; in kg*m^2
     public static final SpeakerConfig SHOOTER_SOURCE_INTAKE = new SpeakerConfig(-1, -1500, -1500);
-    public static final double INTAKE_DELAY_SEC = 10;
+    public static final double INTAKE_DELAY_SEC = 0;
     public static final int BEAM_BREAK_ID = 1;
-    public static final double BEAM_BREAK_THRESHOLD = 0;
+    public static final double BEAM_BREAK_THRESHOLD = 150;
   }
 
   public static class TurretConstants {
