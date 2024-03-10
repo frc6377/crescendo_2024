@@ -18,9 +18,7 @@ public class TrapElvCommandFactory {
 
   public Command stowTrapElvCommand() {
     if (subsystem == null) return Commands.none();
-    final Command command =
-        subsystem.startEnd(() -> subsystem.stowTrapElv(), () -> {}).withName("stowTrapElvCommand");
-    return command;
+    return subsystem.startEnd(() -> subsystem.stowTrapElv(), () -> {});
   }
 
   public Command setWristSource() {
@@ -30,8 +28,7 @@ public class TrapElvCommandFactory {
             () -> {
               subsystem.setWristState(TrapElvState.FROM_SOURCE);
             })
-        .withName("setWristSource")
-        .asProxy();
+        .withName("setWristSource");
   }
 
   public Command setWristAMP() {
@@ -41,8 +38,7 @@ public class TrapElvCommandFactory {
             () -> {
               subsystem.setWristState(TrapElvState.AMP_SCORE);
             })
-        .withName("setWristAMP")
-        .asProxy();
+        .withName("setWristAMP");
   }
 
   public Command setWristStowed() {
@@ -52,8 +48,7 @@ public class TrapElvCommandFactory {
             () -> {
               subsystem.setWristState(TrapElvState.STOWED);
             })
-        .withName("setWristStowed")
-        .asProxy();
+        .withName("setWristStowed");
   }
 
   public Command rollerIntakeCommand() {
@@ -66,8 +61,7 @@ public class TrapElvCommandFactory {
             () -> {
               subsystem.setRoller(0);
             })
-        .withName("rollerIntakeCommand")
-        .asProxy();
+        .withName("rollerIntakeCommand");
   }
 
   public Command rollerOutakeCommand() {
@@ -80,8 +74,7 @@ public class TrapElvCommandFactory {
             () -> {
               subsystem.setRoller(0);
             })
-        .withName("rollerOutakeCommand")
-        .asProxy();
+        .withName("rollerOutakeCommand");
   }
 
   public Command zeroArm() {
@@ -96,8 +89,7 @@ public class TrapElvCommandFactory {
             () -> {
               subsystem.setRoller(0);
             })
-        .withName("Stop Roller")
-        .asProxy();
+        .withName("Stop Roller");
   }
 
   public Command intakeSource() {
@@ -109,8 +101,7 @@ public class TrapElvCommandFactory {
               subsystem.setRoller(TrapElvConstants.ROLLER_SPEED);
             },
             () -> {})
-        .withName("Intake From Source")
-        .asProxy();
+        .withName("Intake From Source");
   }
 
   public Command intakeGround() {
@@ -123,8 +114,7 @@ public class TrapElvCommandFactory {
             () -> {
               subsystem.stowTrapElv();
             })
-        .withName("Intake from Ground")
-        .asProxy();
+        .withName("Intake from Ground");
   }
 
   public Command positionAMP() {
@@ -135,8 +125,7 @@ public class TrapElvCommandFactory {
               subsystem.setWristState(TrapElvState.AMP_SCORE);
             },
             () -> {})
-        .withName("Pose AMP")
-        .asProxy();
+        .withName("Score Amp");
   }
 
   public Command scoreAMP() {
@@ -147,45 +136,34 @@ public class TrapElvCommandFactory {
               subsystem.setRoller(TrapElvConstants.ROLLER_SPEED);
             },
             () -> {})
-        .withName("Score Amp")
-        .asProxy();
+        .withName("Score Amp");
   }
 
   public Command wristintakeSource() {
     if (subsystem == null) return Commands.none();
     return intakeSource()
         .until(subsystem.getSourceBreak())
-        .andThen(Commands.print("0.25s left").andThen(intakeFromSourceForTime()))
-        .withName("wristIntakeSource")
-        .asProxy();
+        .andThen(Commands.print("0.25s left").andThen(intakeFromSourceForTime()));
   }
 
   public Command intakeFromGroundForTime() {
     if (subsystem == null) return Commands.none();
-    return intakeFromGroundForTime(Constants.TrapElvConstants.INTAKE_BEAM_BREAK_DELAY_SEC)
-        .withName("intakeFromGroundForTime")
-        .asProxy();
+    return intakeFromGroundForTime(Constants.TrapElvConstants.INTAKE_BEAM_BREAK_DELAY_SEC);
   }
 
   public Command intakeFromGroundForTime(double seconds) {
     if (subsystem == null) return Commands.none();
-    return Commands.deadline(new WaitCommand(seconds), intakeGround())
-        .withName("intakeFromGroundForTime")
-        .asProxy();
+    return Commands.deadline(new WaitCommand(seconds), intakeGround());
   }
 
   public Command intakeFromSourceForTime() {
     if (subsystem == null) return Commands.none();
-    return intakeFromSourceForTime(Constants.TrapElvConstants.SOURCE_BEAM_BREAK_DELAY_SEC)
-        .withName("intakeFromSourceForTime")
-        .asProxy();
+    return intakeFromSourceForTime(Constants.TrapElvConstants.SOURCE_BEAM_BREAK_DELAY_SEC);
   }
 
   public Command intakeFromSourceForTime(double seconds) {
     if (subsystem == null) return Commands.none();
-    return Commands.deadline(new WaitCommand(seconds), intakeSource())
-        .withName("intakeFromSourceForTime")
-        .asProxy();
+    return Commands.deadline(new WaitCommand(seconds), intakeSource());
   }
 
   public BooleanSupplier getSourceBreak() {

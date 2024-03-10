@@ -14,17 +14,15 @@ import frc.robot.Constants.ClimberConstants;
 import frc.robot.utilities.DebugEntry;
 
 public class ClimberSubsystem extends SubsystemBase {
-  private final CANSparkMax leftArmMotor;
-  private final CANSparkMax rightArmMotor;
-
   private PIDState pidState;
+  private CANSparkMax leftArmMotor;
+  private CANSparkMax rightArmMotor;
   private ShuffleboardTab climberTab = Shuffleboard.getTab(this.getName());
 
   private DebugEntry<Double> rightArmPoseEntry;
   private DebugEntry<Double> leftArmPoseEntry;
   private DebugEntry<Double> rightArmOutputEntry;
   private DebugEntry<Double> leftArmOutputEntry;
-  private DebugEntry<String> currentCommand;
 
   public ClimberSubsystem() {
     leftArmMotor = new CANSparkMax(ClimberConstants.LEFT_ARM_ID, MotorType.kBrushless);
@@ -41,7 +39,6 @@ public class ClimberSubsystem extends SubsystemBase {
         new DebugEntry<Double>(rightArmMotor.getAppliedOutput(), "right arm output", this);
     leftArmOutputEntry =
         new DebugEntry<Double>(rightArmMotor.getAppliedOutput(), "left arm output", this);
-    currentCommand = new DebugEntry<String>("none", "current Command", this);
   }
 
   private void configMotor(CANSparkMax motor, boolean invert) {
@@ -54,13 +51,18 @@ public class ClimberSubsystem extends SubsystemBase {
     double armPosition;
 
     armPosition = motor.getAbsoluteEncoder().getPosition();
-    if (armPosition > 0.5) armPosition -= 1;
+
     motor.setSoftLimit(
         SoftLimitDirection.kForward,
         (float) (Units.degreesToRotations(135) * ClimberConstants.GEAR_RATIO));
     motor.setSoftLimit(SoftLimitDirection.kReverse, 0);
     double motorPosition = armPosition * ClimberConstants.GEAR_RATIO;
-    motor.getEncoder().setPosition(motorPosition);
+    if (Math.abs(motorPosition) > 10) {
+      motor.getEncoder().setPosition(0);
+    } else {
+      motor.getEncoder().setPosition(motorPosition);
+    }
+
     motor.setInverted(invert);
     motor.setSmartCurrentLimit(40);
   }
@@ -165,7 +167,6 @@ public class ClimberSubsystem extends SubsystemBase {
     leftArmPoseEntry.log(leftArmMotor.getEncoder().getPosition());
     rightArmOutputEntry.log(rightArmMotor.get());
     leftArmOutputEntry.log(leftArmMotor.get());
-    if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
   }
 
   public record DifferentialDemand(double left, double right) {}

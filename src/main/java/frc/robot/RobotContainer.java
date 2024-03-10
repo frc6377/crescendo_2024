@@ -139,7 +139,7 @@ public class RobotContainer {
       trapElvSubsystem = null;
     }
     trapElvCommandFactory = new TrapElvCommandFactory(trapElvSubsystem);
-    if (enabledSubsystems.turretRotationEnabled || enabledSubsystems.turretPitchEnabled) {
+    if (enabledSubsystems.turretEnabled) {
       turretSubsystem = new TurretSubsystem(robotStateManager, null);
     } else {
       turretSubsystem = null;
@@ -230,7 +230,7 @@ public class RobotContainer {
         .whileTrue(
             Commands.either(
                 intakeCommandFactory.reverseIntakeCommand(),
-                shooterOuttake(),
+                shooterCommandFactory.outtake().asProxy(),
                 robotStateManager.isAmpSupplier()));
 
     OI.getButton(OI.Driver.intakeSource).whileTrue(trapElvCommandFactory.wristintakeSource());
@@ -242,13 +242,6 @@ public class RobotContainer {
     OI.getButton(OI.Operator.latchClimber).onTrue(climberCommandFactory.clip());
 
     OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
-  }
-
-  private Command shooterOuttake() {
-
-    return Commands.parallel(
-            triggerCommandFactory.getEjectCommand(), intakeCommandFactory.reverseIntakeCommand())
-        .asProxy();
   }
 
   private void configDriverFeedBack() {
@@ -301,7 +294,7 @@ public class RobotContainer {
   private Command shootAuton() {
     return Commands.deadline(
             Commands.waitUntil(() -> shooterSubsystem.isShooterReady())
-                .andThen(triggerCommandFactory.getShootCommand()),
+                .andThen(triggerCommandFactory.getShootCommand().withTimeout(5)),
             shooterCommandFactory.revShooter())
         .andThen(shooterCommandFactory.shooterIdle().withTimeout(.02));
   }

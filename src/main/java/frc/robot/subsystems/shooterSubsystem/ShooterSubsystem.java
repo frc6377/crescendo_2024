@@ -18,6 +18,7 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.TOFSensorSimple;
+import java.util.function.BooleanSupplier;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -47,8 +48,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private DebugEntry<Boolean> shooterReadyEntry;
 
-  private DebugEntry<String> currentCommand;
-
   private TOFSensorSimple beamBreak;
 
   private SpeakerConfig targetSpeeds;
@@ -70,16 +69,19 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterRightMotor.restoreFactoryDefaults();
     shooterRightMotor.setSmartCurrentLimit(50);
 
-    shooterRightMotor.enableVoltageCompensation(11.5);
-    shooterLeftMotor.enableVoltageCompensation(11.5);
-
     shooterLeftMotor.setIdleMode(IdleMode.kCoast);
     shooterRightMotor.setIdleMode(IdleMode.kCoast);
 
     shooterLeftMotor.setInverted(true);
 
-    ShooterConstants.SHOOTER_PID.setSparkPidController(shooterLeftMotor);
-    ShooterConstants.SHOOTER_PID.setSparkPidController(shooterRightMotor);
+    shooterLeftMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_P);
+    shooterLeftMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_I);
+    shooterLeftMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_D);
+    shooterLeftMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
+    shooterRightMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_P);
+    shooterRightMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_I);
+    shooterRightMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_D);
+    shooterRightMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
 
     if (!Robot.isCompetition) {
       shooterTab.add("Shooter Right PID", shooterRightMotor.getPIDController());
@@ -124,7 +126,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
     shooterTab.addDouble("Left Current", shooterLeftMotor::getOutputCurrent);
     shooterTab.addDouble("Right Current", shooterRightMotor::getOutputCurrent);
-    currentCommand = new DebugEntry<String>("none", "current Command", this);
   }
 
   @Override
@@ -137,8 +138,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
     leftMotorTemperatureEntry.log(shooterLeftMotor.getMotorTemperature());
     rightMotorTemperatureEntry.log(shooterRightMotor.getMotorTemperature());
-
-    if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
   }
 
   @Override
@@ -302,9 +301,8 @@ public class ShooterSubsystem extends SubsystemBase {
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_LEFT,
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT);
 
-  public Trigger getBeamBreak() {
-
-    return new Trigger(beamBreak::get);
+  public BooleanSupplier getBeamBreak() {
+    return beamBreak::get;
   }
 
   public void stop() {
