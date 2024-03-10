@@ -10,8 +10,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -168,6 +166,10 @@ public class RobotContainer {
     configDriverFeedBack();
   }
 
+  public SwerveSubsystem getDriveTrain() {
+    return drivetrain;
+  }
+
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
@@ -200,7 +202,8 @@ public class RobotContainer {
     OI.getButton(OI.Driver.resetRotationButton)
         .onTrue(drivetrainCommandFactory.zeroDriveTrain().withName("Put Pose & Rotation on Field"));
 
-    OI.getButton(OI.Driver.useRod).whileTrue(drivetrainCommandFactory.robotOrientedDrive(input));
+    OI.getButton(OI.Driver.useRod)
+        .whileTrue(drivetrainCommandFactory.assistedDriving(input, robotStateManager));
 
     OI.getTrigger(OI.Operator.prepareToFire)
         .whileTrue(
@@ -344,15 +347,8 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     if (Constants.enabledSubsystems.drivetrainEnabled) {
       return new WaitCommand(autoDelay.getDouble(0))
-          .andThen(autoChooser.getSelected())
-          .withName("Get Auto Command")
-          .andThen(
-              new InstantCommand(
-                  () -> {
-                    if (DriverStation.getAlliance().get() == Alliance.Red) {
-                      drivetrain.setOperatorPerspectiveForward(Rotation2d.fromRotations(0.5));
-                    }
-                  }));
+          .andThen(autoChooser.getSelected().asProxy())
+          .withName("Get Auto Command");
     }
     return null;
   }
