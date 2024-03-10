@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
@@ -228,7 +229,7 @@ public final class Constants {
     public static final double MAX_ACCEPTABLE_ERROR_METERS = 2;
     public static final double MAX_TIME_BETWEEN_POSES_SECONDS = 0.2; // 10 periodic cycles
 
-    public static final String MAIN_CAMERA_NAME = "Camera_Module_Main";
+    public static final String MAIN_CAMERA_NAME = "Camera_Module_v1";
     public static final String TURRET_CAMERA_NAME = "Camera_Module_Turret";
   }
 
@@ -251,13 +252,14 @@ public final class Constants {
   public static class FieldConstants {
     public static final Translation2d RED_SPEAKER = new Translation2d(16.579342, 5.547868);
     public static final Translation2d BLUE_SPEAKER = new Translation2d(-0.0381, 5.547868);
+    public static final double CENTERLINE_X_APPROX = 8;
   }
 
   public static class enabledSubsystems {
     public static final boolean intakeEnabled = true;
     public static final boolean drivetrainEnabled = true;
-    public static final boolean visionEnabled = false;
-    public static final boolean usingPhoton = false;
+    public static final boolean visionEnabled = true;
+    public static final boolean usingPhoton = true;
     public static final boolean elvEnabled = true;
     public static final boolean signalEnabled = false;
     public static final boolean shooterEnabled = true;
@@ -275,4 +277,12 @@ public final class Constants {
 
   // Lights
   public static final int LED_COUNT = 20;
+
+  public static class DriverConstants {
+
+    public static final Rotation2d RED_AMP_ROTATION = Rotation2d.fromRotations(0.25);
+    public static final Rotation2d BLUE_AMP_ROTATION = Rotation2d.fromRotations(0.25);
+    public static final Rotation2d BLUE_SOURCE_ROTATION = Rotation2d.fromRotations(-0.25);
+    public static final Rotation2d RED_SOURCE_ROTATION = Rotation2d.fromRotations(-0.25);
+  }
 }
