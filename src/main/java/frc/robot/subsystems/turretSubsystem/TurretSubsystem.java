@@ -441,6 +441,14 @@ public class TurretSubsystem extends SubsystemBase {
           tagDistanceEntry.log(distanceToTag);
         }
 
+        if (visionSubsystem.getTurretPitch(tagID) == 0) {
+          setPitchPos(Constants.TurretConstants.defaultShotPitch);
+          setTurretPos(0);
+        } else {
+          double visionTY = visionSubsystem.getTurretPitch(tagID);
+          setPitchPos(distanceToShootingPitch(tyToDistanceFromTag(visionTY)));
+        }
+
         if (Math.abs(Math.toRadians(visionTX) + turretPosition)
             > Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES)) {
           // TODO: Make turret rotate the drivebase if necessary and driver thinks it's a good idea

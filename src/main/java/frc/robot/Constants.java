@@ -87,6 +87,7 @@ public final class Constants {
     public static final int PITCH_MOTOR_ID = 10;
     public static final int PITCH_ENCODER_ID = 1; // replace with actual ID
     public static final boolean IS_MOTOR_INVERTED = true;
+    public static final int defaultShotPitch = 40;
 
     // PID coefficients
     public static final double TURRET_KP =
@@ -277,14 +278,14 @@ public final class Constants {
   public static class enabledSubsystems {
     public static final boolean intakeEnabled = true;
     public static final boolean drivetrainEnabled = true;
-    public static final boolean visionEnabled = false;
-    public static final boolean usingPhoton = false;
+    public static final boolean visionEnabled = true;
+    public static final boolean usingPhoton = true;
     public static final boolean elvEnabled = true;
-    public static final boolean signalEnabled = false;
+    public static final boolean signalEnabled = true;
     public static final boolean shooterEnabled = true;
     public static final boolean triggerEnabled = true;
-    public static final boolean turretRotationEnabled = false;
-    public static final boolean turretPitchEnabled = false;
+    public static final boolean turretRotationEnabled = true;
+    public static final boolean turretPitchEnabled = true;
     public static final boolean climberEnabled = true;
   }
 
