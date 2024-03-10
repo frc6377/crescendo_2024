@@ -23,10 +23,11 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeMotor = new TalonFX(Constants.IntakeConstants.INTAKE_MOTOR_ID, "rio");
     chooserMotor =
         new CANSparkMax(
-            Constants.IntakeConstants.INTAKE_CHOOSER_ID, MotorType.kBrushed); // Bag Motor
+            Constants.IntakeConstants.INTAKE_CHOOSER_ID, MotorType.kBrushless); // NEO Motor
+
     chooserMotor.restoreFactoryDefaults();
     // intakeMotor.config
-    chooserMotor.setSmartCurrentLimit(20);
+    chooserMotor.setSmartCurrentLimit(40);
     chooserMotor.setInverted(true);
     intakeOutput = new DebugEntry<Double>(0.0, "Intake Motor Ouput", this);
     chooserOutput = new DebugEntry<Double>(0.0, "Chooser Motor Output", this);

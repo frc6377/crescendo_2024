@@ -18,7 +18,6 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.TOFSensorSimple;
-import java.util.function.BooleanSupplier;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -70,6 +69,9 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterLeftMotor.setSmartCurrentLimit(50);
     shooterRightMotor.restoreFactoryDefaults();
     shooterRightMotor.setSmartCurrentLimit(50);
+
+    shooterRightMotor.enableVoltageCompensation(11.5);
+    shooterLeftMotor.enableVoltageCompensation(11.5);
 
     shooterLeftMotor.setIdleMode(IdleMode.kCoast);
     shooterRightMotor.setIdleMode(IdleMode.kCoast);
@@ -300,8 +302,8 @@ public class ShooterSubsystem extends SubsystemBase {
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_LEFT,
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT);
 
-  public BooleanSupplier getBeamBreak() {
-    return beamBreak::get;
+  public Trigger getBeamBreak() {
+    return new Trigger(beamBreak::get);
   }
 
   public void stop() {

@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
@@ -35,19 +36,20 @@ public final class Constants {
   public static class IntakeConstants {
     public static final int INTAKE_MOTOR_ID = 10;
     public static final int INTAKE_CHOOSER_ID = 14;
-    public static final double INTAKE_PERCENTAGE = 0.75;
-    public static final double CHOOSER_PERCENTAGE = 0.75;
+    public static final double INTAKE_PERCENTAGE = 0.25;
+    public static final double CHOOSER_PERCENTAGE = 1;
   }
 
   public static class TriggerConstants {
     public static final int MOTOR_ID = 15; // edit all constants when testing
-    public static final double LOAD_PERCENTAGE = -0.5; // used when intaking into the turret
+    public static final double LOAD_PERCENTAGE = -1; // used when intaking into the turret
     public static final double HOLD_PERCENTAGE =
         -0.05; // very slow motor speed in case note slips out of trigger
     public static final double SHOOT_PERCENTAGE =
         0.5; // used when feeding note into turret to fire (should be negative value because it
     // outtakes)
     public static final boolean MOTOR_INVERT = true;
+    public static final double EJECT_PERCENT = -0.25;
   }
 
   public static class ShooterConstants {
@@ -55,14 +57,14 @@ public final class Constants {
     public static final int SHOOTER_MOTOR_RIGHT_ID = 4;
 
     // PID
-    public static final HowdyPID SHOOTER_PID = new HowdyPID(0.001, 0.00000035, 0);
+    public static final HowdyPID SHOOTER_PID = new HowdyPID(0.0003, 0, 0, 0, 0.0002);
 
     // Motor RPM, NOT roller RPM
     public static final double SHOOTER_IDLE_SPEED_LEFT = 400; // Placeholder; in RPM
     public static final double SHOOTER_IDLE_SPEED_RIGHT = 400; // Placeholder; in RPM
 
     public static final double SHOOTER_SPEED_TOLERANCE =
-        0.2; // Placeholder; speed must be within (1-n)v to (1+n)v to fire
+        0.05; // speed must be within (1-n)v to (1+n)v to fire
 
     public static final double SHOOTER_LEFT_GEARING = 0.4; // Unitless
     public static final double SHOOTER_LEFT_MOMENT = 0.000848475500006; // Placeholder; in kg*m^2
@@ -70,9 +72,9 @@ public final class Constants {
     public static final double SHOOTER_RIGHT_GEARING = 0.4; // Unitless
     public static final double SHOOTER_RIGHT_MOMENT = 0.000848475500006; // Placeholder; in kg*m^2
     public static final SpeakerConfig SHOOTER_SOURCE_INTAKE = new SpeakerConfig(-1, -1500, -1500);
-    public static final double INTAKE_DELAY_SEC = 10;
+    public static final double INTAKE_DELAY_SEC = 0;
     public static final int BEAM_BREAK_ID = 1;
-    public static final double BEAM_BREAK_THRESHOLD = 0;
+    public static final double BEAM_BREAK_THRESHOLD = 150;
   }
 
   public static class TurretConstants {
@@ -227,7 +229,7 @@ public final class Constants {
     public static final double MAX_ACCEPTABLE_ERROR_METERS = 2;
     public static final double MAX_TIME_BETWEEN_POSES_SECONDS = 0.2; // 10 periodic cycles
 
-    public static final String MAIN_CAMERA_NAME = "Camera_Module_Main";
+    public static final String MAIN_CAMERA_NAME = "Camera_Module_v1";
     public static final String TURRET_CAMERA_NAME = "Camera_Module_Turret";
   }
 
@@ -250,13 +252,14 @@ public final class Constants {
   public static class FieldConstants {
     public static final Translation2d RED_SPEAKER = new Translation2d(16.579342, 5.547868);
     public static final Translation2d BLUE_SPEAKER = new Translation2d(-0.0381, 5.547868);
+    public static final double CENTERLINE_X_APPROX = 8;
   }
 
   public static class enabledSubsystems {
     public static final boolean intakeEnabled = true;
     public static final boolean drivetrainEnabled = true;
-    public static final boolean visionEnabled = false;
-    public static final boolean usingPhoton = false;
+    public static final boolean visionEnabled = true;
+    public static final boolean usingPhoton = true;
     public static final boolean elvEnabled = true;
     public static final boolean signalEnabled = false;
     public static final boolean shooterEnabled = true;
@@ -274,4 +277,12 @@ public final class Constants {
 
   // Lights
   public static final int LED_COUNT = 20;
+
+  public static class DriverConstants {
+
+    public static final Rotation2d RED_AMP_ROTATION = Rotation2d.fromRotations(0.25);
+    public static final Rotation2d BLUE_AMP_ROTATION = Rotation2d.fromRotations(0.25);
+    public static final Rotation2d BLUE_SOURCE_ROTATION = Rotation2d.fromRotations(-0.25);
+    public static final Rotation2d RED_SOURCE_ROTATION = Rotation2d.fromRotations(-0.25);
+  }
 }
