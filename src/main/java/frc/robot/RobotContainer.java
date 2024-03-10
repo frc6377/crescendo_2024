@@ -222,16 +222,9 @@ public class RobotContainer {
     OI.getButton(OI.Operator.switchToAmp).onTrue(robotStateManager.setAmpMode());
     OI.getButton(OI.Operator.switchToSpeaker).onTrue(robotStateManager.setSpeakerMode());
 
-    OI.getTrigger(OI.Driver.intake)
-        .whileTrue(
-            Commands.either(intakeAmp(), intakeSpeaker(), robotStateManager.isAmpSupplier()));
+    OI.getTrigger(OI.Driver.intake).whileTrue(intakeCommand());
 
-    OI.getTrigger(OI.Driver.outtake)
-        .whileTrue(
-            Commands.either(
-                intakeCommandFactory.reverseIntakeCommand(),
-                shooterOuttake(),
-                robotStateManager.isAmpSupplier()));
+    OI.getTrigger(OI.Driver.outtake).whileTrue(outtakeCommand());
 
     OI.getButton(OI.Driver.intakeSource).whileTrue(trapElvCommandFactory.wristintakeSource());
 
@@ -242,6 +235,20 @@ public class RobotContainer {
     OI.getButton(OI.Operator.latchClimber).onTrue(climberCommandFactory.clip());
 
     OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
+
+    new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
+    new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());
+  }
+
+  private Command outtakeCommand() {
+    return Commands.either(
+        intakeCommandFactory.reverseIntakeCommand(),
+        shooterOuttake(),
+        robotStateManager.isAmpSupplier());
+  }
+
+  private Command intakeCommand() {
+    return Commands.either(intakeAmp(), intakeSpeaker(), robotStateManager.isAmpSupplier());
   }
 
   private Command shooterOuttake() {
@@ -287,7 +294,10 @@ public class RobotContainer {
     return Commands.parallel(
         Commands.either(
             triggerCommandFactory.getShootCommand(),
-            triggerCommandFactory.getShootCommand().onlyIf(() -> shooterSubsystem.isShooterReady()),
+            triggerCommandFactory
+                .getShootCommand()
+                .onlyIf(() -> shooterSubsystem.isShooterReady())
+                .asProxy(),
             OI.getButton(OI.Operator.simple)),
         shooterCommandFactory.revShooter());
   }

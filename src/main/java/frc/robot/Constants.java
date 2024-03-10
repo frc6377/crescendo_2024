@@ -38,6 +38,7 @@ public final class Constants {
     public static final int INTAKE_CHOOSER_ID = 14;
     public static final double INTAKE_PERCENTAGE = 0.25;
     public static final double CHOOSER_PERCENTAGE = 1;
+    public static final double AMP_INTAKE_PERCENTAGE = 0.5;
   }
 
   public static class TriggerConstants {
