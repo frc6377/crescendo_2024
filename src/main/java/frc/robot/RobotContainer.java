@@ -265,7 +265,7 @@ public class RobotContainer {
             Commands.startEnd(
                 () -> OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
                 () -> OI.Driver.setRumble(0)));
-    new Trigger(shooterSubsystem::isShooterReady)
+    new Trigger(shooterCommandFactory::isShooterReady)
         .whileTrue(
             Commands.startEnd(
                 () -> OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
@@ -279,8 +279,8 @@ public class RobotContainer {
 
   private Command intakeSpeaker() {
     return Commands.parallel(
-        intakeCommandFactory.intakeSpeakerCommandSmart(shooterSubsystem.getBeamBreak()),
-        triggerCommandFactory.getGroundLoadCommand(shooterSubsystem.getBeamBreak()));
+        intakeCommandFactory.intakeSpeakerCommandSmart(shooterCommandFactory.getBeamBreak()),
+        triggerCommandFactory.getGroundLoadCommand(shooterCommandFactory.getBeamBreak()));
   }
 
   private Command intakeAmp() {
@@ -296,7 +296,7 @@ public class RobotContainer {
             triggerCommandFactory.getShootCommand(),
             triggerCommandFactory
                 .getShootCommand()
-                .onlyIf(() -> shooterSubsystem.isShooterReady())
+                .onlyIf(() -> shooterCommandFactory.isShooterReady())
                 .asProxy(),
             OI.getButton(OI.Operator.simple)),
         shooterCommandFactory.revShooter());
@@ -309,11 +309,11 @@ public class RobotContainer {
 
   private Command shootAuton() {
     return Commands.deadline(
-        Commands.waitUntil(() -> shooterSubsystem.isShooterReady())
+        Commands.waitUntil(() -> shooterCommandFactory.isShooterReady())
             .andThen(
                 triggerCommandFactory
-                    .getShootCommand()
-                    .until(shooterSubsystem.getBeamBreak().negate().debounce(.25))),
+                    .getShootComman
+                    .until(shooterCommandFactory.getBeamBreak().negate().debounce(.25))),
         shooterCommandFactory.revShooter());
   }
 
