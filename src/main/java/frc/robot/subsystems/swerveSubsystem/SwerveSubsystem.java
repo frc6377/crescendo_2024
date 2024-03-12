@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.OI;
@@ -27,6 +28,8 @@ import frc.robot.Telemetry;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.LimelightHelpers;
 import java.util.function.BiConsumer;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements subsystem so it can be used
@@ -186,5 +189,25 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   @Override
   public void periodic() {
     if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
+  }
+
+  public static class RotationSource implements DoubleSupplier {
+    private double lastVal;
+    private Supplier<Translation2d> supplier;
+
+    public RotationSource(XboxController controller) {
+      supplier = () -> new Translation2d(controller.getRightX(), controller.getRightY());
+    }
+
+    @Override
+    public double getAsDouble() {
+      Translation2d input = supplier.get();
+      if (input.getNorm() < 0.05) {
+        return lastVal;
+      }
+      double rotation = input.getAngle().getDegrees();
+      lastVal = rotation;
+      return rotation;
+    }
   }
 }

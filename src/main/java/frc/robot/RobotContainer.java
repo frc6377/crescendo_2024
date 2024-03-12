@@ -47,6 +47,7 @@ import frc.robot.subsystems.vision.PhotonSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 /**
@@ -189,9 +190,10 @@ public class RobotContainer {
                     OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
                     OI.getAxisSupplier(OI.Driver.rotationAxis).get()),
                 OI.getButton(OI.Driver.highGear).getAsBoolean());
+    DoubleSupplier direction = new SwerveSubsystem.RotationSource(OI.Driver.controller);
 
     drivetrainCommandFactory.setDefaultCommand(
-        drivetrainCommandFactory.fieldOrientedDrive(input).withName("Get Axis Suppliers"));
+        drivetrainCommandFactory.pointDrive(direction, input).withName("Get Axis Suppliers"));
 
     trapElvCommandFactory.setDefaultCommand(trapElvCommandFactory.stowTrapElvCommand());
 
@@ -236,8 +238,12 @@ public class RobotContainer {
 
     OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
 
-    new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
-    new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());
+    new Trigger(() -> OI.Operator.controller.getPOV() == 90)
+        .whileTrue(turretCommandFactory.testTurretCommand(5));
+    new Trigger(() -> OI.Operator.controller.getPOV() == 270)
+        .whileTrue(turretCommandFactory.testTurretCommand(-5));
+    new Trigger(() -> OI.Operator.controller.getPOV() == 0)
+        .whileTrue(turretCommandFactory.zeroZeroing());
   }
 
   private Command outtakeCommand() {

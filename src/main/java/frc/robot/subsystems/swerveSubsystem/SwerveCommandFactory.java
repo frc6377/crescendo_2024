@@ -101,6 +101,7 @@ public class SwerveCommandFactory {
           double alpha =
               Math.toRadians(pid.calculate(subsystem.getState().Pose.getRotation().getDegrees()));
           SmartDashboard.putNumber("error", pid.getPositionError());
+          SmartDashboard.putNumber("alpha", alpha);
           subsystem.setControl(
               new SwerveRequest.FieldCentric()
                   .withRotationalRate(alpha)
