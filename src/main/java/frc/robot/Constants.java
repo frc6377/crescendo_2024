@@ -79,9 +79,9 @@ public final class Constants {
   }
 
   public static class TurretConstants {
-    public static final int TURRET_MOTOR_ID = 9;
+    public static final int TURRET_MOTOR_ID = 2;
     public static final int TURRET_CANcoder_ID = 17; // replace with actual CANcoder ID
-    public static final int PITCH_MOTOR_ID = 10;
+    public static final int PITCH_MOTOR_ID = 3;
     public static final int PITCH_ENCODER_ID = 1; // replace with actual ID
     public static final boolean IS_MOTOR_INVERTED = true;
     public static final int DEFAULT_SHOT_PITCH = 40;
@@ -147,8 +147,8 @@ public final class Constants {
         TURRET_GEAR_TEETH
             / (LOW_GEAR_CANCODER_TEETH
                 + 0.0); // Revolutions of the turret, to revolutions of the cancoder
-    public static final int highGearCAN_CODER_ID = 0;
-    public static final int lowGearCAN_CODER_ID = 0;
+    public static final int highGearCAN_CODER_ID = 5;
+    public static final int lowGearCAN_CODER_ID = 6;
     public static final double ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV = 0;
 
     // Turret limits
