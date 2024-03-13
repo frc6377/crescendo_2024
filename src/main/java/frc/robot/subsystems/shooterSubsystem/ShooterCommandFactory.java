@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterCommandFactory {
@@ -87,5 +88,15 @@ public class ShooterCommandFactory {
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
     subsystem.setDefaultCommand(defaultCommand);
+  }
+
+  public boolean isShooterReady() {
+    if (subsystem == null) return true;
+    return subsystem.isShooterReady();
+  }
+
+  public Trigger getBeamBreak() {
+    if (subsystem == null) return new Trigger(() -> false);
+    return subsystem.getBeamBreak();
   }
 }

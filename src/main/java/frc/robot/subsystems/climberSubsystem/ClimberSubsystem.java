@@ -24,7 +24,6 @@ public class ClimberSubsystem extends SubsystemBase {
   private DebugEntry<Double> leftArmPoseEntry;
   private DebugEntry<Double> rightArmOutputEntry;
   private DebugEntry<Double> leftArmOutputEntry;
-  private DebugEntry<String> currentCommand;
 
   public ClimberSubsystem() {
     leftArmMotor = new CANSparkMax(ClimberConstants.LEFT_ARM_ID, MotorType.kBrushless);
@@ -41,7 +40,6 @@ public class ClimberSubsystem extends SubsystemBase {
         new DebugEntry<Double>(rightArmMotor.getAppliedOutput(), "right arm output", this);
     leftArmOutputEntry =
         new DebugEntry<Double>(rightArmMotor.getAppliedOutput(), "left arm output", this);
-    currentCommand = new DebugEntry<String>("none", "current Command", this);
   }
 
   private void configMotor(CANSparkMax motor, boolean invert) {
@@ -165,7 +163,6 @@ public class ClimberSubsystem extends SubsystemBase {
     leftArmPoseEntry.log(leftArmMotor.getEncoder().getPosition());
     rightArmOutputEntry.log(rightArmMotor.get());
     leftArmOutputEntry.log(leftArmMotor.get());
-    if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
   }
 
   public record DifferentialDemand(double left, double right) {}
