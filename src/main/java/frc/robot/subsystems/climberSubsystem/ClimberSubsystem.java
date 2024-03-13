@@ -165,7 +165,7 @@ public class ClimberSubsystem extends SubsystemBase {
     leftArmPoseEntry.log(leftArmMotor.getEncoder().getPosition());
     rightArmOutputEntry.log(rightArmMotor.get());
     leftArmOutputEntry.log(leftArmMotor.get());
-    if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
+    currentCommand.log(this.getCurrentCommand().getName());
   }
 
   public record DifferentialDemand(double left, double right) {}

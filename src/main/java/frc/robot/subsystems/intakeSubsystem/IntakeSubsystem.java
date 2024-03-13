@@ -36,8 +36,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
   // TODO: Add check to make sure turret is below 45 degrees before running & add photogate when
   // implemented.
-  public void runIntake() {
-    intakeMotor.set(Constants.IntakeConstants.INTAKE_PERCENTAGE);
+  public void runIntake(boolean isAmp) {
+    intakeMotor.set(
+        isAmp
+            ? Constants.IntakeConstants.AMP_INTAKE_PERCENTAGE
+            : Constants.IntakeConstants.INTAKE_PERCENTAGE);
   }
 
   public void reverseIntake() {
@@ -54,12 +57,12 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void speakerIntake() {
-    runIntake();
+    runIntake(false);
     speakerChooser();
   }
 
   public void ampIntake() {
-    runIntake();
+    runIntake(true);
     ampChooser();
   }
 
@@ -72,7 +75,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public void periodic() {
     intakeOutput.log(intakeMotor.get());
     chooserOutput.log(chooserMotor.getAppliedOutput());
-    if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
+    currentCommand.log(this.getCurrentCommand().getName());
   }
 
   @Override

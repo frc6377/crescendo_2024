@@ -91,6 +91,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   private DebugEntry<Double> wristGoal;
   private DebugEntry<String> wristStateEntry;
   private DebugEntry<String> wristCurrentCommand;
+  private DebugEntry<String> currentWristStateEntry;
 
   private double FF;
 
