@@ -199,6 +199,8 @@ public class RobotContainer {
 
     triggerCommandFactory.setDefaultCommand(triggerCommandFactory.getHoldCommand());
 
+    turretCommandFactory.setDefaultCommand(turretCommandFactory.idleTurret());
+
     OI.getButton(OI.Driver.resetRotationButton)
         .onTrue(drivetrainCommandFactory.zeroDriveTrain().withName("Put Pose & Rotation on Field"));
 
@@ -294,7 +296,8 @@ public class RobotContainer {
 
   private Command prepareToScoreSpeaker() {
     return Commands.parallel(
-        turretCommandFactory.getAimTurretCommand(), shooterCommandFactory.revShooter());
+        turretCommandFactory.moveUpwards(),
+        shooterCommandFactory.revShooter()); // TODO: just testing pitch from tunable number
   }
 
   private Command shootAuton() {

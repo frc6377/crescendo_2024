@@ -100,8 +100,8 @@ public final class Constants {
     public static final int TURRET_SMART_CURRENT_LIMIT = 40;
 
     // TODO: Change values when there's an actual real functional robot.
-    public static final HowdyPID PITCH_PID = new HowdyPID(175, 0.001, 0);
-    public static final HowdyFF PITCH_FF = new HowdyFF(0, 0.08, 0.1);
+    public static final HowdyPID PITCH_PID = new HowdyPID(0.01, 0.0, 0);
+    public static final HowdyFF PITCH_FF = new HowdyFF(0, 1.55, 0.1);
 
     public static final double PITCH_KMAXOUTPUT = 1;
     public static final double PITCH_KMINOUTPUT = -1;
@@ -109,7 +109,7 @@ public final class Constants {
     public static final int PITCH_MAX_ANGLE_DEGREES = 50;
     public static final int PITCH_MIN_ANGLE_DEGREES = -5;
 
-    public static final double PITCH_CONVERSION_FACTOR = 0.25;
+    public static final double PITCH_CONVERSION_FACTOR = 25;
     public static final int PITCH_SMART_CURRENT_LIMIT = 40;
 
     // Physics Values

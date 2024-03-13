@@ -119,8 +119,7 @@ public class TurretCommandFactory {
     if (subsystem == null) return Commands.none();
     return subsystem
         .runEnd(() -> subsystem.holdPosition(), subsystem::stopTurret)
-        .withName("idleTurret")
-        .asProxy();
+        .withName("idleTurret");
   }
 
   public Command testTurretCommand(double degrees) {

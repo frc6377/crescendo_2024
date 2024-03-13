@@ -17,6 +17,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
@@ -40,6 +41,7 @@ import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.HowdyMath;
+import frc.robot.utilities.TunableNumber;
 
 public class TurretSubsystem extends SubsystemBase {
   private final CANSparkMax turretMotor;
@@ -71,6 +73,11 @@ public class TurretSubsystem extends SubsystemBase {
   private SimDeviceSim simTurretEncoder;
   private SimDouble simTurretPos;
 
+  private InterpolatingDoubleTreeMap pitchMap;
+
+  private TunableNumber pitchTune;
+  private double pitchValue = 0;
+
   private final ShuffleboardTab turretTab = Shuffleboard.getTab(this.getName());
   private final DebugEntry<Double> turretPositionEntry =
       new DebugEntry<Double>(turretPosition, "Turret Position", this);
@@ -88,7 +95,10 @@ public class TurretSubsystem extends SubsystemBase {
       new DebugEntry<Double>(0.0, "Turret Motor Output", this);
   private final DebugEntry<Double> tagDistanceEntry =
       new DebugEntry<Double>(0.0, "LastMeasuredTagDistance", this);
-  private DebugEntry<String> currentCommand;
+  private DebugEntry<String> currentCommand =
+      new DebugEntry<String>("none", "Turret Command", this);
+  private DebugEntry<Double> pitchMotorOutput =
+      new DebugEntry<Double>(0.0, "Pitch Motor Output", this);
 
   private final RobotStateManager robotStateManager;
   private final VisionSubsystem visionSubsystem;
@@ -148,6 +158,12 @@ public class TurretSubsystem extends SubsystemBase {
     this.robotStateManager = robotStateManager;
     this.visionSubsystem = visionSubsystem;
 
+    pitchTune = new TunableNumber("pitch GoTo Value", 0.0, (a) -> pitchValue = a, this);
+
+    pitchMap = new InterpolatingDoubleTreeMap();
+    pitchMap.put(0.0, 0.0);
+    pitchMap.put(1.0, 1.0);
+
     // Simulation
     if (Robot.isSimulation()) {
       // Turret
@@ -180,7 +196,7 @@ public class TurretSubsystem extends SubsystemBase {
                   * Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY
                   * Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY
                   / 3,
-              Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY,
+              Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY / 2.0,
               Math.toRadians(Constants.TurretConstants.PITCH_MIN_ANGLE_DEGREES),
               Math.toRadians(Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES),
               true,
@@ -191,8 +207,6 @@ public class TurretSubsystem extends SubsystemBase {
           pitchRoot.append(new MechanismLigament2d("Pitch", 2, 0, 5, new Color8Bit(Color.kBlue)));
       turretTab.add("Pitch", pitchMech);
     }
-
-    currentCommand = new DebugEntry<String>("none", "current Command", this);
   }
 
   public void stopTurret() {
@@ -323,7 +337,7 @@ public class TurretSubsystem extends SubsystemBase {
                     setpoint,
                     Math.toRadians(Constants.TurretConstants.PITCH_MIN_ANGLE_DEGREES),
                     Math.toRadians(Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES)))
-            + pitchFeedForward.calculate(turretPosition, 0));
+            + pitchFeedForward.calculate(pitchPosition, 0));
   }
 
   public void holdPosition() {
@@ -333,7 +347,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   public void moveUp() {
     if (Constants.enabledSubsystems.turretRotationEnabled) setTurretPos(turretPosition);
-    if (Constants.enabledSubsystems.turretPitchEnabled) setPitchPos(30);
+    if (Constants.enabledSubsystems.turretPitchEnabled) setPitchPos(pitchValue);
   }
 
   public void updateTurretPosition() {
@@ -410,11 +424,12 @@ public class TurretSubsystem extends SubsystemBase {
    */
   private double tyToDistanceFromTag(double ty) {
     DynamicRobotConfig dynamicRobotConfig = new DynamicRobotConfig();
-    double tagTheta = Math.toRadians(ty) + dynamicRobotConfig.getLimelightConfig().limelightYMeters;
+    double tagTheta =
+        Math.toRadians(ty) + dynamicRobotConfig.getLimelightConfig().limelightPitchRadians;
     double height =
         Constants.TurretConstants.SPEAKER_TAG_CENTER_HEIGHT_METERS
             - dynamicRobotConfig.getLimelightConfig()
-                .limelightZMeters; // TODO: Change these alphabot constants to be turret
+                .limelightYMeters; // TODO: Change these alphabot constants to be turret
     // constants whenever the robot is built
     double distance = height / Math.tan(tagTheta);
     return distance;
@@ -448,6 +463,7 @@ public class TurretSubsystem extends SubsystemBase {
     pitchVelocityEntry.log(pitchVelocity);
 
     motorOutputEntry.log(turretMotor.get());
+    pitchMotorOutput.log(pitchMotor.get());
 
     if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
   }

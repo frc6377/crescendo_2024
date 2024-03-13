@@ -43,7 +43,6 @@ public class RobotStateManager extends SubsystemBase {
     if (allianceColor == AllianceColor.UNKNOWN) {
       Optional<Alliance> alliance = DriverStation.getAlliance();
       if (alliance.isPresent()) {
-        String test = alliance.get().toString();
         allianceColor =
             alliance.get().equals(Alliance.Red) ? AllianceColor.RED : AllianceColor.BLUE;
       }
