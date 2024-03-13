@@ -75,7 +75,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public void periodic() {
     intakeOutput.log(intakeMotor.get());
     chooserOutput.log(chooserMotor.getAppliedOutput());
-    currentCommand.log(this.getCurrentCommand().getName());
+    if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
   }
 
   @Override

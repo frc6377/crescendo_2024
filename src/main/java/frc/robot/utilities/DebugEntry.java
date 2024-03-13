@@ -64,12 +64,12 @@ public class DebugEntry<T> {
   }
 
   public DebugEntry<T> withPosition(int colIndex, int rowIndex) {
-    networkEntry.withPosition(colIndex, rowIndex);
+    if (!Robot.isCompetition) networkEntry.withPosition(colIndex, rowIndex);
     return this;
   }
 
   public DebugEntry<T> withSize(int width, int height) {
-    networkEntry.withSize(width, height);
+    if (!Robot.isCompetition) networkEntry.withSize(width, height);
     return this;
   }
 
