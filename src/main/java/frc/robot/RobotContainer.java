@@ -237,7 +237,13 @@ public class RobotContainer {
     OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
 
     new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
+    new Trigger(() -> OI.Operator.controller.getPOV() == 90)
+        .whileTrue(turretCommandFactory.testTurretCommand(0));
     new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());
+    new Trigger(() -> OI.Operator.controller.getPOV() == 270)
+        .whileTrue(turretCommandFactory.testTurretCommand(90));
+
+    OI.getButton(OI.Operator.zeroTurretZeroing).onTrue(turretCommandFactory.zeroZeroing());
   }
 
   private Command outtakeCommand() {

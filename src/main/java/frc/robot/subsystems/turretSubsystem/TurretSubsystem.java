@@ -91,34 +91,47 @@ public class TurretSubsystem extends SubsystemBase {
 
   public TurretSubsystem(RobotStateManager robotStateManager, VisionSubsystem visionSubsystem) {
     // Initialize Motors
-    turretMotor = new CANSparkMax(Constants.TurretConstants.TURRET_MOTOR_ID, MotorType.kBrushless);
-    turretMotor.restoreFactoryDefaults();
-    turretMotor.setInverted(Constants.TurretConstants.IS_MOTOR_INVERTED);
-    turretMotor.setSmartCurrentLimit(Constants.TurretConstants.TURRET_SMART_CURRENT_LIMIT);
-    turretMotor.setSoftLimit(
-        CANSparkMax.SoftLimitDirection.kReverse,
-        (float) TurretConstants.TURRET_MIN_ANGLE_ROTATIONS);
-    turretMotor.setSoftLimit(
-        CANSparkMax.SoftLimitDirection.kForward,
-        (float) TurretConstants.TURRET_MAX_ANGLE_ROTATIONS);
-    turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
-    turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
-    turretPIDController = TurretConstants.TURRET_PID.getPIDController();
-    TurretConstants.TURRET_PID.createTunableNumbers("Turret Motor", turretPIDController, this);
-
-    pitchMotor = new CANSparkMaxSim(Constants.TurretConstants.PITCH_MOTOR_ID, MotorType.kBrushless);
-    pitchMotor.restoreFactoryDefaults();
-    pitchMotor.setSmartCurrentLimit(Constants.TurretConstants.PITCH_SMART_CURRENT_LIMIT);
-    pitchMotor.setSoftLimit(
-        CANSparkMax.SoftLimitDirection.kReverse, (float) TurretConstants.PITCH_MIN_ANGLE_ROTATIONS);
-    pitchMotor.setSoftLimit(
-        CANSparkMax.SoftLimitDirection.kForward, (float) TurretConstants.PITCH_MAX_ANGLE_ROTATIONS);
-    pitchMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
-    pitchMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
-    pitchPIDController = TurretConstants.PITCH_PID.getPIDController();
-    TurretConstants.PITCH_PID.createTunableNumbers("Pitch Motor", pitchPIDController, this);
-    pitchFeedForward = TurretConstants.PITCH_FF.getArmFeedforward();
-
+    if (enabledSubsystems.turretRotationEnabled) {
+      turretMotor =
+          new CANSparkMax(Constants.TurretConstants.TURRET_MOTOR_ID, MotorType.kBrushless);
+      turretMotor.restoreFactoryDefaults();
+      turretMotor.setInverted(Constants.TurretConstants.IS_MOTOR_INVERTED);
+      turretMotor.setSmartCurrentLimit(Constants.TurretConstants.TURRET_SMART_CURRENT_LIMIT);
+      turretMotor.setSoftLimit(
+          CANSparkMax.SoftLimitDirection.kReverse,
+          (float) TurretConstants.TURRET_MIN_ANGLE_ROTATIONS);
+      turretMotor.setSoftLimit(
+          CANSparkMax.SoftLimitDirection.kForward,
+          (float) TurretConstants.TURRET_MAX_ANGLE_ROTATIONS);
+      turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
+      turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
+      turretPIDController = TurretConstants.TURRET_PID.getPIDController();
+      TurretConstants.TURRET_PID.createTunableNumbers("Turret Motor", turretPIDController, this);
+    } else {
+      turretMotor = null;
+      turretPIDController = TurretConstants.TURRET_PID.getPIDController();
+    }
+    if (enabledSubsystems.turretPitchEnabled) {
+      pitchMotor =
+          new CANSparkMaxSim(Constants.TurretConstants.PITCH_MOTOR_ID, MotorType.kBrushless);
+      pitchMotor.restoreFactoryDefaults();
+      pitchMotor.setSmartCurrentLimit(Constants.TurretConstants.PITCH_SMART_CURRENT_LIMIT);
+      pitchMotor.setSoftLimit(
+          CANSparkMax.SoftLimitDirection.kReverse,
+          (float) TurretConstants.PITCH_MIN_ANGLE_ROTATIONS);
+      pitchMotor.setSoftLimit(
+          CANSparkMax.SoftLimitDirection.kForward,
+          (float) TurretConstants.PITCH_MAX_ANGLE_ROTATIONS);
+      pitchMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
+      pitchMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
+      pitchPIDController = TurretConstants.PITCH_PID.getPIDController();
+      TurretConstants.PITCH_PID.createTunableNumbers("Pitch Motor", pitchPIDController, this);
+      pitchFeedForward = TurretConstants.PITCH_FF.getArmFeedforward();
+    } else {
+      pitchMotor = null;
+      pitchFeedForward = TurretConstants.PITCH_FF.getArmFeedforward();
+      pitchPIDController = TurretConstants.PITCH_PID.getPIDController();
+    }
     // Encoders
     highGearCANcoder = new CANcoder(Constants.TurretConstants.highGearCAN_CODER_ID);
     lowGearCANcoder = new CANcoder(Constants.TurretConstants.lowGearCAN_CODER_ID);

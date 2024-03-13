@@ -3,7 +3,6 @@ package frc.robot.subsystems.turretSubsystem;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -125,12 +124,10 @@ public class TurretCommandFactory {
     if (subsystem == null) return Commands.none();
 
     final DoubleSupplier visionSupplier = () -> visionSubsystem.getTurretYaw(0);
-    final PIDController azimuthPIDController = TurretConstants.VISION_PID.getPIDController();
     final Supplier<Rotation2d> odometryAngle =
         HowdyMath.getAngleToTargetContinous(
             () -> robotPosition.get().getTranslation(),
             RSM.getAllianceColor().getSpeakerLocation());
-    azimuthPIDController.setSetpoint(0);
 
     return subsystem.run(
         () -> {
