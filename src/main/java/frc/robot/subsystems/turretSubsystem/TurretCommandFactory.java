@@ -5,17 +5,22 @@ import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.config.TurretZeroConfig;
+import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.HowdyMath;
 import java.util.function.DoubleSupplier;
+import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 public class TurretCommandFactory {
@@ -29,7 +34,12 @@ public class TurretCommandFactory {
       Supplier<Pose2d> robotPosition,
       RobotStateManager robotStateManager) {
     this.subsystem = subsystem;
-    this.visionSubsystem = subsystem.getVisionSubsystem();
+    if (subsystem != null) {
+      this.visionSubsystem = subsystem.getVisionSubsystem();
+
+    } else {
+      visionSubsystem = null;
+    }
     this.robotPosition = robotPosition;
     RSM = robotStateManager;
   }
@@ -101,8 +111,7 @@ public class TurretCommandFactory {
               dynamicConfig.saveTurretZero(new TurretZeroConfig(lowGearOffset, highGearOffset));
             },
             subsystem)
-        .withName("zeroZeroing")
-        .asProxy();
+        .withName("zeroZeroing");
   }
 
   public Command zeroTurretCommand() {
@@ -115,15 +124,22 @@ public class TurretCommandFactory {
   public Command testTurretCommand(double degrees) {
     if (subsystem == null) return Commands.none();
     return subsystem
-        .runEnd(() -> subsystem.setTurretPos(Math.toRadians(degrees)), subsystem::stopTurret)
+        .runEnd(() -> subsystem.setPitchPos(Math.toRadians(degrees)), subsystem::stopTurret)
         .withName("TestTurret")
         .asProxy();
   }
 
   public Command aimTurretCommand() {
     if (subsystem == null) return Commands.none();
+    final IntSupplier targetId = () -> RSM.getSpeakerCenterTag();
+    final DoubleSupplier yawSupplier = () -> visionSubsystem.getTurretYaw(targetId.getAsInt());
+    final DoubleSupplier pitchSupplier = () -> visionSubsystem.getTurretPitch(targetId.getAsInt());
+    final Supplier<Translation2d> speakerLocation =
+        () ->
+            (RSM.getAllianceColor() == AllianceColor.BLUE)
+                ? FieldConstants.BLUE_SPEAKER
+                : FieldConstants.RED_SPEAKER;
 
-    final DoubleSupplier visionSupplier = () -> visionSubsystem.getTurretYaw(0);
     final Supplier<Rotation2d> odometryAngle =
         HowdyMath.getAngleToTargetContinous(
             () -> robotPosition.get().getTranslation(),
@@ -131,8 +147,8 @@ public class TurretCommandFactory {
 
     return subsystem.run(
         () -> {
-          double visionMeasure = visionSupplier.getAsDouble();
-          if (visionMeasure == -1) {
+          double visionMeasure = yawSupplier.getAsDouble();
+          if (Double.isNaN(visionMeasure)) {
             // No vision for targeting
             subsystem.setTurretPos(
                 odometryAngle.get().minus(robotPosition.get().getRotation()).getRadians());
@@ -140,6 +156,39 @@ public class TurretCommandFactory {
             // Using vision
             subsystem.setTurretPos(visionMeasure + subsystem.getTurretPos());
           }
+
+          // Esitmates the distance in meters
+          double tagPitch = pitchSupplier.getAsDouble();
+          double distanceEstimate;
+          if (Double.isNaN(tagPitch)) {
+            distanceEstimate =
+                robotPosition.get().getTranslation().getDistance(speakerLocation.get());
+          } else {
+            Translation2d cameraPositionRelativeToAxle = new Translation2d(-5, 0);
+            Translation2d cameraPostion =
+                cameraPositionRelativeToAxle.rotateBy(
+                    Rotation2d.fromRadians(-subsystem.getTurretPitch()));
+            Pose2d cameraPose2d =
+                new Pose2d(cameraPostion, Rotation2d.fromRadians(subsystem.getTurretPitch()));
+
+            double tagHeight = 100;
+
+            double relativeHeight = tagHeight - cameraPose2d.getY();
+            // tan = y/x -> y / tan = x
+            double slope =
+                cameraPose2d.getRotation().plus(Rotation2d.fromDegrees(tagPitch)).getTan();
+            double cameraDistance = relativeHeight - slope;
+
+            distanceEstimate = cameraDistance + cameraPose2d.getX();
+          }
+
+          if (Double.isNaN(pitchSupplier.getAsDouble())) {
+            subsystem.setPitchPos(0);
+          } else {
+            subsystem.setPitchPos(10);
+          }
+
+          SmartDashboard.putNumber("Distance Estimate", distanceEstimate);
         });
   }
 

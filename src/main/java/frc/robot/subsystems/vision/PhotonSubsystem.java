@@ -129,7 +129,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
         }
       }
     }
-    return -1;
+    return Double.NaN;
   }
 
   public double getTurretPitch(int id) {

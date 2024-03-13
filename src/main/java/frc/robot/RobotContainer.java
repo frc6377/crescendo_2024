@@ -238,10 +238,10 @@ public class RobotContainer {
 
     new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
     new Trigger(() -> OI.Operator.controller.getPOV() == 90)
-        .whileTrue(turretCommandFactory.testTurretCommand(0));
+        .whileTrue(turretCommandFactory.testTurretCommand(10));
     new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());
     new Trigger(() -> OI.Operator.controller.getPOV() == 270)
-        .whileTrue(turretCommandFactory.testTurretCommand(90));
+        .whileTrue(turretCommandFactory.testTurretCommand(20));
 
     OI.getButton(OI.Operator.zeroTurretZeroing).onTrue(turretCommandFactory.zeroZeroing());
   }
