@@ -21,7 +21,7 @@ import frc.robot.utilities.HowdyPID;
  */
 public final class Constants {
   public static class SwerveDriveConstants {
-    public static final double TURN_kP = 1;
+    public static final double TURN_kP = 10;
     public static final double TURN_kD = 0;
     public static final double MAX_AUTO_TURN = 180; // deg/s
     public static final double MAX_AUTO_ACCERLATION = 180; // deg/s^2
@@ -285,5 +285,7 @@ public final class Constants {
     public static final Rotation2d BLUE_AMP_ROTATION = Rotation2d.fromRotations(0.25);
     public static final Rotation2d BLUE_SOURCE_ROTATION = Rotation2d.fromRotations(-0.25);
     public static final Rotation2d RED_SOURCE_ROTATION = Rotation2d.fromRotations(-0.25);
+    public static final Rotation2d ABSOLUTE_POINTING_OFFSET = Rotation2d.fromRotations(0.25);
+    public static final double ROTATION_DEADBAND = 0.2;
   }
 }

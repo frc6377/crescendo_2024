@@ -190,10 +190,12 @@ public class RobotContainer {
                     OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
                     OI.getAxisSupplier(OI.Driver.rotationAxis).get()),
                 OI.getButton(OI.Driver.highGear).getAsBoolean());
-    DoubleSupplier direction = new SwerveSubsystem.RotationSource(OI.Driver.controller);
+    DoubleSupplier direction = new SwerveSubsystem.RotationSource(OI.Driver.controller, drivetrain);
 
     drivetrainCommandFactory.setDefaultCommand(
-        drivetrainCommandFactory.pointDrive(direction, input).withName("Get Axis Suppliers"));
+        drivetrainCommandFactory
+            .pointDrive(direction, SwerveSubsystem.scrubRotation(input))
+            .withName("Get Axis Suppliers"));
 
     trapElvCommandFactory.setDefaultCommand(trapElvCommandFactory.stowTrapElvCommand());
 
@@ -377,5 +379,9 @@ public class RobotContainer {
           .withName("Get Auto Command");
     }
     return null;
+  }
+
+  public RobotStateManager getRobotStateManager() {
+    return robotStateManager;
   }
 }

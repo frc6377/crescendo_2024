@@ -38,15 +38,10 @@ public class RobotStateManager extends SubsystemBase {
     endGameStart.onTrue(new InstantCommand(() -> isEndGame = true).withName("EndGame Start"));
   }
 
-  @Override
-  public void periodic() {
-    if (allianceColor == AllianceColor.UNKNOWN) {
-      Optional<Alliance> alliance = DriverStation.getAlliance();
-      if (alliance.isPresent()) {
-        String test = alliance.get().toString();
-        allianceColor =
-            alliance.get().equals(Alliance.Red) ? AllianceColor.RED : AllianceColor.BLUE;
-      }
+  public void robotModeChange() {
+    Optional<Alliance> alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      allianceColor = alliance.get().equals(Alliance.Red) ? AllianceColor.RED : AllianceColor.BLUE;
     }
   }
 

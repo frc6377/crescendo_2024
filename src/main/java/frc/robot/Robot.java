@@ -4,11 +4,14 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.stateManagement.AllianceColor;
+import frc.robot.stateManagement.RobotStateManager;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.NoSuchElementException;
@@ -31,6 +34,7 @@ public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
+  private RobotStateManager RSM;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -80,6 +84,8 @@ public class Robot extends LoggedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+
+    RSM = m_robotContainer.getRobotStateManager();
   }
 
   /**
@@ -132,6 +138,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
+    RSM.robotModeChange();
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -139,11 +146,12 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    // BLUE is the default, so we only need to handle RED here.
-    // if (DriverStation.getAlliance().get() == Alliance.Red) {
-    //
-    // m_robotContainer.getDriveTrain().setOperatorPerspectiveForward(Rotation2d.fromRotations(0.5));
-    // }
+
+    if (m_robotContainer.getRobotStateManager().getAllianceColor() == AllianceColor.RED) {
+      m_robotContainer.getDriveTrain().setOperatorPerspectiveForward(Rotation2d.fromRotations(0.5));
+    } else {
+      m_robotContainer.getDriveTrain().setOperatorPerspectiveForward(Rotation2d.fromRotations(0));
+    }
   }
 
   /** This function is called periodically during operator control. */
@@ -159,6 +167,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void testInit() {
+    RSM.robotModeChange();
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
   }
