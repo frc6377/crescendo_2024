@@ -49,9 +49,7 @@ public class SwerveCommandFactory {
    */
   public Command pointInDirection(Rotation2d angleToPoint, Supplier<DriveRequest> input) {
     if (subsystem == null) return Commands.none();
-    return pointDrive(() -> angleToPoint.getDegrees(), input)
-        .withName("Pointing In Direction")
-        .asProxy();
+    return pointDrive(() -> angleToPoint.getDegrees(), input).withName("Pointing In Direction");
   }
 
   /**
@@ -116,7 +114,7 @@ public class SwerveCommandFactory {
 
     final Command command =
         new FunctionalCommand(init, exec, (interupt) -> {}, () -> false, subsystem);
-    return command.withName("pointDrive").asProxy();
+    return command.withName("pointDrive");
   }
 
   /**
