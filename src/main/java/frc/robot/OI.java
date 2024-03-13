@@ -70,7 +70,7 @@ public class OI {
   }
 
   public static final class Operator {
-    private static final XboxController controller = new XboxController(operatorJoystickPort);
+    public static final XboxController controller = new XboxController(operatorJoystickPort);
 
     // A B Y X Buttons
     public static final Control retractClimber =

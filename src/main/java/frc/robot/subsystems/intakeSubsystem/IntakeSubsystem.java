@@ -17,7 +17,6 @@ public class IntakeSubsystem extends SubsystemBase {
   private final CANSparkMax chooserMotor;
   private DebugEntry<Double> intakeOutput;
   private DebugEntry<Double> chooserOutput;
-  private DebugEntry<String> currentCommand;
 
   public IntakeSubsystem() {
     intakeMotor = new TalonFX(Constants.IntakeConstants.INTAKE_MOTOR_ID, "rio");
@@ -31,13 +30,15 @@ public class IntakeSubsystem extends SubsystemBase {
     chooserMotor.setInverted(true);
     intakeOutput = new DebugEntry<Double>(0.0, "Intake Motor Ouput", this);
     chooserOutput = new DebugEntry<Double>(0.0, "Chooser Motor Output", this);
-    currentCommand = new DebugEntry<String>("none", "current Command", this);
   }
 
   // TODO: Add check to make sure turret is below 45 degrees before running & add photogate when
   // implemented.
-  public void runIntake() {
-    intakeMotor.set(Constants.IntakeConstants.INTAKE_PERCENTAGE);
+  public void runIntake(boolean isAmp) {
+    intakeMotor.set(
+        isAmp
+            ? Constants.IntakeConstants.AMP_INTAKE_PERCENTAGE
+            : Constants.IntakeConstants.INTAKE_PERCENTAGE);
   }
 
   public void reverseIntake() {
@@ -54,12 +55,12 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void speakerIntake() {
-    runIntake();
+    runIntake(false);
     speakerChooser();
   }
 
   public void ampIntake() {
-    runIntake();
+    runIntake(true);
     ampChooser();
   }
 
@@ -72,7 +73,6 @@ public class IntakeSubsystem extends SubsystemBase {
   public void periodic() {
     intakeOutput.log(intakeMotor.get());
     chooserOutput.log(chooserMotor.getAppliedOutput());
-    if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
   }
 
   @Override
