@@ -42,7 +42,7 @@ public final class Constants {
   }
 
   public static class TriggerConstants {
-    public static final int MOTOR_ID = 15; // edit all constants when testing
+    public static final int MOTOR_ID = 13; // edit all constants when testing
     public static final double LOAD_PERCENTAGE = -1; // used when intaking into the turret
     public static final double HOLD_PERCENTAGE =
         -0.05; // very slow motor speed in case note slips out of trigger
@@ -94,8 +94,8 @@ public final class Constants {
     public static final double TURRET_KMAXOUTPUT = 1;
     public static final double TURRET_KMINOUTPUT = -1;
 
-    public static final int TURRET_MIN_ANGLE_DEGREES = -5;
-    public static final int TURRET_MAX_ANGLE_DEGREES = 45;
+    public static final int TURRET_MIN_ANGLE_DEGREES = 0;
+    public static final int TURRET_MAX_ANGLE_DEGREES = 40; // 56.2 - 11 measured
 
     public static final double TURRET_CONVERSION_FACTOR = 0.25;
     public static final int TURRET_SMART_CURRENT_LIMIT = 40;
@@ -149,7 +149,7 @@ public final class Constants {
                 + 0.0); // Revolutions of the turret, to revolutions of the cancoder
     public static final int highGearCAN_CODER_ID = 5;
     public static final int lowGearCAN_CODER_ID = 6;
-    public static final double ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV = 0;
+    public static final double ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV = 0.25;
 
     // Turret limits
     public static final double TURRET_MIN_ANGLE_ROTATIONS =
@@ -190,7 +190,7 @@ public final class Constants {
     public static final double WRIST_DEADZONE = 0.01;
 
     // Roller
-    public static final int ROLLER_MOTOR_ID = 13;
+    public static final int ROLLER_MOTOR_ID = 15;
 
     public static final double ROLLER_SPEED = 0.4;
     public static final double ROLLER_REVERSE_SPEED = -0.5;
@@ -267,7 +267,7 @@ public final class Constants {
     public static final boolean signalEnabled = false;
     public static final boolean shooterEnabled = true;
     public static final boolean triggerEnabled = true;
-    public static final boolean turretRotationEnabled = true;
+    public static final boolean turretRotationEnabled = false;
     public static final boolean turretPitchEnabled = true;
     public static final boolean climberEnabled = true;
   }

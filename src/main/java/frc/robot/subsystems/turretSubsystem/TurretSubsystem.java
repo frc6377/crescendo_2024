@@ -57,7 +57,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   private double turretPosition;
   private double turretVelocity;
-  private double pitchPosition;
+  private double pitchPosition = 10;
   private double pitchVelocity;
 
   private SingleJointedArmSim turretSim;
@@ -80,17 +80,17 @@ public class TurretSubsystem extends SubsystemBase {
 
   private final ShuffleboardTab turretTab = Shuffleboard.getTab(this.getName());
   private final DebugEntry<Double> turretPositionEntry =
-      new DebugEntry<Double>(turretPosition, "Turret Position", this);
+      new DebugEntry<Double>(turretPosition, "Turret Position (Rotations)", this);
   private final DebugEntry<Double> turretGoalPositionEntry =
-      new DebugEntry<Double>(0.0, "Turret Goal Position", this);
+      new DebugEntry<Double>(0.0, "Turret Goal Position (Radians)", this);
   private final DebugEntry<Double> turretVelocityEntry =
-      new DebugEntry<Double>(turretVelocity, "Turret Velocity", this);
+      new DebugEntry<Double>(turretVelocity, "Turret Velocity (RPM)", this);
   private final DebugEntry<Double> pitchPositionEntry =
-      new DebugEntry<Double>(pitchPosition, "Pitch Position", this);
+      new DebugEntry<Double>(pitchPosition, "Pitch Position (Rotations)", this);
   private final DebugEntry<Double> pitchGoalPositionEntry =
-      new DebugEntry<Double>(0.0, "Pitch Goal Position", this);
+      new DebugEntry<Double>(0.0, "Pitch Goal Position (Radians)", this);
   private final DebugEntry<Double> pitchVelocityEntry =
-      new DebugEntry<Double>(pitchVelocity, "Pitch Velocity", this);
+      new DebugEntry<Double>(pitchVelocity, "Pitch Velocity (RPM)", this);
   private final DebugEntry<Double> motorOutputEntry =
       new DebugEntry<Double>(0.0, "Turret Motor Output", this);
   private final DebugEntry<Double> tagDistanceEntry =

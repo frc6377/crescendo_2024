@@ -94,8 +94,7 @@ public class TurretCommandFactory {
               dynamicConfig.saveTurretZero(new TurretZeroConfig(lowGearOffset, highGearOffset));
             },
             subsystem)
-        .withName("zeroZeroing")
-        .asProxy();
+        .withName("zeroZeroing");
   }
 
   public Command zeroTurretCommand() {
@@ -125,7 +124,7 @@ public class TurretCommandFactory {
   public Command testTurretCommand(double degrees) {
     if (subsystem == null) return Commands.none();
     return subsystem
-        .runEnd(() -> subsystem.setTurretPos(Math.toRadians(degrees)), subsystem::stopTurret)
+        .runEnd(() -> subsystem.setPitchPos(Math.toRadians(degrees)), subsystem::stopTurret)
         .withName("TestTurret")
         .asProxy();
   }

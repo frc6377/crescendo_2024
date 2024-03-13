@@ -89,4 +89,13 @@ public class RobotStateManager extends SubsystemBase {
   public Command setSpeakerMode() {
     return runOnce(() -> setPlacementMode(PlacementMode.SPEAKER));
   }
+
+  public int getSpeakerCenterTag() {
+    if (getAllianceColor() == AllianceColor.RED) {
+      return 5;
+    } else if (getAllianceColor() == AllianceColor.BLUE) {
+      return 3; // TODO: verify
+    }
+    return -1;
+  }
 }
