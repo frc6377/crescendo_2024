@@ -311,9 +311,8 @@ public class RobotContainer {
     return Commands.deadline(
         Commands.waitUntil(() -> shooterCommandFactory.isShooterReady())
             .andThen(
-                triggerCommandFactory
-                    .getShootComman
-                    .until(shooterCommandFactory.getBeamBreak().negate().debounce(.25))),
+                triggerCommandFactory.getShootComman.until(
+                    shooterCommandFactory.getBeamBreak().negate().debounce(.25))),
         shooterCommandFactory.revShooter());
   }
 
