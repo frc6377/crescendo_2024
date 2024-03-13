@@ -90,7 +90,6 @@ public class TrapElvSubsystem extends SubsystemBase {
   private DebugEntry<Double> wristOutput;
   private DebugEntry<Double> wristGoal;
   private DebugEntry<String> currentWristStateEntry;
-  private DebugEntry<String> currentCommand;
 
   private double FF;
 
@@ -252,7 +251,6 @@ public class TrapElvSubsystem extends SubsystemBase {
     wristGoal = new DebugEntry<Double>(wristStateGoal, "Wrist Goal", this);
     currentWristStateEntry =
         new DebugEntry<String>(TrapElvState.STOWED.name(), "Current Wrist State", this);
-    currentCommand = new DebugEntry<String>("none", "current Command", this);
   }
 
   // Boolean Suppliers
@@ -356,8 +354,6 @@ public class TrapElvSubsystem extends SubsystemBase {
       baseLog.log(baseLimit.get());
       scoringLog.log(sourceBreak.get());
     }
-
-    if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
   }
 
   @Override
