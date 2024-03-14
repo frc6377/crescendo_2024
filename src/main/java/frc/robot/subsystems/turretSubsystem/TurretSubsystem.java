@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
@@ -49,7 +50,7 @@ import frc.robot.utilities.TunableNumber;
 
 public class TurretSubsystem extends SubsystemBase {
   private final CANSparkMax turretMotor;
-  private final PIDController turretPIDController;
+  private final PIDController turretPositionPIDController;
 
   private final CANSparkMaxSim pitchMotor;
   private final PIDController pitchPIDController;
@@ -60,7 +61,7 @@ public class TurretSubsystem extends SubsystemBase {
   private final SparkAbsoluteEncoder pitchEncoder;
   private final AbsoluteEncoder pitchAbsoluteEncoder;
 
-  private double turretPosition;
+  private double turretPosition = 0;
   private double turretVelocity;
   private double pitchPosition = 10;
   private double pitchVelocity;
@@ -84,7 +85,6 @@ public class TurretSubsystem extends SubsystemBase {
   private double pitchKg;
 
   private TunableNumber pitchTune;
-  private double pitchValue = Math.toRadians(40);
 
   private final ShuffleboardTab turretTab = Shuffleboard.getTab(this.getName());
   private final DebugEntry<Double> turretPositionEntry =
@@ -111,6 +111,9 @@ public class TurretSubsystem extends SubsystemBase {
   private final RobotStateManager robotStateManager;
   private final VisionSubsystem visionSubsystem;
 
+  private boolean usingPitchPid = true;
+  private PIDController turretPIDController;
+
   public TurretSubsystem(RobotStateManager robotStateManager, VisionSubsystem visionSubsystem) {
     // Initialize Motors
     turretMotor = new CANSparkMax(Constants.TurretConstants.TURRET_MOTOR_ID, MotorType.kBrushless);
@@ -126,8 +129,11 @@ public class TurretSubsystem extends SubsystemBase {
         (float) TurretConstants.TURRET_MAX_ANGLE_ROTATIONS);
     turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
     turretMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
-    turretPIDController = TurretConstants.TURRET_PID.getPIDController();
-    TurretConstants.TURRET_PID.createTunableNumbers("Turret Motor", turretPIDController, this);
+    turretPositionPIDController = TurretConstants.TURRET_POSITION_PID_CASCADE.getPIDController();
+    TurretConstants.TURRET_POSITION_PID_CASCADE.createTunableNumbers(
+        "Turret Motor", turretPositionPIDController, this);
+    TurretConstants.TURRET_VELOCITY_PID_CASCADE.setSparkPidController(turretMotor);
+    turretPIDController = TurretConstants.TURRET_POSITION_PID.getPIDController();
 
     pitchMotor = new CANSparkMaxSim(Constants.TurretConstants.PITCH_MOTOR_ID, MotorType.kBrushless);
     pitchMotor.restoreFactoryDefaults();
@@ -169,9 +175,10 @@ public class TurretSubsystem extends SubsystemBase {
     highGearCANcoder.getConfigurator().apply(highGearSensorConfigs);
     lowGearCANcoder.getConfigurator().apply(lowGearSensorConfigs);
 
-    if (Robot.isReal()) {
-      zeroTurret();
-    }
+    // TODO: Reintroduce turret zeroing
+    // if (Robot.isReal()) {
+    //   zeroTurret();
+    // }
 
     this.robotStateManager = robotStateManager;
     this.visionSubsystem = visionSubsystem;
@@ -242,9 +249,7 @@ public class TurretSubsystem extends SubsystemBase {
     double encoderPosition =
         lowGearCANcoder.getPosition().getValueAsDouble()
             / Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO;
-    return (encoderPosition + Constants.TurretConstants.ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV)
-        * Math.PI
-        * 2;
+    return turretMotor.getEncoder().getPosition() * TurretConstants.TURRET_CONVERSION_FACTOR;
   }
 
   private double calculatePitchPosition() {
@@ -261,7 +266,9 @@ public class TurretSubsystem extends SubsystemBase {
     if (!Constants.enabledSubsystems.turretRotationEnabled) return;
     double lowGearPosition = lowGearCANcoder.getAbsolutePosition().getValue().doubleValue();
     double highGearPosition = highGearCANcoder.getAbsolutePosition().getValue().doubleValue();
-    Rotation2d turretRotation = encoderPositionsToTurretRotation(lowGearPosition, highGearPosition);
+    // Rotation2d turretRotation = encoderPositionsToTurretRotation(lowGearPosition,
+    // highGearPosition);
+    Rotation2d turretRotation = new Rotation2d();
 
     lowGearCANcoder.setPosition(
         turretRotation.getRotations() * Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO);
@@ -343,40 +350,30 @@ public class TurretSubsystem extends SubsystemBase {
     if (!Constants.enabledSubsystems.turretRotationEnabled) return;
 
     turretGoalPositionEntry.log(Units.radiansToDegrees(setpoint));
-    turretMotor.set(
-        turretPIDController.calculate(
-            turretPosition,
-            MathUtil.clamp(
-                setpoint,
-                Math.toRadians(Constants.TurretConstants.TURRET_MIN_ANGLE_DEGREES),
-                Math.toRadians(Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES))));
+    turretPositionPIDController.setSetpoint(
+        MathUtil.clamp(
+            setpoint,
+            Math.toRadians(Constants.TurretConstants.TURRET_MIN_ANGLE_DEGREES),
+            Math.toRadians(Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES)));
   }
 
   public void setPitchPos(double setpoint) {
     if (!Constants.enabledSubsystems.turretPitchEnabled) return;
-
+    usingPitchPid = true;
+    pitchPIDController.setSetpoint(
+        MathUtil.clamp(
+            setpoint,
+            Math.toRadians(Constants.TurretConstants.PITCH_MIN_ANGLE_DEGREES),
+            Math.toRadians(Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES)));
     pitchGoalPositionEntry.log(Math.toDegrees(setpoint));
-    pitchMotor.setVoltage(
-        pitchPIDController.calculate(
-                pitchPosition,
-                MathUtil.clamp(
-                    setpoint,
-                    Math.toRadians(Constants.TurretConstants.PITCH_MIN_ANGLE_DEGREES),
-                    Math.toRadians(Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES)))
-            + pitchFeedForward.calculate(pitchPosition, 0));
   }
 
   public void holdPosition() {
     if (Constants.enabledSubsystems.turretRotationEnabled) setTurretPos(0);
-    if (Constants.enabledSubsystems.turretPitchEnabled)
-      pitchMotor.setVoltage(
-          -0.1); // This just needed to be a not zero value to make sure the robot would not crunch
-    // its self
-  }
-
-  public void moveUp() {
-    if (Constants.enabledSubsystems.turretRotationEnabled) setTurretPos(turretPosition);
-    if (Constants.enabledSubsystems.turretPitchEnabled) setPitchPos(pitchValue);
+    if (Constants.enabledSubsystems.turretPitchEnabled) {
+      usingPitchPid = false;
+      pitchMotor.setVoltage(-0.1);
+    }
   }
 
   public void updateTurretPosition() {
@@ -479,6 +476,14 @@ public class TurretSubsystem extends SubsystemBase {
   public void periodic() {
     if (enabledSubsystems.turretRotationEnabled) {
       updateTurretPosition();
+      if(TurretConstants.ADVANCE_LOOP){
+        turretMotor
+            .getPIDController()
+            .setReference(
+                turretPositionPIDController.calculate(turretPosition), ControlType.kVelocity);
+      }else{
+        turretMotor.set(turretPIDController.calculate(turretPosition));
+      }
       turretVelocity =
           (lowGearCANcoder.getVelocity().getValueAsDouble()
                   * Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO)
@@ -490,6 +495,11 @@ public class TurretSubsystem extends SubsystemBase {
 
     if (enabledSubsystems.turretPitchEnabled) {
       updatePitchPosition();
+      if (usingPitchPid) {
+        pitchMotor.setVoltage(
+            pitchPIDController.calculate(pitchPosition)
+                + pitchFeedForward.calculate(pitchPosition, 0));
+      }
       pitchVelocity =
           pitchEncoder.getVelocity()
               * 60; // changing from rotations per second to rotations per minute or rpm
@@ -527,5 +537,14 @@ public class TurretSubsystem extends SubsystemBase {
 
   protected CANcoder getHighGearCANCoder() {
     return highGearCANcoder;
+  }
+
+  /**
+   * The elevation of the turret in radians
+   *
+   * @return the current elevation of the turret
+   */
+  public double getPitch() {
+    return pitchPosition;
   }
 }

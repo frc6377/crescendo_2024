@@ -11,12 +11,18 @@ import frc.robot.Constants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.config.TurretZeroConfig;
+import frc.robot.stateManagement.AllianceColor;
+import frc.robot.stateManagement.RangeMode;
+import frc.robot.stateManagement.RobotStateManager;
+import java.util.function.DoubleSupplier;
 
 public class TurretCommandFactory {
   final TurretSubsystem subsystem;
+  final RobotStateManager RSM;
 
-  public TurretCommandFactory(TurretSubsystem subsystem) {
+  public TurretCommandFactory(TurretSubsystem subsystem, RobotStateManager RSM) {
     this.subsystem = subsystem;
+    this.RSM = RSM;
   }
 
   public Command stowTurret() {
@@ -104,20 +110,51 @@ public class TurretCommandFactory {
         .asProxy();
   }
 
-  public Command moveUpwards() {
-    if (subsystem == null) return Commands.none();
-    return subsystem.run(() -> subsystem.moveUp()).withName("moveShooterUp").asProxy();
-  }
-
   public Command getAimTurretCommand() {
     if (subsystem == null) return new StartEndCommand(() -> {}, () -> {});
-    return subsystem.run(() -> subsystem.aimTurret()).withName("AimTurretCommand").asProxy();
+    return Commands.either(
+        shortRangeShot(), longRangeShot(), () -> RSM.getRange() == RangeMode.SHORT);
+  }
+
+  public Command shortRangeShot() {
+    return subsystem.startEnd(
+        () -> {
+          if (Constants.enabledSubsystems.turretRotationEnabled)
+            subsystem.setTurretPos(Math.toRadians(00));
+          if (Constants.enabledSubsystems.turretPitchEnabled)
+            subsystem.setPitchPos(Math.toRadians(40));
+        },
+        () -> {});
+  }
+
+  public Command longRangeShot() {
+    double angleToTarget = 0.35;
+    DoubleSupplier targetAngle =
+        () -> RSM.getAllianceColor() == AllianceColor.RED ? angleToTarget : -angleToTarget;
+    return subsystem.startEnd(
+        () -> {
+          if (Constants.enabledSubsystems.turretRotationEnabled) {
+            subsystem.setTurretPos(targetAngle.getAsDouble());
+          }
+          if (Constants.enabledSubsystems.turretPitchEnabled){
+            subsystem.setPitchPos(Math.toRadians(22.5));
+          }
+        },
+        () -> {});
   }
 
   public Command idleTurret() {
     if (subsystem == null) return Commands.none();
     return subsystem
-        .runEnd(() -> subsystem.holdPosition(), subsystem::stopTurret)
+        .run(
+            () -> {
+              subsystem.setTurretPos(0);
+              if (subsystem.getPitch() > 0.05) {
+                subsystem.setPitchPos(0);
+              } else {
+                subsystem.holdPosition();
+              }
+            })
         .withName("idleTurret");
   }
 
@@ -132,5 +169,11 @@ public class TurretCommandFactory {
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
     subsystem.setDefaultCommand(defaultCommand);
+  }
+
+  public Command logCurrentAngle() {
+    return subsystem
+        .runOnce(() -> System.out.println(subsystem.getTurretPos()))
+        .ignoringDisable(true);
   }
 }

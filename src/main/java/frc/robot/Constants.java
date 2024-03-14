@@ -89,16 +89,19 @@ public final class Constants {
     public static final int DEFAULT_SHOT_ROTATION = 0;
 
     // PID coefficients
-    // TODO: Change values when there's an actual real functional robot.
-    public static final HowdyPID TURRET_PID = new HowdyPID(0.125, 0.001, 0);
+    public static final boolean ADVANCE_LOOP = false;
+    public static final HowdyPID TURRET_POSITION_PID_CASCADE = new HowdyPID(5, 0.01, 0.225, 0.05, 0);
+    public static final HowdyPID TURRET_VELOCITY_PID_CASCADE = new HowdyPID(5, 0.01, 0.225, 0.05, 0);
+    public static final HowdyPID TURRET_POSITION_PID = new HowdyPID(5, 0.01, 0.225, 0.05, 0);
+
 
     public static final double TURRET_KMAXOUTPUT = 1;
     public static final double TURRET_KMINOUTPUT = -1;
 
-    public static final int TURRET_MIN_ANGLE_DEGREES = 0;
-    public static final int TURRET_MAX_ANGLE_DEGREES = 40; // 56.2 - 11 measured
+    public static final int TURRET_MIN_ANGLE_DEGREES = -30;
+    public static final int TURRET_MAX_ANGLE_DEGREES = 30; // 56.2 - 11 measured
 
-    public static final double TURRET_CONVERSION_FACTOR = 0.25;
+    public static final double TURRET_CONVERSION_FACTOR = 0.18292682926829268292682926829268;
     public static final int TURRET_SMART_CURRENT_LIMIT = 40;
 
     // TODO: Change values when there's an actual real functional robot.
@@ -270,7 +273,7 @@ public final class Constants {
     public static final boolean signalEnabled = false;
     public static final boolean shooterEnabled = true;
     public static final boolean triggerEnabled = true;
-    public static final boolean turretRotationEnabled = false;
+    public static final boolean turretRotationEnabled = true;
     public static final boolean turretPitchEnabled = true;
     public static final boolean climberEnabled = false;
   }
@@ -290,5 +293,10 @@ public final class Constants {
     public static final Rotation2d BLUE_AMP_ROTATION = Rotation2d.fromRotations(0.25);
     public static final Rotation2d BLUE_SOURCE_ROTATION = Rotation2d.fromRotations(-0.25);
     public static final Rotation2d RED_SOURCE_ROTATION = Rotation2d.fromRotations(-0.25);
+  }
+
+  public static class CommandConstants {
+
+    public static final double WAIT_FOR_TRAPELV = 0.1;
   }
 }

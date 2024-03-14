@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.Constants.LimelightConstants;
 import frc.robot.utilities.DebugEntry;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
@@ -24,6 +25,7 @@ public class RobotStateManager extends SubsystemBase {
 
   // Placement Mode
   private PlacementMode placementMode = PlacementMode.SPEAKER;
+  private RangeMode range = RangeMode.SHORT;
 
   // Debug Logging
   private DebugEntry<PlacementMode> placementModeLog =
@@ -92,10 +94,24 @@ public class RobotStateManager extends SubsystemBase {
 
   public int getSpeakerCenterTag() {
     if (getAllianceColor() == AllianceColor.RED) {
-      return 5;
+      return LimelightConstants.SPEAKER_TAG_ID_RED;
     } else if (getAllianceColor() == AllianceColor.BLUE) {
-      return 3; // TODO: verify
+      return LimelightConstants.SPEAKER_TAG_ID_BLUE;
     }
     return -1;
+  }
+
+  // Ranging Control
+
+  public void setLongRange() {
+    this.range = RangeMode.LONG;
+  }
+
+  public void setShortRange() {
+    this.range = RangeMode.SHORT;
+  }
+
+  public RangeMode getRange() {
+    return range;
   }
 }
