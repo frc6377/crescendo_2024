@@ -364,7 +364,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   public void holdPosition() {
     if (Constants.enabledSubsystems.turretRotationEnabled) setTurretPos(0);
-    if (Constants.enabledSubsystems.turretPitchEnabled) setPitchPos(0.1); // Magic Number
+    if (Constants.enabledSubsystems.turretPitchEnabled) setPitchPos(0.1); // This just needed to be a not zero value to make sure the robot would not crunch its self
   }
 
   public void moveUp() {
