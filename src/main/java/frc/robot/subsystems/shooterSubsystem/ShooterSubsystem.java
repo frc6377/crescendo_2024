@@ -62,8 +62,9 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterRightMotor =
         new CANSparkMaxSim(Constants.ShooterConstants.SHOOTER_MOTOR_RIGHT_ID, MotorType.kBrushless);
 
-    beamBreak =
-        new TOFSensorSimple(ShooterConstants.BEAM_BREAK_ID, ShooterConstants.BEAM_BREAK_THRESHOLD);
+    // beamBreak =
+    //     new TOFSensorSimple(ShooterConstants.BEAM_BREAK_ID,
+    // ShooterConstants.BEAM_BREAK_THRESHOLD);
 
     shooterLeftMotor.restoreFactoryDefaults();
     shooterLeftMotor.setSmartCurrentLimit(50);
@@ -78,8 +79,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
     shooterLeftMotor.setInverted(true);
 
-    ShooterConstants.SHOOTER_PID.setSparkPidController(shooterLeftMotor);
-    ShooterConstants.SHOOTER_PID.setSparkPidController(shooterRightMotor);
+    ShooterConstants.LEFT_SHOOTER_PID.setSparkPidController(shooterLeftMotor);
+    ShooterConstants.RIGHT_SHOOTER_PID.setSparkPidController(shooterRightMotor);
+
+    ShooterConstants.LEFT_SHOOTER_PID.createTunableNumbers("Left motor", shooterLeftMotor, this);
 
     if (!Robot.isCompetition) {
       shooterTab.add("Shooter Right PID", shooterRightMotor.getPIDController());
@@ -303,7 +306,7 @@ public class ShooterSubsystem extends SubsystemBase {
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT);
 
   public Trigger getBeamBreak() {
-    return new Trigger(beamBreak::get);
+    return new Trigger(() -> false);
   }
 
   public void stop() {

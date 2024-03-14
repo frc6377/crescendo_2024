@@ -49,7 +49,7 @@ public final class Constants {
     public static final double SHOOT_PERCENTAGE =
         1; // used when feeding note into turret to fire (should be negative value because it
     // outtakes)
-    public static final boolean MOTOR_INVERT = true;
+    public static final boolean MOTOR_INVERT = false;
     public static final double EJECT_PERCENT = -0.25;
   }
 
@@ -58,7 +58,8 @@ public final class Constants {
     public static final int SHOOTER_MOTOR_RIGHT_ID = 4;
 
     // PID
-    public static final HowdyPID SHOOTER_PID = new HowdyPID(0.0003, 0, 0, 0, 0.0002);
+    public static final HowdyPID RIGHT_SHOOTER_PID = new HowdyPID(0.0003, 0, 0, 0, 0.0002);
+    public static final HowdyPID LEFT_SHOOTER_PID = new HowdyPID(0.0003, 0, 0, 0, 0.0002);
 
     // Motor RPM, NOT roller RPM
     public static final double SHOOTER_IDLE_SPEED_LEFT = 400; // Placeholder; in RPM
@@ -101,13 +102,13 @@ public final class Constants {
     public static final int TURRET_SMART_CURRENT_LIMIT = 40;
 
     // TODO: Change values when there's an actual real functional robot.
-    public static final HowdyPID PITCH_PID = new HowdyPID(8, 0, 0.25);
+    public static final HowdyPID PITCH_PID = new HowdyPID(8, 0, 0);
     public static final HowdyFF PITCH_FF = new HowdyFF(0, 0.3, 0.1);
 
     public static final double PITCH_KMAXOUTPUT = 1;
     public static final double PITCH_KMINOUTPUT = -1;
 
-    public static final int PITCH_MAX_ANGLE_DEGREES = 50;
+    public static final int PITCH_MAX_ANGLE_DEGREES = 70;
     public static final int PITCH_MIN_ANGLE_DEGREES = -5;
 
     public static final double PITCH_CONVERSION_FACTOR = 128;
@@ -172,7 +173,7 @@ public final class Constants {
   public static class TrapElvConstants {
     // Control
     public static final double INTAKE_BEAM_BREAK_DELAY_SEC = 0.025;
-    public static final double SOURCE_BEAM_BREAK_DELAY_SEC = 0.2;
+    public static final double SOURCE_BEAM_BREAK_DELAY_SEC = 0.15;
 
     // Wrist
     public static final int WRIST_MOTOR_ID = 12;
@@ -264,14 +265,14 @@ public final class Constants {
     public static final boolean intakeEnabled = true;
     public static final boolean drivetrainEnabled = true;
     public static final boolean visionEnabled = false;
-    public static final boolean usingPhoton = true;
+    public static final boolean usingPhoton = false;
     public static final boolean elvEnabled = true;
     public static final boolean signalEnabled = false;
-    public static final boolean shooterEnabled = false;
+    public static final boolean shooterEnabled = true;
     public static final boolean triggerEnabled = true;
     public static final boolean turretRotationEnabled = false;
     public static final boolean turretPitchEnabled = true;
-    public static final boolean climberEnabled = true;
+    public static final boolean climberEnabled = false;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;

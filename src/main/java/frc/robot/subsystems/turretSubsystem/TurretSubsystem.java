@@ -84,7 +84,7 @@ public class TurretSubsystem extends SubsystemBase {
   private double pitchKg;
 
   private TunableNumber pitchTune;
-  private double pitchValue = 0;
+  private double pitchValue = Math.toRadians(40);
 
   private final ShuffleboardTab turretTab = Shuffleboard.getTab(this.getName());
   private final DebugEntry<Double> turretPositionEntry =
@@ -115,6 +115,7 @@ public class TurretSubsystem extends SubsystemBase {
     // Initialize Motors
     turretMotor = new CANSparkMax(Constants.TurretConstants.TURRET_MOTOR_ID, MotorType.kBrushless);
     turretMotor.restoreFactoryDefaults();
+    turretMotor.setIdleMode(IdleMode.kBrake);
     turretMotor.setInverted(Constants.TurretConstants.IS_MOTOR_INVERTED);
     turretMotor.setSmartCurrentLimit(Constants.TurretConstants.TURRET_SMART_CURRENT_LIMIT);
     turretMotor.setSoftLimit(
@@ -131,12 +132,14 @@ public class TurretSubsystem extends SubsystemBase {
     pitchMotor = new CANSparkMaxSim(Constants.TurretConstants.PITCH_MOTOR_ID, MotorType.kBrushless);
     pitchMotor.restoreFactoryDefaults();
     pitchMotor.setSmartCurrentLimit(Constants.TurretConstants.PITCH_SMART_CURRENT_LIMIT);
-    pitchMotor.setSoftLimit(
-        CANSparkMax.SoftLimitDirection.kReverse, (float) TurretConstants.PITCH_MIN_ANGLE_ROTATIONS);
-    pitchMotor.setSoftLimit(
-        CANSparkMax.SoftLimitDirection.kForward, (float) TurretConstants.PITCH_MAX_ANGLE_ROTATIONS);
-    pitchMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
-    pitchMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
+    // pitchMotor.setSoftLimit(
+    //     CANSparkMax.SoftLimitDirection.kReverse, (float)
+    // TurretConstants.PITCH_MIN_ANGLE_ROTATIONS);
+    // pitchMotor.setSoftLimit(
+    //     CANSparkMax.SoftLimitDirection.kForward, (float)
+    // TurretConstants.PITCH_MAX_ANGLE_ROTATIONS);
+    // pitchMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
+    // pitchMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
     pitchMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
     pitchAbsoluteEncoder = pitchMotor.getAbsoluteEncoder();
     pitchAbsoluteEncoder.setPositionConversionFactor(1);
@@ -173,8 +176,7 @@ public class TurretSubsystem extends SubsystemBase {
     this.robotStateManager = robotStateManager;
     this.visionSubsystem = visionSubsystem;
 
-    pitchTune =
-        new TunableNumber("pitch GoTo Value", 0.0, (a) -> pitchValue = Math.toRadians(a), this);
+    pitchTune = new TunableNumber("pitch GoTo Value", 40.0, (a) -> {}, this);
     pitchKgTune =
         new TunableNumber("pitch Kg", TurretConstants.PITCH_FF.getKG(), (kg) -> pitchKg = kg, this);
 
@@ -366,7 +368,10 @@ public class TurretSubsystem extends SubsystemBase {
 
   public void holdPosition() {
     if (Constants.enabledSubsystems.turretRotationEnabled) setTurretPos(0);
-    if (Constants.enabledSubsystems.turretPitchEnabled) setPitchPos(0.1); // This just needed to be a not zero value to make sure the robot would not crunch its self
+    if (Constants.enabledSubsystems.turretPitchEnabled)
+      pitchMotor.setVoltage(
+          -0.1); // This just needed to be a not zero value to make sure the robot would not crunch
+    // its self
   }
 
   public void moveUp() {

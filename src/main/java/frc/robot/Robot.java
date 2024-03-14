@@ -136,7 +136,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-    m_robotContainer.getDriveTrain().startVisionMeasures();
+    // m_robotContainer.getDriveTrain().startVisionMeasures();
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
