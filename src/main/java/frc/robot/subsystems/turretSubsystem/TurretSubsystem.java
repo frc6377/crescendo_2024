@@ -401,7 +401,8 @@ public class TurretSubsystem extends SubsystemBase {
                       .BLUE) // Default to red because that's the color on our test field
               ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
               : Constants.TurretConstants.SPEAKER_TAG_ID_RED);
-      double visionTX = visionSubsystem.getTurretYaw(tagID);
+      // We invert tx and ty because the limelight is mounted upside-down
+      double visionTX = -visionSubsystem.getTurretYaw(tagID);
       if (visionTX != 0) {
         // X & Rotation
         if (Constants.enabledSubsystems.turretRotationEnabled) {
@@ -410,10 +411,10 @@ public class TurretSubsystem extends SubsystemBase {
 
         // Y & Tilting
         if (Constants.enabledSubsystems.turretPitchEnabled) {
-          double visionTY = visionSubsystem.getTurretPitch(tagID);
+          double visionTY = -visionSubsystem.getTurretPitch(tagID);
           double distanceToTag = tyToDistanceFromTag(visionTY);
           tagDistanceEntry.log(distanceToTag);
-          setPitchPos(distanceToShootingPitch(tyToDistanceFromTag(visionTY)));
+          setPitchPos(distanceToShootingPitch(distanceToTag));
         }
 
         if (Math.abs(Math.toRadians(visionTX) + turretPosition)
