@@ -88,15 +88,15 @@ public class TurretSubsystem extends SubsystemBase {
 
   private final ShuffleboardTab turretTab = Shuffleboard.getTab(this.getName());
   private final DebugEntry<Double> turretPositionEntry =
-      new DebugEntry<Double>(turretPosition, "Turret Position (Rotations)", this);
+      new DebugEntry<Double>(turretPosition, "Turret Position (Degrees)", this);
   private final DebugEntry<Double> turretGoalPositionEntry =
-      new DebugEntry<Double>(0.0, "Turret Goal Position (Radians)", this);
+      new DebugEntry<Double>(0.0, "Turret Goal Position (Degrees)", this);
   private final DebugEntry<Double> turretVelocityEntry =
       new DebugEntry<Double>(turretVelocity, "Turret Velocity (RPM)", this);
   private final DebugEntry<Double> pitchPositionEntry =
-      new DebugEntry<Double>(pitchPosition, "Pitch Position (Rotations)", this);
+      new DebugEntry<Double>(pitchPosition, "Pitch Position (Degrees)", this);
   private final DebugEntry<Double> pitchGoalPositionEntry =
-      new DebugEntry<Double>(0.0, "Pitch Goal Position (Radians)", this);
+      new DebugEntry<Double>(0.0, "Pitch Goal Position (Degrees)", this);
   private final DebugEntry<Double> pitchVelocityEntry =
       new DebugEntry<Double>(pitchVelocity, "Pitch Velocity (RPM)", this);
   private final DebugEntry<Double> motorOutputEntry =
@@ -140,7 +140,6 @@ public class TurretSubsystem extends SubsystemBase {
     pitchMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
     pitchAbsoluteEncoder = pitchMotor.getAbsoluteEncoder();
     pitchAbsoluteEncoder.setPositionConversionFactor(1);
-    pitchAbsoluteEncoder.setInverted(false);
     pitchAbsoluteEncoder.setZeroOffset(TurretConstants.PITCH_ZERO_OFFSET);
     pitchAbsoluteEncoder.setInverted(true);
     pitchMotor.setIdleMode(IdleMode.kCoast);
@@ -339,7 +338,7 @@ public class TurretSubsystem extends SubsystemBase {
   public void setTurretPos(double setpoint) {
     if (!Constants.enabledSubsystems.turretRotationEnabled) return;
 
-    turretGoalPositionEntry.log(setpoint);
+    turretGoalPositionEntry.log(Units.radiansToDegrees(setpoint));
     turretMotor.set(
         turretPIDController.calculate(
             turretPosition,
@@ -365,7 +364,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   public void holdPosition() {
     if (Constants.enabledSubsystems.turretRotationEnabled) setTurretPos(0);
-    if (Constants.enabledSubsystems.turretPitchEnabled) setPitchPos(0.1);
+    if (Constants.enabledSubsystems.turretPitchEnabled) setPitchPos(0.1); // Magic Number
   }
 
   public void moveUp() {
@@ -477,7 +476,7 @@ public class TurretSubsystem extends SubsystemBase {
           (lowGearCANcoder.getVelocity().getValueAsDouble()
                   * Constants.TurretConstants.LOW_GEAR_CAN_CODER_RATIO)
               * 60; // changing from rotations per second to rotations per minute or rpm
-      turretPositionEntry.log(turretPosition);
+      turretPositionEntry.log(Units.rotationsToDegrees(turretPosition));
       turretVelocityEntry.log(turretVelocity);
       motorOutputEntry.log(turretMotor.get());
     }
