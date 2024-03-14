@@ -1,5 +1,6 @@
 package frc.robot.subsystems.climberSubsystem;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -7,41 +8,51 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ClimberConstants;
+import frc.robot.subsystems.turretSubsystem.TurretCommandFactory;
+import frc.robot.subsystems.turretSubsystem.TurretCommandFactory.TurretPosition;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 /** Expected climb sequece is: 1. Raise 2. Clip 3. Climb */
 public class ClimberCommandFactory {
   private final ClimberSubsystem subsystem;
+  private final TurretCommandFactory turretCommandFactory;
   private final Runnable noop = () -> {};
 
-  public ClimberCommandFactory(ClimberSubsystem subsystem) {
+  public ClimberCommandFactory(
+      ClimberSubsystem subsystem, TurretCommandFactory turretCommandFactory) {
     this.subsystem = subsystem;
+    this.turretCommandFactory = turretCommandFactory;
   }
 
   public Command raise() {
     if (subsystem == null) return Commands.none();
     Timer minTime = new Timer();
-    return initalRaise()
+    return turretCommandFactory
+        .point(new TurretPosition(new Rotation2d(), new Rotation2d()))
         .andThen(
-            new FunctionalCommand(
-                () -> {
-                  subsystem.setOutputLimits(1, 0);
-                  subsystem.applyCurrentDemand(ClimberConstants.RAISE_CURRENT);
-                  minTime.start();
-                },
-                noop,
-                (interupt) -> {
-                  subsystem.setOutputLimits(0, -1);
-                  subsystem.applyPercent(0);
-                },
-                () -> {
-                  boolean vel = subsystem.getVelocity().isZero(0.5);
-                  return vel && minTime.hasElapsed(ClimberConstants.MIN_RAISE_TIME_SEC);
-                },
-                subsystem))
-        .withName("raise")
-        .asProxy();
+            Commands.parallel(
+                    initalRaise()
+                        .andThen(
+                            new FunctionalCommand(
+                                () -> {
+                                  subsystem.setOutputLimits(1, 0);
+                                  subsystem.applyCurrentDemand(ClimberConstants.RAISE_CURRENT);
+                                  minTime.start();
+                                },
+                                noop,
+                                (interupt) -> {
+                                  subsystem.setOutputLimits(0, -1);
+                                  subsystem.applyPercent(0);
+                                },
+                                () -> {
+                                  boolean vel = subsystem.getVelocity().isZero(0.5);
+                                  return vel
+                                      && minTime.hasElapsed(ClimberConstants.MIN_RAISE_TIME_SEC);
+                                },
+                                subsystem)),
+                    turretCommandFactory.inert())
+                .withName("raise"));
   }
 
   public Command initalRaise() {

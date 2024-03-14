@@ -471,4 +471,8 @@ public class TurretSubsystem extends SubsystemBase {
   protected CANcoder getHighGearCANCoder() {
     return highGearCANcoder;
   }
+
+  public Rotation2d getPitch() {
+    return Rotation2d.fromRadians(calculatePitchPosition());
+  }
 }

@@ -3,8 +3,10 @@ package frc.robot.subsystems.turretSubsystem;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.Constants;
@@ -134,5 +136,30 @@ public class TurretCommandFactory {
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
     subsystem.setDefaultCommand(defaultCommand);
+  }
+
+  public Command point(TurretPosition target) {
+    return new FunctionalCommand(
+        () -> {
+          subsystem.setTurretPos(target.horizontal.getRadians());
+          subsystem.setPitchPos(target.vertical.getRadians());
+        },
+        () -> {},
+        (a) -> {},
+        () ->
+            subsystem.getTurretPos() - target.horizontal.getRadians() < 0.1
+                && subsystem.getPitch().minus(target.vertical).getRadians() < 0.1,
+        subsystem);
+  }
+
+  public static record TurretPosition(Rotation2d horizontal, Rotation2d vertical) {}
+
+  /**
+   * pervents the turret from moving until interuppeted
+   *
+   * @return
+   */
+  public Command inert() {
+    return subsystem.run(() -> {});
   }
 }

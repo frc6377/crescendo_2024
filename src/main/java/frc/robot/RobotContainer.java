@@ -150,7 +150,7 @@ public class RobotContainer {
     } else {
       climberSubsystem = null;
     }
-    climberCommandFactory = new ClimberCommandFactory(climberSubsystem);
+    climberCommandFactory = new ClimberCommandFactory(climberSubsystem, turretCommandFactory);
 
     if (Constants.enabledSubsystems.drivetrainEnabled) {
       registerCommands();
