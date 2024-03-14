@@ -20,14 +20,15 @@ public class DynamicRobotConfig {
     public static double lowGearTurretZero = 0;
     public static double highGearTurretZero = 0;
 
-    // These 3 don't make very much sense when our bot has a turret. Also they're wrong. I'm keeping them around so we don't have to refactor Limelight Configs
+    // These 3 don't make very much sense when our bot has a turret. Also they're wrong. I'm keeping
+    // them around so we don't have to refactor Limelight Configs
     public static double limelightXMeters = Units.inchesToMeters(4.34645669);
     public static double limelightZMeters = Units.inchesToMeters(17.28346);
     public static double limelightYawRadians = Math.toRadians(180);
 
     public static double limelightYMeters = Units.inchesToMeters(9.99);
     public static double limelightRollRadians = Math.toRadians(180);
-    public static double limelightPitchRadians = Math.toRadians(90-69);
+    public static double limelightPitchRadians = Math.toRadians(90 - 69);
   }
 
   private static TunerConstants tunerConstants;

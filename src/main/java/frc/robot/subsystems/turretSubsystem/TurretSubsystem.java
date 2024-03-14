@@ -360,7 +360,7 @@ public class TurretSubsystem extends SubsystemBase {
                     setpoint,
                     Math.toRadians(Constants.TurretConstants.PITCH_MIN_ANGLE_DEGREES),
                     Math.toRadians(Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES)))
-     + pitchFeedForward.calculate(pitchPosition, 0));
+            + pitchFeedForward.calculate(pitchPosition, 0));
   }
 
   public void holdPosition() {
