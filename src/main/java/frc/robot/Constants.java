@@ -101,8 +101,8 @@ public final class Constants {
     public static final int TURRET_SMART_CURRENT_LIMIT = 40;
 
     // TODO: Change values when there's an actual real functional robot.
-    public static final HowdyPID PITCH_PID = new HowdyPID(0.01, 0.0, 0);
-    public static final HowdyFF PITCH_FF = new HowdyFF(0, 1.55, 0.1);
+    public static final HowdyPID PITCH_PID = new HowdyPID(8, 0, 0.25);
+    public static final HowdyFF PITCH_FF = new HowdyFF(0, 0.3, 0.1);
 
     public static final double PITCH_KMAXOUTPUT = 1;
     public static final double PITCH_KMINOUTPUT = -1;
@@ -110,8 +110,10 @@ public final class Constants {
     public static final int PITCH_MAX_ANGLE_DEGREES = 50;
     public static final int PITCH_MIN_ANGLE_DEGREES = -5;
 
-    public static final double PITCH_CONVERSION_FACTOR = 25;
+    public static final double PITCH_CONVERSION_FACTOR = 128;
     public static final int PITCH_SMART_CURRENT_LIMIT = 40;
+
+    public static final double PITCH_ZERO_OFFSET = Units.degreesToRotations(265.72);
 
     // Physics Values
     public static final double SHOOTER_CENTER_OF_GRAVITY = 1; // TODO: Get real values
@@ -157,9 +159,9 @@ public final class Constants {
     public static final double TURRET_MAX_ANGLE_ROTATIONS =
         (TURRET_MAX_ANGLE_DEGREES / (360 * TURRET_CONVERSION_FACTOR));
     public static final double PITCH_MIN_ANGLE_ROTATIONS =
-        (PITCH_MIN_ANGLE_DEGREES / (360 * PITCH_CONVERSION_FACTOR));
+        ((PITCH_MIN_ANGLE_DEGREES * PITCH_CONVERSION_FACTOR) / 360);
     public static final double PITCH_MAX_ANGLE_ROTATIONS =
-        (PITCH_MAX_ANGLE_DEGREES / (360 * PITCH_CONVERSION_FACTOR));
+        ((PITCH_MAX_ANGLE_DEGREES * PITCH_CONVERSION_FACTOR) / 360);
   }
 
   public static class OperatorConstants {
@@ -261,11 +263,11 @@ public final class Constants {
   public static class enabledSubsystems {
     public static final boolean intakeEnabled = true;
     public static final boolean drivetrainEnabled = true;
-    public static final boolean visionEnabled = true;
+    public static final boolean visionEnabled = false;
     public static final boolean usingPhoton = true;
     public static final boolean elvEnabled = true;
     public static final boolean signalEnabled = false;
-    public static final boolean shooterEnabled = true;
+    public static final boolean shooterEnabled = false;
     public static final boolean triggerEnabled = true;
     public static final boolean turretRotationEnabled = false;
     public static final boolean turretPitchEnabled = true;
