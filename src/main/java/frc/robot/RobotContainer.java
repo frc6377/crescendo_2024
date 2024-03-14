@@ -310,7 +310,7 @@ public class RobotContainer {
   private Command ampAuton() {
     return Commands.parallel(
         trapElvCommandFactory.positionAMP(),
-        Commands.waitUntil(trapElvSubsystem.isAMPReady())
+        Commands.waitUntil(trapElvCommandFactory.getSourceBreak())
             .andThen(trapElvCommandFactory.scoreAMP())
             .onlyWhile(trapElvCommandFactory.getSourceBreak()));
   }
@@ -319,9 +319,7 @@ public class RobotContainer {
   public void registerCommands() {
     HashMap<String, Command> autonCommands = new HashMap<String, Command>();
 
-    if (enabledSubsystems.shooterEnabled) {
-      autonCommands.put("Shoot", shootAuton());
-    }
+    autonCommands.put("Shoot", shootAuton());
 
     autonCommands.put("Amp", ampAuton());
 
