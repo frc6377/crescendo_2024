@@ -151,7 +151,7 @@ public class TurretCommandFactory {
         () -> {
           if (Constants.enabledSubsystems.turretRotationEnabled) {
             if (CommandConstants.USE_VISION_TARGETING) {
-              visionTracking(() -> 0);
+              visionTracking();
             } else {
               subsystem.setTurretPos(targetAngle.getAsDouble());
             }
@@ -198,11 +198,8 @@ public class TurretCommandFactory {
 
     @Override
     public double getAsDouble() {
-      if (subsystem.turretAtSetPoint()) dir = !dir;
-      if (dir) {
-        return 90;
-      }
-      return -90;
+      int scl = RSM.getAllianceColor() == AllianceColor.RED ? 1 : -1;
+      return Units.rotationsToDegrees(0.1901587509527439) * scl;
     }
   }
 
