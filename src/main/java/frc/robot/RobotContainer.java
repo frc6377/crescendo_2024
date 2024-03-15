@@ -271,11 +271,11 @@ public class RobotContainer {
 
   private void configDriverFeedBack() {
     new Trigger(trapElvCommandFactory.getSourceBreak())
-        .and(OI.getTrigger(OI.Driver.intake))
+        .and(() -> OI.Operator.controller.getPOV() == 0)
         .whileTrue(
             Commands.startEnd(
-                () -> OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
-                () -> OI.Driver.setRumble(0)));
+                () -> {OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);},
+                () -> {OI.Driver.setRumble(0);OI.Operator.setRumble(0);}));
     new Trigger(shooterCommandFactory::isShooterReady)
         .whileTrue(
             Commands.startEnd(
@@ -283,11 +283,11 @@ public class RobotContainer {
                 () -> OI.Operator.setRumble(0)));
     shooterCommandFactory
         .getBeamBreak()
-        .and(OI.getTrigger(OI.Driver.intake).or(() -> OI.Operator.controller.getPOV() == 90))
+        .and(OI.getTrigger(OI.Driver.intake).or(() -> OI.Operator.controller.getPOV() == 00))
         .whileTrue(
             Commands.startEnd(
-                () -> OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
-                () -> OI.Driver.setRumble(0)));
+                () -> {OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);},
+                () -> {OI.Driver.setRumble(0);OI.Operator.setRumble(0);}));
   }
 
   private Command speakerSource() {
