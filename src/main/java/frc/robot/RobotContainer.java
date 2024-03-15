@@ -336,7 +336,7 @@ public class RobotContainer {
                 triggerCommandFactory
                     .getShootCommand()
                     .until(shooterCommandFactory.getBeamBreak().negate().debounce(.25))),
-        shooterCommandFactory.revShooter());
+        prepareToScoreSpeaker());
   }
 
   private Command ampAuton() {
