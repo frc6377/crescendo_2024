@@ -329,14 +329,38 @@ public class RobotContainer {
         trapElvCommandFactory.wristShooterRev());
   }
 
-  private Command shootAuton() {
+  private Command prepareToScoreSpeakerShortRange() {
+    return Commands.parallel(
+        turretCommandFactory.shortRangeShot(),
+        shooterCommandFactory.revShooter(),
+        trapElvCommandFactory.wristShooterRev());
+  }
+
+  private Command prepareToScoreSpeakerLongRange() {
+    return Commands.parallel(
+        turretCommandFactory.longRangeShot(),
+        shooterCommandFactory.revShooter(),
+        trapElvCommandFactory.wristShooterRev());
+  }
+
+  private Command shootAutonShort() {
     return Commands.deadline(
         Commands.waitUntil(() -> shooterCommandFactory.isShooterReady())
             .andThen(
                 triggerCommandFactory
                     .getShootCommand()
                     .until(shooterCommandFactory.getBeamBreak().negate().debounce(.25))),
-        prepareToScoreSpeaker());
+        prepareToScoreSpeakerShortRange());
+  }
+
+  private Command shootAutonLong() {
+    return Commands.deadline(
+        Commands.waitUntil(() -> shooterCommandFactory.isShooterReady())
+            .andThen(
+                triggerCommandFactory
+                    .getShootCommand()
+                    .until(shooterCommandFactory.getBeamBreak().negate().debounce(.25))),
+        prepareToScoreSpeakerLongRange());
   }
 
   private Command ampAuton() {
@@ -350,7 +374,8 @@ public class RobotContainer {
   public void registerCommands() {
     HashMap<String, Command> autonCommands = new HashMap<String, Command>();
 
-    autonCommands.put("Shoot", shootAuton());
+    autonCommands.put("Shoot", shootAutonShort());
+    autonCommands.put("ShootLong", shootAutonLong());
     // autonCommands.put("Amp", ampAuton());
     if (Constants.enabledSubsystems.intakeEnabled) {
       autonCommands.put("Speaker Intake", intakeCommandFactory.getSpeakerIntakeCommand());
