@@ -118,6 +118,7 @@ public class TrapElvCommandFactory {
     return subsystem
         .startEnd(
             () -> {
+              subsystem.setWristState(TrapElvState.STOWED);
               subsystem.setRoller(TrapElvConstants.ROLLER_SPEED);
             },
             () -> {
@@ -201,7 +202,8 @@ public class TrapElvCommandFactory {
               subsystem.setWristState(TrapElvState.AMP_REV);
             },
             () -> {})
-        .withName("Pose AMP");
+        .withName("Pose AMP")
+        .asProxy();
   }
 
   public void setDefaultCommand(Command defaultCommand) {

@@ -58,7 +58,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "ShootLong"
           }
         }
       ]

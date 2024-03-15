@@ -242,10 +242,10 @@ public class RobotContainer {
     OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
 
     new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
-    new Trigger(() -> OI.Operator.controller.getPOV() == 90)
+    new Trigger(() -> OI.Operator.controller.getPOV() == 270)
         .onTrue(new InstantCommand(() -> robotStateManager.setLongRange()));
     new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());
-    new Trigger(() -> OI.Operator.controller.getPOV() == 270)
+    new Trigger(() -> OI.Operator.controller.getPOV() == 90)
         .onTrue(new InstantCommand(() -> robotStateManager.setShortRange()));
 
     new Trigger(() -> OI.Driver.controller.getPOV() == 90)
@@ -264,7 +264,6 @@ public class RobotContainer {
   }
 
   private Command shooterOuttake() {
-
     return Commands.parallel(
             triggerCommandFactory.getEjectCommand(), intakeCommandFactory.reverseIntakeCommand())
         .asProxy();
@@ -305,7 +304,8 @@ public class RobotContainer {
     return Commands.parallel(
             trapElvCommandFactory.intakeGround(), intakeCommandFactory.getAmpIntakeCommand())
         .until(trapElvCommandFactory.getSourceBreak())
-        .andThen(trapElvCommandFactory.intakeFromGroundForTime());
+        .andThen(trapElvCommandFactory.intakeFromGroundForTime())
+        .asProxy();
   }
 
   private Command shootSpeaker() {
@@ -331,14 +331,14 @@ public class RobotContainer {
 
   private Command prepareToScoreSpeakerShortRange() {
     return Commands.parallel(
-        turretCommandFactory.shortRangeShot(),
+        turretCommandFactory.shortRangeShot().asProxy(),
         shooterCommandFactory.revShooter(),
         trapElvCommandFactory.wristShooterRev());
   }
 
   private Command prepareToScoreSpeakerLongRange() {
     return Commands.parallel(
-        turretCommandFactory.longRangeShot(),
+        turretCommandFactory.longRangeShot().asProxy(),
         shooterCommandFactory.revShooter(),
         trapElvCommandFactory.wristShooterRev());
   }
@@ -349,6 +349,7 @@ public class RobotContainer {
             .andThen(
                 triggerCommandFactory
                     .getShootCommand()
+                    .withTimeout(1)
                     .until(shooterCommandFactory.getBeamBreak().negate().debounce(.25))),
         prepareToScoreSpeakerShortRange());
   }
@@ -378,7 +379,7 @@ public class RobotContainer {
     autonCommands.put("ShootLong", shootAutonLong());
     // autonCommands.put("Amp", ampAuton());
     if (Constants.enabledSubsystems.intakeEnabled) {
-      autonCommands.put("Speaker Intake", intakeCommandFactory.getSpeakerIntakeCommand());
+      autonCommands.put("Speaker Intake", intakeSpeaker().asProxy());
       autonCommands.put("Amp Intake", intakeAmp());
     }
     autonCommands.put("Intake", new InstantCommand(() -> {}, new Subsystem[] {}));

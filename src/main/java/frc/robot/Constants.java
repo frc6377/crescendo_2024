@@ -50,7 +50,7 @@ public final class Constants {
         1; // used when feeding note into turret to fire (should be negative value because it
     // outtakes)
     public static final boolean MOTOR_INVERT = false;
-    public static final double EJECT_PERCENT = -0.25;
+    public static final double EJECT_PERCENT = 1;
   }
 
   public static class ShooterConstants {
@@ -276,7 +276,7 @@ public final class Constants {
     public static final boolean triggerEnabled = true;
     public static final boolean turretRotationEnabled = true;
     public static final boolean turretPitchEnabled = true;
-    public static final boolean climberEnabled = true;
+    public static final boolean climberEnabled = false;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
