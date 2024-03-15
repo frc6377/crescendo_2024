@@ -90,16 +90,17 @@ public final class Constants {
 
     // PID coefficients
     public static final boolean ADVANCE_LOOP = false;
-    public static final HowdyPID TURRET_POSITION_PID_CASCADE = new HowdyPID(5, 0.01, 0.225, 0.05, 0);
-    public static final HowdyPID TURRET_VELOCITY_PID_CASCADE = new HowdyPID(5, 0.01, 0.225, 0.05, 0);
-    public static final HowdyPID TURRET_POSITION_PID = new HowdyPID(5, 0.01, 0.225, 0.05, 0);
-
+    public static final HowdyPID TURRET_POSITION_PID_CASCADE =
+        new HowdyPID(5, 0.01, 0.225, 0.05, 0);
+    public static final HowdyPID TURRET_VELOCITY_PID_CASCADE =
+        new HowdyPID(5, 0.01, 0.225, 0.05, 0);
+    public static final HowdyPID TURRET_POSITION_PID = new HowdyPID(2, 0.0, 0, 0.05, 0);
 
     public static final double TURRET_KMAXOUTPUT = 1;
     public static final double TURRET_KMINOUTPUT = -1;
 
-    public static final int TURRET_MIN_ANGLE_DEGREES = -30;
-    public static final int TURRET_MAX_ANGLE_DEGREES = 30; // 56.2 - 11 measured
+    public static final int TURRET_MIN_ANGLE_DEGREES = -90;
+    public static final int TURRET_MAX_ANGLE_DEGREES = 90;
 
     public static final double TURRET_CONVERSION_FACTOR = 0.18292682926829268292682926829268;
     public static final int TURRET_SMART_CURRENT_LIMIT = 40;
@@ -161,7 +162,7 @@ public final class Constants {
     public static final double TURRET_MIN_ANGLE_ROTATIONS =
         (TURRET_MIN_ANGLE_DEGREES / (360 * TURRET_MOTOR_TURRET_RATIO));
     public static final double TURRET_MAX_ANGLE_ROTATIONS =
-        (TURRET_MAX_ANGLE_DEGREES / (360 * TURRET_CONVERSION_FACTOR));
+        (TURRET_MAX_ANGLE_DEGREES / (360 * TURRET_MOTOR_TURRET_RATIO));
     public static final double PITCH_MIN_ANGLE_ROTATIONS =
         ((PITCH_MIN_ANGLE_DEGREES * PITCH_CONVERSION_FACTOR) / 360);
     public static final double PITCH_MAX_ANGLE_ROTATIONS =
@@ -267,15 +268,15 @@ public final class Constants {
   public static class enabledSubsystems {
     public static final boolean intakeEnabled = true;
     public static final boolean drivetrainEnabled = true;
-    public static final boolean visionEnabled = false;
-    public static final boolean usingPhoton = false;
+    public static final boolean visionEnabled = true;
+    public static final boolean usingPhoton = true;
     public static final boolean elvEnabled = true;
     public static final boolean signalEnabled = false;
     public static final boolean shooterEnabled = true;
     public static final boolean triggerEnabled = true;
     public static final boolean turretRotationEnabled = true;
     public static final boolean turretPitchEnabled = true;
-    public static final boolean climberEnabled = false;
+    public static final boolean climberEnabled = true;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
@@ -298,5 +299,6 @@ public final class Constants {
   public static class CommandConstants {
 
     public static final double WAIT_FOR_TRAPELV = 0.1;
+    public static final boolean USE_VISION_TARGETING = true;
   }
 }

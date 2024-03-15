@@ -145,7 +145,9 @@ public class RobotContainer {
     } else {
       turretSubsystem = null;
     }
-    turretCommandFactory = new TurretCommandFactory(turretSubsystem, robotStateManager);
+    turretCommandFactory =
+        new TurretCommandFactory(
+            turretSubsystem, robotStateManager, visionSubsystem, drivetrain::getRotation);
     if (enabledSubsystems.climberEnabled) {
       climberSubsystem = new ClimberSubsystem();
     } else {
@@ -282,7 +284,7 @@ public class RobotContainer {
                 () -> OI.Operator.setRumble(0)));
     shooterCommandFactory
         .getBeamBreak()
-        .and(OI.getTrigger(OI.Driver.intake))
+        .and(OI.getTrigger(OI.Driver.intake).or(() -> OI.Operator.controller.getPOV() == 90))
         .whileTrue(
             Commands.startEnd(
                 () -> OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
