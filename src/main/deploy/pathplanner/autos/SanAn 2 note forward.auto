@@ -14,6 +14,12 @@
         {
           "type": "named",
           "data": {
+            "name": "StartSanAn2Forward"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Shoot"
           }
         },
@@ -22,43 +28,69 @@
           "data": {
             "commands": [
               {
-                "type": "path",
-                "data": {
-                  "pathName": "SanAn 2 note intake"
-                }
-              },
-              {
-                "type": "deadline",
+                "type": "sequential",
                 "data": {
                   "commands": [
                     {
-                      "type": "wait",
+                      "type": "path",
                       "data": {
-                        "waitTime": 4.0
+                        "pathName": "SanAn 2 note intake"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "SanAn 2 note Shoot"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Speaker Intake"
+                        "name": "atSanAnFiringLocation"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "deadline",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Wait until Loaded"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Speaker Intake"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "WaitForSanAnFiringLocation"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ShootLong"
                       }
                     }
                   ]
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "SanAn 2 note Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShootLong"
           }
         }
       ]

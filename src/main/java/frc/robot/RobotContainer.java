@@ -429,4 +429,8 @@ public class RobotContainer {
     }
     return null;
   }
+
+  public ShooterCommandFactory getShooterCommandFactory() {
+    return shooterCommandFactory;
+  }
 }
