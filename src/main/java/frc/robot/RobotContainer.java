@@ -227,8 +227,6 @@ public class RobotContainer {
     OI.getButton(OI.Operator.switchToAmp).onTrue(robotStateManager.setAmpMode());
     OI.getButton(OI.Operator.switchToSpeaker).onTrue(robotStateManager.setSpeakerMode());
 
-    OI.getTrigger(OI.Driver.intake).whileTrue(intakeCommand());
-
     OI.getTrigger(OI.Driver.outtake).whileTrue(outtakeCommand());
 
     OI.getButton(OI.Driver.intakeSource).whileTrue(trapElvCommandFactory.wristintakeSource());
@@ -248,8 +246,7 @@ public class RobotContainer {
     new Trigger(() -> OI.Operator.controller.getPOV() == 90)
         .onTrue(new InstantCommand(() -> robotStateManager.setShortRange()));
 
-    new Trigger(() -> OI.Driver.controller.getPOV() == 90)
-        .onTrue(turretCommandFactory.logCurrentAngle());
+    new Trigger(() -> OI.Driver.controller.getPOV() == 0).whileTrue(intakeCommand());
   }
 
   private Command outtakeCommand() {
@@ -274,8 +271,14 @@ public class RobotContainer {
         .and(() -> OI.Operator.controller.getPOV() == 0)
         .whileTrue(
             Commands.startEnd(
-                () -> {OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);},
-                () -> {OI.Driver.setRumble(0);OI.Operator.setRumble(0);}));
+                () -> {
+                  OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);
+                  OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);
+                },
+                () -> {
+                  OI.Driver.setRumble(0);
+                  OI.Operator.setRumble(0);
+                }));
     new Trigger(shooterCommandFactory::isShooterReady)
         .whileTrue(
             Commands.startEnd(
@@ -286,8 +289,14 @@ public class RobotContainer {
         .and(OI.getTrigger(OI.Driver.intake).or(() -> OI.Operator.controller.getPOV() == 00))
         .whileTrue(
             Commands.startEnd(
-                () -> {OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);},
-                () -> {OI.Driver.setRumble(0);OI.Operator.setRumble(0);}));
+                () -> {
+                  OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);
+                  OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);
+                },
+                () -> {
+                  OI.Driver.setRumble(0);
+                  OI.Operator.setRumble(0);
+                }));
   }
 
   private Command speakerSource() {
