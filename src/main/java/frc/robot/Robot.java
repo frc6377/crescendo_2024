@@ -12,8 +12,6 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.enabledSubsystems;
-import frc.robot.utilities.AutoManager;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.NoSuchElementException;
@@ -36,7 +34,6 @@ public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-  private AutoManager m_autoManager;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -86,10 +83,6 @@ public class Robot extends LoggedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-
-    // Instantiate our AutoManager.  This will perform all the state tracking required for differnt
-    // auto commands.
-    m_autoManager = new AutoManager(m_robotContainer.getShooterCommandFactory());
   }
 
   /**
@@ -125,9 +118,7 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    if (enabledSubsystems.drivetrainEnabled) {
-      m_robotContainer.getDriveTrain().stopVisionMeasures();
-    }
+    m_robotContainer.getDriveTrain().stopVisionMeasures();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)

@@ -304,7 +304,7 @@ public class ShooterSubsystem extends SubsystemBase {
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_LEFT,
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT);
 
-  protected Trigger getBeamBreak() {
+  public Trigger getBeamBreak() {
     return new Trigger(beamBreak::get);
   }
 
