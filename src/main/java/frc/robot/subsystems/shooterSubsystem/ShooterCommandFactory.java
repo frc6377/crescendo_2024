@@ -77,7 +77,8 @@ public class ShooterCommandFactory {
                 () -> {
                   subsystem.stop();
                 })
-            .withName("Idle Shooter command");
+            .withName("Idle Shooter command")
+            .asProxy();
     return command;
   }
 
@@ -91,6 +92,7 @@ public class ShooterCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
+    defaultCommand.addRequirements(subsystem);
     subsystem.setDefaultCommand(defaultCommand);
   }
 
