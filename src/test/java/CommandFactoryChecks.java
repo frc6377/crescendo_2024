@@ -1,7 +1,9 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.RobotStateManager;
@@ -25,6 +27,8 @@ import java.util.HashSet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class CommandFactoryChecks {
 
@@ -35,75 +39,76 @@ public class CommandFactoryChecks {
   public void cleanupTests() {}
 
   @Test
-  public void checkClimbCmdsAreProxy() {
+  public void checkClimbCmds() {
     ClimberSubsystem sub = new ClimberSubsystem();
     ClimberCommandFactory factory = new ClimberCommandFactory(sub);
-    checkAllCmdFactoriesAreProxy(factory, factory.getCommands());
+    checkAllCmdFactoriesAreProxy(factory, factory.getCommands(), sub);
 
     factory = new ClimberCommandFactory(null);
     checkCmdNullSafety(factory::getCommands);
   }
 
   @Test
-  public void checkSwerveCmdsAreProxy() {
+  public void checkSwerveCmds() {
     SwerveSubsystem sub = new DynamicRobotConfig().getTunerConstants().drivetrain;
     SwerveCommandFactory factory = new SwerveCommandFactory(sub);
-    checkAllCmdFactoriesAreProxy(factory, factory.getCommands());
+    checkAllCmdFactoriesAreProxy(factory, factory.getCommands(), sub);
 
     factory = new SwerveCommandFactory(null);
     checkCmdNullSafety(factory::getCommands);
   }
 
   @Test
-  public void checkShootCmdsAreProxy() {
+  public void checkShootCmds() {
     ShooterSubsystem sub = new ShooterSubsystem();
     ShooterCommandFactory factory = new ShooterCommandFactory(sub);
-    checkAllCmdFactoriesAreProxy(factory, factory.getCommands());
+    checkAllCmdFactoriesAreProxy(factory, factory.getCommands(), sub);
 
     factory = new ShooterCommandFactory(null);
     checkCmdNullSafety(factory::getCommands);
   }
 
   @Test
-  public void checkTrapElvCmdsAreProxy() {
+  public void checkTrapElvCmds() {
     TrapElvSubsystem sub = new TrapElvSubsystem();
     TrapElvCommandFactory factory = new TrapElvCommandFactory(sub);
-    checkAllCmdFactoriesAreProxy(factory, factory.getCommands());
+    checkAllCmdFactoriesAreProxy(factory, factory.getCommands(), sub);
 
     factory = new TrapElvCommandFactory(null);
     checkCmdNullSafety(factory::getCommands);
   }
 
   @Test
-  public void checkIntakeCmdsAreProxy() {
+  public void checkIntakeCmds() {
     IntakeSubsystem sub = new IntakeSubsystem();
     IntakeCommandFactory factory = new IntakeCommandFactory(sub);
-    checkAllCmdFactoriesAreProxy(factory, factory.getCommands());
+    checkAllCmdFactoriesAreProxy(factory, factory.getCommands(), sub);
 
     factory = new IntakeCommandFactory(null);
     checkCmdNullSafety(factory::getCommands);
   }
 
   @Test
-  public void checkTriggerCmdsAreProxy() {
+  public void checkTriggerCmds() {
     TriggerSubsystem sub = new TriggerSubsystem();
     TriggerCommandFactory factory = new TriggerCommandFactory(sub);
-    checkAllCmdFactoriesAreProxy(factory, factory.getCommands());
+    checkAllCmdFactoriesAreProxy(factory, factory.getCommands(), sub);
 
     factory = new TriggerCommandFactory(null);
     checkCmdNullSafety(factory::getCommands);
   }
 
   @Test
-  public void checkTurretCmdsAreProxy() {
+  public void checkTurretCmds() {
     TurretSubsystem sub = new TurretSubsystem(new RobotStateManager(), new VisionSubsystem() {});
     TurretCommandFactory factory = new TurretCommandFactory(sub);
-    checkAllCmdFactoriesAreProxy(factory, factory.getCommands());
+    checkAllCmdFactoriesAreProxy(factory, factory.getCommands(), sub);
 
     factory = new TurretCommandFactory(null);
     checkCmdNullSafety(factory::getCommands);
   }
 
+  // TODO: only checks Command factor methods, other methods remain unchecked
   private void checkCmdNullSafety(Runnable getCommands) {
     try {
       getCommands.run();
@@ -122,7 +127,7 @@ public class CommandFactoryChecks {
     }
   }
 
-  private void checkAllCmdFactoriesAreProxy(Object factory, Command[] cmds) {
+  private void checkAllCmdFactoriesAreProxy(Object factory, Command[] cmds, Subsystem sub) {
     int numCommands = 0;
     for (Method m : factory.getClass().getMethods()) {
       if (m.getReturnType() == Command.class) {
@@ -133,12 +138,24 @@ public class CommandFactoryChecks {
     assertEquals(
         cmds.length,
         numCommands,
-        "getCommands() list size mismatch with number of Command factory methods");
+        sub.getName() + " getCommands() list size mismatch with number of Command factory methods");
+
     for (Command cmd : cmds) {
       assertEquals(
           new HashSet<Subsystem>(),
           cmd.getRequirements(),
-          "Non-proxied public Command factory detected");
+          "Non-proxied public Command factory detected: " + cmd.getName());
+
+      try (MockedStatic<RobotState> robotMock = Mockito.mockStatic(RobotState.class)) {
+        robotMock.when(() -> RobotState.isDisabled()).thenReturn(false);
+        CommandScheduler.getInstance().enable();
+        cmd.schedule();
+        assertNotEquals(
+            CommandScheduler.getInstance().requiring(sub),
+            null,
+            cmd.getName() + " missing subsystem requirement");
+        CommandScheduler.getInstance().cancelAll();
+      }
     }
   }
 }

@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ClimberConstants;
 import java.util.ArrayList;
@@ -47,7 +46,8 @@ public class ClimberCommandFactory {
 
   public Command initalRaise() {
     if (subsystem == null) return Commands.none();
-    return new InstantCommand(() -> subsystem.applyPercent(ClimberConstants.INITAL_RAISE_PERCENT))
+    return subsystem
+        .runOnce(() -> subsystem.applyPercent(ClimberConstants.INITAL_RAISE_PERCENT))
         .andThen(new WaitCommand(ClimberConstants.BREAK_STATIC_TIME))
         .withName("initalRaise")
         .asProxy();
@@ -63,7 +63,8 @@ public class ClimberCommandFactory {
 
   public Command breakStatic() {
     if (subsystem == null) return Commands.none();
-    return new InstantCommand(() -> subsystem.applyPercent(ClimberConstants.BREAK_STATIC_PERCENT))
+    return subsystem
+        .runOnce(() -> subsystem.applyPercent(ClimberConstants.BREAK_STATIC_PERCENT))
         .andThen(new WaitCommand(ClimberConstants.BREAK_STATIC_TIME))
         .withName("breakStatic")
         .asProxy();

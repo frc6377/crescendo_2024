@@ -91,6 +91,8 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
             telemetry.telemeterize(a);
             LimelightHelpers.simPose(a);
           });
+
+      seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     } else {
       this.registerTelemetry(telemetry::realTelemetry);
     }

@@ -59,7 +59,7 @@ public class TriggerCommandFactory {
 
   public Command[] getCommands() {
     ArrayList<Command> cmds = new ArrayList<Command>();
-    cmds.add(getGroundLoadCommand(() -> false));
+    cmds.add(getGroundLoadCommand(() -> true));
     cmds.add(getLoadForTime());
     cmds.add(getLoadCommand());
     cmds.add(getHoldCommand());
