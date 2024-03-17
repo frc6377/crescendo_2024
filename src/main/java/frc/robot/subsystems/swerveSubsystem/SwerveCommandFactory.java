@@ -19,6 +19,7 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem.DriveRequest;
+import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -288,5 +289,20 @@ public class SwerveCommandFactory {
             () -> RSM.getAllianceColor() == AllianceColor.RED)
         .withName("Target Amp")
         .asProxy();
+  }
+
+  public Command[] getCommands() {
+    ArrayList<Command> cmds = new ArrayList<Command>();
+    cmds.add(autoTargetAmp(() -> new DriveRequest(0, 0, 0), new RobotStateManager()));
+    cmds.add(autoTargetSpeaker(() -> new DriveRequest(0, 0, 0), new RobotStateManager()));
+    cmds.add(assistedDriving(() -> new DriveRequest(0, 0, 0), new RobotStateManager()));
+    cmds.add(zeroDriveTrain());
+    cmds.add(fieldOrientedDrive(() -> new DriveRequest(0, 0, 0)));
+    cmds.add(robotOrientedDrive(() -> new DriveRequest(0, 0, 0)));
+    cmds.add(applyRequest(() -> new SwerveRequest.Idle()));
+    cmds.add(pointAtLocation(new Translation2d(), () -> new DriveRequest(0, 0, 0)));
+    cmds.add(pointInDirection(new Rotation2d(), () -> new DriveRequest(0, 0, 0)));
+    cmds.add(pointDrive(() -> 0.0, () -> new DriveRequest(0, 0, 0)));
+    return cmds.toArray(new Command[cmds.size()]);
   }
 }

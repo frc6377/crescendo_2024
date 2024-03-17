@@ -4,8 +4,11 @@ import static org.mockito.Mockito.*;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.config.DynamicRobotConfig;
 import frc.robot.subsystems.climberSubsystem.ClimberCommandFactory;
 import frc.robot.subsystems.climberSubsystem.ClimberSubsystem;
+import frc.robot.subsystems.swerveSubsystem.SwerveCommandFactory;
+import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import org.junit.jupiter.api.AfterEach;
@@ -26,6 +29,14 @@ public class ProxyCmdCheck {
     ClimberCommandFactory factory = new ClimberCommandFactory(sub);
     checkAllCmdFactoriesAreProxy(factory, factory.getCommands());
   }
+
+  @Test
+  public void checkSwerveCmdsAreProxy() {
+    SwerveSubsystem sub = new DynamicRobotConfig().getTunerConstants().drivetrain;
+    SwerveCommandFactory factory = new SwerveCommandFactory(sub);
+    checkAllCmdFactoriesAreProxy(factory, factory.getCommands());
+  }
+
   /*
 
     @Test
@@ -50,11 +61,6 @@ public class ProxyCmdCheck {
               new TurretSubsystem(new RobotStateManager(), new VisionSubsystem() {})));
     }
 
-    @Test
-    public void checkSwerveCmdsAreProxy() {
-      checkAllCmdFactoriesAreProxy(
-          new SwerveCommandFactory(new DynamicRobotConfig().getTunerConstants().drivetrain));
-    }
 
     @Test
     public void checkIntakeCmdsAreProxy() {
