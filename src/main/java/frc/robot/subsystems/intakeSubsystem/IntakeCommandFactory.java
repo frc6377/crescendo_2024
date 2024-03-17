@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.stateManagement.PlacementMode;
+import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 
 public class IntakeCommandFactory {
@@ -63,5 +64,16 @@ public class IntakeCommandFactory {
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
     subsystem.setDefaultCommand(defaultCommand);
+  }
+
+  public Command[] getCommands() {
+    ArrayList<Command> cmds = new ArrayList<Command>();
+    cmds.add(reverseIntakeCommand());
+    cmds.add(getIntakeCommand(PlacementMode.AMP));
+    cmds.add(getSpeakerIntakeCommand());
+    cmds.add(intakeSourceForTime());
+    cmds.add(intakeSpeakerCommandSmart(() -> false));
+    cmds.add(getAmpIntakeCommand());
+    return cmds.toArray(new Command[cmds.size()]);
   }
 }

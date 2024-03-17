@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.subsystems.climberSubsystem.ClimberCommandFactory;
 import frc.robot.subsystems.climberSubsystem.ClimberSubsystem;
+import frc.robot.subsystems.intakeSubsystem.IntakeCommandFactory;
+import frc.robot.subsystems.intakeSubsystem.IntakeSubsystem;
 import frc.robot.subsystems.shooterSubsystem.ShooterCommandFactory;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem;
 import frc.robot.subsystems.swerveSubsystem.SwerveCommandFactory;
@@ -55,17 +57,14 @@ public class ProxyCmdCheck {
     checkAllCmdFactoriesAreProxy(factory, factory.getCommands());
   }
 
+  @Test
+  public void checkIntakeCmdsAreProxy() {
+    IntakeSubsystem sub = new IntakeSubsystem();
+    IntakeCommandFactory factory = new IntakeCommandFactory(sub);
+    checkAllCmdFactoriesAreProxy(factory, factory.getCommands());
+  }
+
   /*
-
-    @Test
-    public void checkShooterCmdsAreProxy() {
-      checkAllCmdFactoriesAreProxy(new ShooterCommandFactory(new ShooterSubsystem()));
-    }
-
-    @Test
-    public void checkTrapElvCmdsAreProxy() {
-      checkAllCmdFactoriesAreProxy(new TrapElvCommandFactory(new TrapElvSubsystem()));
-    }
 
     @Test
     public void checkTriggerCmdsAreProxy() {
