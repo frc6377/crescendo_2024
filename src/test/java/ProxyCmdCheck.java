@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.subsystems.climberSubsystem.ClimberCommandFactory;
 import frc.robot.subsystems.climberSubsystem.ClimberSubsystem;
+import frc.robot.subsystems.shooterSubsystem.ShooterCommandFactory;
+import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem;
 import frc.robot.subsystems.swerveSubsystem.SwerveCommandFactory;
 import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem;
 import java.lang.reflect.Method;
@@ -34,6 +36,13 @@ public class ProxyCmdCheck {
   public void checkSwerveCmdsAreProxy() {
     SwerveSubsystem sub = new DynamicRobotConfig().getTunerConstants().drivetrain;
     SwerveCommandFactory factory = new SwerveCommandFactory(sub);
+    checkAllCmdFactoriesAreProxy(factory, factory.getCommands());
+  }
+
+  @Test
+  public void checkShootCmdsAreProxy() {
+    ShooterSubsystem sub = new ShooterSubsystem();
+    ShooterCommandFactory factory = new ShooterCommandFactory(sub);
     checkAllCmdFactoriesAreProxy(factory, factory.getCommands());
   }
 

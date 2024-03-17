@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
+import java.util.ArrayList;
 
 public class ShooterCommandFactory {
   private final ShooterSubsystem subsystem;
@@ -104,5 +105,16 @@ public class ShooterCommandFactory {
   public Trigger getBeamBreak() {
     if (subsystem == null) return new Trigger(() -> false);
     return subsystem.getBeamBreak();
+  }
+
+  public Command[] getCommands() {
+    ArrayList<Command> cmds = new ArrayList<Command>();
+    cmds.add(this.intakeSource());
+    cmds.add(this.intakeSourceForTime());
+    cmds.add(this.intakeSpeakerSource());
+    cmds.add(this.outtake());
+    cmds.add(this.revShooter());
+    cmds.add(this.shooterIdle());
+    return cmds.toArray(new Command[cmds.size()]);
   }
 }
