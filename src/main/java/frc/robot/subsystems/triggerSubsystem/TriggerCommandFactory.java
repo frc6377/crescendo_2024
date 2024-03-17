@@ -31,7 +31,7 @@ public class TriggerCommandFactory {
 
   public Command getHoldCommand() {
     final Command command =
-        buildCommand(TriggerConstants.HOLD_PERCENTAGE).withName("getHoldCommand");
+        buildCommand(TriggerConstants.HOLD_PERCENTAGE).withName("getHoldCommand").asProxy();
     return command;
   }
 
@@ -41,6 +41,7 @@ public class TriggerCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
+    defaultCommand.addRequirements(subsystem);
     subsystem.setDefaultCommand(defaultCommand);
   }
 
@@ -52,6 +53,6 @@ public class TriggerCommandFactory {
   }
 
   public Command getEjectCommand() {
-    return buildCommand(TriggerConstants.EJECT_PERCENT);
+    return buildCommand(TriggerConstants.EJECT_PERCENT).asProxy();
   }
 }

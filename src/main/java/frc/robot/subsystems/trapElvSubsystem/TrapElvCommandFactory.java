@@ -19,7 +19,10 @@ public class TrapElvCommandFactory {
   public Command stowTrapElvCommand() {
     if (subsystem == null) return Commands.none();
     final Command command =
-        subsystem.startEnd(() -> subsystem.stowTrapElv(), () -> {}).withName("stowTrapElvCommand");
+        subsystem
+            .startEnd(() -> subsystem.stowTrapElv(), () -> {})
+            .withName("stowTrapElvCommand")
+            .asProxy();
     return command;
   }
 
@@ -82,11 +85,6 @@ public class TrapElvCommandFactory {
             })
         .withName("rollerOutakeCommand")
         .asProxy();
-  }
-
-  public Command zeroArm() {
-    if (subsystem == null) return Commands.none();
-    throw new UnsupportedOperationException("Unimplemented");
   }
 
   public Command stopRoller() {
@@ -195,6 +193,7 @@ public class TrapElvCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
+    defaultCommand.addRequirements(subsystem);
     subsystem.setDefaultCommand(defaultCommand);
   }
 }

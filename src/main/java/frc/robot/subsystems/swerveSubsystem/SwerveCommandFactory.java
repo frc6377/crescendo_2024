@@ -113,7 +113,7 @@ public class SwerveCommandFactory {
 
     final Command command =
         new FunctionalCommand(init, exec, (interupt) -> {}, () -> false, subsystem);
-    return command.withName("pointDrive");
+    return command.withName("pointDrive").asProxy();
   }
 
   /**
@@ -183,12 +183,14 @@ public class SwerveCommandFactory {
                               driveRequest.alpha() * SwerveSubsystem.maxAngularRate);
                   subsystem.setControl(swerveRequest);
                 })
-            .withName("fieldOrientedDrive");
+            .withName("fieldOrientedDrive")
+            .asProxy();
     return command;
   }
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
+    defaultCommand.addRequirements(subsystem);
     subsystem.setDefaultCommand(defaultCommand);
   }
 
