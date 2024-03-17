@@ -116,7 +116,8 @@ public class CommandFactoryChecks {
     for (int i = 0; i < cmds.length; i++) {
       String name = cmds[i].getName();
       for (int j = i + 1; j < cmds.length; j++) {
-        assertNotEquals(name, cmds[j].getName(), "Duplicate Command \"" + name + "\" in getCommands list");
+        assertNotEquals(
+            name, cmds[j].getName(), "Duplicate Command \"" + name + "\" in getCommands list");
       }
     }
   }
@@ -129,9 +130,15 @@ public class CommandFactoryChecks {
       }
     }
     noDuplicatesInGetCommands(cmds);
-    assertEquals(cmds.length, numCommands, "getCommands() list size mismatch with number of Command factory methods");
+    assertEquals(
+        cmds.length,
+        numCommands,
+        "getCommands() list size mismatch with number of Command factory methods");
     for (Command cmd : cmds) {
-      assertEquals(new HashSet<Subsystem>(), cmd.getRequirements(), "Non-proxied public Command factory detected");
+      assertEquals(
+          new HashSet<Subsystem>(),
+          cmd.getRequirements(),
+          "Non-proxied public Command factory detected");
     }
   }
 }
