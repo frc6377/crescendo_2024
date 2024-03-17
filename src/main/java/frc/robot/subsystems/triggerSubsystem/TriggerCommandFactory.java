@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.TriggerConstants;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 
 public class TriggerCommandFactory {
@@ -42,8 +43,7 @@ public class TriggerCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
-    defaultCommand.addRequirements(subsystem);
-    subsystem.setDefaultCommand(defaultCommand);
+    subsystem.setDefaultCommand(Commands.defer(() -> defaultCommand, Set.of(subsystem)));
   }
 
   private Command buildCommand(double speed) {

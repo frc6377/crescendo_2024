@@ -20,6 +20,7 @@ import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem.DriveRequest;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -191,8 +192,7 @@ public class SwerveCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
-    defaultCommand.addRequirements(subsystem);
-    subsystem.setDefaultCommand(defaultCommand);
+    subsystem.setDefaultCommand(Commands.defer(() -> defaultCommand, Set.of(subsystem)));
   }
 
   public Command zeroDriveTrain() {

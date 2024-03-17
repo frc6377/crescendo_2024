@@ -141,14 +141,18 @@ public class CommandFactoryChecks {
         sub.getName() + " getCommands() list size mismatch with number of Command factory methods");
 
     for (Command cmd : cmds) {
+      // Verify the compiled Command doesn't require any subsystem
       assertEquals(
           new HashSet<Subsystem>(),
           cmd.getRequirements(),
           "Non-proxied public Command factory detected: " + cmd.getName());
 
       try (MockedStatic<RobotState> robotMock = Mockito.mockStatic(RobotState.class)) {
+        // force robot enabled so the CommandScheduler can schedule Commands.
         robotMock.when(() -> RobotState.isDisabled()).thenReturn(false);
         CommandScheduler.getInstance().enable();
+
+        // Schedule the command and verify is requires the subsystem underneath the ProxyCommand
         cmd.schedule();
         assertNotEquals(
             CommandScheduler.getInstance().requiring(sub),

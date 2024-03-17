@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
 import java.util.ArrayList;
+import java.util.Set;
 
 public class ShooterCommandFactory {
   private final ShooterSubsystem subsystem;
@@ -93,8 +94,7 @@ public class ShooterCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
-    defaultCommand.addRequirements(subsystem);
-    subsystem.setDefaultCommand(defaultCommand);
+    subsystem.setDefaultCommand(Commands.defer(() -> defaultCommand, Set.of(subsystem)));
   }
 
   public boolean isShooterReady() {
