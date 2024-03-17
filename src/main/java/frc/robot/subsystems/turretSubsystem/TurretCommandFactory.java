@@ -11,6 +11,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.config.TurretZeroConfig;
+import java.util.ArrayList;
 
 public class TurretCommandFactory {
   final TurretSubsystem subsystem;
@@ -134,5 +135,18 @@ public class TurretCommandFactory {
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
     subsystem.setDefaultCommand(defaultCommand);
+  }
+
+  public Command[] getCommands() {
+    ArrayList<Command> cmds = new ArrayList<Command>();
+    cmds.add(stowTurret());
+    cmds.add(pickup());
+    cmds.add(zeroZeroing());
+    cmds.add(zeroTurretCommand());
+    cmds.add(moveUpwards());
+    cmds.add(getAimTurretCommand());
+    cmds.add(idleTurret());
+    cmds.add(testTurretCommand(0.0));
+    return cmds.toArray(new Command[cmds.size()]);
   }
 }

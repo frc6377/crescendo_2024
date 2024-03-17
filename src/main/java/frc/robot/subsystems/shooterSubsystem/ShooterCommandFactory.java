@@ -14,9 +14,9 @@ import java.util.ArrayList;
 
 public class ShooterCommandFactory {
   private final ShooterSubsystem subsystem;
-  private ShuffleboardTab shooterTab = Shuffleboard.getTab("ShooterSubsystem");
-  private GenericEntry targetRPM = shooterTab.add("Target RPM", 3050).getEntry();
-  private GenericEntry rightTargetRPM = shooterTab.add("right RPM", 2250).getEntry();
+  private static ShuffleboardTab shooterTab = Shuffleboard.getTab("ShooterSubsystem");
+  private static GenericEntry targetRPM = shooterTab.add("Target RPM", 3050).getEntry();
+  private static GenericEntry rightTargetRPM = shooterTab.add("right RPM", 2250).getEntry();
 
   public ShooterCommandFactory(ShooterSubsystem subsystem) {
     this.subsystem = subsystem;
