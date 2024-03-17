@@ -1,3 +1,4 @@
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -109,11 +110,7 @@ public class CommandFactoryChecks {
 
   // TODO: only checks Command factory methods, other methods remain unchecked
   private void checkCmdNullSafety(Runnable getCommands) {
-    try {
-      getCommands.run();
-    } catch (NullPointerException e) {
-      assertEquals(true, false, "Caught NullPointerException when subsystem is disabled");
-    }
+    assertDoesNotThrow(getCommands::run, "Caught Exception when subsystem is disabled\n");
   }
 
   private void noDuplicatesInGetCommands(Command[] cmds) {
