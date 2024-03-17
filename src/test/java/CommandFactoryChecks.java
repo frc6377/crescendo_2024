@@ -108,7 +108,7 @@ public class CommandFactoryChecks {
     checkCmdNullSafety(factory::getCommands);
   }
 
-  // TODO: only checks Command factor methods, other methods remain unchecked
+  // TODO: only checks Command factory methods, other methods remain unchecked
   private void checkCmdNullSafety(Runnable getCommands) {
     try {
       getCommands.run();
