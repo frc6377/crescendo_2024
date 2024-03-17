@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ClimberConstants;
+import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
@@ -83,5 +84,15 @@ public class ClimberCommandFactory {
     return new FunctionalCommand(init, exec, end, isFinished, subsystem)
         .withName("climb")
         .asProxy();
+  }
+
+  public Command[] getCommands() {
+    ArrayList<Command> cmds = new ArrayList<Command>();
+    cmds.add(raise());
+    cmds.add(clip());
+    cmds.add(climb());
+    cmds.add(breakStatic());
+    cmds.add(initalRaise());
+    return cmds.toArray(new Command[cmds.size()]);
   }
 }
