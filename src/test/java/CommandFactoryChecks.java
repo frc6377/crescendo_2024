@@ -23,7 +23,6 @@ import frc.robot.subsystems.turretSubsystem.TurretCommandFactory;
 import frc.robot.subsystems.turretSubsystem.TurretSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import java.lang.reflect.Method;
-import java.util.HashSet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -143,8 +142,8 @@ public class CommandFactoryChecks {
     for (Command cmd : cmds) {
       // Verify the compiled Command doesn't require any subsystem
       assertEquals(
-          new HashSet<Subsystem>(),
-          cmd.getRequirements(),
+          0,
+          cmd.getRequirements().size(),
           "Non-proxied public Command factory detected: " + cmd.getName());
 
       try (MockedStatic<RobotState> robotMock = Mockito.mockStatic(RobotState.class)) {
