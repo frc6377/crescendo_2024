@@ -15,6 +15,8 @@ import frc.robot.subsystems.swerveSubsystem.SwerveCommandFactory;
 import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem;
 import frc.robot.subsystems.trapElvSubsystem.TrapElvCommandFactory;
 import frc.robot.subsystems.trapElvSubsystem.TrapElvSubsystem;
+import frc.robot.subsystems.triggerSubsystem.TriggerCommandFactory;
+import frc.robot.subsystems.triggerSubsystem.TriggerSubsystem;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import org.junit.jupiter.api.AfterEach;
@@ -61,6 +63,13 @@ public class ProxyCmdCheck {
   public void checkIntakeCmdsAreProxy() {
     IntakeSubsystem sub = new IntakeSubsystem();
     IntakeCommandFactory factory = new IntakeCommandFactory(sub);
+    checkAllCmdFactoriesAreProxy(factory, factory.getCommands());
+  }
+
+  @Test
+  public void checkTriggerCmdsAreProxy() {
+    TriggerSubsystem sub = new TriggerSubsystem();
+    TriggerCommandFactory factory = new TriggerCommandFactory(sub);
     checkAllCmdFactoriesAreProxy(factory, factory.getCommands());
   }
 
