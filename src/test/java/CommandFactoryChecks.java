@@ -1,10 +1,12 @@
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.RobotStateManager;
@@ -24,16 +26,38 @@ import frc.robot.subsystems.turretSubsystem.TurretCommandFactory;
 import frc.robot.subsystems.turretSubsystem.TurretSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 public class CommandFactoryChecks {
 
-  @BeforeEach
-  public void setup() {}
+  private static String cmdNames[] = {
+    Commands.none().getName(),
+    Commands.idle().getName(),
+    Commands.runOnce(() -> {}).getName(),
+    Commands.run(() -> {}).getName(),
+    Commands.startEnd(() -> {}, () -> {}).getName(),
+    Commands.runEnd(() -> {}, () -> {}).getName(),
+    Commands.print("").getName(),
+    Commands.waitSeconds(0.0).getName(),
+    Commands.waitUntil(() -> true).getName(),
+    Commands.either(Commands.none(), Commands.none(), () -> true).getName(),
+    Commands.defer(() -> Commands.none(), Set.of()).getName(),
+    Commands.deferredProxy(() -> Commands.none()).getName(),
+    Commands.sequence().getName(),
+    Commands.repeatingSequence().getName(),
+    Commands.parallel().getName(),
+    Commands.race().getName(),
+    Commands.deadline(Commands.none()).getName()
+  };
+
+  @BeforeAll
+  public static void setup() {}
 
   @AfterEach
   public void cleanupTests() {}
@@ -142,6 +166,11 @@ public class CommandFactoryChecks {
           0,
           cmd.getRequirements().size(),
           "Non-proxied public Command factory detected: " + cmd.getName());
+
+      // Check that all Commands have names that aren't generic
+      assertFalse(
+          Arrays.asList(cmdNames).contains(cmd.getName()),
+          "Detected generic Command name " + cmd.getName());
 
       try (MockedStatic<RobotState> robotMock = Mockito.mockStatic(RobotState.class)) {
         // force robot enabled so the CommandScheduler can schedule Commands.

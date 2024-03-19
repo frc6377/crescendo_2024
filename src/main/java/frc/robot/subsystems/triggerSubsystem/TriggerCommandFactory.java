@@ -18,13 +18,14 @@ public class TriggerCommandFactory {
   }
 
   public Command getGroundLoadCommand(BooleanSupplier tof) {
-    return getLoadCommand().until(tof).andThen(getLoadForTime());
+    return getLoadCommand().until(tof).andThen(getLoadForTime()).withName("getGroundLoadCommand");
   }
 
   public Command getLoadForTime() {
     if (subsystem == null) return Commands.none();
 
-    return Commands.deadline(new WaitCommand(ShooterConstants.INTAKE_DELAY_SEC), getLoadCommand());
+    return Commands.deadline(new WaitCommand(ShooterConstants.INTAKE_DELAY_SEC), getLoadCommand())
+        .withName("getLoadForTime");
   }
 
   public Command getLoadCommand() {

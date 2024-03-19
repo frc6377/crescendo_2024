@@ -40,12 +40,16 @@ public class IntakeCommandFactory {
   public Command intakeSourceForTime() {
     if (subsystem == null) return Commands.none();
     return Commands.deadline(
-        new WaitCommand(ShooterConstants.INTAKE_DELAY_SEC), getSpeakerIntakeCommand());
+            new WaitCommand(ShooterConstants.INTAKE_DELAY_SEC), getSpeakerIntakeCommand())
+        .withName("intakeSourceForTime");
   }
 
   public Command intakeSpeakerCommandSmart(BooleanSupplier tof) {
     if (subsystem == null) return Commands.none();
-    return getSpeakerIntakeCommand().until(tof).andThen(intakeSourceForTime());
+    return getSpeakerIntakeCommand()
+        .until(tof)
+        .andThen(intakeSourceForTime())
+        .withName("intakeSpeakerCommandSmart");
   }
 
   public Command getAmpIntakeCommand() {

@@ -251,7 +251,7 @@ public class SwerveCommandFactory {
             Commands.either(Commands.none(), autoTargetSource(requestSupplier, RSM), isAmpMode),
             onNearSide);
 
-    return assistDriver;
+    return assistDriver.withName("assistedDriving");
   }
 
   private BooleanSupplier isOnNearSide(BooleanSupplier isRed) {
