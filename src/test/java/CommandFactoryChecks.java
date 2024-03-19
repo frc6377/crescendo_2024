@@ -58,24 +58,7 @@ public class CommandFactoryChecks {
               Commands.repeatingSequence().getName(),
               Commands.parallel().getName(),
               Commands.race().getName(),
-              Commands.deadline(Commands.none()).getName(),
-              Commands.none().asProxy().getName(),
-              Commands.idle().asProxy().getName(),
-              Commands.runOnce(() -> {}).asProxy().getName(),
-              Commands.run(() -> {}).asProxy().getName(),
-              Commands.startEnd(() -> {}, () -> {}).asProxy().getName(),
-              Commands.runEnd(() -> {}, () -> {}).asProxy().getName(),
-              Commands.print("").asProxy().getName(),
-              Commands.waitSeconds(0.0).asProxy().getName(),
-              Commands.waitUntil(() -> true).asProxy().getName(),
-              Commands.either(Commands.none(), Commands.none(), () -> true).asProxy().getName(),
-              Commands.defer(() -> Commands.none(), Set.of()).asProxy().getName(),
-              Commands.deferredProxy(() -> Commands.none()).asProxy().getName(),
-              Commands.sequence().asProxy().getName(),
-              Commands.repeatingSequence().asProxy().getName(),
-              Commands.parallel().asProxy().getName(),
-              Commands.race().asProxy().getName(),
-              Commands.deadline(Commands.none()).asProxy().getName()));
+              Commands.deadline(Commands.none()).getName()));
 
   @BeforeAll
   public static void setup() {
@@ -195,7 +178,8 @@ public class CommandFactoryChecks {
 
       // Check that all Commands have names that aren't generic
       assertFalse(
-          cmdNames.contains(cmd.getName()), "Detected generic Command name " + cmd.getName());
+          cmdNames.contains(extractProxyName(cmd.getName())),
+          "Detected generic Command name " + cmd.getName());
 
       try (MockedStatic<RobotState> robotMock = Mockito.mockStatic(RobotState.class)) {
         // force robot enabled so the CommandScheduler can schedule Commands.
@@ -210,12 +194,21 @@ public class CommandFactoryChecks {
             cmd.getName() + " missing subsystem requirement");
 
         if (debugPrints) {
-        System.out.println(
-            cmd.getName() + " : " + CommandScheduler.getInstance().requiring(sub).getName());
+          System.out.println(
+              cmd.getName() + " : " + CommandScheduler.getInstance().requiring(sub).getName());
         }
 
         CommandScheduler.getInstance().cancelAll();
       }
     }
+  }
+
+  private String extractProxyName(String name) {
+    String proxyPrefix = "Proxy(";
+    while (name.length() >= proxyPrefix.length()
+        && name.substring(0, proxyPrefix.length()).equals(proxyPrefix)) {
+      name = name.substring(proxyPrefix.length(), name.length() - 1); // Remove ')' suffix
+    }
+    return name;
   }
 }
