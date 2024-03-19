@@ -186,7 +186,7 @@ public class CommandFactoryChecks {
         robotMock.when(() -> RobotState.isDisabled()).thenReturn(false);
         CommandScheduler.getInstance().enable();
 
-        // Schedule the command and verify is requires the subsystem underneath the ProxyCommand
+        // Schedule the command and verify it requires the subsystem underneath the ProxyCommand
         cmd.schedule();
         assertNotEquals(
             CommandScheduler.getInstance().requiring(sub),
