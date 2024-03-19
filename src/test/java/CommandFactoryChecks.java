@@ -178,7 +178,7 @@ public class CommandFactoryChecks {
 
       // Check that all Commands have names that aren't generic
       assertFalse(
-          cmdNames.contains(extractProxyName(cmd.getName())),
+          cmdNames.contains(extractProxy(cmd.getName())),
           "Detected generic Command name " + cmd.getName());
 
       try (MockedStatic<RobotState> robotMock = Mockito.mockStatic(RobotState.class)) {
@@ -203,9 +203,9 @@ public class CommandFactoryChecks {
     }
   }
 
-  private String extractProxyName(String name) {
+  private String extractProxy(String name) {
     String proxyPrefix = "Proxy(";
-    while (name.length() >= proxyPrefix.length()
+    while (name.length() > proxyPrefix.length()
         && name.substring(0, proxyPrefix.length()).equals(proxyPrefix)) {
       name = name.substring(proxyPrefix.length(), name.length() - 1); // Remove ')' suffix
     }
