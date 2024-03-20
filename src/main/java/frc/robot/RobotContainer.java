@@ -240,8 +240,8 @@ public class RobotContainer {
     OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
 
     new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
-    new Trigger(() -> OI.Operator.controller.getPOV() == 270)
-        .onTrue(new InstantCommand(() -> robotStateManager.setLongRange()));
+    // new Trigger(() -> OI.Operator.controller.getPOV() == 270)
+    //     .onTrue(new InstantCommand(() -> robotStateManager.setLongRange()));
     new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());
     new Trigger(() -> OI.Operator.controller.getPOV() == 90)
         .onTrue(new InstantCommand(() -> robotStateManager.setShortRange()));

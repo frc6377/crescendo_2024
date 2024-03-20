@@ -60,6 +60,12 @@
           "data": {
             "name": "ShootLong"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SanAn 2 note dodge"
+          }
         }
       ]
     }
