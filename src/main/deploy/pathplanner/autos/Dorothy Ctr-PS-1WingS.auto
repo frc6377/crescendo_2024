@@ -32,15 +32,15 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "named",
-                      "data": {
-                        "name": "Speaker Intake"
-                      }
-                    },
-                    {
                       "type": "wait",
                       "data": {
                         "waitTime": 4.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Speaker Intake"
                       }
                     }
                   ]
@@ -59,6 +59,12 @@
           "type": "named",
           "data": {
             "name": "ShootLong"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SanAn 2 note dodge"
           }
         }
       ]

@@ -248,7 +248,7 @@ public final class Constants {
     public static final int RIGHT_ARM_ID = 11;
     public static final double GEAR_RATIO = 175;
     public static final double CLIMB_PERCENT = -0.4;
-    public static final double CLIMB_POSITION = 7;
+    public static final double CLIMB_POSITION = 37;
     public static final double[] POSITION_PID = new double[] {0.15, 0, 0, 0};
     public static final double[] CURRENT_PID = new double[] {0.01, 0, 0, 0};
     public static final double MIN_RAISE_TIME_SEC = 0.2;
@@ -274,9 +274,9 @@ public final class Constants {
     public static final boolean signalEnabled = false;
     public static final boolean shooterEnabled = true;
     public static final boolean triggerEnabled = true;
-    public static final boolean turretRotationEnabled = true;
+    public static final boolean turretRotationEnabled = false;
     public static final boolean turretPitchEnabled = true;
-    public static final boolean climberEnabled = false;
+    public static final boolean climberEnabled = true;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
