@@ -188,8 +188,11 @@ public class TurretSubsystem extends SubsystemBase {
         new TunableNumber("pitch Kg", TurretConstants.PITCH_FF.getKG(), (kg) -> pitchKg = kg, this);
 
     pitchMap = new InterpolatingDoubleTreeMap();
-    pitchMap.put(0.0, 0.0);
-    pitchMap.put(1.0, 1.0);
+    pitchMap.put(Units.inchesToMeters(136.3), 34.6);
+    pitchMap.put(Units.inchesToMeters(136.3), 35.4);
+    pitchMap.put(Units.inchesToMeters(95.63), 43.2);
+    pitchMap.put(Units.inchesToMeters(59.88), 51.6);
+    pitchMap.put(Units.inchesToMeters(0.0), 90.0);
 
     // Simulation
     if (Robot.isSimulation()) {
@@ -417,7 +420,7 @@ public class TurretSubsystem extends SubsystemBase {
           double visionTY = -visionSubsystem.getTurretPitch(tagID);
           double distanceToTag = tyToDistanceFromTag(visionTY);
           tagDistanceEntry.log(distanceToTag);
-          setPitchPos(distanceToShootingPitch(distanceToTag));
+          // setPitchPos(distanceToShootingPitch(distanceToTag));
         }
 
         if (Math.abs(Math.toRadians(visionTX) + turretPosition)
@@ -433,7 +436,7 @@ public class TurretSubsystem extends SubsystemBase {
         setTurretPos(Constants.TurretConstants.DEFAULT_SHOT_ROTATION);
       }
       if (Constants.enabledSubsystems.turretPitchEnabled) {
-        setPitchPos(Constants.TurretConstants.DEFAULT_SHOT_PITCH);
+        // setPitchPos(Constants.TurretConstants.DEFAULT_SHOT_PITCH);
       }
     }
   }
@@ -468,20 +471,20 @@ public class TurretSubsystem extends SubsystemBase {
    * @param distance The distance from the speaker in meters
    * @return The shooter pitch in degrees
    */
-  private double distanceToShootingPitch(double distance) {
-    return 4; // TODO: Make and use a real formula(use testing, not physics)
+  public double distanceToShootingPitch(double distance) {
+    return pitchMap.get(distance);
   }
 
   @Override
   public void periodic() {
     if (enabledSubsystems.turretRotationEnabled) {
       updateTurretPosition();
-      if(TurretConstants.ADVANCE_LOOP){
+      if (TurretConstants.ADVANCE_LOOP) {
         turretMotor
             .getPIDController()
             .setReference(
                 turretPositionPIDController.calculate(turretPosition), ControlType.kVelocity);
-      }else{
+      } else {
         turretMotor.set(turretPIDController.calculate(turretPosition));
       }
       turretVelocity =

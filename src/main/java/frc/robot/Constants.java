@@ -90,10 +90,11 @@ public final class Constants {
 
     // PID coefficients
     public static final boolean ADVANCE_LOOP = false;
-    public static final HowdyPID TURRET_POSITION_PID_CASCADE = new HowdyPID(5, 0.01, 0.225, 0.05, 0);
-    public static final HowdyPID TURRET_VELOCITY_PID_CASCADE = new HowdyPID(5, 0.01, 0.225, 0.05, 0);
+    public static final HowdyPID TURRET_POSITION_PID_CASCADE =
+        new HowdyPID(5, 0.01, 0.225, 0.05, 0);
+    public static final HowdyPID TURRET_VELOCITY_PID_CASCADE =
+        new HowdyPID(5, 0.01, 0.225, 0.05, 0);
     public static final HowdyPID TURRET_POSITION_PID = new HowdyPID(5, 0.01, 0.225, 0.05, 0);
-
 
     public static final double TURRET_KMAXOUTPUT = 1;
     public static final double TURRET_KMINOUTPUT = -1;
@@ -267,13 +268,13 @@ public final class Constants {
   public static class enabledSubsystems {
     public static final boolean intakeEnabled = true;
     public static final boolean drivetrainEnabled = true;
-    public static final boolean visionEnabled = false;
-    public static final boolean usingPhoton = false;
+    public static final boolean visionEnabled = true;
+    public static final boolean usingPhoton = true;
     public static final boolean elvEnabled = true;
     public static final boolean signalEnabled = false;
     public static final boolean shooterEnabled = true;
     public static final boolean triggerEnabled = true;
-    public static final boolean turretRotationEnabled = true;
+    public static final boolean turretRotationEnabled = false;
     public static final boolean turretPitchEnabled = true;
     public static final boolean climberEnabled = false;
   }

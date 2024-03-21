@@ -116,6 +116,11 @@ public class TurretCommandFactory {
         shortRangeShot(), longRangeShot(), () -> RSM.getRange() == RangeMode.SHORT);
   }
 
+  public Command aimTurret() {
+    if (subsystem == null) return new StartEndCommand(() -> {}, () -> {});
+    return subsystem.run(subsystem::aimTurret).asProxy().withName("Aim Turret 2");
+  }
+
   public Command shortRangeShot() {
     return subsystem.startEnd(
         () -> {
@@ -136,7 +141,7 @@ public class TurretCommandFactory {
           if (Constants.enabledSubsystems.turretRotationEnabled) {
             subsystem.setTurretPos(targetAngle.getAsDouble());
           }
-          if (Constants.enabledSubsystems.turretPitchEnabled){
+          if (Constants.enabledSubsystems.turretPitchEnabled) {
             subsystem.setPitchPos(Math.toRadians(22.5));
           }
         },

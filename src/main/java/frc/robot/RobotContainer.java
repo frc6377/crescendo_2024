@@ -141,7 +141,7 @@ public class RobotContainer {
     }
     trapElvCommandFactory = new TrapElvCommandFactory(trapElvSubsystem);
     if (enabledSubsystems.turretRotationEnabled || enabledSubsystems.turretPitchEnabled) {
-      turretSubsystem = new TurretSubsystem(robotStateManager, null);
+      turretSubsystem = new TurretSubsystem(robotStateManager, visionSubsystem);
     } else {
       turretSubsystem = null;
     }
@@ -232,6 +232,8 @@ public class RobotContainer {
     OI.getButton(OI.Driver.intakeSource).whileTrue(trapElvCommandFactory.wristintakeSource());
 
     OI.getButton(OI.Driver.speakerSource).whileTrue(speakerSource());
+
+    OI.getButton(OI.Driver.aimTurret).toggleOnTrue(turretCommandFactory.aimTurret());
 
     OI.getButton(OI.Operator.prepClimb).onTrue(climberCommandFactory.raise());
 
