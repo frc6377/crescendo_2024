@@ -167,6 +167,7 @@ public final class Constants {
         ((PITCH_MIN_ANGLE_DEGREES * PITCH_CONVERSION_FACTOR) / 360);
     public static final double PITCH_MAX_ANGLE_ROTATIONS =
         ((PITCH_MAX_ANGLE_DEGREES * PITCH_CONVERSION_FACTOR) / 360);
+    public static final Rotation2d PIN_EPSILION = null;
   }
 
   public static class OperatorConstants {

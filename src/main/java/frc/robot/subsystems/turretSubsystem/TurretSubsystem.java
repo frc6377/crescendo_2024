@@ -350,8 +350,8 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   /**
-   * Sets the method to calculate the current turret angle.
-   * Is expected in rotaions.
+   * Sets the method to calculate the current turret angle. Is expected in rotaions.
+   *
    * @param positionErrorSupplier the method to call
    */
   public void setPositionErrorSupplier(DoubleSupplier positionErrorSupplier) {
@@ -475,10 +475,12 @@ public class TurretSubsystem extends SubsystemBase {
 
   /**
    * Checks if the turret is at its current set point +/- epsilion
+   *
    * @param epsilion the allowed error margin
    * @return if the turret is at its setpoint
    */
-  public boolean turretAtSetPoint(double epsilion) {
-    return Math.abs(turretPositionPIDController.getSetpoint() - turretPosition) < epsilion;
+  public boolean turretAtSetPoint(Rotation2d epsilion) {
+    return Math.abs(turretPositionPIDController.getSetpoint() - turretPosition)
+        < epsilion.getRotations();
   }
 }

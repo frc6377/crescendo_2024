@@ -20,7 +20,6 @@ import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem.DriveRequest;
 import frc.robot.utilities.HowdyMath;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -42,12 +41,12 @@ public class SwerveCommandFactory {
 
   // ---------- Getters ----------
 
-  public Translation2d currentRobotPosition(){
-    if(subsystem == null) return new Translation2d();
+  public Translation2d currentRobotPosition() {
+    if (subsystem == null) return new Translation2d();
     return subsystem.getState().Pose.getTranslation();
   }
 
-  // ---------- Commands ---------- 
+  // ---------- Commands ----------
 
   /**
    * Request the robot to point in a specified direction. Any non zero rotation demand will result
@@ -72,7 +71,8 @@ public class SwerveCommandFactory {
    */
   public Command pointAtLocation(final Translation2d target, final Supplier<DriveRequest> input) {
     if (subsystem == null) return Commands.none();
-    final DoubleSupplier getAngleToTarget = () -> HowdyMath.getAngleToTarget(currentRobotPosition(), target).getDegrees();
+    final DoubleSupplier getAngleToTarget =
+        () -> HowdyMath.getAngleToTarget(currentRobotPosition(), target).getDegrees();
     return pointDrive(getAngleToTarget, input).withName("Pointing at location").asProxy();
   }
 

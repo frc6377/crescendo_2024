@@ -22,7 +22,6 @@ import frc.robot.stateManagement.RangeMode;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.HowdyMath;
-
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -148,7 +147,6 @@ public class TurretCommandFactory {
         () -> {});
   }
 
-
   public Command longRangeShot() {
     double angleToTarget = 0.35;
     DoubleSupplier targetAngle =
@@ -202,14 +200,22 @@ public class TurretCommandFactory {
     return subsystem
         .run(
             () -> {
-              subsystem.setTurretPos(0);
-              if (subsystem.getPitch() > 0.05) {
-                subsystem.setPitchPos(0);
-              } else {
-                subsystem.holdPosition();
-              }
+              moveToBottomOfTravel();
             })
         .withName("idleTurret");
+  }
+
+  public Command pinTurret() {
+    return subsystem.run(
+        () -> {
+          if (subsystem.turretAtSetPoint(TurretConstants.PIN_EPSILION)) {
+            moveToBottomOfTravel();
+            // Effectivly disables the rotation motor
+            subsystem.setPositionErrorSupplier(() -> 0);
+          } else {
+            subsystem.setTurretPos(0);
+          }
+        });
   }
 
   public Command testTurretCommand(double degrees) {
@@ -231,11 +237,24 @@ public class TurretCommandFactory {
         .ignoringDisable(true);
   }
 
+  private void moveToBottomOfTravel() {
+    subsystem.setTurretPos(0);
+    if (subsystem.getPitch() > 0.05) {
+      subsystem.setPitchPos(0);
+    } else {
+      subsystem.holdPosition();
+    }
+  }
 
-  private Rotation2d odometryPointing(){
-    final Translation2d targetPosition = RSM.getAllianceColor() == AllianceColor.RED ? FieldConstants.RED_SPEAKER : FieldConstants.BLUE_SPEAKER;
-    final Rotation2d targetTurretAngleRelToField = HowdyMath.getAngleToTarget(translationSupplier.get(), targetPosition);
-    final Rotation2d targetTurretAngleRelToRobot = targetTurretAngleRelToField.minus(rotationSupplier.get());
+  private Rotation2d odometryPointing() {
+    final Translation2d targetPosition =
+        RSM.getAllianceColor() == AllianceColor.RED
+            ? FieldConstants.RED_SPEAKER
+            : FieldConstants.BLUE_SPEAKER;
+    final Rotation2d targetTurretAngleRelToField =
+        HowdyMath.getAngleToTarget(translationSupplier.get(), targetPosition);
+    final Rotation2d targetTurretAngleRelToRobot =
+        targetTurretAngleRelToField.minus(rotationSupplier.get());
     return targetTurretAngleRelToRobot;
   }
 }
