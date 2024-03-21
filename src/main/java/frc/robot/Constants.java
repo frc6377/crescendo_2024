@@ -93,7 +93,8 @@ public final class Constants {
     // Position in turret position (-0.5 to 0.5) to velocity in RPM
     public static final HowdyPID TURRET_POSITION_PID_CASCADE = new HowdyPID(200, 0., 0., 0.0, 0);
     // Velocity in RPM to percent out
-    public static final HowdyPID TURRET_VELOCITY_PID_CASCADE = new HowdyPID(0.1, 0., 3e-5, 0.0, 0);
+    public static final HowdyPID TURRET_VELOCITY_PID_CASCADE =
+        new HowdyPID(0.05, 1e-8, 3e-5, 4.0, 0);
 
     public static final double TURRET_KMAXOUTPUT = 1;
     public static final double TURRET_KMINOUTPUT = -1;
@@ -102,7 +103,7 @@ public final class Constants {
     public static final int TURRET_MAX_ANGLE_DEGREES = 90;
 
     public static final double TURRET_CONVERSION_FACTOR = 0.18292682926829268292682926829268;
-    public static final int TURRET_SMART_CURRENT_LIMIT = 40;
+    public static final int TURRET_SMART_CURRENT_LIMIT = 60;
 
     // TODO: Change values when there's an actual real functional robot.
     public static final HowdyPID PITCH_PID = new HowdyPID(8, 0, 0);
