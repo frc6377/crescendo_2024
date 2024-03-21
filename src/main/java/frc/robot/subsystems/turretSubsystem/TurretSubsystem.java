@@ -237,8 +237,6 @@ public class TurretSubsystem extends SubsystemBase {
           pitchRoot.append(new MechanismLigament2d("Pitch", 2, 0, 5, new Color8Bit(Color.kBlue)));
       turretTab.add("Pitch", pitchMech);
     }
-
-    currentCommand = new DebugEntry<String>("none", "Turret Command", this);
   }
 
   public void stopTurret() {

@@ -201,7 +201,7 @@ public class TrapElvCommandFactory {
               subsystem.setWristState(TrapElvState.AMP_REV);
             },
             () -> {})
-        .withName("Pose AMP");
+        .withName("wristShooterRev").asProxy();
   }
 
   public void setDefaultCommand(Command defaultCommand) {
