@@ -461,7 +461,9 @@ public class TurretSubsystem extends SubsystemBase {
             - dynamicRobotConfig.getLimelightConfig()
                 .limelightYMeters; // TODO: Change these alphabot constants to be turret
     // constants whenever the robot is built
+
     double distance = height / Math.tan(tagTheta);
+    System.out.println("tagTheta" + tagTheta + " height:" + height + " distance:" + distance);
     return distance;
   }
 
