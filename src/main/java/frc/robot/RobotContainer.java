@@ -147,7 +147,7 @@ public class RobotContainer {
     }
     turretCommandFactory =
         new TurretCommandFactory(
-            turretSubsystem, robotStateManager, visionSubsystem, drivetrain::getRotation);
+            turretSubsystem, robotStateManager, visionSubsystem, drivetrain::getRotation, drivetrainCommandFactory::currentRobotPosition);
     if (enabledSubsystems.climberEnabled) {
       climberSubsystem = new ClimberSubsystem();
     } else {
