@@ -271,7 +271,7 @@ public final class Constants {
     public static final boolean visionEnabled = true;
     public static final boolean usingPhoton = true;
     public static final boolean elvEnabled = true;
-    public static final boolean signalEnabled = false;
+    public static final boolean signalEnabled = true;
     public static final boolean shooterEnabled = true;
     public static final boolean triggerEnabled = true;
     public static final boolean turretRotationEnabled = false;
@@ -287,6 +287,7 @@ public final class Constants {
 
   // Lights
   public static final int LED_COUNT = 20;
+  public static final int LED_STRIP_PWM_PORT = 0;
 
   public static class DriverConstants {
 
