@@ -78,8 +78,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
     shooterLeftMotor.setInverted(true);
 
-    ShooterConstants.SHOOTER_PID.setSparkPidController(shooterLeftMotor);
-    ShooterConstants.SHOOTER_PID.setSparkPidController(shooterRightMotor);
+    ShooterConstants.LEFT_SHOOTER_PID.setSparkPidController(shooterLeftMotor);
+    ShooterConstants.RIGHT_SHOOTER_PID.setSparkPidController(shooterRightMotor);
+
+    ShooterConstants.LEFT_SHOOTER_PID.createTunableNumbers("Left motor", shooterLeftMotor, this);
 
     if (!Robot.isCompetition) {
       shooterTab.add("Shooter Right PID", shooterRightMotor.getPIDController());
@@ -195,7 +197,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   // Speed in RPM. Left is index 0, right is index 1.
-  public SpeakerConfig setShooterSpeeds(SpeakerConfig speeds) {
+  protected SpeakerConfig setShooterSpeeds(SpeakerConfig speeds) {
     targetSpeeds = speeds;
 
     shooterLeftMotor
@@ -256,7 +258,7 @@ public class ShooterSubsystem extends SubsystemBase {
     return speeds;
   }
 
-  public void requestPercent(double percent) {
+  protected void requestPercent(double percent) {
     shooterRightMotor.set(percent);
     shooterLeftMotor.set(percent);
   }
@@ -286,17 +288,42 @@ public class ShooterSubsystem extends SubsystemBase {
     public double getSpeedRightInRPM() {
       return speedRightInRPM;
     }
+
+    @Override
+    public boolean equals(Object object) {
+      if (object == null) {
+        return false;
+      }
+      if (object.getClass() != this.getClass()) {
+        return false;
+      }
+
+      final SpeakerConfig otherConfig = (SpeakerConfig) object;
+
+      if (this.distanceInInches != otherConfig.distanceInInches) {
+        return false;
+      }
+      if (this.speedLeftInRPM != otherConfig.speedLeftInRPM) {
+        return false;
+      }
+      if (this.speedRightInRPM != otherConfig.speedRightInRPM) {
+        return false;
+      }
+
+      return true;
+    }
   }
 
   // Motor RPM, NOT roller RPM
   public static final SpeakerConfig[] speakerConfigList = {
-    new SpeakerConfig(0, 2350, 1950),
-    new SpeakerConfig(40, 350, 350),
-    new SpeakerConfig(195, 500, 500),
-    new SpeakerConfig(290, 700, 700)
+    new SpeakerConfig(0, 3600, 2800),
+    new SpeakerConfig(59.88, 3650, 2850),
+    new SpeakerConfig(95.63, 3700, 2900),
+    new SpeakerConfig(136.3, 3750, 2950),
+    new SpeakerConfig(243.7, 3850, 3050)
   };
 
-  private static final SpeakerConfig speakerConfigIdle =
+  public static final SpeakerConfig speakerConfigIdle =
       new SpeakerConfig(
           -1,
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_LEFT,
@@ -306,8 +333,10 @@ public class ShooterSubsystem extends SubsystemBase {
     return new Trigger(beamBreak::get);
   }
 
-  public void stop() {
-    shooterRightMotor.set(0);
+  protected void stopAndLogMotors() {
     shooterLeftMotor.set(0);
+    shooterRightMotor.set(0);
+    leftMotorTargetSpeedEntry.log(0d);
+    rightMotorTargetSpeedEntry.log(0d);
   }
 }

@@ -29,7 +29,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  * project.
  */
 public class Robot extends LoggedRobot {
-  public static final boolean isCompetition = true;
+  public static final boolean isCompetition = false;
 
   private Command m_autonomousCommand;
 
@@ -136,7 +136,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-    m_robotContainer.getDriveTrain().startVisionMeasures();
+    // m_robotContainer.getDriveTrain().startVisionMeasures();
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -145,7 +145,8 @@ public class Robot extends LoggedRobot {
       m_autonomousCommand.cancel();
     }
     // BLUE is the default, so we only need to handle RED here.
-    if (DriverStation.getAlliance().get() == Alliance.Red) {
+    if (DriverStation.getAlliance().isPresent()
+        && DriverStation.getAlliance().get() == Alliance.Red) {
       m_robotContainer.getDriveTrain().setOperatorPerspectiveForward(Rotation2d.fromRotations(0.5));
     }
   }

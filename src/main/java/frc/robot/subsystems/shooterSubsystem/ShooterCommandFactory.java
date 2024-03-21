@@ -9,13 +9,12 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
 
 public class ShooterCommandFactory {
   private final ShooterSubsystem subsystem;
   private ShuffleboardTab shooterTab = Shuffleboard.getTab("ShooterSubsystem");
-  private GenericEntry targetRPM = shooterTab.add("Target RPM", 3050).getEntry();
-  private GenericEntry rightTargetRPM = shooterTab.add("right RPM", 2250).getEntry();
+  private GenericEntry leftTargetRPM = shooterTab.add("Left motor target RPM", 2750).getEntry();
+  private GenericEntry rightTargetRPM = shooterTab.add("Right motor target RPM", 2350).getEntry();
 
   public ShooterCommandFactory(ShooterSubsystem subsystem) {
     this.subsystem = subsystem;
@@ -56,26 +55,23 @@ public class ShooterCommandFactory {
   public Command revShooter() {
     if (subsystem == null) return Commands.none();
     return new FunctionalCommand(
-            () -> {
-              subsystem.setShooterSpeeds(
-                  new SpeakerConfig(-1, targetRPM.getDouble(4000), rightTargetRPM.getDouble(4000)));
-            },
-            () -> {},
-            (a) -> {},
-            () -> false,
-            subsystem)
-        .withName("revShooter")
-        .asProxy();
+        () -> {
+          subsystem.setShooterSpeeds(ShooterSubsystem.calculateShooterSpeeds(170)); // Amp shoot
+        },
+        () -> {},
+        (a) -> {},
+        () -> false,
+        subsystem);
   }
 
-  // Idle shooter command; for default command purposes
+  // Idle shooter command
   public Command shooterIdle() {
     if (subsystem == null) return Commands.none();
     final Command command =
         subsystem
             .run(
                 () -> {
-                  subsystem.stop();
+                  subsystem.stopAndLogMotors();
                 })
             .withName("Idle Shooter command");
     return command;
@@ -84,8 +80,8 @@ public class ShooterCommandFactory {
   public Command outtake() {
     if (subsystem == null) return Commands.none();
     return subsystem
-        .startEnd(() -> subsystem.requestPercent(-1), subsystem::stop)
-        .withName("outtake")
+        .startEnd(() -> subsystem.requestPercent(-1), subsystem::stopAndLogMotors)
+        .withName("Outtake command")
         .asProxy();
   }
 
