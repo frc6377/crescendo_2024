@@ -12,7 +12,6 @@ import frc.robot.subsystems.signaling.patterns.FireFlyPattern;
 import frc.robot.subsystems.signaling.patterns.PatternNode;
 import frc.robot.subsystems.signaling.patterns.RainbowPattern;
 import frc.robot.subsystems.signaling.patterns.TransFlag;
-import java.util.ArrayList;
 import java.util.function.Consumer;
 
 public class SignalingSubsystem extends SubsystemBase {
@@ -76,7 +75,7 @@ public class SignalingSubsystem extends SubsystemBase {
     } else if (alliance == AllianceColor.BLUE) {
       return RGB.BLUE;
     }
-    return RGB.PURPLE;
+    return RGB.RED;
   }
 
   private void startSignal(final double time, final double intensity) {
@@ -107,7 +106,7 @@ public class SignalingSubsystem extends SubsystemBase {
 
   private void setSection(final RGB rgb, final int startID, final int count) {
     for (var i = Math.max(startID, 0); i < Math.min(startID + count, numberOfLEDS); i++) {
-      ledBuffer.setRGB(i, rgb.red, rgb.green, rgb.blue);
+      ledBuffer.setRGB(i, rgb.red / 4, rgb.green / 4, rgb.blue / 4);
     }
     ledStrip.setData(ledBuffer);
   }
@@ -172,20 +171,8 @@ public class SignalingSubsystem extends SubsystemBase {
     FIRE_FLY;
 
     public static DisablePattern getRandom() {
-      // Do not use due to special request
-      DisablePattern[] DNU = {DisablePattern.TRANS_FLAG};
       DisablePattern[] allPatterns = DisablePattern.values();
-      ArrayList<DisablePattern> useable = new ArrayList<>();
-      for (DisablePattern p : allPatterns) {
-        boolean skip = false;
-        for (DisablePattern d : DNU) {
-          if (p == d) skip = true;
-        }
-        if (skip) continue;
-        useable.add(p);
-      }
-
-      return useable.get((int) Math.floor(Math.random() * (useable.size())));
+      return allPatterns[(int) Math.floor(Math.random() * (allPatterns.length))];
     }
   }
 
