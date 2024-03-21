@@ -35,7 +35,7 @@ import java.util.function.BiConsumer;
 public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   private static final double kSimLoopPeriod = 0.005; // 5 ms
   public static final double maxSpeed = Units.feetToMeters(18.2); // Desired top speed
-  public static final double maxAngularRate = Math.PI * 4; // Max angular velocity in rads/sec
+  public static final double maxAngularRate = Math.PI * 6; // Max angular velocity in rads/sec
   private final double drivetrainRadius;
   private final Telemetry telemetry = new Telemetry(maxSpeed);
 
@@ -46,6 +46,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   private SwerveDriveKinematics kinematics;
 
   private DebugEntry<String> currentCommand;
+  private boolean acceptVisionMeasures = false;
 
   public SwerveSubsystem(
       SwerveDrivetrainConstants driveTrainConstants,
@@ -124,7 +125,9 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   }
 
   public BiConsumer<Pose2d, Double> getVisionMeasurementConsumer() {
-    return (t, u) -> addVisionMeasurement(t, u);
+    return (t, u) -> {
+      if (acceptVisionMeasures) addVisionMeasurement(t, u);
+    };
   }
 
   public SwerveRequest getBrakeRequest() {
@@ -186,5 +189,13 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   @Override
   public void periodic() {
     if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
+  }
+
+  public void stopVisionMeasures() {
+    acceptVisionMeasures = false;
+  }
+
+  public void startVisionMeasures() {
+    acceptVisionMeasures = true;
   }
 }

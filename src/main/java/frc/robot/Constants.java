@@ -38,6 +38,7 @@ public final class Constants {
     public static final int INTAKE_CHOOSER_ID = 14;
     public static final double INTAKE_PERCENTAGE = 0.25;
     public static final double CHOOSER_PERCENTAGE = 1;
+    public static final double AMP_INTAKE_PERCENTAGE = 0.5;
   }
 
   public static class TriggerConstants {
@@ -46,7 +47,7 @@ public final class Constants {
     public static final double HOLD_PERCENTAGE =
         -0.05; // very slow motor speed in case note slips out of trigger
     public static final double SHOOT_PERCENTAGE =
-        0.5; // used when feeding note into turret to fire (should be negative value because it
+        1; // used when feeding note into turret to fire (should be negative value because it
     // outtakes)
     public static final boolean MOTOR_INVERT = true;
     public static final double EJECT_PERCENT = -0.25;
@@ -57,7 +58,7 @@ public final class Constants {
     public static final int SHOOTER_MOTOR_RIGHT_ID = 4;
 
     // PID
-    public static final HowdyPID SHOOTER_PID = new HowdyPID(0.001, 0.00000035, 0);
+    public static final HowdyPID SHOOTER_PID = new HowdyPID(0.0003, 0, 0, 0, 0.0002);
 
     // Motor RPM, NOT roller RPM
     public static final double SHOOTER_IDLE_SPEED_LEFT = 400; // Placeholder; in RPM
@@ -262,8 +263,8 @@ public final class Constants {
     public static final boolean usingPhoton = true;
     public static final boolean elvEnabled = true;
     public static final boolean signalEnabled = false;
-    public static final boolean shooterEnabled = true;
-    public static final boolean triggerEnabled = true;
+    public static final boolean shooterEnabled = false;
+    public static final boolean triggerEnabled = false;
     public static final boolean turretRotationEnabled = false;
     public static final boolean turretPitchEnabled = false;
     public static final boolean climberEnabled = true;

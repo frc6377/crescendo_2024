@@ -222,16 +222,9 @@ public class RobotContainer {
     OI.getButton(OI.Operator.switchToAmp).onTrue(robotStateManager.setAmpMode());
     OI.getButton(OI.Operator.switchToSpeaker).onTrue(robotStateManager.setSpeakerMode());
 
-    OI.getTrigger(OI.Driver.intake)
-        .whileTrue(
-            Commands.either(intakeAmp(), intakeSpeaker(), robotStateManager.isAmpSupplier()));
+    OI.getTrigger(OI.Driver.intake).whileTrue(intakeCommand());
 
-    OI.getTrigger(OI.Driver.outtake)
-        .whileTrue(
-            Commands.either(
-                intakeCommandFactory.reverseIntakeCommand(),
-                shooterOuttake(),
-                robotStateManager.isAmpSupplier()));
+    OI.getTrigger(OI.Driver.outtake).whileTrue(outtakeCommand());
 
     OI.getButton(OI.Driver.intakeSource).whileTrue(trapElvCommandFactory.wristintakeSource());
 
@@ -242,6 +235,20 @@ public class RobotContainer {
     OI.getButton(OI.Operator.latchClimber).onTrue(climberCommandFactory.clip());
 
     OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
+
+    new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
+    new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());
+  }
+
+  private Command outtakeCommand() {
+    return Commands.either(
+        intakeCommandFactory.reverseIntakeCommand(),
+        shooterOuttake(),
+        robotStateManager.isAmpSupplier());
+  }
+
+  private Command intakeCommand() {
+    return Commands.either(intakeAmp(), intakeSpeaker(), robotStateManager.isAmpSupplier());
   }
 
   private Command shooterOuttake() {
@@ -257,7 +264,7 @@ public class RobotContainer {
             Commands.startEnd(
                 () -> OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
                 () -> OI.Driver.setRumble(0)));
-    new Trigger(shooterSubsystem::isShooterReady)
+    new Trigger(shooterCommandFactory::isShooterReady)
         .whileTrue(
             Commands.startEnd(
                 () -> OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
@@ -271,8 +278,8 @@ public class RobotContainer {
 
   private Command intakeSpeaker() {
     return Commands.parallel(
-        intakeCommandFactory.intakeSpeakerCommandSmart(shooterSubsystem.getBeamBreak()),
-        triggerCommandFactory.getGroundLoadCommand(shooterSubsystem.getBeamBreak()));
+        intakeCommandFactory.intakeSpeakerCommandSmart(shooterCommandFactory.getBeamBreak()),
+        triggerCommandFactory.getGroundLoadCommand(shooterCommandFactory.getBeamBreak()));
   }
 
   private Command intakeAmp() {
@@ -286,7 +293,10 @@ public class RobotContainer {
     return Commands.parallel(
         Commands.either(
             triggerCommandFactory.getShootCommand(),
-            triggerCommandFactory.getShootCommand().onlyIf(() -> shooterSubsystem.isShooterReady()),
+            triggerCommandFactory
+                .getShootCommand()
+                .onlyIf(() -> shooterCommandFactory.isShooterReady())
+                .asProxy(),
             OI.getButton(OI.Operator.simple)),
         shooterCommandFactory.revShooter());
   }
@@ -298,13 +308,12 @@ public class RobotContainer {
 
   private Command shootAuton() {
     return Commands.deadline(
-            Commands.waitUntil(() -> shooterSubsystem.isShooterReady())
-                .andThen(
-                    triggerCommandFactory
-                        .getShootCommand()
-                        .until(shooterSubsystem.getBeamBreak().negate())),
-            shooterCommandFactory.revShooter())
-        .andThen(shooterCommandFactory.shooterIdle().withTimeout(.02));
+        Commands.waitUntil(() -> shooterCommandFactory.isShooterReady())
+            .andThen(
+                triggerCommandFactory
+                    .getShootCommand()
+                    .until(shooterCommandFactory.getBeamBreak().negate().debounce(.25))),
+        shooterCommandFactory.revShooter());
   }
 
   private Command ampAuton() {

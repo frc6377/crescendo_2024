@@ -41,7 +41,7 @@ public class ClimberSubsystem extends SubsystemBase {
         new DebugEntry<Double>(rightArmMotor.getAppliedOutput(), "right arm output", this);
     leftArmOutputEntry =
         new DebugEntry<Double>(rightArmMotor.getAppliedOutput(), "left arm output", this);
-    currentCommand = new DebugEntry<String>("none", "current Command", this);
+    currentCommand = new DebugEntry<String>("none", "Climber Command", this);
   }
 
   private void configMotor(CANSparkMax motor, boolean invert) {

@@ -31,13 +31,16 @@ public class IntakeSubsystem extends SubsystemBase {
     chooserMotor.setInverted(true);
     intakeOutput = new DebugEntry<Double>(0.0, "Intake Motor Ouput", this);
     chooserOutput = new DebugEntry<Double>(0.0, "Chooser Motor Output", this);
-    currentCommand = new DebugEntry<String>("none", "current Command", this);
+    currentCommand = new DebugEntry<String>("none", "Intake Command", this);
   }
 
   // TODO: Add check to make sure turret is below 45 degrees before running & add photogate when
   // implemented.
-  public void runIntake() {
-    intakeMotor.set(Constants.IntakeConstants.INTAKE_PERCENTAGE);
+  public void runIntake(boolean isAmp) {
+    intakeMotor.set(
+        isAmp
+            ? Constants.IntakeConstants.AMP_INTAKE_PERCENTAGE
+            : Constants.IntakeConstants.INTAKE_PERCENTAGE);
   }
 
   public void reverseIntake() {
@@ -54,12 +57,12 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void speakerIntake() {
-    runIntake();
+    runIntake(false);
     speakerChooser();
   }
 
   public void ampIntake() {
-    runIntake();
+    runIntake(true);
     ampChooser();
   }
 
