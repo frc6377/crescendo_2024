@@ -46,6 +46,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   private SwerveDriveKinematics kinematics;
 
   private DebugEntry<String> currentCommand;
+  private boolean acceptVisionMeasures = false;
 
   public SwerveSubsystem(
       SwerveDrivetrainConstants driveTrainConstants,
@@ -119,12 +120,18 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     m_simNotifier.startPeriodic(kSimLoopPeriod);
   }
 
+  public Rotation2d getRotation() {
+    return getState().Pose.getRotation();
+  }
+
   private ChassisSpeeds getChassisSpeeds() {
     return kinematics.toChassisSpeeds(super.getState().ModuleStates);
   }
 
   public BiConsumer<Pose2d, Double> getVisionMeasurementConsumer() {
-    return (t, u) -> addVisionMeasurement(t, u);
+    return (t, u) -> {
+      if (acceptVisionMeasures) addVisionMeasurement(t, u);
+    };
   }
 
   public SwerveRequest getBrakeRequest() {
@@ -186,5 +193,13 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   @Override
   public void periodic() {
     if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
+  }
+
+  public void stopVisionMeasures() {
+    acceptVisionMeasures = false;
+  }
+
+  public void startVisionMeasures() {
+    acceptVisionMeasures = true;
   }
 }

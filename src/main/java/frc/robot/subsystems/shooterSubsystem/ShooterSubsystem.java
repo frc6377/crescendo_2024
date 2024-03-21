@@ -78,8 +78,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
     shooterLeftMotor.setInverted(true);
 
-    ShooterConstants.SHOOTER_PID.setSparkPidController(shooterLeftMotor);
-    ShooterConstants.SHOOTER_PID.setSparkPidController(shooterRightMotor);
+    ShooterConstants.LEFT_SHOOTER_PID.setSparkPidController(shooterLeftMotor);
+    ShooterConstants.RIGHT_SHOOTER_PID.setSparkPidController(shooterRightMotor);
+
+    ShooterConstants.LEFT_SHOOTER_PID.createTunableNumbers("Left motor", shooterLeftMotor, this);
 
     if (!Robot.isCompetition) {
       shooterTab.add("Shooter Right PID", shooterRightMotor.getPIDController());
@@ -124,7 +126,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     shooterTab.addDouble("Left Current", shooterLeftMotor::getOutputCurrent);
     shooterTab.addDouble("Right Current", shooterRightMotor::getOutputCurrent);
-    currentCommand = new DebugEntry<String>("none", "current Command", this);
+    currentCommand = new DebugEntry<String>("none", "Shooter Command", this);
   }
 
   @Override

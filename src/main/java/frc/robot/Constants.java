@@ -42,15 +42,15 @@ public final class Constants {
   }
 
   public static class TriggerConstants {
-    public static final int MOTOR_ID = 15; // edit all constants when testing
+    public static final int MOTOR_ID = 13; // edit all constants when testing
     public static final double LOAD_PERCENTAGE = -1; // used when intaking into the turret
     public static final double HOLD_PERCENTAGE =
         -0.05; // very slow motor speed in case note slips out of trigger
     public static final double SHOOT_PERCENTAGE =
         1; // used when feeding note into turret to fire (should be negative value because it
     // outtakes)
-    public static final boolean MOTOR_INVERT = true;
-    public static final double EJECT_PERCENT = -0.25;
+    public static final boolean MOTOR_INVERT = false;
+    public static final double EJECT_PERCENT = 1;
   }
 
   public static class ShooterConstants {
@@ -58,7 +58,8 @@ public final class Constants {
     public static final int SHOOTER_MOTOR_RIGHT_ID = 4;
 
     // PID
-    public static final HowdyPID SHOOTER_PID = new HowdyPID(0.0003, 0, 0, 0, 0.0002);
+    public static final HowdyPID RIGHT_SHOOTER_PID = new HowdyPID(0.0003, 0, 0, 0, 0.0002);
+    public static final HowdyPID LEFT_SHOOTER_PID = new HowdyPID(0.0003, 0, 0, 0, 0.0002);
 
     // Motor RPM, NOT roller RPM
     public static final double SHOOTER_IDLE_SPEED_LEFT = 400; // Placeholder; in RPM
@@ -80,37 +81,45 @@ public final class Constants {
   }
 
   public static class TurretConstants {
-    public static final int TURRET_MOTOR_ID = 9;
+    public static final int TURRET_MOTOR_ID = 2;
     public static final int TURRET_CANcoder_ID = 17; // replace with actual CANcoder ID
-    public static final int PITCH_MOTOR_ID = 10;
+    public static final int PITCH_MOTOR_ID = 3;
     public static final int PITCH_ENCODER_ID = 1; // replace with actual ID
     public static final boolean IS_MOTOR_INVERTED = true;
+    public static final int DEFAULT_SHOT_PITCH = 40;
+    public static final int DEFAULT_SHOT_ROTATION = 0;
 
     // PID coefficients
-    // TODO: Change values when there's an actual real functional robot.
-    public static final HowdyPID TURRET_PID = new HowdyPID(0.125, 0.001, 0);
+    public static final boolean ADVANCE_LOOP = false;
+    public static final HowdyPID TURRET_POSITION_PID_CASCADE =
+        new HowdyPID(5, 0.01, 0.225, 0.05, 0);
+    public static final HowdyPID TURRET_VELOCITY_PID_CASCADE =
+        new HowdyPID(5, 0.01, 0.225, 0.05, 0);
+    public static final HowdyPID TURRET_POSITION_PID = new HowdyPID(2, 0.0, 0, 0.05, 0);
 
     public static final double TURRET_KMAXOUTPUT = 1;
     public static final double TURRET_KMINOUTPUT = -1;
 
-    public static final int TURRET_MIN_ANGLE_DEGREES = -5;
-    public static final int TURRET_MAX_ANGLE_DEGREES = 45;
+    public static final int TURRET_MIN_ANGLE_DEGREES = -90;
+    public static final int TURRET_MAX_ANGLE_DEGREES = 90;
 
-    public static final double TURRET_CONVERSION_FACTOR = 0.25;
+    public static final double TURRET_CONVERSION_FACTOR = 0.18292682926829268292682926829268;
     public static final int TURRET_SMART_CURRENT_LIMIT = 40;
 
     // TODO: Change values when there's an actual real functional robot.
-    public static final HowdyPID PITCH_PID = new HowdyPID(175, 0.001, 0);
-    public static final HowdyFF PITCH_FF = new HowdyFF(0, 0.08, 0.1);
+    public static final HowdyPID PITCH_PID = new HowdyPID(8, 0, 0);
+    public static final HowdyFF PITCH_FF = new HowdyFF(0, 0.3, 0.1);
 
     public static final double PITCH_KMAXOUTPUT = 1;
     public static final double PITCH_KMINOUTPUT = -1;
 
-    public static final int PITCH_MAX_ANGLE_DEGREES = 50;
+    public static final int PITCH_MAX_ANGLE_DEGREES = 70;
     public static final int PITCH_MIN_ANGLE_DEGREES = -5;
 
-    public static final double PITCH_CONVERSION_FACTOR = 0.25;
+    public static final double PITCH_CONVERSION_FACTOR = 128;
     public static final int PITCH_SMART_CURRENT_LIMIT = 40;
+
+    public static final double PITCH_ZERO_OFFSET = Units.degreesToRotations(265.72);
 
     // Physics Values
     public static final double SHOOTER_CENTER_OF_GRAVITY = 1; // TODO: Get real values
@@ -146,19 +155,19 @@ public final class Constants {
         TURRET_GEAR_TEETH
             / (LOW_GEAR_CANCODER_TEETH
                 + 0.0); // Revolutions of the turret, to revolutions of the cancoder
-    public static final int highGearCAN_CODER_ID = 0;
-    public static final int lowGearCAN_CODER_ID = 0;
-    public static final double ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV = 0;
+    public static final int highGearCAN_CODER_ID = 5;
+    public static final int lowGearCAN_CODER_ID = 6;
+    public static final double ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV = 0.25;
 
     // Turret limits
     public static final double TURRET_MIN_ANGLE_ROTATIONS =
         (TURRET_MIN_ANGLE_DEGREES / (360 * TURRET_MOTOR_TURRET_RATIO));
     public static final double TURRET_MAX_ANGLE_ROTATIONS =
-        (TURRET_MAX_ANGLE_DEGREES / (360 * TURRET_CONVERSION_FACTOR));
+        (TURRET_MAX_ANGLE_DEGREES / (360 * TURRET_MOTOR_TURRET_RATIO));
     public static final double PITCH_MIN_ANGLE_ROTATIONS =
-        (PITCH_MIN_ANGLE_DEGREES / (360 * PITCH_CONVERSION_FACTOR));
+        ((PITCH_MIN_ANGLE_DEGREES * PITCH_CONVERSION_FACTOR) / 360);
     public static final double PITCH_MAX_ANGLE_ROTATIONS =
-        (PITCH_MAX_ANGLE_DEGREES / (360 * PITCH_CONVERSION_FACTOR));
+        ((PITCH_MAX_ANGLE_DEGREES * PITCH_CONVERSION_FACTOR) / 360);
   }
 
   public static class OperatorConstants {
@@ -169,7 +178,7 @@ public final class Constants {
   public static class TrapElvConstants {
     // Control
     public static final double INTAKE_BEAM_BREAK_DELAY_SEC = 0.025;
-    public static final double SOURCE_BEAM_BREAK_DELAY_SEC = 0.2;
+    public static final double SOURCE_BEAM_BREAK_DELAY_SEC = 0.15;
 
     // Wrist
     public static final int WRIST_MOTOR_ID = 12;
@@ -189,7 +198,7 @@ public final class Constants {
     public static final double WRIST_DEADZONE = 0.01;
 
     // Roller
-    public static final int ROLLER_MOTOR_ID = 13;
+    public static final int ROLLER_MOTOR_ID = 15;
 
     public static final double ROLLER_SPEED = 0.4;
     public static final double ROLLER_REVERSE_SPEED = -0.5;
@@ -240,7 +249,7 @@ public final class Constants {
     public static final int RIGHT_ARM_ID = 11;
     public static final double GEAR_RATIO = 175;
     public static final double CLIMB_PERCENT = -0.4;
-    public static final double CLIMB_POSITION = 7;
+    public static final double CLIMB_POSITION = 37;
     public static final double[] POSITION_PID = new double[] {0.15, 0, 0, 0};
     public static final double[] CURRENT_PID = new double[] {0.01, 0, 0, 0};
     public static final double MIN_RAISE_TIME_SEC = 0.2;
@@ -264,10 +273,10 @@ public final class Constants {
     public static final boolean usingPhoton = true;
     public static final boolean elvEnabled = true;
     public static final boolean signalEnabled = false;
-    public static final boolean shooterEnabled = false;
-    public static final boolean triggerEnabled = false;
+    public static final boolean shooterEnabled = true;
+    public static final boolean triggerEnabled = true;
     public static final boolean turretRotationEnabled = false;
-    public static final boolean turretPitchEnabled = false;
+    public static final boolean turretPitchEnabled = true;
     public static final boolean climberEnabled = true;
   }
 
@@ -286,5 +295,11 @@ public final class Constants {
     public static final Rotation2d BLUE_AMP_ROTATION = Rotation2d.fromRotations(0.25);
     public static final Rotation2d BLUE_SOURCE_ROTATION = Rotation2d.fromRotations(-0.25);
     public static final Rotation2d RED_SOURCE_ROTATION = Rotation2d.fromRotations(-0.25);
+  }
+
+  public static class CommandConstants {
+
+    public static final double WAIT_FOR_TRAPELV = 0.1;
+    public static final boolean USE_VISION_TARGETING = true;
   }
 }
