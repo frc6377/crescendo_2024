@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.CommandConstants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.config.DynamicRobotConfig;
@@ -19,6 +21,8 @@ import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RangeMode;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
+import frc.robot.utilities.HowdyMath;
+
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -27,16 +31,19 @@ public class TurretCommandFactory {
   final RobotStateManager RSM;
   final VisionSubsystem vision;
   final Supplier<Rotation2d> rotationSupplier;
+  final Supplier<Translation2d> translationSupplier;
 
   public TurretCommandFactory(
       TurretSubsystem subsystem,
       RobotStateManager RSM,
       VisionSubsystem visionSubsystem,
-      Supplier<Rotation2d> rotationSupplier) {
+      Supplier<Rotation2d> rotationSupplier,
+      Supplier<Translation2d> translationSupplier) {
     this.subsystem = subsystem;
     this.RSM = RSM;
     this.vision = visionSubsystem;
     this.rotationSupplier = rotationSupplier;
+    this.translationSupplier = translationSupplier;
   }
 
   public Command stowTurret() {
@@ -141,7 +148,6 @@ public class TurretCommandFactory {
         () -> {});
   }
 
-  SearchingBehavior searchingInstance = new SearchingBehavior();
 
   public Command longRangeShot() {
     double angleToTarget = 0.35;
@@ -164,10 +170,10 @@ public class TurretCommandFactory {
   }
 
   private void visionTracking() {
-    visionTracking(searchingInstance);
+    visionTracking(this::odometryPointing);
   }
 
-  private void visionTracking(DoubleSupplier searchingBehavior) {
+  private void visionTracking(Supplier<Rotation2d> searchingBehavior) {
     visionTracking(
         RSM.getAllianceColor() == AllianceColor.RED
             ? LimelightConstants.SPEAKER_TAG_ID_RED
@@ -179,28 +185,16 @@ public class TurretCommandFactory {
    * @param targetTag the tag to search towards
    * @param searchingBehavior target rotation in degrees
    */
-  private void visionTracking(int targetTag, DoubleSupplier searchingBehavior) {
+  private void visionTracking(int targetTag, Supplier<Rotation2d> searchingBehavior) {
     subsystem.setPositionErrorSupplier(
         () -> {
           double errDegrees = vision.getTurretYaw(targetTag);
           if (Double.isNaN(errDegrees)) {
-            subsystem.setPIDVelocity(0.1);
-            return Units.degreesToRotations(searchingBehavior.getAsDouble());
+            return searchingBehavior.get().getRotations();
           }
-          subsystem.setPIDVelocity(-1);
           double err = Units.degreesToRotations(errDegrees);
           return err;
         });
-  }
-
-  private class SearchingBehavior implements DoubleSupplier {
-    boolean dir;
-
-    @Override
-    public double getAsDouble() {
-      int scl = RSM.getAllianceColor() == AllianceColor.RED ? 1 : -1;
-      return Units.rotationsToDegrees(0.1901587509527439) * scl;
-    }
   }
 
   public Command idleTurret() {
@@ -235,5 +229,13 @@ public class TurretCommandFactory {
     return subsystem
         .runOnce(() -> System.out.println(subsystem.getTurretPos()))
         .ignoringDisable(true);
+  }
+
+
+  private Rotation2d odometryPointing(){
+    final Translation2d targetPosition = RSM.getAllianceColor() == AllianceColor.RED ? FieldConstants.RED_SPEAKER : FieldConstants.BLUE_SPEAKER;
+    final Rotation2d targetTurretAngleRelToField = HowdyMath.getAngleToTarget(translationSupplier.get(), targetPosition);
+    final Rotation2d targetTurretAngleRelToRobot = targetTurretAngleRelToField.minus(rotationSupplier.get());
+    return targetTurretAngleRelToRobot;
   }
 }

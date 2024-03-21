@@ -131,6 +131,8 @@ public class TurretSubsystem extends SubsystemBase {
     TurretConstants.TURRET_POSITION_PID_CASCADE.createTunableNumbers(
         "Turret Motor", turretPositionPIDController, this);
     turretVelocityPIDController = TurretConstants.TURRET_VELOCITY_PID_CASCADE.getPIDController();
+    turretTab.addFloat("rotation current", () -> (float) turretMotor.getOutputCurrent());
+    turretTab.addFloat("rotation temp", () -> (float) turretMotor.getMotorTemperature());
 
     pitchMotor = new CANSparkMaxSim(Constants.TurretConstants.PITCH_MOTOR_ID, MotorType.kBrushless);
     pitchMotor.restoreFactoryDefaults();
@@ -347,6 +349,11 @@ public class TurretSubsystem extends SubsystemBase {
     this.setPositionErrorSupplier(() -> turretPosition - Units.radiansToRotations(limitedSetpoint));
   }
 
+  /**
+   * Sets the method to calculate the current turret angle.
+   * Is expected in rotaions.
+   * @param positionErrorSupplier the method to call
+   */
   public void setPositionErrorSupplier(DoubleSupplier positionErrorSupplier) {
     this.positionErrorSupplier = positionErrorSupplier;
   }
@@ -467,15 +474,11 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   /**
-   * @deprecated Set Pid max vel
-   * @param vel
+   * Checks if the turret is at its current set point +/- epsilion
+   * @param epsilion the allowed error margin
+   * @return if the turret is at its setpoint
    */
-  public void setPIDVelocity(double vel) {
-    // if (vel < 0) turretPIDController.setConstraints(new Constraints(1, 1));
-    // else turretPIDController.setConstraints(new Constraints(vel, 1));
-  }
-
-  public boolean turretAtSetPoint() {
-    return false;
+  public boolean turretAtSetPoint(double epsilion) {
+    return Math.abs(turretPositionPIDController.getSetpoint() - turretPosition) < epsilion;
   }
 }
