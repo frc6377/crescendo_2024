@@ -1,16 +1,18 @@
 # How to use:
-#   Uing the naming convnetion we already have, name a file with the desired two cordinates
+#   1. Using the naming convention we already have, name a file with the desired two coordinates.
 #	Example Name:
 #   	- A2-D1.path
 #		- A2.path
 #		- A2-D1 Greg.path
+#		- A2 Greg.path
 #	
 #	All of these names should work just fine because It will just read the first part for cords
-#	After writing the file name, be sure to go into the file and add and empty {} inside,
+#
+#	2. After writing the file name, be sure to go into the file and add and empty {} inside,
 #	this is because it will not be read as a .json file otherwise
 #
-#This slideshow shows what each point is supposed to be:
-#https://docs.google.com/presentation/d/1zT4bFxyZKDe3ofrhip2B1Tj3Z3is9n5AYjpofgDgosI/edit?usp=sharing
+# This slideshow shows what each point is supposed to be:
+# https://docs.google.com/presentation/d/1zT4bFxyZKDe3ofrhip2B1Tj3Z3is9n5AYjpofgDgosI/edit?usp=sharing
 
 import os
 import json
@@ -44,9 +46,9 @@ def create_path_file(file_name):
 
 
 	cpX1 = x1
-	cpY1 = y2 + ((y1-y2)/2) if y1 > y2 else y1 + ((y2-y1)/2)
+	cpY1 = round(y2 + ((y1-y2)/2) if y1 > y2 else y1 + ((y2-y1)/2), 3)
 
-	cpX2 = x2 + ((x1-x2)/2) if x1 > x2 else x1 + ((x2-x1)/2)
+	cpX2 = round(x2 + ((x1-x2)/2) if x1 > x2 else x1 + ((x2-x1)/2), 3)
 	cpY2 = y2
 
 	file = {
@@ -104,13 +106,19 @@ def create_path_file(file_name):
 	
 	return file
 
+not_format_files_num = 0
+
 for filename in os.listdir(path_folder):
-	current_file_path = 'Test/'+filename
-	with open(current_file_path, 'r') as file:
-		current_file = json.load(file)
-	generated_path = create_path_file(filename)
-	if str(current_file) == '{}':
-		with open(current_file_path, 'w') as file:
-			print(f'{current_file_path} was generated')
-			json.dump(generated_path, file)
+	current_file_path = path_folder+'/'+filename
+	try:
+		with open(current_file_path, 'r') as file:
+			current_file = json.load(file)
+		generated_path = create_path_file(filename)
+		if str(current_file) == '{}':
+			with open(current_file_path, 'w') as file:
+				print(f'{current_file_path} was generated')
+				json.dump(generated_path, file)
+	except KeyError:
+		not_format_files_num += 1
+print(f"The names of {not_format_files_num} files were not formatted properly.")
 print('Done!')
