@@ -120,5 +120,6 @@ for filename in os.listdir(path_folder):
 				json.dump(generated_path, file)
 	except KeyError:
 		not_format_files_num += 1
-print(f"The names of {not_format_files_num} files were not formatted properly.")
+if not_format_files_num > 0:
+	print(f"The names of {not_format_files_num} files were not formatted properly.")
 print('Done!')
