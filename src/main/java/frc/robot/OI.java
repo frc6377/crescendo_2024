@@ -19,7 +19,7 @@ public class OI {
   private static final int operatorJoystickPort = 1;
 
   public static final class Driver {
-    private static final XboxController controller = new XboxController(driverJoystickPort);
+    public static final XboxController controller = new XboxController(driverJoystickPort);
 
     // A B Y X Buttons
     public static final Control intakeSource =
@@ -27,7 +27,8 @@ public class OI {
     public static final Control speakerSource =
         new Control(XboxController.Button.kB, "Intake Speaker from Source", controller);
     public static final Control Y = new Control(XboxController.Button.kY, null, controller);
-    public static final Control X = new Control(XboxController.Button.kX, null, controller);
+    public static final Control aimTurret =
+        new Control(XboxController.Button.kX, "Aim Turret Button", controller);
 
     // Bumpers & Triggers
     public static final Control outtake =

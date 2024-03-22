@@ -11,12 +11,18 @@ import frc.robot.Constants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.config.TurretZeroConfig;
+import frc.robot.stateManagement.AllianceColor;
+import frc.robot.stateManagement.RangeMode;
+import frc.robot.stateManagement.RobotStateManager;
+import java.util.function.DoubleSupplier;
 
 public class TurretCommandFactory {
   final TurretSubsystem subsystem;
+  final RobotStateManager RSM;
 
-  public TurretCommandFactory(TurretSubsystem subsystem) {
+  public TurretCommandFactory(TurretSubsystem subsystem, RobotStateManager RSM) {
     this.subsystem = subsystem;
+    this.RSM = RSM;
   }
 
   public Command stowTurret() {
@@ -94,8 +100,7 @@ public class TurretCommandFactory {
               dynamicConfig.saveTurretZero(new TurretZeroConfig(lowGearOffset, highGearOffset));
             },
             subsystem)
-        .withName("zeroZeroing")
-        .asProxy();
+        .withName("zeroZeroing");
   }
 
   public Command zeroTurretCommand() {
@@ -105,28 +110,67 @@ public class TurretCommandFactory {
         .asProxy();
   }
 
-  public Command moveUpwards() {
-    if (subsystem == null) return Commands.none();
-    return subsystem.run(() -> subsystem.moveUp()).withName("moveShooterUp").asProxy();
-  }
-
   public Command getAimTurretCommand() {
     if (subsystem == null) return new StartEndCommand(() -> {}, () -> {});
-    return subsystem.run(() -> subsystem.aimTurret()).withName("AimTurretCommand").asProxy();
+    return Commands.either(
+        shortRangeShot(), longRangeShot(), () -> RSM.getRange() == RangeMode.SHORT);
+  }
+
+  public Command aimTurret() {
+    if (subsystem == null) return new StartEndCommand(() -> {}, () -> {});
+    return subsystem.run(subsystem::aimTurret).asProxy().withName("Aim Turret 2");
+  }
+
+  public Command shortRangeShot() {
+    if (subsystem == null) return new StartEndCommand(() -> {}, () -> {});
+    return subsystem.startEnd(
+        () -> {
+          if (Constants.enabledSubsystems.turretRotationEnabled)
+            subsystem.setTurretPos(Math.toRadians(00));
+          if (Constants.enabledSubsystems.turretPitchEnabled)
+            subsystem.setPitchPos(Math.toRadians(17)); // Placeholder value
+        },
+        () -> {});
+  }
+
+  public Command longRangeShot() {
+    if (subsystem == null) return Commands.none();
+    double angleToTarget = 0.35;
+    DoubleSupplier targetAngle =
+        () -> RSM.getAllianceColor() == AllianceColor.RED ? angleToTarget : -angleToTarget;
+    return subsystem
+        .startEnd(
+            () -> {
+              if (Constants.enabledSubsystems.turretRotationEnabled) {
+                subsystem.setTurretPos(targetAngle.getAsDouble());
+              }
+              if (Constants.enabledSubsystems.turretPitchEnabled) {
+                subsystem.setPitchPos(Math.toRadians(22.5));
+              }
+            },
+            () -> {})
+        .asProxy();
   }
 
   public Command idleTurret() {
     if (subsystem == null) return Commands.none();
     return subsystem
-        .runEnd(() -> subsystem.holdPosition(), subsystem::stopTurret)
-        .withName("idleTurret")
-        .asProxy();
+        .run(
+            () -> {
+              subsystem.setTurretPos(0);
+              if (subsystem.getPitch() > 0.05) {
+                subsystem.setPitchPos(0);
+              } else {
+                subsystem.holdPosition();
+              }
+            })
+        .withName("idleTurret");
   }
 
   public Command testTurretCommand(double degrees) {
     if (subsystem == null) return Commands.none();
     return subsystem
-        .runEnd(() -> subsystem.setTurretPos(Math.toRadians(degrees)), subsystem::stopTurret)
+        .runEnd(() -> subsystem.setPitchPos(Math.toRadians(degrees)), subsystem::stopTurret)
         .withName("TestTurret")
         .asProxy();
   }
@@ -134,5 +178,12 @@ public class TurretCommandFactory {
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
     subsystem.setDefaultCommand(defaultCommand);
+  }
+
+  public Command logCurrentAngle() {
+    if (subsystem == null) return Commands.none();
+    return subsystem
+        .runOnce(() -> System.out.println(subsystem.getTurretPos()))
+        .ignoringDisable(true);
   }
 }

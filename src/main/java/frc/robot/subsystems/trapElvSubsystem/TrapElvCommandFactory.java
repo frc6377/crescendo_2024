@@ -193,6 +193,18 @@ public class TrapElvCommandFactory {
     return subsystem.getSourceBreak();
   }
 
+  public Command wristShooterRev() {
+    if (subsystem == null) return Commands.none();
+    return subsystem
+        .startEnd(
+            () -> {
+              subsystem.setWristState(TrapElvState.AMP_REV);
+            },
+            () -> {})
+        .withName("wristShooterRev")
+        .asProxy();
+  }
+
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
     subsystem.setDefaultCommand(defaultCommand);

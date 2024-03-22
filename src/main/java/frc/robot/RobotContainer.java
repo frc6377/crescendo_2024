@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.CommandConstants;
 import frc.robot.Constants.enabledSubsystems;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.AllianceColor;
@@ -140,11 +141,11 @@ public class RobotContainer {
     }
     trapElvCommandFactory = new TrapElvCommandFactory(trapElvSubsystem);
     if (enabledSubsystems.turretRotationEnabled || enabledSubsystems.turretPitchEnabled) {
-      turretSubsystem = new TurretSubsystem(robotStateManager, null);
+      turretSubsystem = new TurretSubsystem(robotStateManager, visionSubsystem);
     } else {
       turretSubsystem = null;
     }
-    turretCommandFactory = new TurretCommandFactory(turretSubsystem);
+    turretCommandFactory = new TurretCommandFactory(turretSubsystem, robotStateManager);
     if (enabledSubsystems.climberEnabled) {
       climberSubsystem = new ClimberSubsystem();
     } else {
@@ -199,6 +200,8 @@ public class RobotContainer {
 
     triggerCommandFactory.setDefaultCommand(triggerCommandFactory.getHoldCommand());
 
+    turretCommandFactory.setDefaultCommand(turretCommandFactory.idleTurret());
+
     OI.getButton(OI.Driver.resetRotationButton)
         .onTrue(drivetrainCommandFactory.zeroDriveTrain().withName("Put Pose & Rotation on Field"));
 
@@ -230,6 +233,8 @@ public class RobotContainer {
 
     OI.getButton(OI.Driver.speakerSource).whileTrue(speakerSource());
 
+    OI.getButton(OI.Driver.aimTurret).toggleOnTrue(turretCommandFactory.aimTurret());
+
     OI.getButton(OI.Operator.prepClimb).onTrue(climberCommandFactory.raise());
 
     OI.getButton(OI.Operator.latchClimber).onTrue(climberCommandFactory.clip());
@@ -237,7 +242,14 @@ public class RobotContainer {
     OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
 
     new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
+    new Trigger(() -> OI.Operator.controller.getPOV() == 90)
+        .onTrue(new InstantCommand(() -> robotStateManager.setLongRange()));
     new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());
+    new Trigger(() -> OI.Operator.controller.getPOV() == 270)
+        .onTrue(new InstantCommand(() -> robotStateManager.setShortRange()));
+
+    new Trigger(() -> OI.Driver.controller.getPOV() == 90)
+        .onTrue(turretCommandFactory.logCurrentAngle());
   }
 
   private Command outtakeCommand() {
@@ -270,6 +282,13 @@ public class RobotContainer {
             Commands.startEnd(
                 () -> OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
                 () -> OI.Operator.setRumble(0)));
+    shooterCommandFactory
+        .getBeamBreak()
+        .and(OI.getTrigger(OI.Driver.intake))
+        .whileTrue(
+            Commands.startEnd(
+                () -> OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
+                () -> OI.Driver.setRumble(0)));
   }
 
   private Command speakerSource() {
@@ -279,8 +298,7 @@ public class RobotContainer {
 
   private Command intakeSpeaker() {
     return Commands.parallel(
-        intakeCommandFactory.intakeSpeakerCommandSmart(shooterCommandFactory.getBeamBreak()),
-        triggerCommandFactory.getGroundLoadCommand(shooterCommandFactory.getBeamBreak()));
+        intakeCommandFactory.getSpeakerIntakeCommand(), triggerCommandFactory.getLoadCommand());
   }
 
   private Command intakeAmp() {
@@ -292,19 +310,23 @@ public class RobotContainer {
 
   private Command shootSpeaker() {
     return Commands.parallel(
-        Commands.either(
-            triggerCommandFactory.getShootCommand(),
-            triggerCommandFactory
-                .getShootCommand()
-                .onlyIf(() -> shooterCommandFactory.isShooterReady())
-                .asProxy(),
-            OI.getButton(OI.Operator.simple)),
+        Commands.waitSeconds(CommandConstants.WAIT_FOR_TRAPELV)
+            .andThen(
+                Commands.either(
+                    triggerCommandFactory.getShootCommand(),
+                    triggerCommandFactory
+                        .getShootCommand()
+                        .onlyIf(() -> shooterCommandFactory.isShooterReady())
+                        .asProxy(),
+                    OI.getButton(OI.Operator.simple))),
         shooterCommandFactory.revShooter());
   }
 
   private Command prepareToScoreSpeaker() {
     return Commands.parallel(
-        turretCommandFactory.getAimTurretCommand(), shooterCommandFactory.revShooter());
+        turretCommandFactory.getAimTurretCommand(),
+        shooterCommandFactory.revShooter(),
+        trapElvCommandFactory.wristShooterRev());
   }
 
   private Command shootAuton() {
