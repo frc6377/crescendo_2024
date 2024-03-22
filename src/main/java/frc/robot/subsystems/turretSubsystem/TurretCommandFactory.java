@@ -141,8 +141,6 @@ public class TurretCommandFactory {
         () -> {});
   }
 
-  SearchingBehavior searchingInstance = new SearchingBehavior();
-
   public Command longRangeShot() {
     double angleToTarget = 0.35;
     DoubleSupplier targetAngle =
@@ -164,7 +162,11 @@ public class TurretCommandFactory {
   }
 
   private void visionTracking() {
-    visionTracking(searchingInstance);
+    visionTracking(
+        () -> {
+          int scl = RSM.getAllianceColor() == AllianceColor.RED ? 1 : -1;
+          return Units.rotationsToDegrees(0.1901587509527439) * scl;
+        });
   }
 
   private void visionTracking(DoubleSupplier searchingBehavior) {
@@ -191,16 +193,6 @@ public class TurretCommandFactory {
           double err = Units.degreesToRotations(errDegrees);
           return err;
         });
-  }
-
-  private class SearchingBehavior implements DoubleSupplier {
-    boolean dir;
-
-    @Override
-    public double getAsDouble() {
-      int scl = RSM.getAllianceColor() == AllianceColor.RED ? 1 : -1;
-      return Units.rotationsToDegrees(0.1901587509527439) * scl;
-    }
   }
 
   public Command idleTurret() {

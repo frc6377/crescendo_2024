@@ -169,8 +169,13 @@ public class RobotContainer {
     configDriverFeedBack();
   }
 
-  public SwerveSubsystem getDriveTrain() {
-    return drivetrain;
+  public void setVisionMeasuresEnabled(boolean enableVisionMeasures) {
+    if(drivetrain != null) return;
+    if(enableVisionMeasures){
+      drivetrain.startVisionMeasures();
+    }else{
+      drivetrain.stopVisionMeasures();
+    }
   }
 
   /**
@@ -240,8 +245,6 @@ public class RobotContainer {
     OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
 
     new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
-    // new Trigger(() -> OI.Operator.controller.getPOV() == 270)
-    //     .onTrue(new InstantCommand(() -> robotStateManager.setLongRange()));
     new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());
     new Trigger(() -> OI.Operator.controller.getPOV() == 90)
         .onTrue(new InstantCommand(() -> robotStateManager.setShortRange()));
@@ -428,5 +431,10 @@ public class RobotContainer {
           .withName("Get Auto Command");
     }
     return null;
+  }
+
+  public void setOperatorPerspectiveForward(Rotation2d rotation) {
+    if(drivetrain == null) return;
+    drivetrain.setOperatorPerspectiveForward(rotation);
   }
 }

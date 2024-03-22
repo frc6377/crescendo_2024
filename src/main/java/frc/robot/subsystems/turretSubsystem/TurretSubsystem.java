@@ -47,7 +47,6 @@ import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.HowdyMath;
-import frc.robot.utilities.TunableNumber;
 import java.util.function.DoubleSupplier;
 
 public class TurretSubsystem extends SubsystemBase {
@@ -83,8 +82,6 @@ public class TurretSubsystem extends SubsystemBase {
   private SimDouble simTurretPos;
 
   private InterpolatingDoubleTreeMap pitchMap;
-
-  private TunableNumber pitchKgTune;
 
   private final ShuffleboardTab turretTab = Shuffleboard.getTab(this.getName());
   private final DebugEntry<Double> turretPositionEntry =
@@ -144,14 +141,6 @@ public class TurretSubsystem extends SubsystemBase {
     pitchMotor = new CANSparkMaxSim(Constants.TurretConstants.PITCH_MOTOR_ID, MotorType.kBrushless);
     pitchMotor.restoreFactoryDefaults();
     pitchMotor.setSmartCurrentLimit(Constants.TurretConstants.PITCH_SMART_CURRENT_LIMIT);
-    // pitchMotor.setSoftLimit(
-    //     CANSparkMax.SoftLimitDirection.kReverse, (float)
-    // TurretConstants.PITCH_MIN_ANGLE_ROTATIONS);
-    // pitchMotor.setSoftLimit(
-    //     CANSparkMax.SoftLimitDirection.kForward, (float)
-    // TurretConstants.PITCH_MAX_ANGLE_ROTATIONS);
-    // pitchMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
-    // pitchMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
     pitchMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
     pitchAbsoluteEncoder = pitchMotor.getAbsoluteEncoder();
     pitchAbsoluteEncoder.setPositionConversionFactor(1);
@@ -187,8 +176,6 @@ public class TurretSubsystem extends SubsystemBase {
     // if (Robot.isReal()) {
     //   zeroTurret();
     // }
-
-    // new TunableNumber("pitch GoTo Value", 40.0, (a) -> {}, this);
 
     pitchMap = new InterpolatingDoubleTreeMap();
     pitchMap.put(0.0, 0.0);
@@ -240,7 +227,6 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public void stopTurret() {
-
     turretMotor.stopMotor();
     pitchMotor.stopMotor();
   }
@@ -265,10 +251,6 @@ public class TurretSubsystem extends SubsystemBase {
   /** Will calculate the current turret position and update encoders and motors off of it. */
   public void zeroTurret() {
     if (!Constants.enabledSubsystems.turretRotationEnabled) return;
-    // double lowGearPosition = lowGearCANcoder.getAbsolutePosition().getValue().doubleValue();
-    // double highGearPosition = highGearCANcoder.getAbsolutePosition().getValue().doubleValue();
-    // Rotation2d turretRotation = encoderPositionsToTurretRotation(lowGearPosition,
-    // highGearPosition);
     Rotation2d turretRotation = new Rotation2d();
 
     lowGearCANcoder.setPosition(
