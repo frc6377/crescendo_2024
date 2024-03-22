@@ -190,7 +190,8 @@ public class RobotContainer {
                     OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
                     OI.getAxisSupplier(OI.Driver.rotationAxis).get()),
                 OI.getButton(OI.Driver.highGear).getAsBoolean());
-    DoubleSupplier direction = new SwerveSubsystem.RotationSource(OI.Driver.controller, drivetrain);
+    DoubleSupplier direction =
+        drivetrainCommandFactory.createRotationSource(OI.Driver.controller, drivetrain);
 
     drivetrainCommandFactory.setDefaultCommand(
         drivetrainCommandFactory

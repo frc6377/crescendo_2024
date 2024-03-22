@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -19,15 +20,19 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem.DriveRequest;
+import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem.RotationSource;
+import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class SwerveCommandFactory {
   private final SwerveSubsystem subsystem;
+  private final ArrayList<RotationSource> rotationSources;
 
   public SwerveCommandFactory(SwerveSubsystem subsystem) {
     this.subsystem = subsystem;
+    rotationSources = new ArrayList<>(1);
   }
 
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
@@ -198,10 +203,14 @@ public class SwerveCommandFactory {
 
     return subsystem
         .runOnce(
-            () ->
-                subsystem.seedFieldRelative(
-                    new Pose2d(
-                        subsystem.getState().Pose.getTranslation(), Rotation2d.fromDegrees(180))))
+            () -> {
+              for (RotationSource RS : rotationSources) {
+                RS.zero();
+              }
+              subsystem.seedFieldRelative(
+                  new Pose2d(
+                      subsystem.getState().Pose.getTranslation(), Rotation2d.fromDegrees(180)));
+            })
         .withName("zeroDriveTrain")
         .asProxy();
   }
@@ -287,5 +296,12 @@ public class SwerveCommandFactory {
             () -> RSM.getAllianceColor() == AllianceColor.RED)
         .withName("Target Amp")
         .asProxy();
+  }
+
+  public RotationSource createRotationSource(
+      XboxController controller, SwerveSubsystem drivetrain) {
+    RotationSource RS = new RotationSource(controller, drivetrain);
+    rotationSources.add(RS);
+    return RS;
   }
 }
