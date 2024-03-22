@@ -177,10 +177,10 @@ public class RobotContainer {
   }
 
   public void setVisionMeasuresEnabled(boolean enableVisionMeasures) {
-    if(drivetrain != null) return;
-    if(enableVisionMeasures){
+    if (drivetrain != null) return;
+    if (enableVisionMeasures) {
       drivetrain.startVisionMeasures();
-    }else{
+    } else {
       drivetrain.stopVisionMeasures();
     }
   }
@@ -445,7 +445,7 @@ public class RobotContainer {
   }
 
   public void setOperatorPerspectiveForward(Rotation2d rotation) {
-    if(drivetrain == null) return;
+    if (drivetrain == null) return;
     drivetrain.setOperatorPerspectiveForward(rotation);
   }
 
