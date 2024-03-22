@@ -78,6 +78,8 @@ public class TurretSubsystem extends SubsystemBase {
   private SimDeviceSim simTurretEncoder;
   private SimDouble simTurretPos;
 
+  private InterpolatingDoubleTreeMap pitchMap;
+
   private final ShuffleboardTab turretTab = Shuffleboard.getTab(this.getName());
   private final DebugEntry<Double> turretPositionEntry =
       new DebugEntry<Double>(turretPosition, "Turret Position (Degrees)", this);
