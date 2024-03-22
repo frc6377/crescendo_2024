@@ -6,12 +6,10 @@ import frc.robot.subsystems.signaling.RGB;
 public class TransFlag {
   public static int numberOfLEDS = Constants.LED_COUNT;
   private static final PatternNode[] pattern = {
-    new PatternNode(RGB.BLACK, 1),
-    new PatternNode(RGB.HOWDY_BLUE, 4),
-    new PatternNode(RGB.PINK, 4),
-    new PatternNode(RGB.WHITE, 4),
-    new PatternNode(RGB.PINK, 4),
-    new PatternNode(RGB.HOWDY_BLUE, 4),
+    new PatternNode(RGB.HOWDY_BLUE, 1),
+    new PatternNode(RGB.PINK, 1),
+    new PatternNode(RGB.WHITE, 1),
+    new PatternNode(RGB.PINK, 1),
   };
   private static int patternLength;
 
