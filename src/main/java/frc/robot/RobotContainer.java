@@ -57,7 +57,7 @@ import java.util.function.Supplier;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private final RobotStateManager robotStateManager = new RobotStateManager();
+  final RobotStateManager robotStateManager = new RobotStateManager();
 
   // The robot's subsystems and commands are defined here...
   private final IntakeSubsystem intakeSubsystem;
@@ -246,9 +246,6 @@ public class RobotContainer {
 
     new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
     new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());
-    new Trigger(() -> OI.Operator.controller.getPOV() == 90)
-        .onTrue(new InstantCommand(() -> robotStateManager.setShortRange()));
-
     new Trigger(() -> OI.Driver.controller.getPOV() == 0).whileTrue(intakeCommand());
   }
 
