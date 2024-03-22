@@ -24,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "A1Sub-A2Intake"
+                  "pathName": "A1-B1 Intake"
                 }
               },
               {
@@ -52,7 +52,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "A2-Amp"
+            "pathName": "B1-Amp"
           }
         },
         {
@@ -68,7 +68,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Amp-A4Intake"
+                  "pathName": "Amp-D1 Intake"
                 }
               },
               {
@@ -96,7 +96,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "A4-Amp"
+            "pathName": "D1-Amp"
           }
         },
         {
@@ -112,7 +112,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Amp-B4Intake"
+                  "pathName": "Amp-D2 Intake"
                 }
               },
               {
@@ -140,7 +140,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "B4-B3Drop"
+            "pathName": "D2-C2 Drop"
           }
         },
         {

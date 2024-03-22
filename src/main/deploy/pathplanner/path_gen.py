@@ -107,6 +107,7 @@ def create_path_file(file_name):
 	return file
 
 not_format_files_num = 0
+not_format_files_list = []
 
 for filename in os.listdir(path_folder):
 	current_file_path = path_folder+'/'+filename
@@ -120,6 +121,9 @@ for filename in os.listdir(path_folder):
 				json.dump(generated_path, file)
 	except KeyError:
 		not_format_files_num += 1
+		not_format_files_list.append(filename)
 if not_format_files_num > 0:
 	print(f"The names of {not_format_files_num} files were not formatted properly.")
+	for file in not_format_files_list:
+		print(f'  -{file}')
 print('Done!')
