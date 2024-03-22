@@ -179,10 +179,10 @@ public class RobotContainer {
   }
 
   public void setVisionMeasuresEnabled(boolean enableVisionMeasures) {
-    if(drivetrain != null) return;
-    if(enableVisionMeasures){
+    if (drivetrain != null) return;
+    if (enableVisionMeasures) {
       drivetrain.startVisionMeasures();
-    }else{
+    } else {
       drivetrain.stopVisionMeasures();
     }
   }
