@@ -32,9 +32,8 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.TurretConstants;
+import frc.robot.config.LimelightConfig;
 import frc.robot.Robot;
-import frc.robot.config.DynamicRobotConfig;
-import frc.robot.config.TurretZeroConfig;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
@@ -128,15 +127,14 @@ public class TurretSubsystem extends SubsystemBase {
     lowGearCANcoder = new CANcoder(Constants.TurretConstants.lowGearCAN_CODER_ID);
     pitchEncoder = pitchMotor.getAbsoluteEncoder();
 
-    TurretZeroConfig zeroConfig = new DynamicRobotConfig().getTurretZeroConfig();
     MagnetSensorConfigs highGearSensorConfigs =
         new MagnetSensorConfigs()
             .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
-            .withMagnetOffset(zeroConfig.highGearTurretZero);
+            .withMagnetOffset(TurretConstants.TurretZeroConfig.highGearTurretZero);
     MagnetSensorConfigs lowGearSensorConfigs =
         new MagnetSensorConfigs()
             .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
-            .withMagnetOffset(zeroConfig.lowGearTurretZero);
+            .withMagnetOffset(TurretConstants.TurretZeroConfig.lowGearTurretZero);
 
     highGearCANcoder.getConfigurator().apply(highGearSensorConfigs);
     lowGearCANcoder.getConfigurator().apply(lowGearSensorConfigs);
@@ -401,11 +399,10 @@ public class TurretSubsystem extends SubsystemBase {
    * @return The distance from the tag (meters)
    */
   private double tyToDistanceFromTag(double ty) {
-    DynamicRobotConfig dynamicRobotConfig = new DynamicRobotConfig();
-    double tagTheta = Math.toRadians(ty) + dynamicRobotConfig.getLimelightConfig().limelightYMeters;
+    double tagTheta = Math.toRadians(ty) + LimelightConfig.limelightYMeters;
     double height =
         Constants.TurretConstants.SPEAKER_TAG_CENTER_HEIGHT_METERS
-            - dynamicRobotConfig.getLimelightConfig()
+            - LimelightConfig
                 .limelightZMeters; // TODO: Change these alphabot constants to be turret
     // constants whenever the robot is built
     double distance = height / Math.tan(tagTheta);

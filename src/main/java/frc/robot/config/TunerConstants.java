@@ -113,18 +113,13 @@ public class TunerConstants {
   private static final double kBackRightXPosInches = -12;
   private static final double kBackRightYPosInches = -12;
 
-  private final SwerveModuleConstants FrontLeft;
-  private final SwerveModuleConstants FrontRight;
-  private final SwerveModuleConstants BackLeft;
-  private final SwerveModuleConstants BackRight;
-  public final SwerveSubsystem drivetrain;
+  private final static double frontLeftOffset = 0.067;
+  private final static double frontRightOffset = 0.384;
+  private final static double backLeftOffset = 0.538;
+  private final static double backRightOffset = 0.919;
 
-  protected TunerConstants(
-      double frontLeftOffset,
-      double frontRightOffset,
-      double backLeftOffset,
-      double backRightOffset) {
-    FrontLeft =
+
+  private final static SwerveModuleConstants FrontLeft =
         ConstantCreator.createModuleConstants(
             kFrontLeftSteerMotorId,
             kFrontLeftDriveMotorId,
@@ -133,7 +128,7 @@ public class TunerConstants {
             Units.inchesToMeters(kFrontLeftXPosInches),
             Units.inchesToMeters(kFrontLeftYPosInches),
             kInvertLeftSide);
-    FrontRight =
+  private final static SwerveModuleConstants  FrontRight =
         ConstantCreator.createModuleConstants(
             kFrontRightSteerMotorId,
             kFrontRightDriveMotorId,
@@ -142,7 +137,7 @@ public class TunerConstants {
             Units.inchesToMeters(kFrontRightXPosInches),
             Units.inchesToMeters(kFrontRightYPosInches),
             kInvertRightSide);
-    BackLeft =
+  private final static SwerveModuleConstants  BackLeft =
         ConstantCreator.createModuleConstants(
             kBackLeftSteerMotorId,
             kBackLeftDriveMotorId,
@@ -151,7 +146,7 @@ public class TunerConstants {
             Units.inchesToMeters(kBackLeftXPosInches),
             Units.inchesToMeters(kBackLeftYPosInches),
             kInvertLeftSide);
-    BackRight =
+  private final static SwerveModuleConstants  BackRight =
         ConstantCreator.createModuleConstants(
             kBackRightSteerMotorId,
             kBackRightDriveMotorId,
@@ -160,7 +155,5 @@ public class TunerConstants {
             Units.inchesToMeters(kBackRightXPosInches),
             Units.inchesToMeters(kBackRightYPosInches),
             kInvertRightSide);
-    drivetrain =
-        new SwerveSubsystem(DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
-  }
+    public final static SwerveSubsystem drivetrain = new SwerveSubsystem(DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);;
 }

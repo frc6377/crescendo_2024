@@ -158,6 +158,11 @@ public final class Constants {
         (PITCH_MIN_ANGLE_DEGREES / (360 * PITCH_CONVERSION_FACTOR));
     public static final double PITCH_MAX_ANGLE_ROTATIONS =
         (PITCH_MAX_ANGLE_DEGREES / (360 * PITCH_CONVERSION_FACTOR));
+        
+    public class TurretZeroConfig {
+      public static final double lowGearTurretZero = Double.NaN;
+      public static final double highGearTurretZero = Double.NaN;
+    }
   }
 
   public static class OperatorConstants {
