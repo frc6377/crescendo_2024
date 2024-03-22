@@ -81,8 +81,6 @@ public class ShooterSubsystem extends SubsystemBase {
     ShooterConstants.LEFT_SHOOTER_PID.setSparkPidController(shooterLeftMotor);
     ShooterConstants.RIGHT_SHOOTER_PID.setSparkPidController(shooterRightMotor);
 
-    ShooterConstants.LEFT_SHOOTER_PID.createTunableNumbers("Left motor", shooterLeftMotor, this);
-
     if (!Robot.isCompetition) {
       shooterTab.add("Shooter Right PID", shooterRightMotor.getPIDController());
       shooterTab.add("Shooter Left PID", shooterLeftMotor.getPIDController());

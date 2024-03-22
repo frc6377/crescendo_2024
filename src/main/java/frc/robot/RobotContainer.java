@@ -176,8 +176,13 @@ public class RobotContainer {
     configDriverFeedBack();
   }
 
-  public SwerveSubsystem getDriveTrain() {
-    return drivetrain;
+  public void setVisionMeasuresEnabled(boolean enableVisionMeasures) {
+    if(drivetrain != null) return;
+    if(enableVisionMeasures){
+      drivetrain.startVisionMeasures();
+    }else{
+      drivetrain.stopVisionMeasures();
+    }
   }
 
   /**
@@ -440,6 +445,11 @@ public class RobotContainer {
           .withName("Get Auto Command");
     }
     return null;
+  }
+
+  public void setOperatorPerspectiveForward(Rotation2d rotation) {
+    if(drivetrain == null) return;
+    drivetrain.setOperatorPerspectiveForward(rotation);
   }
 
   public RobotStateManager getRobotStateManager() {

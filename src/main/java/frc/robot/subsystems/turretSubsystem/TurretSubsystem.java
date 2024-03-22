@@ -20,6 +20,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
@@ -41,6 +42,8 @@ import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.HowdyMath;
+import frc.robot.utilities.TunableNumber;
+
 import java.util.function.DoubleSupplier;
 
 public class TurretSubsystem extends SubsystemBase {
@@ -230,10 +233,6 @@ public class TurretSubsystem extends SubsystemBase {
   /** Will calculate the current turret position and update encoders and motors off of it. */
   public void zeroTurret() {
     if (!Constants.enabledSubsystems.turretRotationEnabled) return;
-    // double lowGearPosition = lowGearCANcoder.getAbsolutePosition().getValue().doubleValue();
-    // double highGearPosition = highGearCANcoder.getAbsolutePosition().getValue().doubleValue();
-    // Rotation2d turretRotation = encoderPositionsToTurretRotation(lowGearPosition,
-    // highGearPosition);
     Rotation2d turretRotation = new Rotation2d();
 
     lowGearCANcoder.setPosition(
