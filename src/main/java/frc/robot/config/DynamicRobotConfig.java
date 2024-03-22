@@ -28,7 +28,7 @@ public class DynamicRobotConfig {
 
     public static double limelightYMeters = Units.inchesToMeters(9.99);
     public static double limelightRollRadians = Math.toRadians(180);
-    public static double limelightPitchRadians = Math.toRadians(90 - 69);
+    public static double limelightPitchRadians = Math.toRadians(23.4);
   }
 
   private static TunerConstants tunerConstants;
