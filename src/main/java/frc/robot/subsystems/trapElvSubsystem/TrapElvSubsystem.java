@@ -260,7 +260,8 @@ public class TrapElvSubsystem extends SubsystemBase {
     wristOutput =
         new DebugEntry<Double>(0.0, "Wrist Motor Output", this).withPosition(2, 1).withSize(2, 1);
     FFOutput = new DebugEntry<Double>(0.0, "FF Output", this).withPosition(5, 1).withSize(2, 1);
-    sourceLog = new DebugEntry<Boolean>(sourceBreak.get(), "Source BB", this).withPosition(0, 2);
+    sourceLog =
+        new DebugEntry<Boolean>(sourceBreak.isBeamBroke(), "Source BB", this).withPosition(0, 2);
     groundLog = new DebugEntry<Boolean>(groundBreak.get(), "Ground BB", this).withPosition(1, 2);
     isWristRollerRunning = new DebugEntry<Boolean>(false, "Wrist Rollers", this).withPosition(2, 2);
 
@@ -347,7 +348,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     wristPositionEntry.log(getWristEncoderPos());
-    sourceLog.log(sourceBreak.get());
+    sourceLog.log(sourceBreak.isBeamBroke());
     groundLog.log(groundBreak.get());
     sourceBreak.getMilliMeters();
 
