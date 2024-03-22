@@ -82,6 +82,10 @@ public class RobotStateManager extends SubsystemBase {
     return () -> this.placementMode == PlacementMode.AMP;
   }
 
+  public Trigger isAmpTrigger() {
+    return new Trigger(isAmpSupplier());
+  }
+
   public Command setAmpMode() {
     return runOnce(() -> setPlacementMode(PlacementMode.AMP));
   }
