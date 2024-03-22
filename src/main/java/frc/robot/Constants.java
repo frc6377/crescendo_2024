@@ -277,8 +277,11 @@ public final class Constants {
   public static final double AMPLIFICATION_RUMBLE_INTENSITY = 0.5;
 
   // Lights
-  public static final int LED_COUNT = 20;
+  public static final int LED_COUNT = 5;
   public static final int LED_STRIP_PWM_PORT = 0;
+  public static final double LED_BRIGHTNESS = 0.25; // 1 is maximum brightness; 0 is minimum
+  public static final int PATTERN_SPEED =
+      50; // The number of ticks it waits before changing the pattern
 
   public static class DriverConstants {
 

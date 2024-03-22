@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
@@ -15,7 +16,6 @@ import frc.robot.subsystems.signaling.patterns.TransFlag;
 import java.util.function.Consumer;
 
 public class SignalingSubsystem extends SubsystemBase {
-  private static final int patternUpdateFrequency = 10;
 
   private final AddressableLED ledStrip;
   private final AddressableLEDBuffer ledBuffer;
@@ -32,6 +32,7 @@ public class SignalingSubsystem extends SubsystemBase {
   private final Consumer<Double> driverRumbleConsumer;
 
   private final RobotStateManager robotStateManager;
+  private final Trigger isAmpModeTrigger;
 
   public SignalingSubsystem(
       final int ID,
@@ -39,6 +40,7 @@ public class SignalingSubsystem extends SubsystemBase {
       final RobotStateManager robotStateManager) {
     this.driverRumbleConsumer = driverRumbleConsumer;
     this.robotStateManager = robotStateManager;
+    this.isAmpModeTrigger = robotStateManager.isAmpTrigger();
 
     tick = 0;
     patternTick = 0;
@@ -56,6 +58,9 @@ public class SignalingSubsystem extends SubsystemBase {
   public void periodic() {
     // Update Light Pattern
     if (DriverStation.isDisabled()) updatePattern();
+
+    isAmpModeTrigger.onFalse(runOnce(() -> setHalfStrip(RGB.RED)));
+    isAmpModeTrigger.onTrue(runOnce(() -> setHalfStrip(RGB.BLUE)));
 
     // End Signaling
     if (rumbleTimer.get() > rumbleEndTime) {
@@ -88,6 +93,7 @@ public class SignalingSubsystem extends SubsystemBase {
   private void startSignal(final double time, final RGB rgb) {
     rumbleEndTime = time;
     setFullStrip(rgb);
+    ledStrip.setData(ledBuffer);
     rumbleTimer.reset();
     rumbleTimer.start();
   }
@@ -96,6 +102,7 @@ public class SignalingSubsystem extends SubsystemBase {
     driverRumbleConsumer.accept(intensity);
     rumbleEndTime = time;
     setFullStrip(rgb);
+    ledStrip.setData(ledBuffer);
     rumbleTimer.reset();
     rumbleTimer.start();
   }
@@ -104,11 +111,28 @@ public class SignalingSubsystem extends SubsystemBase {
     setSection(rgb, 0, numberOfLEDS);
   }
 
-  private void setSection(final RGB rgb, final int startID, final int count) {
-    for (var i = Math.max(startID, 0); i < Math.min(startID + count, numberOfLEDS); i++) {
-      ledBuffer.setRGB(i, rgb.red / 4, rgb.green / 4, rgb.blue / 4);
+  private void setHalfStrip(final RGB rgb) {
+    resetLEDs();
+    for (var i = 0; i < numberOfLEDS; i += 2) {
+      ledBuffer.setRGB(
+          i,
+          (int) (rgb.red * Constants.LED_BRIGHTNESS),
+          (int) (rgb.green * Constants.LED_BRIGHTNESS),
+          (int) (rgb.blue * Constants.LED_BRIGHTNESS));
     }
     ledStrip.setData(ledBuffer);
+  }
+
+  private void setSection(final RGB rgb, final int startID, final int count) {
+    for (var i = startID; i < startID + count; i++) {
+      if (i > -1 && i < numberOfLEDS) {
+        ledBuffer.setRGB(
+            i,
+            (int) (rgb.red * Constants.LED_BRIGHTNESS),
+            (int) (rgb.green * Constants.LED_BRIGHTNESS),
+            (int) (rgb.blue * Constants.LED_BRIGHTNESS));
+      }
+    }
   }
 
   private void updatePattern() {
@@ -116,7 +140,7 @@ public class SignalingSubsystem extends SubsystemBase {
     int patternLength;
 
     tick++;
-    if (tick > patternUpdateFrequency) {
+    if (tick > Constants.PATTERN_SPEED) {
       tick = 0;
       patternTick++;
     } else {
@@ -148,7 +172,7 @@ public class SignalingSubsystem extends SubsystemBase {
     }
     int patternIndex = 0;
     patternTick %= patternLength;
-    int LEDIndex = -patternTick;
+    int LEDIndex = -patternTick - 1;
     while (LEDIndex < numberOfLEDS) {
       patternIndex %= pattern.length;
 
@@ -159,6 +183,7 @@ public class SignalingSubsystem extends SubsystemBase {
       LEDIndex += node.repeat;
       patternIndex += 1;
     }
+    ledStrip.setData(ledBuffer);
   }
 
   public void randomizePattern() {
