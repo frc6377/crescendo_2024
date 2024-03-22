@@ -128,7 +128,7 @@ public class TurretCommandFactory {
           if (Constants.enabledSubsystems.turretRotationEnabled)
             subsystem.setTurretPos(Math.toRadians(00));
           if (Constants.enabledSubsystems.turretPitchEnabled)
-            subsystem.setPitchPos(Math.toRadians(40));
+            subsystem.setPitchPos(Math.toRadians(17)); // Placeholder value
         },
         () -> {});
   }
@@ -138,16 +138,18 @@ public class TurretCommandFactory {
     double angleToTarget = 0.35;
     DoubleSupplier targetAngle =
         () -> RSM.getAllianceColor() == AllianceColor.RED ? angleToTarget : -angleToTarget;
-    return subsystem.startEnd(
-        () -> {
-          if (Constants.enabledSubsystems.turretRotationEnabled) {
-            subsystem.setTurretPos(targetAngle.getAsDouble());
-          }
-          if (Constants.enabledSubsystems.turretPitchEnabled) {
-            subsystem.setPitchPos(Math.toRadians(22.5));
-          }
-        },
-        () -> {}).asProxy();
+    return subsystem
+        .startEnd(
+            () -> {
+              if (Constants.enabledSubsystems.turretRotationEnabled) {
+                subsystem.setTurretPos(targetAngle.getAsDouble());
+              }
+              if (Constants.enabledSubsystems.turretPitchEnabled) {
+                subsystem.setPitchPos(Math.toRadians(22.5));
+              }
+            },
+            () -> {})
+        .asProxy();
   }
 
   public Command idleTurret() {

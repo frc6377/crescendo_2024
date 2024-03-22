@@ -15,7 +15,7 @@ public class ShooterCommandFactory {
   private final ShooterSubsystem subsystem;
   private ShuffleboardTab shooterTab = Shuffleboard.getTab("ShooterSubsystem");
   private GenericEntry targetRPM = shooterTab.add("Target RPM", 3050 * 1.125).getEntry();
-  private GenericEntry rightTargetRPM = shooterTab.add("right RPM", 2250 * 1.125).getEntry();
+  private GenericEntry rightTargetRPM = shooterTab.add("right RPM", 2650 * 1.125).getEntry();
 
   public ShooterCommandFactory(ShooterSubsystem subsystem) {
     this.subsystem = subsystem;

@@ -415,7 +415,7 @@ public class TurretSubsystem extends SubsystemBase {
 
         // Y & Tilting
         if (Constants.enabledSubsystems.turretPitchEnabled) {
-          double visionTY = -visionSubsystem.getTurretPitch(tagID);
+          double visionTY = visionSubsystem.getTurretPitch(tagID);
           double distanceToTag = tyToDistanceFromTag(visionTY);
           tagDistanceEntry.log(distanceToTag);
           // setPitchPos(distanceToShootingPitch(distanceToTag));
