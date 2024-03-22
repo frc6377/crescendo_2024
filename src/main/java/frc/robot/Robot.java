@@ -29,7 +29,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  * project.
  */
 public class Robot extends LoggedRobot {
-  public static final boolean isCompetition = true;
+  public static final boolean isCompetition = false;
 
   private Command m_autonomousCommand;
 
@@ -118,7 +118,7 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_robotContainer.getDriveTrain().stopVisionMeasures();
+    m_robotContainer.setVisionMeasuresEnabled(false);
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -136,7 +136,8 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-    m_robotContainer.getDriveTrain().startVisionMeasures();
+    m_robotContainer.robotStateManager.setShortRange();
+    m_robotContainer.setVisionMeasuresEnabled(true);
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -145,8 +146,9 @@ public class Robot extends LoggedRobot {
       m_autonomousCommand.cancel();
     }
     // BLUE is the default, so we only need to handle RED here.
-    if (DriverStation.getAlliance().get() == Alliance.Red) {
-      m_robotContainer.getDriveTrain().setOperatorPerspectiveForward(Rotation2d.fromRotations(0.5));
+    if (DriverStation.getAlliance().isPresent()
+        && DriverStation.getAlliance().get() == Alliance.Red) {
+      m_robotContainer.setOperatorPerspectiveForward(Rotation2d.fromRotations(0.5));
     }
   }
 
