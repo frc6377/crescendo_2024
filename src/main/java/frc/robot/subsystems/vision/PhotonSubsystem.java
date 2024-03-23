@@ -8,8 +8,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Robot;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.config.LimelightConfig;
@@ -132,17 +134,24 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
     return Double.NaN;
   }
 
-  public double getTurretPitch(int id) {
+  public double getDistance(int id) {
     turretResult = turretCamera.getLatestResult();
     if (turretResult.hasTargets()) {
       List<PhotonTrackedTarget> targets = turretResult.getTargets();
       for (PhotonTrackedTarget target : targets) {
         if (target.getFiducialId() == id) {
-          return target.getPitch();
+          double ang =
+              target.getPitch() + Units.radiansToDegrees(limelightConfig.limelightPitchRadians);
+          System.out.println("ang:" + ang);
+          return FieldConstants.SPEAKER_TAG_HEIGHT_METERS / Math.tan(Math.toRadians(ang));
         }
       }
     }
     return 0;
+  }
+
+  private double angleToDistanceSpeakerTag(Rotation2d theta) {
+    return FieldConstants.SPEAKER_TAG_HEIGHT_METERS / theta.getTan();
   }
 
   public void periodic() {

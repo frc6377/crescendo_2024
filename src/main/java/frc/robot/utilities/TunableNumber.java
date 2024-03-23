@@ -7,8 +7,9 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import java.util.function.Consumer;
+import java.util.function.DoubleSupplier;
 
-public class TunableNumber extends SubsystemBase {
+public class TunableNumber extends SubsystemBase implements DoubleSupplier {
   private static ShuffleboardTab tuningTab;
   private GenericEntry numberEntry;
   private double value;
@@ -27,10 +28,15 @@ public class TunableNumber extends SubsystemBase {
   public void periodic() {
     if (!Robot.isCompetition) {
       consumer.accept(numberEntry.getDouble(value));
+      value = numberEntry.getDouble(value);
     }
   }
 
   public double get() {
+    return value;
+  }
+
+  public double getAsDouble() {
     return value;
   }
 }

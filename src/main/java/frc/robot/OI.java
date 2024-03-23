@@ -22,20 +22,18 @@ public class OI {
     public static final XboxController controller = new XboxController(driverJoystickPort);
 
     // A B Y X Buttons
-    public static final Control intakeSource =
-        new Control(XboxController.Button.kA, "Source", controller);
-    public static final Control speakerSource =
-        new Control(XboxController.Button.kB, "Intake Speaker from Source", controller);
+    public static final Control A = new Control(XboxController.Button.kA, null, controller);
+    public static final Control B = new Control(XboxController.Button.kB, null, controller);
     public static final Control Y = new Control(XboxController.Button.kY, null, controller);
     public static final Control X = new Control(XboxController.Button.kX, null, controller);
 
     // Bumpers & Triggers
-    public static final Control outtake =
-        new Control(XboxController.Axis.kLeftTrigger, "Out take", controller, 0.5);
-    public static final Control intake =
-        new Control(XboxController.Axis.kRightTrigger, "Intake", controller, 0.5);
-    public static final Control useRod =
-        new Control(XboxController.Button.kLeftBumper, "ROD", controller);
+    public static final Control lockSpeaker =
+        new Control(XboxController.Axis.kLeftTrigger, "point at speaker", controller, 0.5);
+    public static final Control lockAmp =
+        new Control(XboxController.Axis.kRightTrigger, "point at amp", controller, 0.5);
+    public static final Control lockSource =
+        new Control(XboxController.Button.kLeftBumper, "Intake Speaker from Source", controller);
     public static final Control highGear =
         new Control(XboxController.Button.kRightBumper, "High gear", controller);
 

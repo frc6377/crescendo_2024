@@ -23,8 +23,8 @@ public final class Constants {
   public static class SwerveDriveConstants {
     public static final double TURN_kP = 10;
     public static final double TURN_kD = 0;
-    public static final double MAX_AUTO_TURN = 180; // deg/s
-    public static final double MAX_AUTO_ACCERLATION = 180; // deg/s^2
+    public static final double MAX_AUTO_TURN = 720; // deg/s
+    public static final double MAX_AUTO_ACCERLATION = 720; // deg/s^2
     public static final double LOW_GEAR_MAG_MULTIPLE = 0.6;
     public static final double LOW_GEAR_STEER_MULTIPLE = 1;
     public static final double HIGH_GEAR_MAG_MULTIPLE = 1;
@@ -90,12 +90,12 @@ public final class Constants {
     public static final int DEFAULT_SHOT_ROTATION = 0;
 
     // PID coefficients
-    public static final boolean ADVANCE_LOOP = false;
-    public static final HowdyPID TURRET_POSITION_PID_CASCADE =
-        new HowdyPID(5, 0.01, 0.225, 0.05, 0);
+    public static final boolean ADVANCE_LOOP = true;
+    // Position in turret position (-0.5 to 0.5) to velocity in RPM
+    public static final HowdyPID TURRET_POSITION_PID_CASCADE = new HowdyPID(200, 0., 0., 0.0, 0);
+    // Velocity in RPM to percent out
     public static final HowdyPID TURRET_VELOCITY_PID_CASCADE =
-        new HowdyPID(5, 0.01, 0.225, 0.05, 0);
-    public static final HowdyPID TURRET_POSITION_PID = new HowdyPID(2, 0.0, 0, 0.05, 0);
+        new HowdyPID(0.05, 1e-8, 3e-5, 4.0, 0);
 
     public static final double TURRET_KMAXOUTPUT = 1;
     public static final double TURRET_KMINOUTPUT = -1;
@@ -104,7 +104,7 @@ public final class Constants {
     public static final int TURRET_MAX_ANGLE_DEGREES = 90;
 
     public static final double TURRET_CONVERSION_FACTOR = 0.18292682926829268292682926829268;
-    public static final int TURRET_SMART_CURRENT_LIMIT = 40;
+    public static final int TURRET_SMART_CURRENT_LIMIT = 60;
 
     // TODO: Change values when there's an actual real functional robot.
     public static final HowdyPID PITCH_PID = new HowdyPID(8, 0, 0);
@@ -157,7 +157,7 @@ public final class Constants {
                 + 0.0); // Revolutions of the turret, to revolutions of the cancoder
     public static final int highGearCAN_CODER_ID = 5;
     public static final int lowGearCAN_CODER_ID = 6;
-    public static final double ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV = 0.25;
+    public static final double ENCODER_ZERO_OFFSET_FROM_TURRET_ZERO_REV = 0;
 
     // Turret limits
     public static final double TURRET_MIN_ANGLE_ROTATIONS =
@@ -168,6 +168,29 @@ public final class Constants {
         ((PITCH_MIN_ANGLE_DEGREES * PITCH_CONVERSION_FACTOR) / 360);
     public static final double PITCH_MAX_ANGLE_ROTATIONS =
         ((PITCH_MAX_ANGLE_DEGREES * PITCH_CONVERSION_FACTOR) / 360);
+    public static final Rotation2d PIN_EPSILION = Rotation2d.fromDegrees(2);
+
+    public static final TurretDataPoint[] TURRET_DATA = {
+
+      // Verified at 6 of 6
+      // 5 deg left
+      new TurretDataPoint(Units.inchesToMeters(15.5), 1.69, Units.degreesToRadians(30)),
+
+      // Verified at 5
+      new TurretDataPoint(Units.inchesToMeters(21.75), 1.8, Units.degreesToRadians(28)),
+      // Verified at 5 of 6
+      new TurretDataPoint(Units.inchesToMeters(59.5), 2.6, Units.degreesToRadians(20)),
+      // Verified at 7 of 8
+      new TurretDataPoint(Units.inchesToMeters(62), 2.65, Units.degreesToRadians(18)),
+      // Verified at 6 of 7
+      // 5 deg left
+      new TurretDataPoint(Units.inchesToMeters(62), 2.65, Units.degreesToRadians(18)),
+
+      // Verified at 6 of 6
+      // 5 deg left
+      new TurretDataPoint(Units.inchesToMeters(83), 3.11, Units.degreesToRadians(16)),
+    };
+    public static final double PITCH_TOLERANCE = 1;
   }
 
   public static class OperatorConstants {
@@ -264,6 +287,8 @@ public final class Constants {
     public static final Translation2d RED_SPEAKER = new Translation2d(16.579342, 5.547868);
     public static final Translation2d BLUE_SPEAKER = new Translation2d(-0.0381, 5.547868);
     public static final double CENTERLINE_X_APPROX = 8;
+    public static final double SPEAKER_TAG_HEIGHT_METERS = 1.45;
+    public static final Rotation2d AMP_DIRECTION = Rotation2d.fromDegrees(90);
   }
 
   public static class enabledSubsystems {
@@ -290,16 +315,19 @@ public final class Constants {
   public static final int LED_COUNT = 20;
 
   public static class DriverConstants {
-
     public static final Rotation2d RED_AMP_ROTATION = Rotation2d.fromRotations(0.25);
     public static final Rotation2d BLUE_AMP_ROTATION = Rotation2d.fromRotations(0.25);
     public static final Rotation2d BLUE_SOURCE_ROTATION = Rotation2d.fromRotations(-0.25);
     public static final Rotation2d RED_SOURCE_ROTATION = Rotation2d.fromRotations(-0.25);
+    public static final Rotation2d ABSOLUTE_POINTING_OFFSET = Rotation2d.fromRotations(0.75);
+    public static final double ROTATION_DEADBAND = 0.05;
   }
 
-  public static class CommandConstants {
+  public static record TurretDataPoint(
+      double realDistanceMeters, double limelightMeters, double turretAngleRadians) {}
 
-    public static final double WAIT_FOR_TRAPELV = 0.1;
+  public static class CommandConstants {
+    public static final double WAIT_FOR_TRAPELV = 0.2;
     public static final boolean USE_VISION_TARGETING = true;
   }
 }
