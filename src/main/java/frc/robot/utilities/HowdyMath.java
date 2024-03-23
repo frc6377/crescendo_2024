@@ -1,6 +1,15 @@
 package frc.robot.utilities;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+
 public class HowdyMath {
+
+  public static Rotation2d getAngleToTarget(Translation2d currentPosition, Translation2d target) {
+    Translation2d delta = currentPosition.minus(target);
+    return new Rotation2d(delta.getX(), delta.getY());
+  }
+
   // Returns modulo inverse of a
   // with respect to m using extended
   // Euclid Algorithm. Refer below post for details:
