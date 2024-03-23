@@ -24,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "A2-B2 Intake"
+                  "pathName": "A2-B2 Intake Dorothy 1"
                 }
               },
               {
@@ -52,7 +52,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "B2-B2 Shoot"
+            "pathName": "B2-B2 Shoot Dorothy 2"
           }
         },
         {
@@ -64,7 +64,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "B2-A2 Move"
+            "pathName": "B2-A2 Move Dorothy 3"
           }
         }
       ]

@@ -24,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "A1-B1 Intake"
+                  "pathName": "A1-B1 Intake Harold 1"
                 }
               },
               {
@@ -52,7 +52,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "B1-Amp"
+            "pathName": "B1-Amp Amp"
           }
         },
         {
@@ -96,7 +96,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "D1-Amp"
+            "pathName": "D1-Amp Amp"
           }
         },
         {

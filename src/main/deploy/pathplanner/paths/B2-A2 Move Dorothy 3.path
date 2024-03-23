@@ -3,24 +3,24 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.75,
+        "x": 2.75,
         "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.65,
+        "x": 2.65,
         "y": 5.55
       },
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.75,
+        "x": 1.383130458568611,
         "y": 5.55
       },
       "prevControl": {
-        "x": 2.85,
+        "x": 1.483130458568611,
         "y": 5.55
       },
       "nextControl": null,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Dorothy",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

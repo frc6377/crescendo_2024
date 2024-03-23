@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "A1-B1 Shoot Chat 1"
+            "pathName": "A1-B1 Shoot Chad 1"
           }
         },
         {
@@ -30,7 +30,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "B2-B2 Intake"
+                  "pathName": "B2-B2 Intake Chad 2"
                 }
               },
               {
@@ -58,7 +58,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "B1-B1 Shoot"
+            "pathName": "B1-B1 Shoot Chad 3"
           }
         },
         {
@@ -74,7 +74,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "B1-B2 Intake"
+                  "pathName": "B1-B2 Intake Chad 4"
                 }
               },
               {
@@ -112,7 +112,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "B2-B3 Intake"
+                  "pathName": "B2-B3 Intake Chad 5"
                 }
               },
               {
@@ -140,7 +140,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "A3-A3 Shoot"
+            "pathName": "A3-A3 Shoot Chad 6"
           }
         },
         {

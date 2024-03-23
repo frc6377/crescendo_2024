@@ -3,24 +3,24 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.6,
-        "y": 6.6
+        "x": 3.3,
+        "y": 6.9
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.2143640332167438,
-        "y": 7.030182327263284
+        "x": 3.1999999999999997,
+        "y": 6.9
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.8,
+        "x": 2.9,
         "y": 7.0
       },
       "prevControl": {
-        "x": 1.5499999999999998,
+        "x": 3.0,
         "y": 7.0
       },
       "nextControl": null,
@@ -28,13 +28,7 @@
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.7,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -45,14 +39,14 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 30.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Amp Starting Location",
+  "folder": "Chad",
   "previewStartingState": {
-    "rotation": 60.0,
+    "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

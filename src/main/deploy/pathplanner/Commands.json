@@ -1,5 +1,5 @@
 {
-    "Speaker Intake" : {              
+    "IntakeS" : {              
         "type": "deadline",
         "data": {
           "commands": [
@@ -26,7 +26,7 @@
         }
     },
 
-    "Amp Intake" : {
+    "IntakeA" : {
         "type": "deadline",
         "data": {
           "commands": [
@@ -45,7 +45,7 @@
           ]
         }
     },
-    "Amp Score" : {
+    "AmpScore" : {
         "type": "named",
         "data": {
           "name": "Amp"

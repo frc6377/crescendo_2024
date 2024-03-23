@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.37,
-        "y": 6.85
+        "x": 3.75,
+        "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.42000000000000015,
-        "y": 6.85
+        "x": 3.65,
+        "y": 5.55
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.5,
-        "y": 7.55
+        "x": 2.75,
+        "y": 5.55
       },
       "prevControl": {
-        "x": 2.4499999999999997,
-        "y": 7.55
+        "x": 2.85,
+        "y": 5.55
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,11 +39,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 35.0,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Dorothy",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

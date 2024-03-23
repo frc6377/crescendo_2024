@@ -33,14 +33,18 @@ with open(commands_file_path, 'r') as f:
 	command_names = [key for key in commands]
 
 
-def get_name_list_file(file_name):
+def get_file_labels(file_name):
 	name_labels = file_name.split('-')
+	name_labels = [*name_labels[0].split(' '), *name_labels[1:]]
+	for i in range(1, len(name_labels)-1):
+		name_labels = [*name_labels[:i], *name_labels[i].split(' '), *name_labels[i+1:]]
 	name_labels = [*name_labels[0:-1], *name_labels[-1].split(' ')]
 	name_labels = [*name_labels[0:-1], *name_labels[-1].split('.')]
+	name_labels = name_labels[:-1]
 	return name_labels
 
 def create_path_file(file_name):
-	name_labels = get_name_list_file(file_name)
+	name_labels = get_file_labels(file_name)
 
 	x1 = setpoints[name_labels[0]]['x']
 	y1 = setpoints[name_labels[0]]['y']
@@ -117,6 +121,45 @@ def create_path_file(file_name):
 	
 	return file
 
+def get_path_json(path):
+	path_json = {
+		"type": "path",
+		"data": {
+			"pathName": f'{path[0]}-{path[1]}' + ' '.join(path[2:])
+		}
+	}
+	return path_json
+
+def create_auto_file(nickname, path_list):
+	start_pose = setpoints[path_list[0][0]]
+	auto = {
+		"version": 1.0,
+		"startingPose": {
+			"position": {
+				"x": start_pose['x'],
+				"y": start_pose['y']
+			},
+			"rotation": start_pose['r']
+		},
+		"command": {
+			"type": "sequential",
+			"data": {
+				"commands": []
+			}
+		},
+		"folder": None,
+		"choreoAuto": False
+	}
+
+	for path in path_list:
+		auto['command']['data']['commands'].append(get_path_json(path))
+		auto['command']['data']['commands'].append(command_names[path[2]])
+	
+	with open(f'{nickname}.auto', 'w') as file:
+		json.dump(auto)
+
+
+
 not_format_files_num = 0
 not_format_files_list = []
 
@@ -138,25 +181,26 @@ for filename in os.listdir(path_folder):
 if not_format_files_num > 0:
 	print(f"The names of {not_format_files_num} files were not formatted properly.")
 	for file in not_format_files_list:
-		print(f'  -{file}')
+		print(f'  -{file}', end='\n\n')
 
 auto_name_list = []
 for filename in os.listdir(auto_folder):
-	file_name = get_name_list_file(filename)
+	file_name = get_file_labels(filename)
 	auto_name_list.append(file_name)
+auto_nicknames = [name[0] for name in auto_name_list]
+print(auto_nicknames)
 	
 autos_to_make = {}
 for path in (path_name_list):
-	current_label = get_name_list_file(path)
-	auto_nicknames = [name[0] for name in auto_name_list]
+	current_label = get_file_labels(path)
 	if len(current_label) >= 5:
 		if current_label[3] not in auto_nicknames:
 			if current_label[3] in autos_to_make:
 				autos_to_make[current_label[3]].append(current_label)
 			else: 
 				autos_to_make[current_label[3]] = [current_label]
-print(autos_to_make)
-				
 
+for key in autos_to_make:
+	create_auto_file(key, autos_to_make[key])
 
 print('Done!')
