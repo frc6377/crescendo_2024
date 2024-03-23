@@ -24,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "SanAn 2 note intake"
+                  "pathName": "A2-B2 Intake"
                 }
               },
               {
@@ -52,7 +52,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SanAn 2 note Shoot"
+            "pathName": "B2-B2 Shoot"
           }
         },
         {
@@ -64,7 +64,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SanAn 2 note dodge"
+            "pathName": "B2-A2 Move"
           }
         }
       ]

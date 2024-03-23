@@ -1,5 +1,6 @@
 {
 	"Path Folder" : "src/main/deploy/pathplanner/paths",
+	"Auto Folder" : "src/main/deploy/pathplanner/autos",
 	"Setpoints" : {
 		"Amp" : {
 			"x" : 1.85,

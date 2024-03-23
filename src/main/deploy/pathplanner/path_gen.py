@@ -18,6 +18,7 @@ import os
 import json
 
 settings_file_path = 'src/main/deploy/pathplanner/settings.json'
+commands_file_path = 'src/main/deploy/pathplanner/Commands.json'
 
 lables = ['Intake', 'Shoot', 'Amp', 'Drop']
 
@@ -25,11 +26,21 @@ with open(settings_file_path, 'r') as f:
 	settings = json.load(f)
 	setpoints = settings['Setpoints']
 	path_folder = settings['Path Folder']
+	auto_folder = settings['Auto Folder']
 
-def create_path_file(file_name):
+with open(commands_file_path, 'r') as f:
+	commands = json.load(f)
+	command_names = [key for key in commands]
+
+
+def get_name_list_file(file_name):
 	name_labels = file_name.split('-')
 	name_labels = [*name_labels[0:-1], *name_labels[-1].split(' ')]
 	name_labels = [*name_labels[0:-1], *name_labels[-1].split('.')]
+	return name_labels
+
+def create_path_file(file_name):
+	name_labels = get_name_list_file(file_name)
 
 	x1 = setpoints[name_labels[0]]['x']
 	y1 = setpoints[name_labels[0]]['y']
@@ -109,8 +120,10 @@ def create_path_file(file_name):
 not_format_files_num = 0
 not_format_files_list = []
 
+path_name_list = []
 for filename in os.listdir(path_folder):
 	current_file_path = path_folder+'/'+filename
+	path_name_list.append(filename)
 	try:
 		with open(current_file_path, 'r') as file:
 			current_file = json.load(file)
@@ -126,4 +139,24 @@ if not_format_files_num > 0:
 	print(f"The names of {not_format_files_num} files were not formatted properly.")
 	for file in not_format_files_list:
 		print(f'  -{file}')
+
+auto_name_list = []
+for filename in os.listdir(auto_folder):
+	file_name = get_name_list_file(filename)
+	auto_name_list.append(file_name)
+	
+autos_to_make = {}
+for path in (path_name_list):
+	current_label = get_name_list_file(path)
+	auto_nicknames = [name[0] for name in auto_name_list]
+	if len(current_label) >= 5:
+		if current_label[3] not in auto_nicknames:
+			if current_label[3] in autos_to_make:
+				autos_to_make[current_label[3]].append(current_label)
+			else: 
+				autos_to_make[current_label[3]] = [current_label]
+print(autos_to_make)
+				
+
+
 print('Done!')

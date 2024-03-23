@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "A1-B1 Shoot"
+            "pathName": "A1-B1 Shoot Chat 1"
           }
         },
         {
@@ -30,7 +30,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "B2 Intake"
+                  "pathName": "B2-B2 Intake"
                 }
               },
               {
@@ -58,7 +58,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "B1 Turn Shoot"
+            "pathName": "B1-B1 Shoot"
           }
         },
         {
