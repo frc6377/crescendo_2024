@@ -87,6 +87,7 @@ public final class Constants {
     public static final boolean IS_MOTOR_INVERTED = true;
     public static final int DEFAULT_SHOT_PITCH = 40;
     public static final int DEFAULT_SHOT_ROTATION = 0;
+    public static final double LOW_GEAR_TURRET_ZERO = -1.209473;
 
     // PID coefficients
     public static final boolean ADVANCE_LOOP = false;

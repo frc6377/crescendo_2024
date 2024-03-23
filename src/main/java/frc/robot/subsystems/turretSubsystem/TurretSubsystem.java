@@ -175,7 +175,7 @@ public class TurretSubsystem extends SubsystemBase {
     MagnetSensorConfigs lowGearSensorConfigs =
         new MagnetSensorConfigs()
             .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
-            .withMagnetOffset(-0.709473 - 0.5);
+            .withMagnetOffset(Constants.TurretConstants.LOW_GEAR_TURRET_ZERO);
 
     highGearCANcoder.getConfigurator().apply(highGearSensorConfigs);
     lowGearCANcoder.getConfigurator().apply(lowGearSensorConfigs);
@@ -352,7 +352,7 @@ public class TurretSubsystem extends SubsystemBase {
             Math.toRadians(Constants.TurretConstants.TURRET_MIN_ANGLE_DEGREES),
             Math.toRadians(Constants.TurretConstants.TURRET_MAX_ANGLE_DEGREES));
     turretGoalPositionEntry.log(Units.radiansToDegrees(setpoint));
-    this.setPositionErrorSupplier(() -> turretPosition - limitedSetpoint);
+    this.setPositionErrorSupplier(() -> turretPosition - (limitedSetpoint / (Math.PI * 2)));
   }
 
   public void setPositionErrorSupplier(DoubleSupplier positionErrorSupplier) {
