@@ -24,7 +24,7 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
+public class PhotonSubsystem extends SubsystemBase {
   private int measurementsUsed = 0;
   private DebugEntry<Double> measurementEntry = new DebugEntry<Double>(0.0, "measurements", this);
 
@@ -33,10 +33,8 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   private LimelightConfig limelightConfig;
   private Transform3d robotToCam;
 
-  private PhotonCamera mainCamera;
-  private PhotonCamera turretCamera;
-  private PhotonPipelineResult mainResult;
-  private PhotonPipelineResult turretResult;
+  private PhotonCamera camera;
+  private PhotonPipelineResult result;
   private AprilTagFieldLayout aprilTagFieldLayout;
   private PhotonPoseEstimator poseEstimator;
   private EstimatedRobotPose lastPose;
@@ -61,14 +59,12 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
                 limelightConfig.limelightRollRadians,
                 limelightConfig.limelightPitchRadians,
                 limelightConfig.limelightYawRadians));
-    mainCamera = new PhotonCamera(Constants.VisionConstants.MAIN_CAMERA_NAME);
-    turretCamera = new PhotonCamera(Constants.VisionConstants.TURRET_CAMERA_NAME);
-    mainResult = mainCamera.getLatestResult();
-    turretResult = turretCamera.getLatestResult();
+    camera = new PhotonCamera(Constants.VisionConstants.MAIN_CAMERA_NAME);
+    result = camera.getLatestResult();
     aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     poseEstimator =
         new PhotonPoseEstimator(
-            aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, mainCamera, robotToCam);
+            aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, robotToCam);
   }
 
   private EstimatedRobotPose getPVEstimatedPose() {
@@ -119,37 +115,11 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
     }
   }
 
-  public double getTurretYaw(int id) {
-    turretResult = turretCamera.getLatestResult();
-    if (turretResult.hasTargets()) {
-      List<PhotonTrackedTarget> targets = turretResult.getTargets();
-      for (PhotonTrackedTarget target : targets) {
-        if (target.getFiducialId() == id) {
-          return target.getYaw();
-        }
-      }
-    }
-    return 0;
-  }
-
-  public double getTurretPitch(int id) {
-    turretResult = turretCamera.getLatestResult();
-    if (turretResult.hasTargets()) {
-      List<PhotonTrackedTarget> targets = turretResult.getTargets();
-      for (PhotonTrackedTarget target : targets) {
-        if (target.getFiducialId() == id) {
-          return target.getPitch();
-        }
-      }
-    }
-    return 0;
-  }
-
   public void periodic() {
     if (Robot.isReal()) {
-      mainResult = mainCamera.getLatestResult();
-      if (mainResult.hasTargets()) {
-        List<PhotonTrackedTarget> targets = mainResult.getTargets();
+      result = camera.getLatestResult();
+      if (result.hasTargets()) {
+        List<PhotonTrackedTarget> targets = result.getTargets();
         if (targets.size() > 1) {
           EstimatedRobotPose newPose = getPVEstimatedPose();
           if ((newPose.estimatedPose.getX() > 12) || (newPose.estimatedPose.getX() < 4.54)) {

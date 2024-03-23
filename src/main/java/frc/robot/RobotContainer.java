@@ -45,7 +45,6 @@ import frc.robot.subsystems.turretSubsystem.TurretCommandFactory;
 import frc.robot.subsystems.turretSubsystem.TurretSubsystem;
 import frc.robot.subsystems.vision.LimelightSubsystem;
 import frc.robot.subsystems.vision.PhotonSubsystem;
-import frc.robot.subsystems.vision.VisionSubsystem;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -66,7 +65,8 @@ public class RobotContainer {
   private final TurretSubsystem turretSubsystem;
 
   private final SwerveSubsystem drivetrain;
-  private final VisionSubsystem visionSubsystem;
+  private final PhotonSubsystem photonSubsystem;
+  private final LimelightSubsystem limelightSubsystem;
 
   private final SignalingSubsystem signalingSubsystem;
 
@@ -125,14 +125,15 @@ public class RobotContainer {
       triggerSubsystem = null;
     }
     triggerCommandFactory = new TriggerCommandFactory(triggerSubsystem);
-    if (enabledSubsystems.visionEnabled) {
-      visionSubsystem =
-          Constants.enabledSubsystems.usingPhoton
-              ? new PhotonSubsystem(drivetrain.getVisionMeasurementConsumer())
-              : new LimelightSubsystem(
-                  drivetrain.getVisionMeasurementConsumer(), robotStateManager);
+    if (enabledSubsystems.photonEnabled) {
+      photonSubsystem = new PhotonSubsystem(drivetrain.getVisionMeasurementConsumer());
     } else {
-      visionSubsystem = new VisionSubsystem() {};
+      photonSubsystem = null;
+    }
+    if (enabledSubsystems.limelightEnabled) {
+      limelightSubsystem = new LimelightSubsystem(robotStateManager);
+    } else {
+      limelightSubsystem = null;
     }
     if (enabledSubsystems.elvEnabled) {
       trapElvSubsystem = new TrapElvSubsystem();
@@ -141,7 +142,7 @@ public class RobotContainer {
     }
     trapElvCommandFactory = new TrapElvCommandFactory(trapElvSubsystem);
     if (enabledSubsystems.turretRotationEnabled || enabledSubsystems.turretPitchEnabled) {
-      turretSubsystem = new TurretSubsystem(robotStateManager, visionSubsystem);
+      turretSubsystem = new TurretSubsystem(robotStateManager, limelightSubsystem);
     } else {
       turretSubsystem = null;
     }

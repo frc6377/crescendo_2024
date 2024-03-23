@@ -8,44 +8,28 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.LimelightHelpers;
-import java.util.function.BiConsumer;
 
-public class LimelightSubsystem extends SubsystemBase implements VisionSubsystem {
+public class LimelightSubsystem extends SubsystemBase {
   private LimelightHelpers.LimelightResults results;
 
-  private int measurementsUsed = 0;
-  private DebugEntry<Integer> measurementEntry = new DebugEntry<Integer>(0, "measurements", this);
+  private RobotStateManager robotStateManager;
+
   private DebugEntry<Double> distanceEntryTag3 =
       new DebugEntry<Double>(0.0, "Tag 3 Distance (m)", this);
   private DebugEntry<Double> distanceEntryTag4 =
       new DebugEntry<Double>(0.0, "Tag 4 Distance (m)", this);
 
-  private int lastHeartbeat = 0;
-
-  private final RobotStateManager robotStateManager;
-
-  private final BiConsumer<Pose2d, Double> measurementConsumer;
-
-  public LimelightSubsystem(
-      BiConsumer<Pose2d, Double> measurementConsumer, RobotStateManager robotStateManager) {
+  public LimelightSubsystem(RobotStateManager robotStateManager) {
     results = LimelightHelpers.getLatestResults("");
-    this.measurementConsumer = measurementConsumer;
     this.robotStateManager = robotStateManager;
     LimelightHelpers.setLEDMode_ForceOff("");
     LimelightHelpers.setStreamMode_PiPMain("");
-  }
-
-  private double getTagCount() {
-    return results.targetingResults.targets_Fiducials.length;
   }
 
   private Pose3d getPose3d() {
@@ -70,12 +54,13 @@ public class LimelightSubsystem extends SubsystemBase implements VisionSubsystem
     return new Pose2d(botpose[0], botpose[1], new Rotation2d(Units.degreesToRadians(botpose[5])));
   }
 
-  private double getTime() {
-    // Accounts for latency
-    // (https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization)
-    return Timer.getFPGATimestamp()
-        - (LimelightHelpers.getLatency_Capture("") / 1000.0)
-        - (LimelightHelpers.getLatency_Pipeline("") / 1000.0);
+  public double getDistanceToTag(int ID) {
+    if (ID == Constants.TurretConstants.SPEAKER_TAG_ID_BLUE) {
+      return getPose2d().getX() - Constants.FieldConstants.BLUE_SPEAKER.getX();
+    } else if (ID == Constants.TurretConstants.SPEAKER_TAG_ID_RED) {
+      return Constants.FieldConstants.RED_SPEAKER.getX() - getPose2d().getX();
+    }
+    return 0;
   }
 
   public double getTurretYaw(int ID) {
@@ -88,38 +73,9 @@ public class LimelightSubsystem extends SubsystemBase implements VisionSubsystem
     return 0;
   }
 
-  public double getTurretPitch(int ID) {
-    if (ID
-        == ((robotStateManager.getAllianceColor() == AllianceColor.BLUE)
-            ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
-            : Constants.TurretConstants.SPEAKER_TAG_ID_RED)) {
-      return LimelightHelpers.getTY("limelight");
-    }
-    return 0;
-  }
-
-  private int getHeartbeat() {
-    // "hb" gets the id of the current network table frame
-    return (int)
-        NetworkTableInstance.getDefault().getTable("limelight").getEntry("hb").getInteger(0);
-  }
-
   @Override
   public void periodic() {
-    if (Robot.isReal()) {
-      results = LimelightHelpers.getLatestResults("");
-      int heartbeat = getHeartbeat();
-      if (heartbeat != lastHeartbeat) {
-        lastHeartbeat = heartbeat;
-        if (getTagCount() > 1) {
-          measurementsUsed++;
-          measurementConsumer.accept(getPose2d(), getTime());
-          if (measurementsUsed % 100 == 0) {
-            measurementEntry.log(measurementsUsed);
-          }
-        }
-      }
-    }
+
   }
 
   @Override

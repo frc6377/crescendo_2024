@@ -43,7 +43,7 @@ import frc.robot.config.DynamicRobotConfig;
 import frc.robot.config.TurretZeroConfig;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
-import frc.robot.subsystems.vision.VisionSubsystem;
+import frc.robot.subsystems.vision.LimelightSubsystem;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.HowdyMath;
 import frc.robot.utilities.TunableNumber;
@@ -109,12 +109,12 @@ public class TurretSubsystem extends SubsystemBase {
       new DebugEntry<Double>(0.0, "Pitch Motor Output", this);
 
   private final RobotStateManager robotStateManager;
-  private final VisionSubsystem visionSubsystem;
+  private final LimelightSubsystem limelightSubsystem;
 
   private boolean usingPitchPid = true;
   private PIDController turretPIDController;
 
-  public TurretSubsystem(RobotStateManager robotStateManager, VisionSubsystem visionSubsystem) {
+  public TurretSubsystem(RobotStateManager robotStateManager, LimelightSubsystem limelightSubsystem) {
     // Initialize Motors
     turretMotor = new CANSparkMax(Constants.TurretConstants.TURRET_MOTOR_ID, MotorType.kBrushless);
     turretMotor.restoreFactoryDefaults();
@@ -181,7 +181,7 @@ public class TurretSubsystem extends SubsystemBase {
     // }
 
     this.robotStateManager = robotStateManager;
-    this.visionSubsystem = visionSubsystem;
+    this.limelightSubsystem = limelightSubsystem;
 
     pitchTune = new TunableNumber("pitch GoTo Value", 40.0, (a) -> {pitchTestAngle = a;}, this);
 
@@ -399,7 +399,7 @@ public class TurretSubsystem extends SubsystemBase {
     if (useTestPitchPose) {
       setPitchPos(pitchTestAngle);
     } else {
-      if (visionSubsystem != null) {
+      if (limelightSubsystem != null) {
         int tagID =
             ((robotStateManager.getAllianceColor()
                     == AllianceColor
@@ -407,7 +407,7 @@ public class TurretSubsystem extends SubsystemBase {
                 ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
                 : Constants.TurretConstants.SPEAKER_TAG_ID_RED);
         // We invert tx and ty because the limelight is mounted upside-down
-        double visionTX = -visionSubsystem.getTurretYaw(tagID);
+        double visionTX = -limelightSubsystem.getTurretYaw(tagID);
         if (visionTX != 0) {
           // X & Rotation
           if (Constants.enabledSubsystems.turretRotationEnabled) {
@@ -416,8 +416,7 @@ public class TurretSubsystem extends SubsystemBase {
 
           // Y & Tilting
           if (Constants.enabledSubsystems.turretPitchEnabled) {
-            double visionTY = visionSubsystem.getTurretPitch(tagID);
-            double distanceToTag = tyToDistanceFromTag(visionTY);
+            double distanceToTag = limelightSubsystem.getDistanceToTag(tagID);
             tagDistanceEntry.log(distanceToTag);
             // setPitchPos(distanceToShootingPitch(distanceToTag));
           }
