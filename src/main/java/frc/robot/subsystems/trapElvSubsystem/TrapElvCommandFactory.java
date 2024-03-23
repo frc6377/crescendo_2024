@@ -146,7 +146,9 @@ public class TrapElvCommandFactory {
             () -> {
               subsystem.setRoller(TrapElvConstants.ROLLER_SPEED);
             },
-            () -> {})
+            () -> {
+              subsystem.setRoller(0);
+            })
         .withName("Score Amp")
         .asProxy();
   }
@@ -189,7 +191,7 @@ public class TrapElvCommandFactory {
   }
 
   public BooleanSupplier getSourceBreak() {
-    // return () -> false;
+    if (subsystem == null) return () -> true;
     return subsystem.getSourceBreak();
   }
 
