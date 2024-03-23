@@ -170,7 +170,14 @@ public final class Constants {
     public static final Rotation2d PIN_EPSILION = Rotation2d.fromDegrees(2);
 
     public static final TurretDataPoint[] TURRET_DATA = {
-      new TurretDataPoint(0, 0, 0),
+      //Verified at 5
+      new TurretDataPoint(Units.inchesToMeters(21.75), 1.8, Units.degreesToRadians(28)),
+      //Verified at 5 of 6
+      new TurretDataPoint(Units.inchesToMeters(59.5), 2.6, Units.degreesToRadians(20)),
+      //Verified at 5 of 6
+      new TurretDataPoint(Units.inchesToMeters(81), 3.104, Units.degreesToRadians(20)),
+
+
     };
   }
 
@@ -268,14 +275,14 @@ public final class Constants {
     public static final Translation2d RED_SPEAKER = new Translation2d(16.579342, 5.547868);
     public static final Translation2d BLUE_SPEAKER = new Translation2d(-0.0381, 5.547868);
     public static final double CENTERLINE_X_APPROX = 8;
-    public static final double SPEAKER_TAG_HEIGHT_METERS = 0;
+    public static final double SPEAKER_TAG_HEIGHT_METERS = 1.45;
     public static final Rotation2d AMP_DIRECTION = Rotation2d.fromDegrees(90);
   }
 
   public static class enabledSubsystems {
     public static final boolean intakeEnabled = true;
     public static final boolean drivetrainEnabled = true;
-    public static final boolean visionEnabled = false;
+    public static final boolean visionEnabled = true;
     public static final boolean usingPhoton = true;
     public static final boolean elvEnabled = true;
     public static final boolean signalEnabled = false;
@@ -308,7 +315,7 @@ public final class Constants {
       double realDistanceMeters, double limelightMeters, double turretAngleRadians) {}
 
   public static class CommandConstants {
-    public static final double WAIT_FOR_TRAPELV = 0.1;
+    public static final double WAIT_FOR_TRAPELV = 0.2;
     public static final boolean USE_VISION_TARGETING = true;
   }
 }

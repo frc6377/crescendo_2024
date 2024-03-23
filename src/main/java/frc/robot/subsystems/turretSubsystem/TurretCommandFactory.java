@@ -22,7 +22,9 @@ import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RangeMode;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
+import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.HowdyMath;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class TurretCommandFactory {
@@ -32,6 +34,8 @@ public class TurretCommandFactory {
   final Supplier<Rotation2d> rotationSupplier;
   final Supplier<Translation2d> translationSupplier;
   static final InterpolatingDoubleTreeMap pitchMap;
+
+  DebugEntry<Double> limelightDistance;
 
   static {
     pitchMap = new InterpolatingDoubleTreeMap();
@@ -46,6 +50,7 @@ public class TurretCommandFactory {
       VisionSubsystem visionSubsystem,
       Supplier<Rotation2d> rotationSupplier,
       Supplier<Translation2d> translationSupplier) {
+    limelightDistance = new DebugEntry<Double>(0D, "Limelight distance", subsystem);
     this.subsystem = subsystem;
     this.RSM = RSM;
     this.vision = visionSubsystem;
@@ -172,23 +177,21 @@ public class TurretCommandFactory {
   }
 
   private void visionTracking(Supplier<Rotation2d> searchingBehavior) {
-    visionTracking(
-        getSpeakerTag(),
-        searchingBehavior);
+    visionTracking(getSpeakerTag(), searchingBehavior);
   }
 
-  private int getSpeakerTag(){
+  private int getSpeakerTag() {
     return RSM.getAllianceColor() == AllianceColor.RED
-            ? LimelightConstants.SPEAKER_TAG_ID_RED
-            : LimelightConstants.SPEAKER_TAG_ID_BLUE;
+        ? LimelightConstants.SPEAKER_TAG_ID_RED
+        : LimelightConstants.SPEAKER_TAG_ID_BLUE;
   }
 
   private double distanceEstimateMeters() {
     double visionDistance = vision.getDistance(getSpeakerTag());
-    if(Double.isNaN(visionDistance)){
+    if (Double.isNaN(visionDistance)) {
       return odometryDistance();
     }
-    return 0;
+    return odometryDistance();
   }
 
   private double odometryDistance() {
@@ -234,10 +237,15 @@ public class TurretCommandFactory {
         });
   }
 
-  public Command testTurretCommand(double degrees) {
+  public Command testTurretCommand(DoubleSupplier degrees) {
     if (subsystem == null) return Commands.none();
     return subsystem
-        .runEnd(() -> subsystem.setPitchPos(Math.toRadians(degrees)), subsystem::stopTurret)
+        .runEnd(
+            () -> {
+              limelightDistance.log(vision.getDistance(getSpeakerTag()));
+              subsystem.setPitchPos(Math.toRadians(degrees.getAsDouble()));
+            },
+            subsystem::stopTurret)
         .withName("TestTurret")
         .asProxy();
   }
@@ -262,14 +270,13 @@ public class TurretCommandFactory {
     }
   }
 
-  private Translation2d speakerPosition(){
-    return
-        RSM.getAllianceColor() == AllianceColor.RED
-            ? FieldConstants.RED_SPEAKER
-            : FieldConstants.BLUE_SPEAKER;
+  private Translation2d speakerPosition() {
+    return RSM.getAllianceColor() == AllianceColor.RED
+        ? FieldConstants.RED_SPEAKER
+        : FieldConstants.BLUE_SPEAKER;
   }
 
-  private Translation2d positionRelativeToSpeaker(){
+  private Translation2d positionRelativeToSpeaker() {
     return translationSupplier.get().minus(speakerPosition());
   }
 

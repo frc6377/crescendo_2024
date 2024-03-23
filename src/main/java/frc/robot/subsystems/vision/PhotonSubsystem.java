@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.FieldConstants;
@@ -139,7 +140,9 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       List<PhotonTrackedTarget> targets = turretResult.getTargets();
       for (PhotonTrackedTarget target : targets) {
         if (target.getFiducialId() == id) {
-          double ang = target.getPitch() + limelightConfig.limelightPitchRadians;
+          double ang =
+              target.getPitch() + Units.radiansToDegrees(limelightConfig.limelightPitchRadians);
+          System.out.println("ang:" + ang);
           return angleToDistanceSpeakerTag(Rotation2d.fromDegrees(ang));
         }
       }

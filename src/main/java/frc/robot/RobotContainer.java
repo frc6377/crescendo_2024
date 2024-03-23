@@ -48,6 +48,7 @@ import frc.robot.subsystems.turretSubsystem.TurretSubsystem;
 import frc.robot.subsystems.vision.LimelightSubsystem;
 import frc.robot.subsystems.vision.PhotonSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
+import frc.robot.utilities.TunableNumber;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.DoubleSupplier;
@@ -216,6 +217,8 @@ public class RobotContainer {
 
     turretCommandFactory.setDefaultCommand(turretCommandFactory.idleTurret());
 
+    TunableNumber turretTestPitch =
+        new TunableNumber("Turret Test Pitch", 0d, (a) -> {}, turretSubsystem);
     OI.getButton(OI.Driver.lockAmp)
         .whileTrue(
             drivetrainCommandFactory.pointInDirection(
@@ -332,37 +335,33 @@ public class RobotContainer {
 
   private Command shootSpeaker() {
     return Commands.parallel(
-        Commands.waitSeconds(CommandConstants.WAIT_FOR_TRAPELV)
-            .andThen(
-                Commands.either(
-                    triggerCommandFactory.getShootCommand(),
-                    triggerCommandFactory
-                        .getShootCommand()
-                        .onlyIf(() -> shooterCommandFactory.isShooterReady())
-                        .asProxy(),
-                    OI.getButton(OI.Operator.simple))),
+        Commands.either(
+            triggerCommandFactory.getShootCommand(),
+            triggerCommandFactory
+                .getShootCommand()
+                .onlyIf(() -> shooterCommandFactory.isShooterReady())
+                .asProxy(),
+            OI.getButton(OI.Operator.simple)),
         shooterCommandFactory.revShooter());
   }
 
   private Command prepareToScoreSpeaker() {
     return Commands.parallel(
-        turretCommandFactory.getAimTurretCommand(),
-        shooterCommandFactory.revShooter(),
-        trapElvCommandFactory.wristShooterRev());
+        Commands.waitSeconds(CommandConstants.WAIT_FOR_TRAPELV)
+            .andThen(turretCommandFactory.getAimTurretCommand()),
+        shooterCommandFactory.revShooter(), trapElvCommandFactory.wristShooterRev());
   }
 
   private Command prepareToScoreSpeakerShortRange() {
     return Commands.parallel(
         turretCommandFactory.shortRangeShot().asProxy(),
-        shooterCommandFactory.revShooter(),
-        trapElvCommandFactory.wristShooterRev());
+        shooterCommandFactory.revShooter(), trapElvCommandFactory.wristShooterRev());
   }
 
   private Command prepareToScoreSpeakerLongRange() {
     return Commands.parallel(
         turretCommandFactory.longRangeShot().asProxy(),
-        shooterCommandFactory.revShooter(),
-        trapElvCommandFactory.wristShooterRev());
+        shooterCommandFactory.revShooter(), trapElvCommandFactory.wristShooterRev());
   }
 
   private Command shootAutonShort() {
