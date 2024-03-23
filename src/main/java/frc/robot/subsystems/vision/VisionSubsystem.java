@@ -5,7 +5,7 @@ public interface VisionSubsystem {
     return 0;
   }
 
-  public default double getDistance(int id) {
+  public default double getTurretPitch(int id) {
     return 0;
   }
 }

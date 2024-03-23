@@ -88,7 +88,7 @@ public class LimelightSubsystem extends SubsystemBase implements VisionSubsystem
     return 0;
   }
 
-  public double getDistance(int ID) {
+  public double getTurretPitch(int ID) {
     if (ID
         == ((robotStateManager.getAllianceColor() == AllianceColor.BLUE)
             ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE

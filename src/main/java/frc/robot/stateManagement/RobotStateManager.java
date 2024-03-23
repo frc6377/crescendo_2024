@@ -1,7 +1,5 @@
 package frc.robot.stateManagement;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -13,7 +11,6 @@ import frc.robot.Constants.LimelightConstants;
 import frc.robot.utilities.DebugEntry;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
 
 public class RobotStateManager extends SubsystemBase {
   // Alliance Color
@@ -114,22 +111,5 @@ public class RobotStateManager extends SubsystemBase {
 
   public RangeMode getRange() {
     return range;
-  }
-
-  private Translation2d allianceCorrect(Translation2d input) {
-    if (allianceColor == AllianceColor.RED) {
-      return new Translation2d(input.getX(), -input.getY());
-    }
-    return input;
-  }
-
-  public DoubleSupplier getSourceAngle() {
-    return () ->
-        allianceCorrect(new Translation2d(1, Rotation2d.fromDegrees(-35))).getAngle().getDegrees();
-  }
-
-  public DoubleSupplier getSpeakerAngle() {
-    return () ->
-        allianceCorrect(new Translation2d(1, Rotation2d.fromDegrees(0))).getAngle().getDegrees();
   }
 }

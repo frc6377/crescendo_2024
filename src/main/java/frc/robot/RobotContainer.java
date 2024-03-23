@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -23,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CommandConstants;
-import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.enabledSubsystems;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.AllianceColor;
@@ -48,10 +46,8 @@ import frc.robot.subsystems.turretSubsystem.TurretSubsystem;
 import frc.robot.subsystems.vision.LimelightSubsystem;
 import frc.robot.subsystems.vision.PhotonSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
-import frc.robot.utilities.TunableNumber;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 /**
@@ -151,12 +147,7 @@ public class RobotContainer {
     }
     turretCommandFactory =
         new TurretCommandFactory(
-            turretSubsystem,
-            robotStateManager,
-            visionSubsystem,
-            drivetrain::getRotation,
-            drivetrainCommandFactory::currentRobotPosition);
-    SmartDashboard.putData(turretCommandFactory.zeroZeroing());
+            turretSubsystem, robotStateManager, visionSubsystem, drivetrain::getRotation);
     if (enabledSubsystems.climberEnabled) {
       climberSubsystem = new ClimberSubsystem();
     } else {
@@ -201,8 +192,6 @@ public class RobotContainer {
                     OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
                     OI.getAxisSupplier(OI.Driver.rotationAxis).get()),
                 OI.getButton(OI.Driver.highGear).getAsBoolean());
-    DoubleSupplier direction =
-        drivetrainCommandFactory.createRotationSource(OI.Driver.controller, drivetrain);
 
     drivetrainCommandFactory.setDefaultCommand(
         drivetrainCommandFactory.fieldOrientedDrive(input).withName("Get Axis Suppliers"));
@@ -215,28 +204,17 @@ public class RobotContainer {
 
     turretCommandFactory.setDefaultCommand(turretCommandFactory.idleTurret());
 
-    TunableNumber turretTestPitch =
-        new TunableNumber("Turret Test Pitch", 0d, (a) -> {}, turretSubsystem);
-    OI.getTrigger(OI.Driver.lockAmp)
-        .whileTrue(
-            drivetrainCommandFactory.pointInDirection(
-                FieldConstants.AMP_DIRECTION, SwerveSubsystem.scrubRotation(input)));
-    OI.getButton(OI.Driver.lockSource)
-        .whileTrue(drivetrainCommandFactory.pointDrive(robotStateManager.getSourceAngle(), input));
-    OI.getTrigger(OI.Driver.lockSpeaker)
-        .whileTrue(drivetrainCommandFactory.pointDrive(robotStateManager.getSpeakerAngle(), input));
-
-    OI.getButton(OI.Operator.retractClimber)
-        .whileTrue(turretCommandFactory.testTurretCommand(turretTestPitch));
-
     OI.getButton(OI.Driver.resetRotationButton)
         .onTrue(drivetrainCommandFactory.zeroDriveTrain().withName("Put Pose & Rotation on Field"));
+
+    OI.getButton(OI.Driver.useRod)
+        .whileTrue(drivetrainCommandFactory.assistedDriving(input, robotStateManager));
 
     OI.getTrigger(OI.Operator.prepareToFire)
         .whileTrue(
             Commands.either(
                 trapElvCommandFactory.positionAMP(),
-                Commands.parallel(prepareToScoreSpeaker()),
+                prepareToScoreSpeaker(),
                 robotStateManager.isAmpSupplier()));
 
     OI.getTrigger(OI.Operator.fire)
@@ -249,13 +227,21 @@ public class RobotContainer {
     OI.getButton(OI.Operator.switchToAmp).onTrue(robotStateManager.setAmpMode());
     OI.getButton(OI.Operator.switchToSpeaker).onTrue(robotStateManager.setSpeakerMode());
 
+    OI.getTrigger(OI.Driver.outtake).whileTrue(outtakeCommand());
+
+    OI.getButton(OI.Driver.intakeSource).whileTrue(trapElvCommandFactory.wristintakeSource());
+
+    OI.getButton(OI.Driver.speakerSource).whileTrue(speakerSource());
+
     OI.getButton(OI.Operator.prepClimb).onTrue(climberCommandFactory.raise());
 
     OI.getButton(OI.Operator.latchClimber).onTrue(climberCommandFactory.clip());
 
-    // OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
+    OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
 
     new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
+    // new Trigger(() -> OI.Operator.controller.getPOV() == 270)
+    //     .onTrue(new InstantCommand(() -> robotStateManager.setLongRange()));
     new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());
     new Trigger(() -> OI.Operator.controller.getPOV() == 90)
         .onTrue(new InstantCommand(() -> robotStateManager.setShortRange()));
@@ -294,24 +280,23 @@ public class RobotContainer {
                   OI.Operator.setRumble(0);
                 }));
     new Trigger(shooterCommandFactory::isShooterReady)
-        .and(turretCommandFactory.isReady())
         .whileTrue(
             Commands.startEnd(
                 () -> OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
                 () -> OI.Operator.setRumble(0)));
-    // shooterCommandFactory
-    //     .getBeamBreak()
-    //     .and(new Trigger(() -> OI.Operator.controller.getPOV() == 00))
-    //     .whileTrue(
-    //         Commands.startEnd(
-    //             () -> {
-    //               OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);
-    //               OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);
-    //             },
-    //             () -> {
-    //               OI.Driver.setRumble(0);
-    //               OI.Operator.setRumble(0);
-    //             }));
+    shooterCommandFactory
+        .getBeamBreak()
+        .and(OI.getTrigger(OI.Driver.intake).or(() -> OI.Operator.controller.getPOV() == 00))
+        .whileTrue(
+            Commands.startEnd(
+                () -> {
+                  OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);
+                  OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);
+                },
+                () -> {
+                  OI.Driver.setRumble(0);
+                  OI.Operator.setRumble(0);
+                }));
   }
 
   private Command speakerSource() {
@@ -321,8 +306,7 @@ public class RobotContainer {
 
   private Command intakeSpeaker() {
     return Commands.parallel(
-        intakeCommandFactory.getSpeakerIntakeCommand(),
-        triggerCommandFactory.getGroundLoadCommand(shooterCommandFactory.getBeamBreak()));
+        intakeCommandFactory.getSpeakerIntakeCommand(), triggerCommandFactory.getLoadCommand());
   }
 
   private Command intakeAmp() {
@@ -335,32 +319,33 @@ public class RobotContainer {
 
   private Command shootSpeaker() {
     return Commands.parallel(
-        Commands.either(
-            triggerCommandFactory.getShootCommand(),
-            triggerCommandFactory
-                .getShootCommand()
-                .onlyIf(() -> shooterCommandFactory.isShooterReady())
-                .asProxy(),
-            OI.getButton(OI.Operator.simple)),
+        Commands.waitSeconds(CommandConstants.WAIT_FOR_TRAPELV)
+            .andThen(
+                Commands.either(
+                    triggerCommandFactory.getShootCommand(),
+                    triggerCommandFactory
+                        .getShootCommand()
+                        .onlyIf(() -> shooterCommandFactory.isShooterReady())
+                        .asProxy(),
+                    OI.getButton(OI.Operator.simple))),
         shooterCommandFactory.revShooter());
   }
 
   private Command prepareToScoreSpeaker() {
     return Commands.parallel(
-        Commands.waitSeconds(CommandConstants.WAIT_FOR_TRAPELV)
-            .andThen(turretCommandFactory.getAimTurretCommand()),
+        turretCommandFactory.getAimTurretCommand(),
         shooterCommandFactory.revShooter(),
         trapElvCommandFactory.wristShooterRev());
   }
 
-  private Command prepareToScoreSpeakerShortRange_AUTON_ONLY() {
+  private Command prepareToScoreSpeakerShortRange() {
     return Commands.parallel(
         turretCommandFactory.shortRangeShot().asProxy(),
         shooterCommandFactory.revShooter(),
         trapElvCommandFactory.wristShooterRev());
   }
 
-  private Command prepareToScoreSpeakerLongRange_AUTON_ONLY() {
+  private Command prepareToScoreSpeakerLongRange() {
     return Commands.parallel(
         turretCommandFactory.longRangeShot().asProxy(),
         shooterCommandFactory.revShooter(),
@@ -375,7 +360,7 @@ public class RobotContainer {
                     .getShootCommand()
                     .withTimeout(1)
                     .until(shooterCommandFactory.getBeamBreak().negate().debounce(.25))),
-        prepareToScoreSpeakerShortRange_AUTON_ONLY());
+        prepareToScoreSpeakerShortRange());
   }
 
   private Command shootAutonLong() {
@@ -385,7 +370,7 @@ public class RobotContainer {
                 triggerCommandFactory
                     .getShootCommand()
                     .until(shooterCommandFactory.getBeamBreak().negate().debounce(.25))),
-        prepareToScoreSpeakerLongRange_AUTON_ONLY());
+        prepareToScoreSpeakerLongRange());
   }
 
   private Command ampAuton() {
@@ -443,9 +428,5 @@ public class RobotContainer {
           .withName("Get Auto Command");
     }
     return null;
-  }
-
-  public RobotStateManager getRobotStateManager() {
-    return robotStateManager;
   }
 }
