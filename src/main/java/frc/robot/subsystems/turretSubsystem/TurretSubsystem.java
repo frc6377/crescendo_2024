@@ -80,11 +80,11 @@ public class TurretSubsystem extends SubsystemBase {
   private SimDouble simTurretPos;
 
   private InterpolatingDoubleTreeMap pitchMap;
-
-  private TunableNumber pitchKgTune;
-  private double pitchKg;
+  private InterpolatingDoubleTreeMap pitchInterpMap;
 
   private TunableNumber pitchTune;
+  private double pitchTestAngle;
+  private boolean useTestPitchPose = true;
 
   private final ShuffleboardTab turretTab = Shuffleboard.getTab(this.getName());
   private final DebugEntry<Double> turretPositionEntry =
@@ -183,9 +183,7 @@ public class TurretSubsystem extends SubsystemBase {
     this.robotStateManager = robotStateManager;
     this.visionSubsystem = visionSubsystem;
 
-    pitchTune = new TunableNumber("pitch GoTo Value", 40.0, (a) -> {}, this);
-    pitchKgTune =
-        new TunableNumber("pitch Kg", TurretConstants.PITCH_FF.getKG(), (kg) -> pitchKg = kg, this);
+    pitchTune = new TunableNumber("pitch GoTo Value", 40.0, (a) -> {pitchTestAngle = a;}, this);
 
     pitchMap = new InterpolatingDoubleTreeMap();
     pitchMap.put(Units.inchesToMeters(136.3), 34.6);
@@ -398,43 +396,47 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public void aimTurret() {
-    if (visionSubsystem != null) {
-      int tagID =
-          ((robotStateManager.getAllianceColor()
-                  == AllianceColor
-                      .BLUE) // Default to red because that's the color on our test field
-              ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
-              : Constants.TurretConstants.SPEAKER_TAG_ID_RED);
-      // We invert tx and ty because the limelight is mounted upside-down
-      double visionTX = -visionSubsystem.getTurretYaw(tagID);
-      if (visionTX != 0) {
-        // X & Rotation
-        if (Constants.enabledSubsystems.turretRotationEnabled) {
-          setTurretPos(Math.toRadians(visionTX) + turretPosition);
-        }
-
-        // Y & Tilting
-        if (Constants.enabledSubsystems.turretPitchEnabled) {
-          double visionTY = visionSubsystem.getTurretPitch(tagID);
-          double distanceToTag = tyToDistanceFromTag(visionTY);
-          tagDistanceEntry.log(distanceToTag);
-          // setPitchPos(distanceToShootingPitch(distanceToTag));
-        }
-
-        if (Math.abs(Math.toRadians(visionTX) + turretPosition)
-            > Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES)) {
-          // TODO: Make turret rotate the drivebase if necessary and driver thinks it's a good idea
-        }
-      }
+    if (useTestPitchPose) {
+      setPitchPos(pitchTestAngle);
     } else {
-      // TODO: Make turret default to using odometry
-      // If we don't see any tags it might mean we're right next to the speaker so it'll go to
-      // default shooting position
-      if (Constants.enabledSubsystems.turretRotationEnabled) {
-        setTurretPos(Constants.TurretConstants.DEFAULT_SHOT_ROTATION);
-      }
-      if (Constants.enabledSubsystems.turretPitchEnabled) {
-        // setPitchPos(Constants.TurretConstants.DEFAULT_SHOT_PITCH);
+      if (visionSubsystem != null) {
+        int tagID =
+            ((robotStateManager.getAllianceColor()
+                    == AllianceColor
+                        .BLUE) // Default to red because that's the color on our test field
+                ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
+                : Constants.TurretConstants.SPEAKER_TAG_ID_RED);
+        // We invert tx and ty because the limelight is mounted upside-down
+        double visionTX = -visionSubsystem.getTurretYaw(tagID);
+        if (visionTX != 0) {
+          // X & Rotation
+          if (Constants.enabledSubsystems.turretRotationEnabled) {
+            setTurretPos(Math.toRadians(visionTX) + turretPosition);
+          }
+
+          // Y & Tilting
+          if (Constants.enabledSubsystems.turretPitchEnabled) {
+            double visionTY = visionSubsystem.getTurretPitch(tagID);
+            double distanceToTag = tyToDistanceFromTag(visionTY);
+            tagDistanceEntry.log(distanceToTag);
+            // setPitchPos(distanceToShootingPitch(distanceToTag));
+          }
+
+          if (Math.abs(Math.toRadians(visionTX) + turretPosition)
+              > Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES)) {
+            // TODO: Make turret rotate the drivebase if necessary and driver thinks it's a good idea
+          }
+        }
+      } else {
+        // TODO: Make turret default to using odometry
+        // If we don't see any tags it might mean we're right next to the speaker so it'll go to
+        // default shooting position
+        if (Constants.enabledSubsystems.turretRotationEnabled) {
+          setTurretPos(Constants.TurretConstants.DEFAULT_SHOT_ROTATION);
+        }
+        if (Constants.enabledSubsystems.turretPitchEnabled) {
+          // setPitchPos(Constants.TurretConstants.DEFAULT_SHOT_PITCH);
+        }
       }
     }
   }
