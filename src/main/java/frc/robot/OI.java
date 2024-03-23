@@ -22,8 +22,8 @@ public class OI {
     public static final XboxController controller = new XboxController(driverJoystickPort);
 
     // A B Y X Buttons
-    public static final Control intakeSource =
-        new Control(XboxController.Button.kA, "Source", controller);
+    public static final Control lockAmp =
+        new Control(XboxController.Button.kA, "point at amp", controller);
     public static final Control speakerSource =
         new Control(XboxController.Button.kB, "Intake Speaker from Source", controller);
     public static final Control Y = new Control(XboxController.Button.kY, null, controller);

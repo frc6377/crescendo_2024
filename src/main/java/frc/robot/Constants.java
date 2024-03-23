@@ -23,8 +23,8 @@ public final class Constants {
   public static class SwerveDriveConstants {
     public static final double TURN_kP = 10;
     public static final double TURN_kD = 0;
-    public static final double MAX_AUTO_TURN = 180; // deg/s
-    public static final double MAX_AUTO_ACCERLATION = 180; // deg/s^2
+    public static final double MAX_AUTO_TURN = 720; // deg/s
+    public static final double MAX_AUTO_ACCERLATION = 720; // deg/s^2
     public static final double LOW_GEAR_MAG_MULTIPLE = 0.6;
     public static final double LOW_GEAR_STEER_MULTIPLE = 1;
     public static final double HIGH_GEAR_MAG_MULTIPLE = 1;
@@ -167,7 +167,11 @@ public final class Constants {
         ((PITCH_MIN_ANGLE_DEGREES * PITCH_CONVERSION_FACTOR) / 360);
     public static final double PITCH_MAX_ANGLE_ROTATIONS =
         ((PITCH_MAX_ANGLE_DEGREES * PITCH_CONVERSION_FACTOR) / 360);
-    public static final Rotation2d PIN_EPSILION = null;
+    public static final Rotation2d PIN_EPSILION = Rotation2d.fromDegrees(2);
+
+    public static final TurretDataPoint[] TURRET_DATA = {
+      new TurretDataPoint(0, 0, 0),
+    };
   }
 
   public static class OperatorConstants {
@@ -264,6 +268,8 @@ public final class Constants {
     public static final Translation2d RED_SPEAKER = new Translation2d(16.579342, 5.547868);
     public static final Translation2d BLUE_SPEAKER = new Translation2d(-0.0381, 5.547868);
     public static final double CENTERLINE_X_APPROX = 8;
+    public static final double SPEAKER_TAG_HEIGHT_METERS = 0;
+    public static final Rotation2d AMP_DIRECTION = Rotation2d.fromDegrees(90);
   }
 
   public static class enabledSubsystems {
@@ -290,17 +296,18 @@ public final class Constants {
   public static final int LED_COUNT = 20;
 
   public static class DriverConstants {
-
     public static final Rotation2d RED_AMP_ROTATION = Rotation2d.fromRotations(0.25);
     public static final Rotation2d BLUE_AMP_ROTATION = Rotation2d.fromRotations(0.25);
     public static final Rotation2d BLUE_SOURCE_ROTATION = Rotation2d.fromRotations(-0.25);
     public static final Rotation2d RED_SOURCE_ROTATION = Rotation2d.fromRotations(-0.25);
-    public static final Rotation2d ABSOLUTE_POINTING_OFFSET = Rotation2d.fromRotations(0.25);
-    public static final double ROTATION_DEADBAND = 0.2;
+    public static final Rotation2d ABSOLUTE_POINTING_OFFSET = Rotation2d.fromRotations(0.75);
+    public static final double ROTATION_DEADBAND = 0.3;
   }
 
-  public static class CommandConstants {
+  public static record TurretDataPoint(
+      double realDistanceMeters, double limelightMeters, double turretAngleRadians) {}
 
+  public static class CommandConstants {
     public static final double WAIT_FOR_TRAPELV = 0.1;
     public static final boolean USE_VISION_TARGETING = true;
   }

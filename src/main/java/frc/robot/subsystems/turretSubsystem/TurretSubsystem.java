@@ -20,7 +20,6 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
@@ -77,8 +76,6 @@ public class TurretSubsystem extends SubsystemBase {
 
   private SimDeviceSim simTurretEncoder;
   private SimDouble simTurretPos;
-
-  private InterpolatingDoubleTreeMap pitchMap;
 
   private final ShuffleboardTab turretTab = Shuffleboard.getTab(this.getName());
   private final DebugEntry<Double> turretPositionEntry =
@@ -137,14 +134,6 @@ public class TurretSubsystem extends SubsystemBase {
     pitchMotor = new CANSparkMaxSim(Constants.TurretConstants.PITCH_MOTOR_ID, MotorType.kBrushless);
     pitchMotor.restoreFactoryDefaults();
     pitchMotor.setSmartCurrentLimit(Constants.TurretConstants.PITCH_SMART_CURRENT_LIMIT);
-    // pitchMotor.setSoftLimit(
-    //     CANSparkMax.SoftLimitDirection.kReverse, (float)
-    // TurretConstants.PITCH_MIN_ANGLE_ROTATIONS);
-    // pitchMotor.setSoftLimit(
-    //     CANSparkMax.SoftLimitDirection.kForward, (float)
-    // TurretConstants.PITCH_MAX_ANGLE_ROTATIONS);
-    // pitchMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
-    // pitchMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
     pitchMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
     pitchAbsoluteEncoder = pitchMotor.getAbsoluteEncoder();
     pitchAbsoluteEncoder.setPositionConversionFactor(1);
@@ -173,17 +162,6 @@ public class TurretSubsystem extends SubsystemBase {
 
     highGearCANcoder.getConfigurator().apply(highGearSensorConfigs);
     lowGearCANcoder.getConfigurator().apply(lowGearSensorConfigs);
-
-    // TODO: Reintroduce turret zeroing
-    // if (Robot.isReal()) {
-    //   zeroTurret();
-    // }
-
-    // new TunableNumber("pitch GoTo Value", 40.0, (a) -> {}, this);
-
-    pitchMap = new InterpolatingDoubleTreeMap();
-    pitchMap.put(0.0, 0.0);
-    pitchMap.put(1.0, 1.0);
 
     // Simulation
     if (Robot.isSimulation()) {
@@ -231,7 +209,6 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public void stopTurret() {
-
     turretMotor.stopMotor();
     pitchMotor.stopMotor();
   }

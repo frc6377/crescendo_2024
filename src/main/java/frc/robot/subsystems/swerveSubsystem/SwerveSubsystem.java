@@ -244,6 +244,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   }
 
   public record DriveInput(double x, double y, double alpha) {}
+
   public void stopVisionMeasures() {
     acceptVisionMeasures = false;
   }

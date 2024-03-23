@@ -5,16 +5,17 @@ import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.Constants;
-import frc.robot.Constants.CommandConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.TurretConstants;
+import frc.robot.Constants.TurretDataPoint;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.config.TurretZeroConfig;
 import frc.robot.stateManagement.AllianceColor;
@@ -22,7 +23,6 @@ import frc.robot.stateManagement.RangeMode;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.HowdyMath;
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class TurretCommandFactory {
@@ -31,6 +31,14 @@ public class TurretCommandFactory {
   final VisionSubsystem vision;
   final Supplier<Rotation2d> rotationSupplier;
   final Supplier<Translation2d> translationSupplier;
+  static final InterpolatingDoubleTreeMap pitchMap;
+
+  static {
+    pitchMap = new InterpolatingDoubleTreeMap();
+    for (TurretDataPoint TDP : TurretConstants.TURRET_DATA) {
+      pitchMap.put(TDP.limelightMeters(), TDP.turretAngleRadians());
+    }
+  }
 
   public TurretCommandFactory(
       TurretSubsystem subsystem,
@@ -139,29 +147,21 @@ public class TurretCommandFactory {
   public Command shortRangeShot() {
     return subsystem.startEnd(
         () -> {
-          if (Constants.enabledSubsystems.turretRotationEnabled)
-            subsystem.setTurretPos(Math.toRadians(00));
-          if (Constants.enabledSubsystems.turretPitchEnabled)
-            subsystem.setPitchPos(Math.toRadians(40));
+          subsystem.setTurretPos(Math.toRadians(00));
+          subsystem.setPitchPos(Math.toRadians(40));
         },
         () -> {});
   }
 
   public Command longRangeShot() {
-    double angleToTarget = 0.35;
-    DoubleSupplier targetAngle =
-        () -> RSM.getAllianceColor() == AllianceColor.RED ? angleToTarget : -angleToTarget;
     return subsystem.startEnd(
         () -> {
           if (Constants.enabledSubsystems.turretRotationEnabled) {
-            if (CommandConstants.USE_VISION_TARGETING) {
-              visionTracking();
-            } else {
-              subsystem.setTurretPos(targetAngle.getAsDouble());
-            }
+            visionTracking();
           }
           if (Constants.enabledSubsystems.turretPitchEnabled) {
-            subsystem.setPitchPos(Math.toRadians(22.5));
+            double distance = distanceEstimateMeters();
+            subsystem.setPitchPos(pitchMap.get(distance));
           }
         },
         () -> {});
@@ -173,10 +173,26 @@ public class TurretCommandFactory {
 
   private void visionTracking(Supplier<Rotation2d> searchingBehavior) {
     visionTracking(
-        RSM.getAllianceColor() == AllianceColor.RED
-            ? LimelightConstants.SPEAKER_TAG_ID_RED
-            : LimelightConstants.SPEAKER_TAG_ID_BLUE,
+        getSpeakerTag(),
         searchingBehavior);
+  }
+
+  private int getSpeakerTag(){
+    return RSM.getAllianceColor() == AllianceColor.RED
+            ? LimelightConstants.SPEAKER_TAG_ID_RED
+            : LimelightConstants.SPEAKER_TAG_ID_BLUE;
+  }
+
+  private double distanceEstimateMeters() {
+    double visionDistance = vision.getDistance(getSpeakerTag());
+    if(Double.isNaN(visionDistance)){
+      return odometryDistance();
+    }
+    return 0;
+  }
+
+  private double odometryDistance() {
+    return positionRelativeToSpeaker().getNorm();
   }
 
   /**
@@ -244,6 +260,17 @@ public class TurretCommandFactory {
     } else {
       subsystem.holdPosition();
     }
+  }
+
+  private Translation2d speakerPosition(){
+    return
+        RSM.getAllianceColor() == AllianceColor.RED
+            ? FieldConstants.RED_SPEAKER
+            : FieldConstants.BLUE_SPEAKER;
+  }
+
+  private Translation2d positionRelativeToSpeaker(){
+    return translationSupplier.get().minus(speakerPosition());
   }
 
   private Rotation2d odometryPointing() {

@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CommandConstants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.enabledSubsystems;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.AllianceColor;
@@ -153,6 +155,7 @@ public class RobotContainer {
             visionSubsystem,
             drivetrain::getRotation,
             drivetrainCommandFactory::currentRobotPosition);
+    SmartDashboard.putData(turretCommandFactory.zeroZeroing());
     if (enabledSubsystems.climberEnabled) {
       climberSubsystem = new ClimberSubsystem();
     } else {
@@ -213,6 +216,11 @@ public class RobotContainer {
 
     turretCommandFactory.setDefaultCommand(turretCommandFactory.idleTurret());
 
+    OI.getButton(OI.Driver.lockAmp)
+        .whileTrue(
+            drivetrainCommandFactory.pointInDirection(
+                FieldConstants.AMP_DIRECTION, SwerveSubsystem.scrubRotation(input)));
+
     OI.getButton(OI.Driver.resetRotationButton)
         .onTrue(drivetrainCommandFactory.zeroDriveTrain().withName("Put Pose & Rotation on Field"));
 
@@ -238,8 +246,6 @@ public class RobotContainer {
 
     OI.getTrigger(OI.Driver.outtake).whileTrue(outtakeCommand());
 
-    OI.getButton(OI.Driver.intakeSource).whileTrue(trapElvCommandFactory.wristintakeSource());
-
     OI.getButton(OI.Driver.speakerSource).whileTrue(speakerSource());
 
     OI.getButton(OI.Operator.prepClimb).onTrue(climberCommandFactory.raise());
@@ -249,8 +255,6 @@ public class RobotContainer {
     OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
 
     new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
-    // new Trigger(() -> OI.Operator.controller.getPOV() == 270)
-    //     .onTrue(new InstantCommand(() -> robotStateManager.setLongRange()));
     new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());
     new Trigger(() -> OI.Operator.controller.getPOV() == 90)
         .onTrue(new InstantCommand(() -> robotStateManager.setShortRange()));
