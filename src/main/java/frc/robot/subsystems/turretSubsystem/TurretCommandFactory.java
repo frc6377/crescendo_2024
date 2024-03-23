@@ -24,6 +24,7 @@ import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.HowdyMath;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -153,27 +154,27 @@ public class TurretCommandFactory {
     return subsystem.startEnd(
         () -> {
           subsystem.setTurretPos(Math.toRadians(00));
-          subsystem.setPitchPos(Math.toRadians(40));
+          subsystem.setPitchPos(Math.toRadians(37));
         },
         () -> {});
   }
 
   public Command longRangeShot() {
-    return subsystem.startEnd(
+    return subsystem.run(
         () -> {
           if (Constants.enabledSubsystems.turretRotationEnabled) {
             visionTracking();
           }
           if (Constants.enabledSubsystems.turretPitchEnabled) {
             double distance = distanceEstimateMeters();
+            limelightDistance.log(distance);
             subsystem.setPitchPos(pitchMap.get(distance));
           }
-        },
-        () -> {});
+        });
   }
 
   private void visionTracking() {
-    visionTracking(this::odometryPointing);
+    visionTracking(() -> new Rotation2d());
   }
 
   private void visionTracking(Supplier<Rotation2d> searchingBehavior) {
@@ -191,7 +192,7 @@ public class TurretCommandFactory {
     if (Double.isNaN(visionDistance)) {
       return odometryDistance();
     }
-    return odometryDistance();
+    return visionDistance;
   }
 
   private double odometryDistance() {
@@ -209,7 +210,7 @@ public class TurretCommandFactory {
           if (Double.isNaN(errDegrees)) {
             return searchingBehavior.get().getRotations();
           }
-          double err = Units.degreesToRotations(errDegrees);
+          double err = Units.degreesToRotations(errDegrees - 4);
           return err;
         });
   }
@@ -219,6 +220,7 @@ public class TurretCommandFactory {
     return subsystem
         .run(
             () -> {
+              subsystem.setTurretPos(0);
               moveToBottomOfTravel();
             })
         .withName("idleTurret");
@@ -290,5 +292,10 @@ public class TurretCommandFactory {
     final Rotation2d targetTurretAngleRelToRobot =
         targetTurretAngleRelToField.minus(rotationSupplier.get());
     return targetTurretAngleRelToRobot;
+  }
+
+  public BooleanSupplier isReady() {
+    if (subsystem == null) return null;
+    return () -> subsystem.pitchAtSetpoint();
   }
 }

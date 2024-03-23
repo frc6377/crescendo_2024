@@ -205,9 +205,7 @@ public class RobotContainer {
         drivetrainCommandFactory.createRotationSource(OI.Driver.controller, drivetrain);
 
     drivetrainCommandFactory.setDefaultCommand(
-        drivetrainCommandFactory
-            .pointDrive(direction, SwerveSubsystem.scrubRotation(input))
-            .withName("Get Axis Suppliers"));
+        drivetrainCommandFactory.fieldOrientedDrive(input).withName("Get Axis Suppliers"));
 
     trapElvCommandFactory.setDefaultCommand(trapElvCommandFactory.stowTrapElvCommand());
 
@@ -219,22 +217,26 @@ public class RobotContainer {
 
     TunableNumber turretTestPitch =
         new TunableNumber("Turret Test Pitch", 0d, (a) -> {}, turretSubsystem);
-    OI.getButton(OI.Driver.lockAmp)
+    OI.getTrigger(OI.Driver.lockAmp)
         .whileTrue(
             drivetrainCommandFactory.pointInDirection(
                 FieldConstants.AMP_DIRECTION, SwerveSubsystem.scrubRotation(input)));
+    OI.getButton(OI.Driver.lockSource)
+        .whileTrue(drivetrainCommandFactory.pointDrive(robotStateManager.getSourceAngle(), input));
+    OI.getTrigger(OI.Driver.lockSpeaker)
+        .whileTrue(drivetrainCommandFactory.pointDrive(robotStateManager.getSpeakerAngle(), input));
+
+    OI.getButton(OI.Operator.retractClimber)
+        .whileTrue(turretCommandFactory.testTurretCommand(turretTestPitch));
 
     OI.getButton(OI.Driver.resetRotationButton)
         .onTrue(drivetrainCommandFactory.zeroDriveTrain().withName("Put Pose & Rotation on Field"));
-
-    OI.getButton(OI.Driver.useRod)
-        .whileTrue(drivetrainCommandFactory.assistedDriving(input, robotStateManager));
 
     OI.getTrigger(OI.Operator.prepareToFire)
         .whileTrue(
             Commands.either(
                 trapElvCommandFactory.positionAMP(),
-                prepareToScoreSpeaker(),
+                Commands.parallel(prepareToScoreSpeaker()),
                 robotStateManager.isAmpSupplier()));
 
     OI.getTrigger(OI.Operator.fire)
@@ -247,15 +249,11 @@ public class RobotContainer {
     OI.getButton(OI.Operator.switchToAmp).onTrue(robotStateManager.setAmpMode());
     OI.getButton(OI.Operator.switchToSpeaker).onTrue(robotStateManager.setSpeakerMode());
 
-    OI.getTrigger(OI.Driver.outtake).whileTrue(outtakeCommand());
-
-    OI.getButton(OI.Driver.speakerSource).whileTrue(speakerSource());
-
     OI.getButton(OI.Operator.prepClimb).onTrue(climberCommandFactory.raise());
 
     OI.getButton(OI.Operator.latchClimber).onTrue(climberCommandFactory.clip());
 
-    OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
+    // OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
 
     new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
     new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());
@@ -296,23 +294,24 @@ public class RobotContainer {
                   OI.Operator.setRumble(0);
                 }));
     new Trigger(shooterCommandFactory::isShooterReady)
+        .and(turretCommandFactory.isReady())
         .whileTrue(
             Commands.startEnd(
                 () -> OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
                 () -> OI.Operator.setRumble(0)));
-    shooterCommandFactory
-        .getBeamBreak()
-        .and(OI.getTrigger(OI.Driver.intake).or(() -> OI.Operator.controller.getPOV() == 00))
-        .whileTrue(
-            Commands.startEnd(
-                () -> {
-                  OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);
-                  OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);
-                },
-                () -> {
-                  OI.Driver.setRumble(0);
-                  OI.Operator.setRumble(0);
-                }));
+    // shooterCommandFactory
+    //     .getBeamBreak()
+    //     .and(new Trigger(() -> OI.Operator.controller.getPOV() == 00))
+    //     .whileTrue(
+    //         Commands.startEnd(
+    //             () -> {
+    //               OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);
+    //               OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);
+    //             },
+    //             () -> {
+    //               OI.Driver.setRumble(0);
+    //               OI.Operator.setRumble(0);
+    //             }));
   }
 
   private Command speakerSource() {
@@ -322,7 +321,8 @@ public class RobotContainer {
 
   private Command intakeSpeaker() {
     return Commands.parallel(
-        intakeCommandFactory.getSpeakerIntakeCommand(), triggerCommandFactory.getLoadCommand());
+        intakeCommandFactory.getSpeakerIntakeCommand(),
+        triggerCommandFactory.getGroundLoadCommand(shooterCommandFactory.getBeamBreak()));
   }
 
   private Command intakeAmp() {
@@ -349,19 +349,22 @@ public class RobotContainer {
     return Commands.parallel(
         Commands.waitSeconds(CommandConstants.WAIT_FOR_TRAPELV)
             .andThen(turretCommandFactory.getAimTurretCommand()),
-        shooterCommandFactory.revShooter(), trapElvCommandFactory.wristShooterRev());
+        shooterCommandFactory.revShooter(),
+        trapElvCommandFactory.wristShooterRev());
   }
 
-  private Command prepareToScoreSpeakerShortRange() {
+  private Command prepareToScoreSpeakerShortRange_AUTON_ONLY() {
     return Commands.parallel(
         turretCommandFactory.shortRangeShot().asProxy(),
-        shooterCommandFactory.revShooter(), trapElvCommandFactory.wristShooterRev());
+        shooterCommandFactory.revShooter(),
+        trapElvCommandFactory.wristShooterRev());
   }
 
-  private Command prepareToScoreSpeakerLongRange() {
+  private Command prepareToScoreSpeakerLongRange_AUTON_ONLY() {
     return Commands.parallel(
         turretCommandFactory.longRangeShot().asProxy(),
-        shooterCommandFactory.revShooter(), trapElvCommandFactory.wristShooterRev());
+        shooterCommandFactory.revShooter(),
+        trapElvCommandFactory.wristShooterRev());
   }
 
   private Command shootAutonShort() {
@@ -372,7 +375,7 @@ public class RobotContainer {
                     .getShootCommand()
                     .withTimeout(1)
                     .until(shooterCommandFactory.getBeamBreak().negate().debounce(.25))),
-        prepareToScoreSpeakerShortRange());
+        prepareToScoreSpeakerShortRange_AUTON_ONLY());
   }
 
   private Command shootAutonLong() {
@@ -382,7 +385,7 @@ public class RobotContainer {
                 triggerCommandFactory
                     .getShootCommand()
                     .until(shooterCommandFactory.getBeamBreak().negate().debounce(.25))),
-        prepareToScoreSpeakerLongRange());
+        prepareToScoreSpeakerLongRange_AUTON_ONLY());
   }
 
   private Command ampAuton() {

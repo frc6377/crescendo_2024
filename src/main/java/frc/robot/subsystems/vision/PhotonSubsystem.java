@@ -143,7 +143,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
           double ang =
               target.getPitch() + Units.radiansToDegrees(limelightConfig.limelightPitchRadians);
           System.out.println("ang:" + ang);
-          return angleToDistanceSpeakerTag(Rotation2d.fromDegrees(ang));
+          return FieldConstants.SPEAKER_TAG_HEIGHT_METERS / Math.tan(Math.toRadians(ang));
         }
       }
     }

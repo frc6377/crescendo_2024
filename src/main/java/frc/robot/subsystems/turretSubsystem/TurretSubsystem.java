@@ -460,4 +460,13 @@ public class TurretSubsystem extends SubsystemBase {
     return Math.abs(turretPositionPIDController.getSetpoint() - turretPosition)
         < epsilion.getRotations();
   }
+
+  DebugEntry<Boolean> atPitchLog = new DebugEntry<Boolean>(false, "Pitch as setpoint", this);
+
+  public boolean pitchAtSetpoint() {
+    pitchPIDController.setTolerance(TurretConstants.PITCH_TOLERANCE);
+    boolean result = pitchPIDController.atSetpoint();
+    atPitchLog.log(result);
+    return result;
+  }
 }

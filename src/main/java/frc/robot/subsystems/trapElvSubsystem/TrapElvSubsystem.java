@@ -350,7 +350,6 @@ public class TrapElvSubsystem extends SubsystemBase {
     wristPositionEntry.log(getWristEncoderPos());
     sourceLog.log(sourceBreak.get());
     groundLog.log(groundBreak.get());
-    sourceBreak.getMilliMeters();
 
     FF = wristFeedforward.calculate(Units.rotationsToRadians(getWristEncoderPos()), 0);
 

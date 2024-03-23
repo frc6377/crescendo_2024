@@ -170,15 +170,26 @@ public final class Constants {
     public static final Rotation2d PIN_EPSILION = Rotation2d.fromDegrees(2);
 
     public static final TurretDataPoint[] TURRET_DATA = {
-      //Verified at 5
+
+      // Verified at 6 of 6
+      // 5 deg left
+      new TurretDataPoint(Units.inchesToMeters(15.5), 1.69, Units.degreesToRadians(30)),
+
+      // Verified at 5
       new TurretDataPoint(Units.inchesToMeters(21.75), 1.8, Units.degreesToRadians(28)),
-      //Verified at 5 of 6
+      // Verified at 5 of 6
       new TurretDataPoint(Units.inchesToMeters(59.5), 2.6, Units.degreesToRadians(20)),
-      //Verified at 5 of 6
-      new TurretDataPoint(Units.inchesToMeters(81), 3.104, Units.degreesToRadians(20)),
+      // Verified at 7 of 8
+      new TurretDataPoint(Units.inchesToMeters(62), 2.65, Units.degreesToRadians(18)),
+      // Verified at 6 of 7
+      // 5 deg left
+      new TurretDataPoint(Units.inchesToMeters(62), 2.65, Units.degreesToRadians(18)),
 
-
+      // Verified at 6 of 6
+      // 5 deg left
+      new TurretDataPoint(Units.inchesToMeters(83), 3.11, Units.degreesToRadians(16)),
     };
+    public static final double PITCH_TOLERANCE = 1;
   }
 
   public static class OperatorConstants {
@@ -288,7 +299,7 @@ public final class Constants {
     public static final boolean signalEnabled = false;
     public static final boolean shooterEnabled = true;
     public static final boolean triggerEnabled = true;
-    public static final boolean turretRotationEnabled = true;
+    public static final boolean turretRotationEnabled = false;
     public static final boolean turretPitchEnabled = true;
     public static final boolean climberEnabled = true;
   }
@@ -308,7 +319,7 @@ public final class Constants {
     public static final Rotation2d BLUE_SOURCE_ROTATION = Rotation2d.fromRotations(-0.25);
     public static final Rotation2d RED_SOURCE_ROTATION = Rotation2d.fromRotations(-0.25);
     public static final Rotation2d ABSOLUTE_POINTING_OFFSET = Rotation2d.fromRotations(0.75);
-    public static final double ROTATION_DEADBAND = 0.3;
+    public static final double ROTATION_DEADBAND = 0.05;
   }
 
   public static record TurretDataPoint(
