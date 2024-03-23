@@ -9,8 +9,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.TurretConstants;
-import frc.robot.config.DynamicRobotConfig;
-import frc.robot.config.TurretZeroConfig;
 
 public class TurretCommandFactory {
   final TurretSubsystem subsystem;
@@ -89,9 +87,6 @@ public class TurretCommandFactory {
               MagnetSensorConfigs newCfgHighGear = new MagnetSensorConfigs();
               newCfgHighGear.withMagnetOffset(highGearOffset);
               highGearCANcoderConfigurator.apply(newCfgHighGear);
-
-              DynamicRobotConfig dynamicConfig = new DynamicRobotConfig();
-              dynamicConfig.saveTurretZero(new TurretZeroConfig(lowGearOffset, highGearOffset));
             },
             subsystem)
         .withName("zeroZeroing")

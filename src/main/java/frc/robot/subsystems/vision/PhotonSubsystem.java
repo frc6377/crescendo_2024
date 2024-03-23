@@ -11,7 +11,6 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.config.DynamicRobotConfig;
 import frc.robot.config.LimelightConfig;
 import frc.robot.utilities.DebugEntry;
 import java.util.List;
@@ -29,8 +28,6 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   private DebugEntry<Double> measurementEntry = new DebugEntry<Double>(0.0, "measurements", this);
 
   private final BiConsumer<Pose2d, Double> measurementConsumer;
-  private DynamicRobotConfig dynamicRobotConfig;
-  private LimelightConfig limelightConfig;
   private Transform3d robotToCam;
 
   private PhotonCamera mainCamera;
@@ -48,19 +45,17 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
 
   public PhotonSubsystem(BiConsumer<Pose2d, Double> measurementConsumer) {
     this.measurementConsumer = measurementConsumer;
-    this.dynamicRobotConfig = new DynamicRobotConfig();
-    limelightConfig = dynamicRobotConfig.getLimelightConfig();
     lastPose = new EstimatedRobotPose(new Pose3d(), 0, null, null);
     robotToCam =
         new Transform3d(
             new Translation3d(
-                limelightConfig.limelightXMeters,
-                limelightConfig.limelightYMeters,
-                limelightConfig.limelightZMeters),
+                LimelightConfig.limelightXMeters,
+                LimelightConfig.limelightYMeters,
+                LimelightConfig.limelightZMeters),
             new Rotation3d(
-                limelightConfig.limelightRollRadians,
-                limelightConfig.limelightPitchRadians,
-                limelightConfig.limelightYawRadians));
+                LimelightConfig.limelightRollRadians,
+                LimelightConfig.limelightPitchRadians,
+                LimelightConfig.limelightYawRadians));
     mainCamera = new PhotonCamera(Constants.VisionConstants.MAIN_CAMERA_NAME);
     turretCamera = new PhotonCamera(Constants.VisionConstants.TURRET_CAMERA_NAME);
     mainResult = mainCamera.getLatestResult();
