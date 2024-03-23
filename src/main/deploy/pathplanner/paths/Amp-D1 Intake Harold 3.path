@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.8,
-        "y": 7.0
+        "x": 1.85,
+        "y": 7.8
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9999999999999998,
-        "y": 7.0
+        "x": 1.85,
+        "y": 7.4
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.85,
-        "y": 7.8
+        "x": 8.2,
+        "y": 7.45
       },
       "prevControl": {
-        "x": 1.85,
-        "y": 7.3999999999999995
+        "x": 6.999999999999999,
+        "y": 7.45
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,8 +30,8 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.3,
-      "rotationDegrees": 90.0,
+      "waypointRelativePos": 0.6,
+      "rotationDegrees": 0.0,
       "rotateFast": false
     }
   ],
@@ -45,11 +45,14 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Amp Starting Location",
-  "previewStartingState": null,
+  "folder": "Harold",
+  "previewStartingState": {
+    "rotation": 90.0,
+    "velocity": 0
+  },
   "useDefaultConstraints": false
 }

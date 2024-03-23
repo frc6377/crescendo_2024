@@ -125,7 +125,7 @@ def get_path_json(path):
 	path_json = {
 		"type": "path",
 		"data": {
-			"pathName": f'{path[0]}-{path[1]}' + ' '.join(path[2:])
+			"pathName": f'{path[0]}-{path[1]} ' + ' '.join(path[2:])
 		}
 	}
 	return path_json
@@ -153,10 +153,11 @@ def create_auto_file(nickname, path_list):
 
 	for path in path_list:
 		auto['command']['data']['commands'].append(get_path_json(path))
-		auto['command']['data']['commands'].append(command_names[path[2]])
+		auto['command']['data']['commands'].append(commands[path[2]])
 	
-	with open(f'{nickname}.auto', 'w') as file:
-		json.dump(auto)
+	with open(f'{auto_folder}/{nickname}.auto', 'w') as file:
+
+		json.dump(auto, file)
 
 
 

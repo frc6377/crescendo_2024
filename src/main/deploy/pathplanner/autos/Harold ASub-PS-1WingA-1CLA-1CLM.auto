@@ -52,7 +52,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "B1-Amp Amp"
+            "pathName": "B1-Amp AmpScore Harold 2"
           }
         },
         {
@@ -68,7 +68,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Amp-D1 Intake"
+                  "pathName": "Amp-D1 Intake Harold 3"
                 }
               },
               {
@@ -96,7 +96,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "D1-Amp Amp"
+            "pathName": "D1-Amp AmpScore Harold 4"
           }
         },
         {
@@ -112,7 +112,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Amp-D2 Intake"
+                  "pathName": "Amp-D2 Intake Harold 5"
                 }
               },
               {
@@ -140,7 +140,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "D2-C2 Drop"
+            "pathName": "D2-C2 Drop Harold 6"
           }
         },
         {
