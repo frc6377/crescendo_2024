@@ -4,38 +4,29 @@ import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.Constants;
-import frc.robot.Constants.CommandConstants;
-import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.config.TurretZeroConfig;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RangeMode;
 import frc.robot.stateManagement.RobotStateManager;
-import frc.robot.subsystems.vision.VisionSubsystem;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class TurretCommandFactory {
   final TurretSubsystem subsystem;
   final RobotStateManager RSM;
-  final VisionSubsystem vision;
   final Supplier<Rotation2d> rotationSupplier;
 
   public TurretCommandFactory(
-      TurretSubsystem subsystem,
-      RobotStateManager RSM,
-      VisionSubsystem visionSubsystem,
-      Supplier<Rotation2d> rotationSupplier) {
+      TurretSubsystem subsystem, RobotStateManager RSM, Supplier<Rotation2d> rotationSupplier) {
     this.subsystem = subsystem;
     this.RSM = RSM;
-    this.vision = visionSubsystem;
     this.rotationSupplier = rotationSupplier;
   }
 
@@ -148,51 +139,13 @@ public class TurretCommandFactory {
     return subsystem.startEnd(
         () -> {
           if (Constants.enabledSubsystems.turretRotationEnabled) {
-            if (CommandConstants.USE_VISION_TARGETING) {
-              visionTracking();
-            } else {
-              subsystem.setTurretPos(targetAngle.getAsDouble());
-            }
+            subsystem.setTurretPos(targetAngle.getAsDouble());
           }
           if (Constants.enabledSubsystems.turretPitchEnabled) {
             subsystem.setPitchPos(Math.toRadians(22.5));
           }
         },
         () -> {});
-  }
-
-  private void visionTracking() {
-    visionTracking(
-        () -> {
-          int scl = RSM.getAllianceColor() == AllianceColor.RED ? 1 : -1;
-          return Units.rotationsToDegrees(0.1901587509527439) * scl;
-        });
-  }
-
-  private void visionTracking(DoubleSupplier searchingBehavior) {
-    visionTracking(
-        RSM.getAllianceColor() == AllianceColor.RED
-            ? LimelightConstants.SPEAKER_TAG_ID_RED
-            : LimelightConstants.SPEAKER_TAG_ID_BLUE,
-        searchingBehavior);
-  }
-
-  /**
-   * @param targetTag the tag to search towards
-   * @param searchingBehavior target rotation in degrees
-   */
-  private void visionTracking(int targetTag, DoubleSupplier searchingBehavior) {
-    subsystem.setPositionErrorSupplier(
-        () -> {
-          double errDegrees = vision.getTurretYaw(targetTag);
-          if (Double.isNaN(errDegrees)) {
-            subsystem.setPIDVelocity(0.1);
-            return Units.degreesToRotations(searchingBehavior.getAsDouble());
-          }
-          subsystem.setPIDVelocity(-1);
-          double err = Units.degreesToRotations(errDegrees);
-          return err;
-        });
   }
 
   public Command idleTurret() {

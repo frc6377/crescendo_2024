@@ -141,13 +141,12 @@ public class RobotContainer {
     }
     trapElvCommandFactory = new TrapElvCommandFactory(trapElvSubsystem);
     if (enabledSubsystems.turretRotationEnabled || enabledSubsystems.turretPitchEnabled) {
-      turretSubsystem = new TurretSubsystem(robotStateManager, null);
+      turretSubsystem = new TurretSubsystem(robotStateManager, visionSubsystem);
     } else {
       turretSubsystem = null;
     }
     turretCommandFactory =
-        new TurretCommandFactory(
-            turretSubsystem, robotStateManager, visionSubsystem, drivetrain::getRotation);
+        new TurretCommandFactory(turretSubsystem, robotStateManager, drivetrain::getRotation);
     if (enabledSubsystems.climberEnabled) {
       climberSubsystem = new ClimberSubsystem();
     } else {

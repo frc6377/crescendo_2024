@@ -43,10 +43,12 @@ import frc.robot.Constants.enabledSubsystems;
 import frc.robot.Robot;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.config.TurretZeroConfig;
+import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.HowdyMath;
+import frc.robot.utilities.TunableNumber;
 import java.util.function.DoubleSupplier;
 
 public class TurretSubsystem extends SubsystemBase {
@@ -83,6 +85,8 @@ public class TurretSubsystem extends SubsystemBase {
 
   private InterpolatingDoubleTreeMap pitchMap;
 
+  private TunableNumber pitchTune;
+
   private final ShuffleboardTab turretTab = Shuffleboard.getTab(this.getName());
   private final DebugEntry<Double> turretPositionEntry =
       new DebugEntry<Double>(turretPosition, "Turret Position (Degrees)", this);
@@ -98,6 +102,8 @@ public class TurretSubsystem extends SubsystemBase {
       new DebugEntry<Double>(pitchVelocity, "Pitch Velocity (RPM)", this);
   private final DebugEntry<Double> motorOutputEntry =
       new DebugEntry<Double>(0.0, "Turret Motor Output", this);
+  private final DebugEntry<Double> tagDistanceEntry =
+      new DebugEntry<Double>(0.0, "LastMeasuredTagDistance", this);
   private DebugEntry<String> currentCommand =
       new DebugEntry<String>("none", "Turret Command", this);
   private DebugEntry<Double> pitchMotorOutput =
@@ -106,10 +112,14 @@ public class TurretSubsystem extends SubsystemBase {
   private DebugEntry<Double> positionErrorLog =
       new DebugEntry<Double>(0.0, "Position Error (deg?)", this);
 
+  private final RobotStateManager robotStateManager;
+  private final VisionSubsystem visionSubsystem;
+
   private boolean usingPitchPid = true;
   private ProfiledPIDController turretPIDController;
 
   public TurretSubsystem(RobotStateManager robotStateManager, VisionSubsystem visionSubsystem) {
+
     this.positionErrorSupplier = () -> 0;
 
     // Initialize Motors
@@ -176,6 +186,11 @@ public class TurretSubsystem extends SubsystemBase {
     // if (Robot.isReal()) {
     //   zeroTurret();
     // }
+
+    this.robotStateManager = robotStateManager;
+    this.visionSubsystem = visionSubsystem;
+
+    pitchTune = new TunableNumber("pitch GoTo Value", 40.0, (a) -> {}, this);
 
     pitchMap = new InterpolatingDoubleTreeMap();
     pitchMap.put(0.0, 0.0);
@@ -381,6 +396,72 @@ public class TurretSubsystem extends SubsystemBase {
   public double getTurretVel() {
     if (!Constants.enabledSubsystems.turretRotationEnabled) return 0;
     return turretVelocity;
+  }
+
+  public void aimTurret() {
+    if (visionSubsystem != null) {
+      int tagID =
+          ((robotStateManager.getAllianceColor()
+                  == AllianceColor
+                      .BLUE) // Default to red because that's the color on our test field
+              ? Constants.TurretConstants.SPEAKER_TAG_ID_BLUE
+              : Constants.TurretConstants.SPEAKER_TAG_ID_RED);
+      double visionTX = visionSubsystem.getTurretYaw(tagID);
+      if (visionTX != 0) {
+        // X & Rotation
+        if (Constants.enabledSubsystems.turretRotationEnabled) {
+          setTurretPos(Math.toRadians(visionTX) + turretPosition);
+        }
+
+        // Y & Tilting
+        if (Constants.enabledSubsystems.turretPitchEnabled) {
+          double visionTY = visionSubsystem.getTurretPitch(tagID);
+          double distanceToTag = tyToDistanceFromTag(visionTY);
+          tagDistanceEntry.log(distanceToTag);
+        }
+
+        if (Math.abs(Math.toRadians(visionTX) + turretPosition)
+            > Math.toRadians(Constants.TurretConstants.MAX_TURRET_ANGLE_DEGREES)) {
+          // TODO: Make turret rotate the drivebase if necessary and driver thinks it's a good idea
+        }
+      }
+    } else {
+      // TODO: Make turret default to using odometry
+      setTurretPos(60);
+    }
+  }
+
+  private void aimTurretOdometry(Pose2d robotPos, Pose2d targetPos) {
+    setTurretPos(getTurretRotationFromOdometry(robotPos, targetPos));
+  }
+
+  /**
+   * Calculates the distance to the tag centered on the speaker from the angle that the limelight
+   * sees it
+   *
+   * @param ty The ty output by the limelight (degrees)
+   * @return The distance from the tag (meters)
+   */
+  private double tyToDistanceFromTag(double ty) {
+    DynamicRobotConfig dynamicRobotConfig = new DynamicRobotConfig();
+    double tagTheta = Math.toRadians(ty) + dynamicRobotConfig.getLimelightConfig().limelightYMeters;
+    double height =
+        Constants.TurretConstants.SPEAKER_TAG_CENTER_HEIGHT_METERS
+            - dynamicRobotConfig.getLimelightConfig()
+                .limelightZMeters; // TODO: Change these alphabot constants to be turret
+    // constants whenever the robot is built
+    double distance = height / Math.tan(tagTheta);
+    return distance;
+  }
+
+  /**
+   * Calculates the pitch the shooter should be angled at to fire a given distance.
+   *
+   * @param distance The distance from the speaker in meters
+   * @return The shooter pitch in degrees
+   */
+  private double distanceToShootingPitch(double distance) {
+    return 4; // TODO: Make and use a real formula(use testing, not physics)
   }
 
   @Override
