@@ -51,6 +51,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   private SwerveDriveKinematics kinematics;
 
   private DebugEntry<String> currentCommand;
+  private boolean acceptVisionMeasures = false;
 
   public SwerveSubsystem(
       SwerveDrivetrainConstants driveTrainConstants,
@@ -129,7 +130,9 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   }
 
   public BiConsumer<Pose2d, Double> getVisionMeasurementConsumer() {
-    return (t, u) -> addVisionMeasurement(t, u);
+    return (t, u) -> {
+      if (acceptVisionMeasures) addVisionMeasurement(t, u);
+    };
   }
 
   public SwerveRequest getBrakeRequest() {
@@ -237,4 +240,11 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   }
 
   public record DriveInput(double x, double y, double alpha) {}
+  public void stopVisionMeasures() {
+    acceptVisionMeasures = false;
+  }
+
+  public void startVisionMeasures() {
+    acceptVisionMeasures = true;
+  }
 }

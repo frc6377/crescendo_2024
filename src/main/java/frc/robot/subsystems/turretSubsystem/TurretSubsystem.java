@@ -192,7 +192,7 @@ public class TurretSubsystem extends SubsystemBase {
       turretTab.add("Pitch", pitchMech);
     }
 
-    currentCommand = new DebugEntry<String>("none", "current Command", this);
+    currentCommand = new DebugEntry<String>("none", "Turret Command", this);
   }
 
   public void stopTurret() {
