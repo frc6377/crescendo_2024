@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.FieldConstants;
@@ -28,6 +29,8 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   private int measurementsUsed = 0;
+  private double lastRecordedTime = 0;
+  private double lastRecordedDistance = 0;
   private DebugEntry<Double> measurementEntry = new DebugEntry<Double>(0.0, "measurements", this);
 
   private final BiConsumer<Pose2d, Double> measurementConsumer;
@@ -143,11 +146,22 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
           double ang =
               target.getPitch() + Units.radiansToDegrees(limelightConfig.limelightPitchRadians);
           System.out.println("ang:" + ang);
-          return FieldConstants.SPEAKER_TAG_HEIGHT_METERS / Math.tan(Math.toRadians(ang));
+          lastRecordedTime = turretResult.getTimestampSeconds();
+          lastRecordedDistance =
+              FieldConstants.SPEAKER_TAG_HEIGHT_METERS / Math.tan(Math.toRadians(ang));
+          return lastRecordedDistance;
         }
       }
     }
-    return Double.NaN;
+    if (lastRecordedTime != 0
+        && lastRecordedTime + Constants.LimelightConstants.APRILTAG_STALE_TIME
+            < Timer.getFPGATimestamp()) {
+      return lastRecordedDistance;
+    } else {
+      lastRecordedTime = 0;
+      lastRecordedDistance = 0;
+      return Double.NaN;
+    }
   }
 
   private double angleToDistanceSpeakerTag(Rotation2d theta) {
