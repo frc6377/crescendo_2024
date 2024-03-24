@@ -347,8 +347,8 @@ public class RobotContainer {
 
   private Command prepareToScoreSpeaker() {
     return Commands.parallel(
-        // Commands.waitSeconds(CommandConstants.WAIT_FOR_TRAPELV)
-        //     .andThen(turretCommandFactory.getAimTurretCommand()),
+        Commands.waitSeconds(CommandConstants.WAIT_FOR_TRAPELV)
+            .andThen(turretCommandFactory.getAimTurretCommand()),
         shooterCommandFactory.revShooter(),
         trapElvCommandFactory.wristShooterRev());
   }
