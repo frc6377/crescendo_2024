@@ -147,7 +147,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
         }
       }
     }
-    return 0;
+    return Double.NaN;
   }
 
   private double angleToDistanceSpeakerTag(Rotation2d theta) {
