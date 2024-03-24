@@ -34,14 +34,14 @@ public class ClimberSubsystem extends SubsystemBase {
 
     rightArmPoseEntry =
         new DebugEntry<Double>(
-            rightArmMotor.getEncoder().getPosition(), "right arm position", this);
+            rightArmMotor.getEncoder().getPosition(), "right arm position", false, this);
     leftArmPoseEntry =
-        new DebugEntry<Double>(rightArmMotor.getEncoder().getPosition(), "left arm position", this);
+        new DebugEntry<Double>(rightArmMotor.getEncoder().getPosition(), "left arm position", false, this);
     rightArmOutputEntry =
-        new DebugEntry<Double>(rightArmMotor.getAppliedOutput(), "right arm output", this);
+        new DebugEntry<Double>(rightArmMotor.getAppliedOutput(), "right arm output", false, this);
     leftArmOutputEntry =
-        new DebugEntry<Double>(rightArmMotor.getAppliedOutput(), "left arm output", this);
-    currentCommand = new DebugEntry<String>("none", "Climber Command", this);
+        new DebugEntry<Double>(rightArmMotor.getAppliedOutput(), "left arm output", false, this);
+    currentCommand = new DebugEntry<String>("none", "Climber Command", false, this);
   }
 
   private void configMotor(CANSparkMax motor, boolean invert) {

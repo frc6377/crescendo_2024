@@ -184,8 +184,8 @@ public class TrapElvSubsystem extends SubsystemBase {
       scoringMotor.restoreFactoryDefaults();
       TrapElvConstants.SCORING_PID.setSparkPidController(scoringMotor);
 
-      baseLog = new DebugEntry<Boolean>(baseLimit.get(), "Base Limit Switch", this);
-      scoringLog = new DebugEntry<Boolean>(scoringLimit.get(), "Scoring Limit Switch", this);
+      baseLog = new DebugEntry<Boolean>(baseLimit.get(), "Base Limit Switch", false, this);
+      scoringLog = new DebugEntry<Boolean>(scoringLimit.get(), "Scoring Limit Switch", false, this);
     }
 
     // Simulation
@@ -247,25 +247,25 @@ public class TrapElvSubsystem extends SubsystemBase {
     }
 
     wristGoal =
-        new DebugEntry<Double>(wristStateGoal, "Wrist Goal", this)
+        new DebugEntry<Double>(wristStateGoal, "Wrist Goal", false, this)
             .withPosition(0, 0)
             .withSize(2, 1);
     wristPositionEntry =
-        new DebugEntry<>(getWristEncoderPos(), "wrist Position", this)
+        new DebugEntry<>(getWristEncoderPos(), "wrist Position", false, this)
             .withPosition(2, 0)
             .withSize(2, 1);
     wristStateEntry =
-        new DebugEntry<String>(TrapElvState.STOWED.name(), "Wrist State", this)
+        new DebugEntry<String>(TrapElvState.STOWED.name(), "Wrist State", false, this)
             .withPosition(0, 1)
             .withSize(2, 1);
     wristOutput =
-        new DebugEntry<Double>(0.0, "Wrist Motor Output", this).withPosition(2, 1).withSize(2, 1);
-    FFOutput = new DebugEntry<Double>(0.0, "FF Output", this).withPosition(5, 1).withSize(2, 1);
-    sourceLog = new DebugEntry<Boolean>(sourceBreak.get(), "Source BB", this).withPosition(0, 2);
-    groundLog = new DebugEntry<Boolean>(groundBreak.get(), "Ground BB", this).withPosition(1, 2);
-    isWristRollerRunning = new DebugEntry<Boolean>(false, "Wrist Rollers", this).withPosition(2, 2);
+        new DebugEntry<Double>(0.0, "Wrist Motor Output", false, this).withPosition(2, 1).withSize(2, 1);
+    FFOutput = new DebugEntry<Double>(0.0, "FF Output", false, this).withPosition(5, 1).withSize(2, 1);
+    sourceLog = new DebugEntry<Boolean>(sourceBreak.get(), "Source BB", false, this).withPosition(0, 2);
+    groundLog = new DebugEntry<Boolean>(groundBreak.get(), "Ground BB", false, this).withPosition(1, 2);
+    isWristRollerRunning = new DebugEntry<Boolean>(false, "Wrist Rollers", false, this).withPosition(2, 2);
 
-    wristCurrentCommand = new DebugEntry<String>("none", "Wrist Command", this).withPosition(4, 4);
+    wristCurrentCommand = new DebugEntry<String>("none", "Wrist Command", false, this).withPosition(4, 4);
   }
 
   // Boolean Suppliers

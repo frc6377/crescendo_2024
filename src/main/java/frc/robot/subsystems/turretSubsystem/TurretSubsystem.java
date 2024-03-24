@@ -79,29 +79,29 @@ public class TurretSubsystem extends SubsystemBase {
 
   private final ShuffleboardTab turretTab = Shuffleboard.getTab(this.getName());
   private final DebugEntry<Double> turretPositionEntry =
-      new DebugEntry<Double>(turretPosition, "Turret Position (Degrees)", this);
+      new DebugEntry<Double>(turretPosition, "Turret Position (Degrees)", false, this);
   private final DebugEntry<Double> turretGoalPositionEntry =
-      new DebugEntry<Double>(0.0, "Turret Goal Position (Degrees)", this);
+      new DebugEntry<Double>(0.0, "Turret Goal Position (Degrees)", false, this);
   private final DebugEntry<Double> turretVelocityEntry =
-      new DebugEntry<Double>(turretVelocity, "Turret Velocity (RPM)", this);
+      new DebugEntry<Double>(turretVelocity, "Turret Velocity (RPM)", false, this);
   private final DebugEntry<Double> pitchPositionEntry =
-      new DebugEntry<Double>(pitchPosition, "Pitch Position (Degrees)", this);
+      new DebugEntry<Double>(pitchPosition, "Pitch Position (Degrees)", false, this);
   private final DebugEntry<Double> pitchGoalPositionEntry =
-      new DebugEntry<Double>(0.0, "Pitch Goal Position (Degrees)", this);
+      new DebugEntry<Double>(0.0, "Pitch Goal Position (Degrees)", false, this);
   private final DebugEntry<Double> pitchVelocityEntry =
-      new DebugEntry<Double>(pitchVelocity, "Pitch Velocity (RPM)", this);
+      new DebugEntry<Double>(pitchVelocity, "Pitch Velocity (RPM)", false, this);
   private final DebugEntry<Double> motorOutputEntry =
-      new DebugEntry<Double>(0.0, "Turret Motor Output", this);
+      new DebugEntry<Double>(0.0, "Turret Motor Output", false, this);
   private DebugEntry<String> currentCommand =
-      new DebugEntry<String>("none", "Turret Command", this);
+      new DebugEntry<String>("none", "Turret Command", false, this);
   private DebugEntry<Double> pitchMotorOutput =
-      new DebugEntry<Double>(0.0, "Pitch Motor Output", this);
+      new DebugEntry<Double>(0.0, "Pitch Motor Output", false, this);
 
   private DebugEntry<Double> positionErrorLog =
-      new DebugEntry<Double>(0.0, "Position Error (deg?)", this);
+      new DebugEntry<Double>(0.0, "Position Error (deg?)", false, this);
 
   private DebugEntry<Double> targetVelocityLog =
-      new DebugEntry<Double>(0.0, "Target Velocity (RPM)", this);
+      new DebugEntry<Double>(0.0, "Target Velocity (RPM)", false, this);
 
   private boolean usingPitchPid = true;
   private final PIDController turretVelocityPIDController;
@@ -461,7 +461,7 @@ public class TurretSubsystem extends SubsystemBase {
         < epsilion.getRotations();
   }
 
-  DebugEntry<Boolean> atPitchLog = new DebugEntry<Boolean>(false, "Pitch as setpoint", this);
+  DebugEntry<Boolean> atPitchLog = new DebugEntry<Boolean>(false, "Pitch as setpoint", false, this);
 
   public boolean pitchAtSetpoint() {
     pitchPIDController.setTolerance(TurretConstants.PITCH_TOLERANCE);

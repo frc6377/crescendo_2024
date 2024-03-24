@@ -28,7 +28,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   private int measurementsUsed = 0;
-  private DebugEntry<Double> measurementEntry = new DebugEntry<Double>(0.0, "measurements", this);
+  private DebugEntry<Double> measurementEntry = new DebugEntry<Double>(0.0, "measurements", false, this);
 
   private final BiConsumer<Pose2d, Double> measurementConsumer;
   private DynamicRobotConfig dynamicRobotConfig;
@@ -44,9 +44,9 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   private EstimatedRobotPose lastPose;
 
   private DebugEntry<Double> distanceEntryTag3 =
-      new DebugEntry<Double>(0.0, "Distance To Tag 3 (m)", this);
+      new DebugEntry<Double>(0.0, "Distance To Tag 3 (m)", false, this);
   private DebugEntry<Double> distanceEntryTag4 =
-      new DebugEntry<Double>(0.0, "Distance To Tag 4 (m)", this);
+      new DebugEntry<Double>(0.0, "Distance To Tag 4 (m)", false, this);
 
   public PhotonSubsystem(BiConsumer<Pose2d, Double> measurementConsumer) {
     this.measurementConsumer = measurementConsumer;

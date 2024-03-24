@@ -106,27 +106,27 @@ public class ShooterSubsystem extends SubsystemBase {
 
     targetSpeeds = new SpeakerConfig(0, 0, 0);
 
-    leftMotorOutputEntry = new DebugEntry<Double>(0.0, "Left Motor Output", this);
-    leftMotorSpeedEntry = new DebugEntry<Double>(0.0, "Left Motor Speed", this);
-    leftMotorTargetSpeedEntry = new DebugEntry<Double>(0.0, "Left Motor Target Speed", this);
-    leftMotorTemperatureEntry = new DebugEntry<Double>(0.0, "Left Motor Temperature", this);
+    leftMotorOutputEntry = new DebugEntry<Double>(0.0, "Left Motor Output", false, this);
+    leftMotorSpeedEntry = new DebugEntry<Double>(0.0, "Left Motor Speed", false, this);
+    leftMotorTargetSpeedEntry = new DebugEntry<Double>(0.0, "Left Motor Target Speed", false, this);
+    leftMotorTemperatureEntry = new DebugEntry<Double>(0.0, "Left Motor Temperature", false, this);
 
-    rightMotorOutputEntry = new DebugEntry<Double>(0.0, "Right Motor Output", this);
-    rightMotorSpeedEntry = new DebugEntry<Double>(0.0, "Right Motor Speed", this);
-    rightMotorTargetSpeedEntry = new DebugEntry<Double>(0.0, "Right Motor Target Speed", this);
-    rightMotorTemperatureEntry = new DebugEntry<Double>(0.0, "Right Motor Temperature", this);
+    rightMotorOutputEntry = new DebugEntry<Double>(0.0, "Right Motor Output", false, this);
+    rightMotorSpeedEntry = new DebugEntry<Double>(0.0, "Right Motor Speed", false, this);
+    rightMotorTargetSpeedEntry = new DebugEntry<Double>(0.0, "Right Motor Target Speed", false, this);
+    rightMotorTemperatureEntry = new DebugEntry<Double>(0.0, "Right Motor Temperature", false, this);
 
-    leftFlywheelInputEntry = new DebugEntry<Double>(0.0, "Left Flywheel Input", this);
-    leftFlywheelAngularVelocityEntry = new DebugEntry<Double>(0.0, "Left Flywheel RPM", this);
+    leftFlywheelInputEntry = new DebugEntry<Double>(0.0, "Left Flywheel Input", false, this);
+    leftFlywheelAngularVelocityEntry = new DebugEntry<Double>(0.0, "Left Flywheel RPM", false, this);
 
-    rightFlywheelInputEntry = new DebugEntry<Double>(0.0, "Right Flywheel Input", this);
-    rightFlywheelAngularVelocityEntry = new DebugEntry<Double>(0.0, "Right Flywheel RPM", this);
+    rightFlywheelInputEntry = new DebugEntry<Double>(0.0, "Right Flywheel Input", false, this);
+    rightFlywheelAngularVelocityEntry = new DebugEntry<Double>(0.0, "Right Flywheel RPM", false, this);
 
-    shooterReadyEntry = new DebugEntry<Boolean>(false, "Shooter Ready?", this);
+    shooterReadyEntry = new DebugEntry<Boolean>(false, "Shooter Ready?", false, this);
 
     shooterTab.addDouble("Left Current", shooterLeftMotor::getOutputCurrent);
     shooterTab.addDouble("Right Current", shooterRightMotor::getOutputCurrent);
-    currentCommand = new DebugEntry<String>("none", "Shooter Command", this);
+    currentCommand = new DebugEntry<String>("none", "Shooter Command", false, this);
   }
 
   @Override

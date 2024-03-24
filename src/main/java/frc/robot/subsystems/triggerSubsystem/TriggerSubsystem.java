@@ -15,7 +15,7 @@ public class TriggerSubsystem extends SubsystemBase {
     motor.restoreFactoryDefaults();
     motor.setSmartCurrentLimit(40);
     motor.setInverted(TriggerConstants.MOTOR_INVERT);
-    currentCommand = new DebugEntry<String>("none", "Trigger Command", this);
+    currentCommand = new DebugEntry<String>("none", "Trigger Command", false, this);
   }
 
   public void setSpeed(double speed) {

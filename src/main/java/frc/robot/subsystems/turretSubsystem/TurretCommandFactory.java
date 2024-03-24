@@ -51,7 +51,7 @@ public class TurretCommandFactory {
       VisionSubsystem visionSubsystem,
       Supplier<Rotation2d> rotationSupplier,
       Supplier<Translation2d> translationSupplier) {
-    limelightDistance = new DebugEntry<Double>(0D, "Limelight distance", subsystem);
+    limelightDistance = new DebugEntry<Double>(0D, "Limelight distance", false, subsystem);
     this.subsystem = subsystem;
     this.RSM = RSM;
     this.vision = visionSubsystem;

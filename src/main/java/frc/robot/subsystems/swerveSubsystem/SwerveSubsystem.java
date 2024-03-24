@@ -100,7 +100,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
       this.registerTelemetry(telemetry::realTelemetry);
     }
 
-    currentCommand = new DebugEntry<String>("none", "Current Command", this);
+    currentCommand = new DebugEntry<String>("none", "Current Command", false, this);
   }
 
   public SwerveSubsystem(

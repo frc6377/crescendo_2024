@@ -45,8 +45,8 @@ public class TestDebugEntry {
       mockedFactory
           .when(() -> DriverStation.reportError(anyString(), anyBoolean()))
           .thenCallRealMethod();
-      new DebugEntry<Double>(0.0, "test", subsystem);
-      new DebugEntry<Double>(0.0, "test", subsystem);
+      new DebugEntry<Double>(0.0, "test", false, subsystem);
+      new DebugEntry<Double>(0.0, "test", false, subsystem);
       mockedFactory.verify(() -> DriverStation.reportError(anyString(), anyBoolean()), times(1));
     }
   }
@@ -66,7 +66,7 @@ public class TestDebugEntry {
           .thenCallRealMethod();
 
       DebugEntry<Float> dut =
-          new DebugEntry<Float>(Float.valueOf((float) 10.0), "test2", subsystem);
+          new DebugEntry<Float>(Float.valueOf((float) 10.0), "test2", false, subsystem);
       mockedFactory.verify(() -> DriverStation.reportWarning(anyString(), anyBoolean()), times(1));
 
       dut.log((float) 10.0);
@@ -85,8 +85,8 @@ public class TestDebugEntry {
       mockedFactory
           .when(() -> DriverStation.reportWarning(anyString(), anyBoolean()))
           .thenCallRealMethod();
-      new DebugEntry<Double>(0.0, "test3", subsystem);
-      new DebugEntry<Double>(0.0, "test3", subsystem2);
+      new DebugEntry<Double>(0.0, "test3", false, subsystem);
+      new DebugEntry<Double>(0.0, "test3", false, subsystem2);
       mockedFactory.verify(() -> DriverStation.reportWarning(anyString(), anyBoolean()), times(0));
     } catch (IllegalArgumentException e) {
     }

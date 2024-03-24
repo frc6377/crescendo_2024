@@ -23,10 +23,12 @@ public class DebugEntry<T> {
   private Consumer<T> localConsumer;
   private final String name;
   private T lastValue;
+  private boolean compOverride = false;
 
-  public DebugEntry(T defaultValue, String name, Subsystem subsystem) {
+  public DebugEntry(T defaultValue, String name,  boolean compOverride, Subsystem subsystem) {
     this.name = name;
     this.lastValue = defaultValue;
+    this.compOverride = compOverride;
 
     // if Double
     if (defaultValue instanceof Double) {
@@ -48,7 +50,7 @@ public class DebugEntry<T> {
       DriverStation.reportWarning("Unsupported data type.", false);
     }
 
-    if (!Robot.isCompetition && localEntry != null) {
+    if ((!Robot.isCompetition || compOverride) && localEntry != null) {
       networkTab = Shuffleboard.getTab(subsystem.getName());
 
       if (!entries.containsKey(name)) {
@@ -75,7 +77,7 @@ public class DebugEntry<T> {
 
   public void log(T newValue) {
     try {
-      if (!Robot.isCompetition && lastValue != newValue) {
+      if ((!Robot.isCompetition || compOverride) && lastValue != newValue) {
         networkEntry.getEntry().setValue(newValue);
         lastValue = newValue;
       }

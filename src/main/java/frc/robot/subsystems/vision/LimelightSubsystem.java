@@ -23,11 +23,11 @@ public class LimelightSubsystem extends SubsystemBase implements VisionSubsystem
   private LimelightHelpers.LimelightResults results;
 
   private int measurementsUsed = 0;
-  private DebugEntry<Integer> measurementEntry = new DebugEntry<Integer>(0, "measurements", this);
+  private DebugEntry<Integer> measurementEntry = new DebugEntry<Integer>(0, "measurements", false, this);
   private DebugEntry<Double> distanceEntryTag3 =
-      new DebugEntry<Double>(0.0, "Tag 3 Distance (m)", this);
+      new DebugEntry<Double>(0.0, "Tag 3 Distance (m)", false, this);
   private DebugEntry<Double> distanceEntryTag4 =
-      new DebugEntry<Double>(0.0, "Tag 4 Distance (m)", this);
+      new DebugEntry<Double>(0.0, "Tag 4 Distance (m)", false, this);
 
   private int lastHeartbeat = 0;
 

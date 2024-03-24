@@ -32,7 +32,7 @@ public class RobotStateManager extends SubsystemBase {
 
   // Debug Logging
   private DebugEntry<PlacementMode> placementModeLog =
-      new DebugEntry<PlacementMode>(placementMode, "Current Placement Mode", this);
+      new DebugEntry<PlacementMode>(placementMode, "Current Placement Mode", false, this);
 
   public RobotStateManager() {
     endGameStart =
