@@ -172,9 +172,8 @@ public final class Constants {
     public static final TurretDataPoint[] TURRET_DATA = {
 
       // Verified at 6 of 6
-      // 5 deg left
+      // 5 deg left 0.393m
       new TurretDataPoint(Units.inchesToMeters(15.5), 1.69, Units.degreesToRadians(30)),
-
       // Verified at 5
       new TurretDataPoint(Units.inchesToMeters(21.75), 1.8, Units.degreesToRadians(28)),
       // Verified at 5 of 6
@@ -184,10 +183,21 @@ public final class Constants {
       // Verified at 6 of 7
       // 5 deg left
       new TurretDataPoint(Units.inchesToMeters(62), 2.65, Units.degreesToRadians(18)),
-
       // Verified at 6 of 6
       // 5 deg left
       new TurretDataPoint(Units.inchesToMeters(83), 3.11, Units.degreesToRadians(16)),
+      // Verified 5/5
+      new TurretDataPoint(0.336, 1.523, Units.degreesToRadians(32)),
+      // Verified 8/12
+      new TurretDataPoint(1.697, 2.7, Units.degreesToRadians(19)),
+      // Verified 4/6
+      new TurretDataPoint(2.53, 3.327, Units.degreesToRadians(15))
+
+      /*
+       * Real, LL, Pitch
+       * 0.328m, 1.523, 32, 5/5
+       * 1.697m, 1.693,
+       */
     };
     public static final double PITCH_TOLERANCE = 1;
   }

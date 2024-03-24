@@ -19,7 +19,6 @@ import frc.robot.Constants.TurretDataPoint;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.config.TurretZeroConfig;
 import frc.robot.stateManagement.AllianceColor;
-import frc.robot.stateManagement.RangeMode;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.DebugEntry;
@@ -146,8 +145,7 @@ public class TurretCommandFactory {
 
   public Command getAimTurretCommand() {
     if (subsystem == null) return new StartEndCommand(() -> {}, () -> {});
-    return Commands.either(
-        shortRangeShot(), longRangeShot(), () -> RSM.getRange() == RangeMode.SHORT);
+    return Commands.either(shortRangeShot(), longRangeShot(), () -> false);
   }
 
   public Command shortRangeShot() {
