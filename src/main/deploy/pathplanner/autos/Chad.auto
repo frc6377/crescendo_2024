@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.76,
-      "y": 6.5
+      "x": 0.6,
+      "y": 6.6
     },
     "rotation": 60.0
   },
@@ -66,22 +66,9 @@
                 }
               },
               {
-                "type": "race",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Speaker Intake"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 6.0
-                      }
-                    }
-                  ]
+                  "name": "Speaker Intake"
                 }
               }
             ]
