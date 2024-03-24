@@ -52,6 +52,7 @@ public class TurretCommandFactory {
       Supplier<Translation2d> translationSupplier) {
     limelightDistance = new DebugEntry<Double>(0D, "Limelight distance", subsystem);
     this.subsystem = subsystem;
+    visionRotation = new DebugEntry<Double>(0d, "Vision Angle", subsystem);
     this.RSM = RSM;
     this.vision = visionSubsystem;
     this.rotationSupplier = rotationSupplier;
@@ -172,7 +173,7 @@ public class TurretCommandFactory {
   }
 
   private void visionTracking() {
-    visionTracking(() -> new Rotation2d());
+    visionTracking(() -> odometryPointing());
   }
 
   private void visionTracking(Supplier<Rotation2d> searchingBehavior) {
@@ -197,6 +198,8 @@ public class TurretCommandFactory {
     return positionRelativeToSpeaker().getNorm();
   }
 
+  DebugEntry<Double> visionRotation;
+
   /**
    * @param targetTag the tag to search towards
    * @param searchingBehavior target rotation in degrees
@@ -206,7 +209,7 @@ public class TurretCommandFactory {
         () -> {
           double errDegrees = vision.getTurretYaw(targetTag);
           if (Double.isNaN(errDegrees)) {
-            return searchingBehavior.get().getRotations();
+            return searchingBehavior.get().getRotations() + subsystem.getTurretPos();
           }
           double err = Units.degreesToRotations(errDegrees - 4);
           return err;
@@ -289,7 +292,7 @@ public class TurretCommandFactory {
         HowdyMath.getAngleToTarget(translationSupplier.get(), targetPosition);
     final Rotation2d targetTurretAngleRelToRobot =
         targetTurretAngleRelToField.minus(rotationSupplier.get());
-    return targetTurretAngleRelToRobot;
+    return targetTurretAngleRelToRobot.times(-1);
   }
 
   public BooleanSupplier isReady() {
