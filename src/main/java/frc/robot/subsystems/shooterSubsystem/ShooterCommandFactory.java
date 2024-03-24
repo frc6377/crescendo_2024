@@ -10,12 +10,14 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
+import java.util.ArrayList;
+import java.util.Set;
 
 public class ShooterCommandFactory {
   private final ShooterSubsystem subsystem;
-  private ShuffleboardTab shooterTab = Shuffleboard.getTab("ShooterSubsystem");
-  private GenericEntry targetRPM = shooterTab.add("Target RPM", 3050).getEntry();
-  private GenericEntry rightTargetRPM = shooterTab.add("right RPM", 2250).getEntry();
+  private static ShuffleboardTab shooterTab = Shuffleboard.getTab("ShooterSubsystem");
+  private static GenericEntry targetRPM = shooterTab.add("Target RPM", 3050).getEntry();
+  private static GenericEntry rightTargetRPM = shooterTab.add("right RPM", 2250).getEntry();
 
   public ShooterCommandFactory(ShooterSubsystem subsystem) {
     this.subsystem = subsystem;
@@ -77,7 +79,8 @@ public class ShooterCommandFactory {
                 () -> {
                   subsystem.stop();
                 })
-            .withName("Idle Shooter command");
+            .withName("Idle Shooter command")
+            .asProxy();
     return command;
   }
 
@@ -91,7 +94,7 @@ public class ShooterCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
-    subsystem.setDefaultCommand(defaultCommand);
+    subsystem.setDefaultCommand(Commands.defer(() -> defaultCommand, Set.of(subsystem)));
   }
 
   public boolean isShooterReady() {
@@ -102,5 +105,16 @@ public class ShooterCommandFactory {
   public Trigger getBeamBreak() {
     if (subsystem == null) return new Trigger(() -> false);
     return subsystem.getBeamBreak();
+  }
+
+  public Command[] getCommands() {
+    ArrayList<Command> cmds = new ArrayList<Command>();
+    cmds.add(this.intakeSource());
+    cmds.add(this.intakeSourceForTime());
+    cmds.add(this.intakeSpeakerSource());
+    cmds.add(this.outtake());
+    cmds.add(this.revShooter());
+    cmds.add(this.shooterIdle());
+    return cmds.toArray(new Command[cmds.size()]);
   }
 }

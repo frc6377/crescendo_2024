@@ -145,7 +145,8 @@ public class Robot extends LoggedRobot {
       m_autonomousCommand.cancel();
     }
     // BLUE is the default, so we only need to handle RED here.
-    if (DriverStation.getAlliance().get() == Alliance.Red) {
+    if (DriverStation.getAlliance().isPresent()
+        && DriverStation.getAlliance().get() == Alliance.Red) {
       m_robotContainer.getDriveTrain().setOperatorPerspectiveForward(Rotation2d.fromRotations(0.5));
     }
   }

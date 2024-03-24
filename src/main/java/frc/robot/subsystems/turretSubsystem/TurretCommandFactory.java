@@ -5,10 +5,11 @@ import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.TurretConstants;
+import java.util.ArrayList;
+import java.util.Set;
 
 public class TurretCommandFactory {
   final TurretSubsystem subsystem;
@@ -19,30 +20,24 @@ public class TurretCommandFactory {
 
   public Command stowTurret() {
     if (subsystem == null) return Commands.none();
-    return new InstantCommand(
-            () ->
-                subsystem.setTurretPos(
-                    Math.toRadians(Constants.TurretConstants.TURRET_STOWED_ANGLE)))
-        .alongWith(
-            new InstantCommand(
-                () ->
-                    subsystem.setPitchPos(
-                        Math.toRadians(Constants.TurretConstants.PITCH_STOWED_ANGLE))))
+    return subsystem
+        .runOnce(
+            () -> {
+              subsystem.setTurretPos(Math.toRadians(Constants.TurretConstants.TURRET_STOWED_ANGLE));
+              subsystem.setPitchPos(Math.toRadians(Constants.TurretConstants.PITCH_STOWED_ANGLE));
+            })
         .withName("StowTurretCommand")
         .asProxy();
   }
 
   public Command pickup() {
     if (subsystem == null) return Commands.none();
-    return new InstantCommand(
-            () ->
-                subsystem.setTurretPos(
-                    Math.toRadians(Constants.TurretConstants.TURRET_PICKUP_ANGLE)))
-        .alongWith(
-            new InstantCommand(
-                () ->
-                    subsystem.setPitchPos(
-                        Math.toRadians(Constants.TurretConstants.PITCH_PICKUP_ANGLE))))
+    return subsystem
+        .runOnce(
+            () -> {
+              subsystem.setTurretPos(Math.toRadians(Constants.TurretConstants.TURRET_PICKUP_ANGLE));
+              subsystem.setPitchPos(Math.toRadians(Constants.TurretConstants.PITCH_PICKUP_ANGLE));
+            })
         .withName("pickup")
         .asProxy();
   }
@@ -128,6 +123,19 @@ public class TurretCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
-    subsystem.setDefaultCommand(defaultCommand);
+    subsystem.setDefaultCommand(Commands.defer(() -> defaultCommand, Set.of(subsystem)));
+  }
+
+  public Command[] getCommands() {
+    ArrayList<Command> cmds = new ArrayList<Command>();
+    cmds.add(stowTurret());
+    cmds.add(pickup());
+    cmds.add(zeroZeroing());
+    cmds.add(zeroTurretCommand());
+    cmds.add(moveUpwards());
+    cmds.add(getAimTurretCommand());
+    cmds.add(idleTurret());
+    cmds.add(testTurretCommand(0.0));
+    return cmds.toArray(new Command[cmds.size()]);
   }
 }
