@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.enabledSubsystems;
-import frc.robot.config.DynamicRobotConfig;
+import frc.robot.config.TunerConstants;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.climberSubsystem.ClimberCommandFactory;
@@ -71,8 +71,6 @@ public class RobotContainer {
 
   private final ClimberSubsystem climberSubsystem;
 
-  private final DynamicRobotConfig dynamicRobotConfig;
-
   private SendableChooser<Command> autoChooser;
   private ShuffleboardTab configTab = Shuffleboard.getTab("Config");
   private GenericEntry autoDelay =
@@ -92,7 +90,6 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    dynamicRobotConfig = new DynamicRobotConfig();
     if (enabledSubsystems.shooterEnabled) {
       shooterSubsystem = new ShooterSubsystem();
     } else {
@@ -105,7 +102,7 @@ public class RobotContainer {
       signalingSubsystem = null;
     }
     if (enabledSubsystems.drivetrainEnabled) {
-      drivetrain = dynamicRobotConfig.getTunerConstants().drivetrain;
+      drivetrain = TunerConstants.drivetrain;
     } else {
       drivetrain = null;
     }

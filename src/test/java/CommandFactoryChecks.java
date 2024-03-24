@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.config.DynamicRobotConfig;
+import frc.robot.config.TunerConstants;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.climberSubsystem.ClimberCommandFactory;
 import frc.robot.subsystems.climberSubsystem.ClimberSubsystem;
@@ -83,7 +83,7 @@ public class CommandFactoryChecks {
 
   @Test
   public void checkSwerveCmds() {
-    SwerveSubsystem sub = new DynamicRobotConfig().getTunerConstants().drivetrain;
+    SwerveSubsystem sub = TunerConstants.drivetrain;
     SwerveCommandFactory factory = new SwerveCommandFactory(sub);
     checkAllCmdFactoriesAreProxy(factory, factory.getCommands(), sub);
 
