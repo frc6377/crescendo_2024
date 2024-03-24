@@ -165,7 +165,7 @@ public class RobotContainer {
 
     if (Constants.enabledSubsystems.drivetrainEnabled) {
       registerCommands();
-      autoChooser = AutoBuilder.buildAutoChooser("Chad");
+      autoChooser = AutoBuilder.buildAutoChooser("Lucy");
       configTab.add("Auton Selection", autoChooser).withSize(3, 1);
     }
 
