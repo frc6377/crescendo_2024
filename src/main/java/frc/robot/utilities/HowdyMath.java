@@ -15,8 +15,22 @@ public class HowdyMath {
               x,
               pieceWiseDivide(
                   function.calculateZDerivative(x), function.calculateZSecondDerivative(x)));
+      System.out.printf(
+          "%7.2f, %s, %s, %s%n",
+          function.calculateZ(x),
+          formatPair(x),
+          formatPair(function.calculateZDerivative(x)),
+          formatPair(function.calculateZSecondDerivative(x)));
     }
     return x;
+  }
+
+  public static String formatPair(Pair<Double, Double> a) {
+    return String.format("(%7.2f, %7.2f)", a.getFirst(), a.getSecond());
+  }
+
+  public static double pairMagnitude(Pair<Double, Double> input) {
+    return Math.hypot(input.getFirst(), input.getSecond());
   }
 
   public static Pair<Double, Double> subtractPairs(Pair<Double, Double> a, Pair<Double, Double> b) {

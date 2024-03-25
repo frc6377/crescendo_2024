@@ -260,7 +260,8 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
             errorFunction,
             HowdyMath.poseToPair(initialPose),
             VisionConstants.GRADIENT_DESCENT_ITERATIONS);
-    return HowdyMath.translation2dFromPair(robotPosition);
+    Translation2d position = HowdyMath.translation2dFromPair(robotPosition);
+    return position;
   }
 
   private List<Pair<Integer, Measure<Distance>>> calculateDistances(

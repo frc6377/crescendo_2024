@@ -265,7 +265,7 @@ public final class Constants {
 
     public static final String MAIN_CAMERA_NAME = "Camera_Module_v1";
     public static final String TURRET_CAMERA_NAME = "Camera_Module_Turret";
-    public static final int GRADIENT_DESCENT_ITERATIONS = 1000;
+    public static final int GRADIENT_DESCENT_ITERATIONS = 50;
   }
 
   public static class ClimberConstants {

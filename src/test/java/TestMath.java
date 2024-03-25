@@ -23,7 +23,7 @@ public class TestMath {
 
   @Test
   public void testDistanceBasedOdometry() {
-    int checks = 1000;
+    int checks = 1;
     long start = System.nanoTime();
     for (int i = 0; i < checks; i++) {
       test();
@@ -33,10 +33,10 @@ public class TestMath {
   }
 
   private void test() {
-    Pose2d initialPosition = new Pose2d(10, 10, new Rotation2d());
+    Pose2d initialPosition = new Pose2d(2, 3, new Rotation2d());
     LinkedList<Pair<Translation2d, Measure<Distance>>> circles = new LinkedList<>();
-    circles.push(Pair.of(new Translation2d(1, 2), Meters.of(1)));
-    circles.push(Pair.of(new Translation2d(2, 1), Meters.of(1)));
+    circles.push(Pair.of(new Translation2d(1, 1), Meters.of(1)));
+    // circles.push(Pair.of(new Translation2d(2, 3), Meters.of(2)));
 
     LinkedList<AprilTag> aprilTags = new LinkedList<>();
     LinkedList<Pair<Integer, Measure<Distance>>> aprilTagCircles = new LinkedList<>();
@@ -53,6 +53,7 @@ public class TestMath {
 
     Translation2d position =
         PhotonSubsystem.distancesBasedEstimate(aprilTagCircles, layout, initialPosition);
+    System.out.println(position);
   }
 
   @Test
@@ -61,7 +62,6 @@ public class TestMath {
     QuadraticEquation equation = new QuadraticEquation(1, 2, center);
     Pair<Double, Double> p =
         HowdyMath.gradientDescentOfKnownEquation(equation, new Pair<Double, Double>(20d, 20d), 5);
-    System.out.println(p.getFirst() + "," + p.getSecond());
     assertTrue(
         p.getFirst() * p.getFirst()
                 + p.getSecond() * p.getSecond()
