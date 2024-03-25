@@ -24,19 +24,13 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Lucy 2"
-          }
-        },
-        {
-          "type": "parallel",
+          "type": "race",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Lucy 3"
+                  "pathName": "Lucy 2"
                 }
               },
               {
@@ -46,6 +40,68 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Lucy 3"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.02
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootLong"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Lucy 4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Speaker Intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Lucy 5"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
           }
         },
         {

@@ -379,7 +379,11 @@ public class RobotContainer {
 
   private Command shootAutonLong() {
     return Commands.deadline(
-        Commands.waitUntil(() -> shooterCommandFactory.isShooterReady())
+        Commands.waitUntil(
+                turretCommandFactory
+                    .isReady()
+                    .and(() -> shooterCommandFactory.isShooterReady())
+                    .debounce(0.25))
             .andThen(
                 triggerCommandFactory
                     .getShootCommand()

@@ -457,8 +457,7 @@ public class TurretSubsystem extends SubsystemBase {
    * @return if the turret is at its setpoint
    */
   public boolean turretAtSetPoint(Rotation2d epsilion) {
-    return Math.abs(turretPositionPIDController.getSetpoint() - turretPosition)
-        < epsilion.getRotations();
+    return Math.abs(positionErrorSupplier.getAsDouble()) < epsilion.getRotations();
   }
 
   DebugEntry<Boolean> atPitchLog = new DebugEntry<Boolean>(false, "Pitch as setpoint", this);
