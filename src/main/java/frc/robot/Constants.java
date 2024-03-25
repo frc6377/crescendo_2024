@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
+import frc.robot.subsystems.turretSubsystem.TurretCommandFactory.SearchingBehavior;
 import frc.robot.utilities.HowdyFF;
 import frc.robot.utilities.HowdyPID;
 
@@ -264,6 +265,7 @@ public final class Constants {
 
     public static final String MAIN_CAMERA_NAME = "Camera_Module_v1";
     public static final String TURRET_CAMERA_NAME = "Camera_Module_Turret";
+    public static final int GRADIENT_DESCENT_ITERATIONS = 1000;
   }
 
   public static class ClimberConstants {
@@ -328,5 +330,6 @@ public final class Constants {
   public static class CommandConstants {
     public static final double WAIT_FOR_TRAPELV = 0.2;
     public static final boolean USE_VISION_TARGETING = true;
+    public static final SearchingBehavior SEARCHING_BEHAVIOR = SearchingBehavior.STAY_STILL;
   }
 }

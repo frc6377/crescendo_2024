@@ -368,6 +368,11 @@ public class TurretSubsystem extends SubsystemBase {
     pitchPosition = calculatePitchPosition();
   }
 
+  /**
+   * Returns the turret position in radians.
+   *
+   * @return the current turret position in radians
+   */
   public double getTurretPos() {
     if (!Constants.enabledSubsystems.turretRotationEnabled) return 0;
     return turretPosition; // returns the absolute encoder position in radians

@@ -1,6 +1,10 @@
 package frc.robot.config;
 
+import edu.wpi.first.math.geometry.Pose3d;
+
 public class LimelightConfig {
+  public static final Pose3d AMP_CAMERA_DEFAULT_POSITION = null;
+  public static final Pose3d TURRET_CAMERA_DEFAULT_POSITION = null;
   public final double limelightXMeters;
   public final double limelightYMeters;
   public final double limelightZMeters;

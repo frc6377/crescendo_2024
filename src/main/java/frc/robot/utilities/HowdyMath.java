@@ -1,9 +1,40 @@
 package frc.robot.utilities;
 
+import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class HowdyMath {
+  public static Pair<Double, Double> gradientDescentOfKnownEquation(
+      Equation3d function, Pair<Double, Double> initialGuess, int iterations) {
+    Pair<Double, Double> x = initialGuess;
+    for (int i = 0; i < iterations; i++) {
+      x =
+          subtractPairs(
+              x,
+              pieceWiseDivide(
+                  function.calculateZDerivative(x), function.calculateZSecondDerivative(x)));
+    }
+    return x;
+  }
+
+  public static Pair<Double, Double> subtractPairs(Pair<Double, Double> a, Pair<Double, Double> b) {
+    return new Pair<Double, Double>(a.getFirst() - b.getFirst(), a.getSecond() - b.getSecond());
+  }
+
+  public static Pair<Double, Double> pieceWiseDivide(
+      Pair<Double, Double> a, Pair<Double, Double> b) {
+    return new Pair<Double, Double>(a.getFirst() / b.getFirst(), a.getSecond() / b.getSecond());
+  }
+
+  public interface Equation3d {
+    public double calculateZ(Pair<Double, Double> point);
+
+    public Pair<Double, Double> calculateZDerivative(Pair<Double, Double> point);
+
+    public Pair<Double, Double> calculateZSecondDerivative(Pair<Double, Double> point);
+  }
 
   public static Rotation2d getAngleToTarget(Translation2d currentPosition, Translation2d target) {
     Translation2d delta = currentPosition.minus(target);
@@ -43,5 +74,17 @@ public class HowdyMath {
     if (x1 < 0) x1 += m0;
 
     return x1;
+  }
+
+  public static Pair<Double, Double> addPairs(Pair<Double, Double> a, Pair<Double, Double> b) {
+    return new Pair<Double, Double>(a.getFirst() + b.getFirst(), a.getSecond() + b.getSecond());
+  }
+
+  public static Pair<Double, Double> poseToPair(Pose2d previousRobotPosition) {
+    return Pair.of(previousRobotPosition.getX(), previousRobotPosition.getY());
+  }
+
+  public static Translation2d translation2dFromPair(Pair<Double, Double> robotPosition) {
+    return new Translation2d(robotPosition.getFirst(), robotPosition.getSecond());
   }
 }

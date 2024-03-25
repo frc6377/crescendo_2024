@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.Constants;
+import frc.robot.Constants.CommandConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.TurretConstants;
@@ -174,7 +175,11 @@ public class TurretCommandFactory {
   }
 
   private void visionTracking() {
-    visionTracking(() -> new Rotation2d());
+    if (CommandConstants.SEARCHING_BEHAVIOR == SearchingBehavior.ODOMETRY) {
+      visionTracking(this::odometryPointing);
+    } else {
+      visionTracking(() -> Rotation2d.fromRadians(subsystem.getTurretPos()));
+    }
   }
 
   private void visionTracking(Supplier<Rotation2d> searchingBehavior) {
@@ -297,5 +302,10 @@ public class TurretCommandFactory {
   public BooleanSupplier isReady() {
     if (subsystem == null) return null;
     return () -> subsystem.pitchAtSetpoint();
+  }
+
+  public enum SearchingBehavior {
+    ODOMETRY,
+    STAY_STILL;
   }
 }
