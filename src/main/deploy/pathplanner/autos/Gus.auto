@@ -24,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "A1Sub-A2Intake"
+                  "pathName": "Gus 1"
                 }
               },
               {
@@ -52,7 +52,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "A2-Amp"
+            "pathName": "Gus 2"
           }
         },
         {
@@ -68,7 +68,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Amp-A4Intake"
+                  "pathName": "Gus 3"
                 }
               },
               {
@@ -96,7 +96,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "A4-Amp"
+            "pathName": "Gus 4"
           }
         },
         {
@@ -112,7 +112,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Amp-B4Intake"
+                  "pathName": "Gus 5"
                 }
               },
               {
@@ -140,7 +140,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "B4-B3Drop"
+            "pathName": "Gus 6"
           }
         },
         {

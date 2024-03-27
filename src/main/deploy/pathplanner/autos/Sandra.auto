@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.23,
+      "x": 1.2,
       "y": 5.55
     },
-    "rotation": 0.0
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -24,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "B1-A4Intake"
+                  "pathName": "Sandra 1"
                 }
               },
               {
@@ -34,19 +34,37 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 5.0
+                        "waitTime": 4.0
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Amp Intake"
+                        "name": "Speaker Intake"
                       }
                     }
                   ]
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Sandra 2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootLong"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Sandra 3"
           }
         }
       ]
