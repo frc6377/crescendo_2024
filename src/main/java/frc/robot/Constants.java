@@ -200,6 +200,11 @@ public final class Constants {
        */
     };
     public static final double PITCH_TOLERANCE = 1;
+
+    public class TurretZeroConfig {
+      public static final double lowGearTurretZero = Double.NaN;
+      public static final double highGearTurretZero = Double.NaN;
+    }
   }
 
   public static class OperatorConstants {
@@ -273,7 +278,7 @@ public final class Constants {
     public static final double MAX_ACCEPTABLE_ERROR_METERS = 2;
     public static final double MAX_TIME_BETWEEN_POSES_SECONDS = 0.2; // 10 periodic cycles
 
-    public static final String MAIN_CAMERA_NAME = "Camera_Module_v1";
+    public static final String MAIN_CAMERA_NAME = "Camera_Module_Main";
     public static final String TURRET_CAMERA_NAME = "Camera_Module_Turret";
   }
 
@@ -331,6 +336,12 @@ public final class Constants {
     public static final Rotation2d RED_SOURCE_ROTATION = Rotation2d.fromRotations(-0.25);
     public static final Rotation2d ABSOLUTE_POINTING_OFFSET = Rotation2d.fromRotations(0.75);
     public static final double ROTATION_DEADBAND = 0.05;
+    public static final DriveType DRIVE_TYPE = DriveType.POINT_DRIVE;
+
+    public static enum DriveType {
+      POINT_DRIVE,
+      FIELD_ORIENTED;
+    }
   }
 
   public static record TurretDataPoint(

@@ -204,8 +204,8 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
 
   public static class RotationSource implements DoubleSupplier {
     private double lastVal;
-    private Supplier<Translation2d> supplier;
-    private SwerveSubsystem subsystem;
+    private final Supplier<Translation2d> supplier;
+    private final SwerveSubsystem subsystem;
 
     public RotationSource(XboxController controller, SwerveSubsystem subsystem) {
       this.subsystem = subsystem;
@@ -226,7 +226,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
         return lastVal;
       }
       // Plus one-eighty to match the expected range of PointDrive (-180 - 180 => 0 - 360)
-      double rotation = 360 - input.getAngle().getDegrees() + 180;
+      final double rotation = 360 - input.getAngle().getDegrees() + 180;
       lastVal = rotation;
       return rotation;
     }

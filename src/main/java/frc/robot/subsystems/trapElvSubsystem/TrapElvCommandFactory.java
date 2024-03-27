@@ -194,7 +194,7 @@ public class TrapElvCommandFactory {
     return subsystem.getSourceBreak();
   }
 
-  public Command wristShooterRev() {
+  public Command shooterMoving() {
     if (subsystem == null) return Commands.none();
     return subsystem
         .startEnd(
@@ -202,7 +202,7 @@ public class TrapElvCommandFactory {
               subsystem.setWristState(TrapElvState.AMP_REV);
             },
             () -> {})
-        .withName("Pose AMP")
+        .withName("Shooter Moving")
         .asProxy();
   }
 
