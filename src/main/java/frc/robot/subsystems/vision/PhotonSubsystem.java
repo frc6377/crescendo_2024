@@ -30,6 +30,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   private int measurementsUsed = 0;
   private double lastRecordedTime = 0;
+  private double lastRecordedYawTime = 0;
   private double lastRecordedDistance = 0;
   private double lastRecordedYaw = 0;
   private DebugEntry<Double> measurementEntry = new DebugEntry<Double>(0.0, "measurements", this);
@@ -131,18 +132,18 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       List<PhotonTrackedTarget> targets = turretResult.getTargets();
       for (PhotonTrackedTarget target : targets) {
         if (target.getFiducialId() == id) {
-          lastRecordedTime = turretResult.getTimestampSeconds();
+          lastRecordedYawTime = turretResult.getTimestampSeconds();
           lastRecordedYaw = target.getYaw();
           return lastRecordedYaw;
         }
       }
     }
-    if (lastRecordedTime != 0
-        && lastRecordedTime + Constants.LimelightConstants.APRILTAG_STALE_TIME
+    if (lastRecordedYawTime != 0
+        && lastRecordedYawTime + Constants.LimelightConstants.APRILTAG_STALE_TIME
             < Timer.getFPGATimestamp()) {
       return lastRecordedYaw;
     } else {
-      lastRecordedTime = 0;
+      lastRecordedYawTime = 0;
       lastRecordedYaw = 0;
       return Double.NaN;
     }
