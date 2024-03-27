@@ -131,6 +131,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       List<PhotonTrackedTarget> targets = turretResult.getTargets();
       for (PhotonTrackedTarget target : targets) {
         if (target.getFiducialId() == id) {
+          lastRecordedTime = turretResult.getTimestampSeconds();
           lastRecordedYaw = target.getYaw();
           return lastRecordedYaw;
         }
