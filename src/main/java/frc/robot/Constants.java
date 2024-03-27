@@ -273,7 +273,7 @@ public final class Constants {
     public static final double MAX_ACCEPTABLE_ERROR_METERS = 2;
     public static final double MAX_TIME_BETWEEN_POSES_SECONDS = 0.2; // 10 periodic cycles
 
-    public static final String MAIN_CAMERA_NAME = "Camera_Module_v1";
+    public static final String MAIN_CAMERA_NAME = "Camera_Module_Main";
     public static final String TURRET_CAMERA_NAME = "Camera_Module_Turret";
   }
 

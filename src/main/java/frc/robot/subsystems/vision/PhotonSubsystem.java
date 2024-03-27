@@ -145,7 +145,6 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
         if (target.getFiducialId() == id) {
           double ang =
               target.getPitch() + Units.radiansToDegrees(limelightConfig.limelightPitchRadians);
-          System.out.println("ang:" + ang);
           lastRecordedTime = turretResult.getTimestampSeconds();
           lastRecordedDistance =
               FieldConstants.SPEAKER_TAG_HEIGHT_METERS / Math.tan(Math.toRadians(ang));
