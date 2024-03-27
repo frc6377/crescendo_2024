@@ -107,6 +107,20 @@ public class SignalingSubsystem extends SubsystemBase {
     rumbleTimer.start();
   }
 
+  public void startAmpSignal() {
+    startSignal(10, Constants.OperatorConstants.RUMBLE_STRENGTH, RGB.RED);
+  }
+
+  public void startShooterSignal() {
+    startSignal(10, Constants.OperatorConstants.RUMBLE_STRENGTH, RGB.BLUE);
+  }
+
+  public void endSignal() {
+    rumbleTimer.reset();
+    driverRumbleConsumer.accept(0.0);
+    resetLEDs();
+  }
+
   private void setFullStrip(final RGB rgb) {
     setSection(rgb, 0, numberOfLEDS);
   }
