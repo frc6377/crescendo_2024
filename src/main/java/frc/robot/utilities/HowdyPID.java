@@ -48,32 +48,29 @@ public class HowdyPID {
   }
 
   public void createTunableNumbers(String name, CANSparkMax motor, Subsystem subsystem) {
-    // this.tuneP =
-    //     new TunableNumber(
-    //         name.concat(" P"), this.P, p -> motor.getPIDController().setP(p), subsystem);
-    // this.tuneI =
-    //     new TunableNumber(
-    //         name.concat(" I"), this.I, i -> motor.getPIDController().setI(i), subsystem);
-    // this.tuneD =
-    //     new TunableNumber(
-    //         name.concat(" D"), this.D, d -> motor.getPIDController().setD(d), subsystem);
-    // this.tuneIz =
-    //     new TunableNumber(
-    //         name.concat(" Iz"), this.Iz, iz -> motor.getPIDController().setIZone(iz), subsystem);
-    // this.tuneFF =
-    //     new TunableNumber(
-    //         name.concat(" FF"), this.FF, ff -> motor.getPIDController().setFF(ff), subsystem);
+    this.tuneP =
+        new TunableNumber(
+            name.concat(" P"), this.P, p -> motor.getPIDController().setP(p), subsystem);
+    this.tuneI =
+        new TunableNumber(
+            name.concat(" I"), this.I, i -> motor.getPIDController().setI(i), subsystem);
+    this.tuneD =
+        new TunableNumber(
+            name.concat(" D"), this.D, d -> motor.getPIDController().setD(d), subsystem);
+    this.tuneIz =
+        new TunableNumber(
+            name.concat(" Iz"), this.Iz, iz -> motor.getPIDController().setIZone(iz), subsystem);
+    this.tuneFF =
+        new TunableNumber(
+            name.concat(" FF"), this.FF, ff -> motor.getPIDController().setFF(ff), subsystem);
   }
 
   public void createTunableNumbers(String name, PIDController controller, Subsystem subsystem) {
-    // this.tuneP = new TunableNumber(name.concat(" P"), this.P, p -> controller.setP(p),
-    // subsystem);
-    // this.tuneI = new TunableNumber(name.concat(" I"), this.I, i -> controller.setI(i),
-    // subsystem);
-    // this.tuneD = new TunableNumber(name.concat(" D"), this.D, d -> controller.setD(d),
-    // subsystem);
-    // this.tuneIz =
-    //     new TunableNumber(name.concat(" Iz"), this.Iz, iz -> controller.setIZone(iz), subsystem);
+    this.tuneP = new TunableNumber(name.concat(" P"), this.P, p -> controller.setP(p), subsystem);
+    this.tuneI = new TunableNumber(name.concat(" I"), this.I, i -> controller.setI(i), subsystem);
+    this.tuneD = new TunableNumber(name.concat(" D"), this.D, d -> controller.setD(d), subsystem);
+    this.tuneIz =
+        new TunableNumber(name.concat(" Iz"), this.Iz, iz -> controller.setIZone(iz), subsystem);
   }
 
   public void setSparkPidController(CANSparkMax motor) {

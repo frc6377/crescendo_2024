@@ -17,8 +17,6 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.TurretDataPoint;
-import frc.robot.config.DynamicRobotConfig;
-import frc.robot.config.TurretZeroConfig;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
@@ -129,9 +127,6 @@ public class TurretCommandFactory {
               MagnetSensorConfigs newCfgHighGear = new MagnetSensorConfigs();
               newCfgHighGear.withMagnetOffset(highGearOffset);
               highGearCANcoderConfigurator.apply(newCfgHighGear);
-
-              DynamicRobotConfig dynamicConfig = new DynamicRobotConfig();
-              dynamicConfig.saveTurretZero(new TurretZeroConfig(lowGearOffset, highGearOffset));
             },
             subsystem)
         .withName("zeroZeroing");

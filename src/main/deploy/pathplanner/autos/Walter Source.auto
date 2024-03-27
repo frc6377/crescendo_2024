@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2,
-      "y": 5.55
+      "x": 0.6,
+      "y": 4.5
     },
-    "rotation": 0
+    "rotation": -60.0
   },
   "command": {
     "type": "sequential",
@@ -24,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "SanAn 2 note intake"
+                  "pathName": "Walter Source 1"
                 }
               },
               {
@@ -34,37 +34,19 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 4.0
+                        "waitTime": 5.0
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Speaker Intake"
+                        "name": "Amp Intake"
                       }
                     }
                   ]
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "SanAn 2 note Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShootLong"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "SanAn 2 note dodge"
           }
         }
       ]

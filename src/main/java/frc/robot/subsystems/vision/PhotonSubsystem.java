@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Robot;
-import frc.robot.config.DynamicRobotConfig;
 import frc.robot.config.LimelightConfig;
 import frc.robot.utilities.DebugEntry;
 import java.util.List;
@@ -30,12 +29,12 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   private int measurementsUsed = 0;
   private double lastRecordedTime = 0;
+  private double lastRecordedYawTime = 0;
   private double lastRecordedDistance = 0;
+  private double lastRecordedYaw = 0;
   private DebugEntry<Double> measurementEntry = new DebugEntry<Double>(0.0, "measurements", this);
 
   private final BiConsumer<Pose2d, Double> measurementConsumer;
-  private DynamicRobotConfig dynamicRobotConfig;
-  private LimelightConfig limelightConfig;
   private Transform3d robotToCam;
 
   private PhotonCamera mainCamera;
@@ -53,19 +52,17 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
 
   public PhotonSubsystem(BiConsumer<Pose2d, Double> measurementConsumer) {
     this.measurementConsumer = measurementConsumer;
-    this.dynamicRobotConfig = new DynamicRobotConfig();
-    limelightConfig = dynamicRobotConfig.getLimelightConfig();
     lastPose = new EstimatedRobotPose(new Pose3d(), 0, null, null);
     robotToCam =
         new Transform3d(
             new Translation3d(
-                limelightConfig.limelightXMeters,
-                limelightConfig.limelightYMeters,
-                limelightConfig.limelightZMeters),
+                LimelightConfig.limelightXMeters,
+                LimelightConfig.limelightYMeters,
+                LimelightConfig.limelightZMeters),
             new Rotation3d(
-                limelightConfig.limelightRollRadians,
-                limelightConfig.limelightPitchRadians,
-                limelightConfig.limelightYawRadians));
+                LimelightConfig.limelightRollRadians,
+                LimelightConfig.limelightPitchRadians,
+                LimelightConfig.limelightYawRadians));
     mainCamera = new PhotonCamera(Constants.VisionConstants.MAIN_CAMERA_NAME);
     turretCamera = new PhotonCamera(Constants.VisionConstants.TURRET_CAMERA_NAME);
     mainResult = mainCamera.getLatestResult();
@@ -130,11 +127,21 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       List<PhotonTrackedTarget> targets = turretResult.getTargets();
       for (PhotonTrackedTarget target : targets) {
         if (target.getFiducialId() == id) {
-          return target.getYaw();
+          lastRecordedYawTime = turretResult.getTimestampSeconds();
+          lastRecordedYaw = target.getYaw();
+          return lastRecordedYaw;
         }
       }
     }
-    return Double.NaN;
+    if (lastRecordedYawTime != 0
+        && lastRecordedYawTime + Constants.LimelightConstants.APRILTAG_STALE_TIME
+            < Timer.getFPGATimestamp()) {
+      return lastRecordedYaw;
+    } else {
+      lastRecordedYawTime = 0;
+      lastRecordedYaw = 0;
+      return Double.NaN;
+    }
   }
 
   public double getDistance(int id) {
@@ -143,8 +150,8 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       List<PhotonTrackedTarget> targets = turretResult.getTargets();
       for (PhotonTrackedTarget target : targets) {
         if (target.getFiducialId() == id) {
-          double ang =
-              target.getPitch() + Units.radiansToDegrees(limelightConfig.limelightPitchRadians);
+          final double ang =
+              target.getPitch() + Units.radiansToDegrees(LimelightConfig.limelightPitchRadians);
           lastRecordedTime = turretResult.getTimestampSeconds();
           lastRecordedDistance =
               FieldConstants.SPEAKER_TAG_HEIGHT_METERS / Math.tan(Math.toRadians(ang));
@@ -161,10 +168,6 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       lastRecordedDistance = 0;
       return Double.NaN;
     }
-  }
-
-  private double angleToDistanceSpeakerTag(Rotation2d theta) {
-    return FieldConstants.SPEAKER_TAG_HEIGHT_METERS / theta.getTan();
   }
 
   public void periodic() {

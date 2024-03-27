@@ -76,7 +76,7 @@ public class OI {
     public static final Control latchClimber =
         new Control(XboxController.Button.kB, "Latch Climber", controller);
     public static final Control simple =
-        new Control(XboxController.Button.kX, "Dumb Behavior", controller);
+        new Control(XboxController.Button.kX, "Test Behavior", controller);
     public static final Control prepClimb =
         new Control(XboxController.Button.kY, "Prepare Climb", controller);
 
