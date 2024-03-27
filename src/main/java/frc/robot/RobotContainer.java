@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -23,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CommandConstants;
 import frc.robot.Constants.DriverConstants;
-import frc.robot.Constants.DriverConstants.DriveType;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.enabledSubsystems;
 import frc.robot.config.TunerConstants;
@@ -202,14 +202,20 @@ public class RobotContainer {
     final DoubleSupplier direction =
         drivetrainCommandFactory.createRotationSource(OI.Driver.controller, drivetrain);
 
-    if (DriverConstants.DRIVE_TYPE == DriveType.FIELD_ORIENTED) {
-      drivetrainCommandFactory.setDefaultCommand(
-          drivetrainCommandFactory.fieldOrientedDrive(input).withName("Field Oriented Drive"));
-    } else {
-      drivetrainCommandFactory.setDefaultCommand(
-          drivetrainCommandFactory
-              .pointDrive(direction, SwerveSubsystem.scrubRotation(input))
-              .withName("Field Oriented Drive"));
+    switch (DriverConstants.DRIVE_TYPE) {
+      case FIELD_ORIENTED:
+        drivetrainCommandFactory.setDefaultCommand(
+            drivetrainCommandFactory.fieldOrientedDrive(input).withName("Field Oriented Drive"));
+        break;
+      case POINT_DRIVE:
+        drivetrainCommandFactory.setDefaultCommand(
+            drivetrainCommandFactory
+                .pointDrive(direction, SwerveSubsystem.scrubRotation(input))
+                .withName("Point Drive"));
+        break;
+      default:
+        DriverStation.reportWarning("Unknown Drive Type Selected.", false);
+        break;
     }
     trapElvCommandFactory.setDefaultCommand(trapElvCommandFactory.stowTrapElvCommand());
 
@@ -237,7 +243,7 @@ public class RobotContainer {
         .whileTrue(
             Commands.either(
                 trapElvCommandFactory.positionAMP(),
-                Commands.parallel(prepareToScoreSpeaker()),
+                prepareToScoreSpeaker(),
                 robotStateManager.isAmpSupplier()));
 
     OI.getTrigger(OI.Operator.fire)
