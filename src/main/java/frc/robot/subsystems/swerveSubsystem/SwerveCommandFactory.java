@@ -307,7 +307,7 @@ public class SwerveCommandFactory {
 
   public RotationSource createRotationSource(
       XboxController controller, SwerveSubsystem drivetrain) {
-    RotationSource RS = new RotationSource(controller, drivetrain);
+    final RotationSource RS = new RotationSource(controller, drivetrain);
     rotationSources.add(RS);
     return RS;
   }
