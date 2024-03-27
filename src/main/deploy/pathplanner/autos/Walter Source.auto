@@ -2,21 +2,15 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.37,
-      "y": 6.850839379282182
+      "x": 0.6,
+      "y": 4.5
     },
-    "rotation": 0
+    "rotation": -60.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
-        {
-          "type": "path",
-          "data": {
-            "pathName": "A1-A1A2 Shoot"
-          }
-        },
         {
           "type": "named",
           "data": {
@@ -30,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "A1A2-A2 Intake"
+                  "pathName": "Walter Source 1"
                 }
               },
               {
@@ -40,31 +34,19 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 4.0
+                        "waitTime": 5.0
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Speaker Intake"
+                        "name": "Amp Intake"
                       }
                     }
                   ]
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "A2 Turn Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
           }
         }
       ]

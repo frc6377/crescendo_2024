@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.LimelightConstants;
@@ -23,7 +24,6 @@ import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.HowdyMath;
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -52,6 +52,7 @@ public class TurretCommandFactory {
       Supplier<Translation2d> translationSupplier) {
     limelightDistance = new DebugEntry<Double>(0D, "Limelight distance", subsystem);
     this.subsystem = subsystem;
+    visionRotation = new DebugEntry<Double>(0d, "Vision Angle", subsystem);
     this.RSM = RSM;
     this.vision = visionSubsystem;
     this.rotationSupplier = rotationSupplier;
@@ -172,7 +173,7 @@ public class TurretCommandFactory {
   }
 
   private void visionTracking() {
-    visionTracking(() -> new Rotation2d());
+    visionTracking(() -> odometryPointing());
   }
 
   private void visionTracking(Supplier<Rotation2d> searchingBehavior) {
@@ -197,6 +198,8 @@ public class TurretCommandFactory {
     return positionRelativeToSpeaker().getNorm();
   }
 
+  DebugEntry<Double> visionRotation;
+
   /**
    * @param targetTag the tag to search towards
    * @param searchingBehavior target rotation in degrees
@@ -206,7 +209,7 @@ public class TurretCommandFactory {
         () -> {
           double errDegrees = vision.getTurretYaw(targetTag);
           if (Double.isNaN(errDegrees)) {
-            return searchingBehavior.get().getRotations();
+            return searchingBehavior.get().getRotations() + subsystem.getTurretPos();
           }
           double err = Units.degreesToRotations(errDegrees - 4);
           return err;
@@ -289,11 +292,13 @@ public class TurretCommandFactory {
         HowdyMath.getAngleToTarget(translationSupplier.get(), targetPosition);
     final Rotation2d targetTurretAngleRelToRobot =
         targetTurretAngleRelToField.minus(rotationSupplier.get());
-    return targetTurretAngleRelToRobot;
+    return targetTurretAngleRelToRobot.times(-1);
   }
 
-  public BooleanSupplier isReady() {
+  public Trigger isReady() {
     if (subsystem == null) return null;
-    return () -> subsystem.pitchAtSetpoint();
+    return new Trigger(
+        () ->
+            subsystem.pitchAtSetpoint() && subsystem.turretAtSetPoint(Rotation2d.fromDegrees(2.5)));
   }
 }

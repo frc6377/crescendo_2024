@@ -18,13 +18,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CommandConstants;
+import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.enabledSubsystems;
+import frc.robot.Constants.DriverConstants.DriveType;
 import frc.robot.config.DynamicRobotConfig;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
@@ -166,7 +167,7 @@ public class RobotContainer {
 
     if (Constants.enabledSubsystems.drivetrainEnabled) {
       registerCommands();
-      autoChooser = AutoBuilder.buildAutoChooser();
+      autoChooser = AutoBuilder.buildAutoChooser("Lucy");
       configTab.add("Auton Selection", autoChooser).withSize(3, 1);
     }
 
@@ -193,7 +194,7 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Swerve config
-    Supplier<DriveRequest> input =
+    final Supplier<DriveRequest> input =
         () ->
             SwerveSubsystem.joystickCondition(
                 new DriveInput(
@@ -201,12 +202,16 @@ public class RobotContainer {
                     OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
                     OI.getAxisSupplier(OI.Driver.rotationAxis).get()),
                 OI.getButton(OI.Driver.highGear).getAsBoolean());
-    DoubleSupplier direction =
+    final DoubleSupplier direction =
         drivetrainCommandFactory.createRotationSource(OI.Driver.controller, drivetrain);
 
-    drivetrainCommandFactory.setDefaultCommand(
-        drivetrainCommandFactory.fieldOrientedDrive(input).withName("Get Axis Suppliers"));
-
+    if(DriverConstants.DRIVE_TYPE == DriveType.FIELD_ORIENTED){
+      drivetrainCommandFactory.setDefaultCommand(
+          drivetrainCommandFactory.fieldOrientedDrive(input).withName("Field Oriented Drive"));
+    }else{
+      drivetrainCommandFactory.setDefaultCommand(
+          drivetrainCommandFactory.pointDrive(direction, SwerveSubsystem.scrubRotation(input)).withName("Field Oriented Drive"));
+    }
     trapElvCommandFactory.setDefaultCommand(trapElvCommandFactory.stowTrapElvCommand());
 
     shooterCommandFactory.setDefaultCommand(shooterCommandFactory.shooterIdle());
@@ -215,7 +220,7 @@ public class RobotContainer {
 
     turretCommandFactory.setDefaultCommand(turretCommandFactory.idleTurret());
 
-    TunableNumber turretTestPitch =
+    final TunableNumber turretTestPitch =
         new TunableNumber("Turret Test Pitch", 0d, (a) -> {}, turretSubsystem);
     OI.getTrigger(OI.Driver.lockAmp)
         .whileTrue(
@@ -225,9 +230,6 @@ public class RobotContainer {
         .whileTrue(drivetrainCommandFactory.pointDrive(robotStateManager.getSourceAngle(), input));
     OI.getTrigger(OI.Driver.lockSpeaker)
         .whileTrue(drivetrainCommandFactory.pointDrive(robotStateManager.getSpeakerAngle(), input));
-
-    OI.getButton(OI.Operator.retractClimber)
-        .whileTrue(turretCommandFactory.testTurretCommand(turretTestPitch));
 
     OI.getButton(OI.Driver.resetRotationButton)
         .onTrue(drivetrainCommandFactory.zeroDriveTrain().withName("Put Pose & Rotation on Field"));
@@ -253,7 +255,7 @@ public class RobotContainer {
 
     OI.getButton(OI.Operator.latchClimber).onTrue(climberCommandFactory.clip());
 
-    // OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
+    OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
 
     new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
     new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());
@@ -299,19 +301,19 @@ public class RobotContainer {
             Commands.startEnd(
                 () -> OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
                 () -> OI.Operator.setRumble(0)));
-    // shooterCommandFactory
-    //     .getBeamBreak()
-    //     .and(new Trigger(() -> OI.Operator.controller.getPOV() == 00))
-    //     .whileTrue(
-    //         Commands.startEnd(
-    //             () -> {
-    //               OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);
-    //               OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);
-    //             },
-    //             () -> {
-    //               OI.Driver.setRumble(0);
-    //               OI.Operator.setRumble(0);
-    //             }));
+    shooterCommandFactory
+        .getBeamBreak()
+        .and(new Trigger(() -> OI.Operator.controller.getPOV() == 00))
+        .whileTrue(
+            Commands.startEnd(
+                () -> {
+                  OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);
+                  OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);
+                },
+                () -> {
+                  OI.Driver.setRumble(0);
+                  OI.Operator.setRumble(0);
+                }));
   }
 
   private Command speakerSource() {
@@ -321,7 +323,7 @@ public class RobotContainer {
 
   private Command intakeSpeaker() {
     return Commands.parallel(
-        intakeCommandFactory.getSpeakerIntakeCommand(),
+        intakeCommandFactory.getSpeakerIntakeCommand().until(shooterCommandFactory.getBeamBreak()),
         triggerCommandFactory.getGroundLoadCommand(shooterCommandFactory.getBeamBreak()));
   }
 
@@ -350,21 +352,21 @@ public class RobotContainer {
         Commands.waitSeconds(CommandConstants.WAIT_FOR_TRAPELV)
             .andThen(turretCommandFactory.getAimTurretCommand()),
         shooterCommandFactory.revShooter(),
-        trapElvCommandFactory.wristShooterRev());
+        trapElvCommandFactory.shooterMoving());
   }
 
   private Command prepareToScoreSpeakerShortRange_AUTON_ONLY() {
     return Commands.parallel(
         turretCommandFactory.shortRangeShot().asProxy(),
         shooterCommandFactory.revShooter(),
-        trapElvCommandFactory.wristShooterRev());
+        trapElvCommandFactory.shooterMoving());
   }
 
   private Command prepareToScoreSpeakerLongRange_AUTON_ONLY() {
     return Commands.parallel(
         turretCommandFactory.longRangeShot().asProxy(),
         shooterCommandFactory.revShooter(),
-        trapElvCommandFactory.wristShooterRev());
+        trapElvCommandFactory.shooterMoving());
   }
 
   private Command shootAutonShort() {
@@ -380,19 +382,16 @@ public class RobotContainer {
 
   private Command shootAutonLong() {
     return Commands.deadline(
-        Commands.waitUntil(() -> shooterCommandFactory.isShooterReady())
+        Commands.waitUntil(
+                turretCommandFactory
+                    .isReady()
+                    .and(() -> shooterCommandFactory.isShooterReady())
+                    .debounce(0.25))
             .andThen(
                 triggerCommandFactory
                     .getShootCommand()
                     .until(shooterCommandFactory.getBeamBreak().negate().debounce(.25))),
         prepareToScoreSpeakerLongRange_AUTON_ONLY());
-  }
-
-  private Command ampAuton() {
-    return null; // return Commands.parallel(
-    //     trapElvCommandFactory.positionAMP(),
-    //     Commands.waitUntil(trapElvSubsystem.isAMPReady())
-    //         .andThen(trapElvCommandFactory.scoreAMP()));
   }
 
   // Register commands for auton
@@ -406,7 +405,6 @@ public class RobotContainer {
       autonCommands.put("Speaker Intake", intakeSpeaker().asProxy());
       autonCommands.put("Amp Intake", intakeAmp());
     }
-    autonCommands.put("Intake", new InstantCommand(() -> {}, new Subsystem[] {}));
 
     NamedCommands.registerCommands(autonCommands);
   }

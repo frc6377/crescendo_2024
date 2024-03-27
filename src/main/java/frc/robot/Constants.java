@@ -262,7 +262,7 @@ public final class Constants {
     public static final double FIELD_HALF_WIDTH = 3.837865;
     public static final double TAG_Y_POS = 1.451102;
     public static final double TAG_HEIGHT = 0.4572;
-    public static final double APRILTAG_STALE_TIME = .25;
+    public static final double APRILTAG_STALE_TIME = 1;
 
     public static final int SPEAKER_TAG_ID_RED = 4;
     public static final int SPEAKER_TAG_ID_BLUE = 7;
@@ -331,6 +331,12 @@ public final class Constants {
     public static final Rotation2d RED_SOURCE_ROTATION = Rotation2d.fromRotations(-0.25);
     public static final Rotation2d ABSOLUTE_POINTING_OFFSET = Rotation2d.fromRotations(0.75);
     public static final double ROTATION_DEADBAND = 0.05;
+    public static final DriveType DRIVE_TYPE = DriveType.POINT_DRIVE;
+
+    public static enum DriveType{
+      POINT_DRIVE,
+      FIELD_ORIENTED;
+    }
   }
 
   public static record TurretDataPoint(
