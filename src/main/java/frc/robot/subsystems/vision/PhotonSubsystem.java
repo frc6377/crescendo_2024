@@ -29,7 +29,9 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   private int measurementsUsed = 0;
   private double lastRecordedTime = 0;
+  private double lastRecordedYawTime = 0;
   private double lastRecordedDistance = 0;
+  private double lastRecordedYaw = 0;
   private DebugEntry<Double> measurementEntry = new DebugEntry<Double>(0.0, "measurements", this);
 
   private final BiConsumer<Pose2d, Double> measurementConsumer;
@@ -125,11 +127,21 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       List<PhotonTrackedTarget> targets = turretResult.getTargets();
       for (PhotonTrackedTarget target : targets) {
         if (target.getFiducialId() == id) {
-          return target.getYaw();
+          lastRecordedYawTime = turretResult.getTimestampSeconds();
+          lastRecordedYaw = target.getYaw();
+          return lastRecordedYaw;
         }
       }
     }
-    return Double.NaN;
+    if (lastRecordedYawTime != 0
+        && lastRecordedYawTime + Constants.LimelightConstants.APRILTAG_STALE_TIME
+            < Timer.getFPGATimestamp()) {
+      return lastRecordedYaw;
+    } else {
+      lastRecordedYawTime = 0;
+      lastRecordedYaw = 0;
+      return Double.NaN;
+    }
   }
 
   public double getDistance(int id) {
