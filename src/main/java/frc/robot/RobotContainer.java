@@ -23,9 +23,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CommandConstants;
 import frc.robot.Constants.DriverConstants;
+import frc.robot.Constants.DriverConstants.DriveType;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.enabledSubsystems;
-import frc.robot.Constants.DriverConstants.DriveType;
 import frc.robot.config.TunerConstants;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
@@ -202,12 +202,14 @@ public class RobotContainer {
     final DoubleSupplier direction =
         drivetrainCommandFactory.createRotationSource(OI.Driver.controller, drivetrain);
 
-    if(DriverConstants.DRIVE_TYPE == DriveType.FIELD_ORIENTED){
+    if (DriverConstants.DRIVE_TYPE == DriveType.FIELD_ORIENTED) {
       drivetrainCommandFactory.setDefaultCommand(
           drivetrainCommandFactory.fieldOrientedDrive(input).withName("Field Oriented Drive"));
-    }else{
+    } else {
       drivetrainCommandFactory.setDefaultCommand(
-          drivetrainCommandFactory.pointDrive(direction, SwerveSubsystem.scrubRotation(input)).withName("Field Oriented Drive"));
+          drivetrainCommandFactory
+              .pointDrive(direction, SwerveSubsystem.scrubRotation(input))
+              .withName("Field Oriented Drive"));
     }
     trapElvCommandFactory.setDefaultCommand(trapElvCommandFactory.stowTrapElvCommand());
 

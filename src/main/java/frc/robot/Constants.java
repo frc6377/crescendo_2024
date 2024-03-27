@@ -338,7 +338,7 @@ public final class Constants {
     public static final double ROTATION_DEADBAND = 0.05;
     public static final DriveType DRIVE_TYPE = DriveType.POINT_DRIVE;
 
-    public static enum DriveType{
+    public static enum DriveType {
       POINT_DRIVE,
       FIELD_ORIENTED;
     }
