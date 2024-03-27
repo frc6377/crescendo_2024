@@ -200,6 +200,11 @@ public final class Constants {
        */
     };
     public static final double PITCH_TOLERANCE = 1;
+
+    public class TurretZeroConfig {
+      public static final double lowGearTurretZero = Double.NaN;
+      public static final double highGearTurretZero = Double.NaN;
+    }
   }
 
   public static class OperatorConstants {
