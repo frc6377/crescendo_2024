@@ -107,6 +107,10 @@ public class SignalingSubsystem extends SubsystemBase {
     rumbleTimer.start();
   }
 
+  public void startIntakeSignal() {
+    startSignal(10, Constants.OperatorConstants.RUMBLE_STRENGTH, RGB.WHITE);
+  }
+
   public void startAmpSignal() {
     startSignal(10, Constants.OperatorConstants.RUMBLE_STRENGTH, RGB.RED);
   }
