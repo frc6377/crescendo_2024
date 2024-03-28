@@ -204,8 +204,8 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
 
   public static class RotationSource implements DoubleSupplier {
     private double lastVal;
-    final private Supplier<Translation2d> supplier;
-    final private SwerveSubsystem subsystem;
+    private final Supplier<Translation2d> supplier;
+    private final SwerveSubsystem subsystem;
 
     public RotationSource(XboxController controller, SwerveSubsystem subsystem) {
       this.subsystem = subsystem;

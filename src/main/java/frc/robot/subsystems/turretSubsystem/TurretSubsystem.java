@@ -37,8 +37,6 @@ import frc.robot.Constants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.enabledSubsystems;
 import frc.robot.Robot;
-import frc.robot.config.DynamicRobotConfig;
-import frc.robot.config.TurretZeroConfig;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.DebugEntry;
@@ -150,11 +148,10 @@ public class TurretSubsystem extends SubsystemBase {
     lowGearCANcoder = new CANcoder(Constants.TurretConstants.lowGearCAN_CODER_ID);
     pitchEncoder = pitchMotor.getAbsoluteEncoder();
 
-    TurretZeroConfig zeroConfig = new DynamicRobotConfig().getTurretZeroConfig();
     MagnetSensorConfigs highGearSensorConfigs =
         new MagnetSensorConfigs()
             .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
-            .withMagnetOffset(zeroConfig.highGearTurretZero);
+            .withMagnetOffset(TurretConstants.TurretZeroConfig.highGearTurretZero);
     MagnetSensorConfigs lowGearSensorConfigs =
         new MagnetSensorConfigs()
             .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)

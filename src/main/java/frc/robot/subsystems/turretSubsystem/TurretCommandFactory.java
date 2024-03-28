@@ -13,12 +13,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
-import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.TurretDataPoint;
-import frc.robot.config.DynamicRobotConfig;
-import frc.robot.config.TurretZeroConfig;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
@@ -33,16 +30,9 @@ public class TurretCommandFactory {
   final VisionSubsystem vision;
   final Supplier<Rotation2d> rotationSupplier;
   final Supplier<Translation2d> translationSupplier;
-  static final InterpolatingDoubleTreeMap pitchMap;
+  final InterpolatingDoubleTreeMap pitchMap;
 
   DebugEntry<Double> limelightDistance;
-
-  static {
-    pitchMap = new InterpolatingDoubleTreeMap();
-    for (TurretDataPoint TDP : TurretConstants.TURRET_DATA) {
-      pitchMap.put(TDP.limelightMeters(), TDP.turretAngleRadians());
-    }
-  }
 
   public TurretCommandFactory(
       TurretSubsystem subsystem,
@@ -57,6 +47,10 @@ public class TurretCommandFactory {
     this.vision = visionSubsystem;
     this.rotationSupplier = rotationSupplier;
     this.translationSupplier = translationSupplier;
+    this.pitchMap = new InterpolatingDoubleTreeMap();
+    for (TurretDataPoint TDP : TurretConstants.TURRET_DATA) {
+      pitchMap.put(TDP.limelightMeters(), TDP.turretAngleRadians());
+    }
   }
 
   public Command stowTurret() {
@@ -129,9 +123,6 @@ public class TurretCommandFactory {
               MagnetSensorConfigs newCfgHighGear = new MagnetSensorConfigs();
               newCfgHighGear.withMagnetOffset(highGearOffset);
               highGearCANcoderConfigurator.apply(newCfgHighGear);
-
-              DynamicRobotConfig dynamicConfig = new DynamicRobotConfig();
-              dynamicConfig.saveTurretZero(new TurretZeroConfig(lowGearOffset, highGearOffset));
             },
             subsystem)
         .withName("zeroZeroing");
@@ -273,21 +264,12 @@ public class TurretCommandFactory {
     }
   }
 
-  private Translation2d speakerPosition() {
-    return RSM.getAllianceColor() == AllianceColor.RED
-        ? FieldConstants.RED_SPEAKER
-        : FieldConstants.BLUE_SPEAKER;
-  }
-
   private Translation2d positionRelativeToSpeaker() {
-    return translationSupplier.get().minus(speakerPosition());
+    return translationSupplier.get().minus(RSM.speakerPosition());
   }
 
   private Rotation2d odometryPointing() {
-    final Translation2d targetPosition =
-        RSM.getAllianceColor() == AllianceColor.RED
-            ? FieldConstants.RED_SPEAKER
-            : FieldConstants.BLUE_SPEAKER;
+    final Translation2d targetPosition = RSM.speakerPosition();
     final Rotation2d targetTurretAngleRelToField =
         HowdyMath.getAngleToTarget(translationSupplier.get(), targetPosition);
     final Rotation2d targetTurretAngleRelToRobot =

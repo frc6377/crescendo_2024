@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.stateManagement.RobotStateManager;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.NoSuchElementException;
@@ -136,7 +135,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-    // m_robotContainer.getDriveTrain().startVisionMeasures();
+    m_robotContainer.getDriveTrain().startVisionMeasures();
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
