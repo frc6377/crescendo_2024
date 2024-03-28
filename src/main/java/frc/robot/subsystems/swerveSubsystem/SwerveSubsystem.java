@@ -221,7 +221,6 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
               .rotateBy(
                   DriverConstants.ABSOLUTE_POINTING_OFFSET.plus(
                       subsystem.getOperatorPerspective()));
-      SmartDashboard.putNumber("last angle", lastVal);
       if (input.getNorm() < DriverConstants.ROTATION_DEADBAND) {
         return lastVal;
       }

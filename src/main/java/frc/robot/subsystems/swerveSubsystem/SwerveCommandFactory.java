@@ -278,7 +278,7 @@ public class SwerveCommandFactory {
     };
   }
 
-  private Command autoTargetSource(Supplier<DriveRequest> request, RobotStateManager RSM) {
+  public Command autoTargetSource(Supplier<DriveRequest> request, RobotStateManager RSM) {
     return Commands.either(
             pointInDirection(DriverConstants.RED_SOURCE_ROTATION, request),
             pointInDirection(DriverConstants.BLUE_SOURCE_ROTATION, request),
@@ -287,7 +287,7 @@ public class SwerveCommandFactory {
         .asProxy();
   }
 
-  private Command autoTargetSpeaker(Supplier<DriveRequest> request, RobotStateManager RSM) {
+  public Command autoTargetSpeaker(Supplier<DriveRequest> request, RobotStateManager RSM) {
     return Commands.either(
             pointAtLocation(FieldConstants.RED_SPEAKER, request),
             pointAtLocation(FieldConstants.BLUE_SPEAKER, request),

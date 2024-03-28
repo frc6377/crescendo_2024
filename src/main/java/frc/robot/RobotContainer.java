@@ -225,16 +225,13 @@ public class RobotContainer {
 
     turretCommandFactory.setDefaultCommand(turretCommandFactory.idleTurret());
 
-    final TunableNumber turretTestPitch =
-        new TunableNumber("Turret Test Pitch", 0d, (a) -> {}, turretSubsystem);
     OI.getTrigger(OI.Driver.lockAmp)
         .whileTrue(
-            drivetrainCommandFactory.pointInDirection(
-                FieldConstants.AMP_DIRECTION, SwerveSubsystem.scrubRotation(input)));
+            drivetrainCommandFactory.autoTargetAmp(SwerveSubsystem.scrubRotation(input), robotStateManager));
     OI.getButton(OI.Driver.lockSource)
-        .whileTrue(drivetrainCommandFactory.pointDrive(robotStateManager.getSourceAngle(), input));
+        .whileTrue(drivetrainCommandFactory.autoTargetSource(SwerveSubsystem.scrubRotation(input), robotStateManager));
     OI.getTrigger(OI.Driver.lockSpeaker)
-        .whileTrue(drivetrainCommandFactory.pointDrive(robotStateManager.getSpeakerAngle(), input));
+        .whileTrue(drivetrainCommandFactory.autoTargetSpeaker(SwerveSubsystem.scrubRotation(input), robotStateManager));
 
     OI.getButton(OI.Driver.resetRotationButton)
         .onTrue(drivetrainCommandFactory.zeroDriveTrain().withName("Put Pose & Rotation on Field"));
@@ -446,9 +443,5 @@ public class RobotContainer {
           .withName("Get Auto Command");
     }
     return null;
-  }
-
-  public RobotStateManager getRobotStateManager() {
-    return robotStateManager;
   }
 }
