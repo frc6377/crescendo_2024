@@ -29,9 +29,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   private int measurementsUsed = 0;
   private double lastRecordedTime = 0;
-  private double lastRecordedYawTime = 0;
-  private double lastRecordedDistance = 0;
-  private double lastRecordedYaw = 0;
+  private PhotonTrackedTarget lastTarget = null;
   private DebugEntry<Double> measurementEntry = new DebugEntry<Double>(0.0, "measurements", this);
 
   private final BiConsumer<Pose2d, Double> measurementConsumer;
@@ -121,25 +119,34 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
     }
   }
 
-  public double getTurretYaw(int id) {
+  public PhotonTrackedTarget getTurretLastResult(int id) {
     turretResult = turretCamera.getLatestResult();
     if (turretResult.hasTargets()) {
       List<PhotonTrackedTarget> targets = turretResult.getTargets();
       for (PhotonTrackedTarget target : targets) {
         if (target.getFiducialId() == id) {
-          lastRecordedYawTime = turretResult.getTimestampSeconds();
-          lastRecordedYaw = target.getYaw();
-          return lastRecordedYaw;
+          lastRecordedTime = turretResult.getTimestampSeconds();
+          lastTarget = target;
+          return lastTarget;
         }
       }
     }
-    if (lastRecordedYawTime != 0
-        && lastRecordedYawTime + Constants.LimelightConstants.APRILTAG_STALE_TIME_SECONDS
+    if (lastRecordedTime != 0
+        && lastRecordedTime + Constants.LimelightConstants.APRILTAG_STALE_TIME
             < Timer.getFPGATimestamp()) {
-      return lastRecordedYaw;
+      return lastTarget;
     } else {
-      lastRecordedYawTime = 0;
-      lastRecordedYaw = 0;
+      lastRecordedTime = 0;
+      lastTarget = null;
+      return null;
+    }
+  }
+
+  public double getTurretYaw(int id) {
+    PhotonTrackedTarget target = getTurretLastResult(id);
+    if (target != null) {
+      return target.getYaw();
+    } else {
       return Double.NaN;
     }
   }
@@ -147,27 +154,12 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   // FIXME: DISTANCE RETURN IS INCONSISTENT
   // AND NOT ACCURATE
   public double getDistance(int id) {
-    turretResult = turretCamera.getLatestResult();
-    if (turretResult.hasTargets()) {
-      List<PhotonTrackedTarget> targets = turretResult.getTargets();
-      for (PhotonTrackedTarget target : targets) {
-        if (target.getFiducialId() == id) {
-          final double ang =
-              target.getPitch() + Units.radiansToDegrees(LimelightConfig.limelightPitchRadians);
-          lastRecordedTime = turretResult.getTimestampSeconds();
-          lastRecordedDistance =
-              FieldConstants.SPEAKER_TAG_HEIGHT_METERS / Math.tan(Math.toRadians(ang));
-          return lastRecordedDistance;
-        }
-      }
-    }
-    if (lastRecordedTime != 0
-        && lastRecordedTime + Constants.LimelightConstants.APRILTAG_STALE_TIME_SECONDS
-            < Timer.getFPGATimestamp()) {
-      return lastRecordedDistance;
+    PhotonTrackedTarget target = getTurretLastResult(id);
+    if (target != null) {
+      final double ang =
+          target.getPitch() + Units.radiansToDegrees(limelightConfig.limelightPitchRadians);
+      return FieldConstants.SPEAKER_TAG_HEIGHT_METERS / Math.tan(Math.toRadians(ang));
     } else {
-      lastRecordedTime = 0;
-      lastRecordedDistance = 0;
       return Double.NaN;
     }
   }
