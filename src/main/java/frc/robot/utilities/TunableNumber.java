@@ -15,9 +15,8 @@ public class TunableNumber extends SubsystemBase implements DoubleSupplier {
   private double value;
   private Consumer<Double> consumer;
 
-  public TunableNumber(
-      String name, double defaultValue, Subsystem subsystem) {
-        this(name, defaultValue, (ignored) -> {}, subsystem);
+  public TunableNumber(String name, double defaultValue, Subsystem subsystem) {
+    this(name, defaultValue, (ignored) -> {}, subsystem);
   }
 
   public TunableNumber(

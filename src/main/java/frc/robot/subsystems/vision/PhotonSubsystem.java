@@ -132,7 +132,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       }
     }
     if (lastRecordedTime != 0
-        && lastRecordedTime + Constants.LimelightConstants.APRILTAG_STALE_TIME
+        && lastRecordedTime + Constants.LimelightConstants.APRILTAG_STALE_TIME_SECONDS
             < Timer.getFPGATimestamp()) {
       return lastTarget;
     } else {
@@ -157,7 +157,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
     PhotonTrackedTarget target = getTurretLastResult(id);
     if (target != null) {
       final double ang =
-          target.getPitch() + Units.radiansToDegrees(limelightConfig.limelightPitchRadians);
+          target.getPitch() + Units.radiansToDegrees(LimelightConfig.limelightPitchRadians);
       return FieldConstants.SPEAKER_TAG_HEIGHT_METERS / Math.tan(Math.toRadians(ang));
     } else {
       return Double.NaN;
