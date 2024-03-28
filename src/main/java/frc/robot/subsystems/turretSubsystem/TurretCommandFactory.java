@@ -202,7 +202,7 @@ public class TurretCommandFactory {
           if (Double.isNaN(errDegrees)) {
             return searchingBehavior.get().getRotations() + subsystem.getTurretPos();
           }
-          double err = Units.degreesToRotations(errDegrees - 4);
+          double err = Units.degreesToRotations(errDegrees);
           return err;
         });
   }

@@ -211,8 +211,8 @@ public class SwerveCommandFactory {
     return subsystem
         .runOnce(
             () -> {
-              for (RotationSource RS : rotationSources) {
-                RS.zero();
+              for (RotationSource rs : rotationSources) {
+                rs.zero();
               }
               subsystem.seedFieldRelative(
                   new Pose2d(
