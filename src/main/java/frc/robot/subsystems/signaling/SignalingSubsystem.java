@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.stateManagement.AllianceColor;
+import frc.robot.stateManagement.PlacementMode;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.signaling.patterns.FireFlyPattern;
 import frc.robot.subsystems.signaling.patterns.PatternNode;
@@ -25,7 +26,7 @@ public class SignalingSubsystem extends SubsystemBase {
   private int tick;
   private int patternTick;
   private final Timer rumbleTimer;
-  private double rumbleEndTime = 0;
+  private double rumbleEndTime = 10;
 
   private DisablePattern disablePattern = DisablePattern.getRandom();
 
@@ -59,19 +60,20 @@ public class SignalingSubsystem extends SubsystemBase {
     // Update Light Pattern
     if (DriverStation.isDisabled()) updatePattern();
 
-    isAmpModeTrigger.onFalse(runOnce(() -> setHalfStrip(RGB.RED)));
-    isAmpModeTrigger.onTrue(runOnce(() -> setHalfStrip(RGB.BLUE)));
+    isAmpModeTrigger.whileFalse(runOnce(() -> resetLEDs()));
+    isAmpModeTrigger.whileTrue(runOnce(() -> resetLEDs()));
 
     // End Signaling
     if (rumbleTimer.get() > rumbleEndTime) {
       rumbleTimer.reset();
+      rumbleTimer.stop();
       driverRumbleConsumer.accept(0.0);
       resetLEDs();
     }
   }
 
-  private void resetLEDs() {
-    setFullStrip(RGB.BLACK);
+  public void resetLEDs() {
+    setHalfStrip(robotStateManager.getPlacementMode() == PlacementMode.AMP ? RGB.BLUE : RGB.RED);
   }
 
   private RGB getColorFromAlliance(AllianceColor alliance) {
@@ -108,19 +110,20 @@ public class SignalingSubsystem extends SubsystemBase {
   }
 
   public void startIntakeSignal() {
-    startSignal(10, Constants.OperatorConstants.RUMBLE_STRENGTH, RGB.WHITE);
+    startSignal(1, Constants.OperatorConstants.RUMBLE_STRENGTH, RGB.WHITE);
   }
 
   public void startAmpSignal() {
-    startSignal(10, Constants.OperatorConstants.RUMBLE_STRENGTH, RGB.RED);
+    startSignal(1, Constants.OperatorConstants.RUMBLE_STRENGTH, RGB.RED);
   }
 
   public void startShooterSignal() {
-    startSignal(10, Constants.OperatorConstants.RUMBLE_STRENGTH, RGB.BLUE);
+    startSignal(1, Constants.OperatorConstants.RUMBLE_STRENGTH, RGB.BLUE);
   }
 
   public void endSignal() {
     rumbleTimer.reset();
+    rumbleTimer.stop();
     driverRumbleConsumer.accept(0.0);
     resetLEDs();
   }
@@ -130,7 +133,7 @@ public class SignalingSubsystem extends SubsystemBase {
   }
 
   private void setHalfStrip(final RGB rgb) {
-    resetLEDs();
+    setFullStrip(RGB.BLACK);
     for (var i = 0; i < numberOfLEDS; i += 2) {
       ledBuffer.setRGB(
           i,
@@ -221,9 +224,6 @@ public class SignalingSubsystem extends SubsystemBase {
 
   public void clearLEDs() {
     setFullStrip(RGB.BLACK);
-  }
-
-  public void displayCriticalError() {
-    // gamePieceCandle.setLEDs(255, 0, 0);
+    ledStrip.setData(ledBuffer);
   }
 }

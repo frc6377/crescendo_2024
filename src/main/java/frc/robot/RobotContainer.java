@@ -287,7 +287,7 @@ public class RobotContainer {
 
   private void configDriverFeedBack() {
     new Trigger(trapElvCommandFactory.getSourceBreak())
-        .and(() -> OI.Operator.controller.getPOV() == 0)
+        .and(() -> OI.Driver.controller.getPOV() == 0 || OI.Operator.controller.getPOV() == 0)
         .whileTrue(
             Commands.startEnd(
                 () -> signalingSubsystem.startAmpSignal(), () -> signalingSubsystem.endSignal()));
