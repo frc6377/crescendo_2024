@@ -7,6 +7,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -16,6 +17,8 @@ import frc.robot.utilities.DebugEntry;
 public class ClimberSubsystem extends SubsystemBase {
   private final CANSparkMax leftArmMotor;
   private final CANSparkMax rightArmMotor;
+  private final Servo leftServo;
+  private final Servo rightServo;
 
   private PIDState pidState;
   private ShuffleboardTab climberTab = Shuffleboard.getTab(this.getName());
@@ -31,6 +34,10 @@ public class ClimberSubsystem extends SubsystemBase {
     rightArmMotor = new CANSparkMax(ClimberConstants.RIGHT_ARM_ID, MotorType.kBrushless);
     configMotor(leftArmMotor, true);
     configMotor(rightArmMotor, false);
+    rightServo = new Servo(1);
+    leftServo = new Servo(2);
+    climberTab.add(leftServo);
+    climberTab.add(rightServo);
 
     rightArmPoseEntry =
         new DebugEntry<Double>(
@@ -65,6 +72,15 @@ public class ClimberSubsystem extends SubsystemBase {
     motor.setSmartCurrentLimit(40);
   }
 
+  protected void setRatchetMode() {
+    rightServo.set(-.5);
+    leftServo.set(.5);
+  }
+
+  protected void notRatchetMode() {
+    rightServo.set(0.0);
+    leftServo.set(0.0);
+  }
   /**
    * Positive is up, negative is down. Is even between arms.
    *
