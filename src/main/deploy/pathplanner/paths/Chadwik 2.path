@@ -3,35 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.6,
-        "y": 4.5
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 1.0180535745686892,
-        "y": 4.124382094918037
-      },
-      "isLocked": false,
-      "linkedName": "A3"
-    },
-    {
-      "anchor": {
         "x": 2.7,
         "y": 4.1
       },
-      "prevControl": {
-        "x": 1.7000000000000002,
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.2,
         "y": 4.1
+      },
+      "isLocked": false,
+      "linkedName": "B3"
+    },
+    {
+      "anchor": {
+        "x": 2.9,
+        "y": 5.55
+      },
+      "prevControl": {
+        "x": 2.9,
+        "y": 4.35
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "B3"
+      "linkedName": "B2"
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 0.5,
-      "rotationDegrees": 0,
+      "rotationDegrees": 90.0,
       "rotateFast": false
     }
   ],
@@ -45,13 +45,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 90.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Chadwik",
   "previewStartingState": {
-    "rotation": -60.0,
+    "rotation": 0,
     "velocity": 0
   },
   "useDefaultConstraints": true

@@ -104,7 +104,7 @@ public final class Constants {
     public static final int TURRET_MIN_ANGLE_DEGREES = -90;
     public static final int TURRET_MAX_ANGLE_DEGREES = 90;
 
-    public static final double TURRET_CONVERSION_FACTOR = 0.18292682926829268292682926829268;
+    public static final double TURRET_CONVERSION_FACTOR = 15/82d;
     public static final int TURRET_SMART_CURRENT_LIMIT = 60;
 
     // TODO: Change values when there's an actual real functional robot.
@@ -181,8 +181,6 @@ public final class Constants {
       // Verified at 5 of 6
       new TurretDataPoint(Units.inchesToMeters(59.5), 2.6, Units.degreesToRadians(20)),
       // Verified at 7 of 8
-      new TurretDataPoint(Units.inchesToMeters(62), 2.65, Units.degreesToRadians(18)),
-      // Verified at 6 of 7
       // 5 deg left
       new TurretDataPoint(Units.inchesToMeters(62), 2.65, Units.degreesToRadians(18)),
       // Verified at 6 of 6
@@ -269,7 +267,7 @@ public final class Constants {
     public static final double FIELD_HALF_WIDTH = 3.837865;
     public static final double TAG_Y_POS = 1.451102;
     public static final double TAG_HEIGHT = 0.4572;
-    public static final double APRILTAG_STALE_TIME = 1;
+    public static final double APRILTAG_STALE_TIME_SECONDS = 1;
 
     public static final int SPEAKER_TAG_ID_RED = 4;
     public static final int SPEAKER_TAG_ID_BLUE = 7;
