@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.utilities.DebugEntry;
 import java.util.Optional;
@@ -50,6 +51,12 @@ public class RobotStateManager extends SubsystemBase {
     if (alliance.isPresent()) {
       allianceColor = alliance.get().equals(Alliance.Red) ? AllianceColor.RED : AllianceColor.BLUE;
     }
+  }
+
+  public Translation2d speakerPosition() {
+    return this.getAllianceColor() == AllianceColor.RED
+        ? FieldConstants.RED_SPEAKER
+        : FieldConstants.BLUE_SPEAKER;
   }
 
   // Note State

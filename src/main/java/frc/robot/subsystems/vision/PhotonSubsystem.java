@@ -144,6 +144,8 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
     }
   }
 
+  // FIXME: DISTANCE RETURN IS INCONSISTENT
+  // AND NOT ACCURATE
   public double getDistance(int id) {
     turretResult = turretCamera.getLatestResult();
     if (turretResult.hasTargets()) {
