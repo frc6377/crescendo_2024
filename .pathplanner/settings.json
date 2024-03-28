@@ -2,7 +2,9 @@
   "robotWidth": 0.61,
   "robotLength": 0.61,
   "holonomicMode": true,
-  "pathFolders": [],
+  "pathFolders": [
+    "Chadwik"
+  ],
   "autoFolders": [],
   "defaultMaxVel": 2.5,
   "defaultMaxAccel": 3.0,
