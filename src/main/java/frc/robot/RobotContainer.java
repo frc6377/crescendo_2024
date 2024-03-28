@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -24,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CommandConstants;
 import frc.robot.Constants.DriverConstants;
-import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.enabledSubsystems;
 import frc.robot.config.TunerConstants;
 import frc.robot.stateManagement.AllianceColor;
@@ -49,7 +47,6 @@ import frc.robot.subsystems.turretSubsystem.TurretSubsystem;
 import frc.robot.subsystems.vision.LimelightSubsystem;
 import frc.robot.subsystems.vision.PhotonSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
-import frc.robot.utilities.TunableNumber;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.DoubleSupplier;
@@ -154,7 +151,6 @@ public class RobotContainer {
             visionSubsystem,
             drivetrain::getRotation,
             drivetrainCommandFactory::currentRobotPosition);
-    SmartDashboard.putData(turretCommandFactory.zeroZeroing());
     if (enabledSubsystems.climberEnabled) {
       climberSubsystem = new ClimberSubsystem();
     } else {
@@ -225,16 +221,18 @@ public class RobotContainer {
 
     turretCommandFactory.setDefaultCommand(turretCommandFactory.idleTurret());
 
-    final TunableNumber turretTestPitch =
-        new TunableNumber("Turret Test Pitch", 0d, (a) -> {}, turretSubsystem);
     OI.getTrigger(OI.Driver.lockAmp)
         .whileTrue(
-            drivetrainCommandFactory.pointInDirection(
-                FieldConstants.AMP_DIRECTION, SwerveSubsystem.scrubRotation(input)));
+            drivetrainCommandFactory.autoTargetAmp(
+                SwerveSubsystem.scrubRotation(input), robotStateManager));
     OI.getButton(OI.Driver.lockSource)
-        .whileTrue(drivetrainCommandFactory.pointDrive(robotStateManager.getSourceAngle(), input));
+        .whileTrue(
+            drivetrainCommandFactory.autoTargetSource(
+                SwerveSubsystem.scrubRotation(input), robotStateManager));
     OI.getTrigger(OI.Driver.lockSpeaker)
-        .whileTrue(drivetrainCommandFactory.pointDrive(robotStateManager.getSpeakerAngle(), input));
+        .whileTrue(
+            drivetrainCommandFactory.autoTargetSpeaker(
+                SwerveSubsystem.scrubRotation(input), robotStateManager));
 
     OI.getButton(OI.Driver.resetRotationButton)
         .onTrue(drivetrainCommandFactory.zeroDriveTrain().withName("Put Pose & Rotation on Field"));
@@ -360,14 +358,14 @@ public class RobotContainer {
         trapElvCommandFactory.shooterMoving());
   }
 
-  private Command prepareToScoreSpeakerShortRange_AUTON_ONLY() {
+  private Command prepareToScoreSpeakerShortRangeAutonOnly() {
     return Commands.parallel(
         turretCommandFactory.shortRangeShot().asProxy(),
         shooterCommandFactory.revShooter(),
         trapElvCommandFactory.shooterMoving());
   }
 
-  private Command prepareToScoreSpeakerLongRange_AUTON_ONLY() {
+  private Command prepareToScoreSpeakerLongRangeAutonOnly() {
     return Commands.parallel(
         turretCommandFactory.longRangeShot().asProxy(),
         shooterCommandFactory.revShooter(),
@@ -382,7 +380,7 @@ public class RobotContainer {
                     .getShootCommand()
                     .withTimeout(1)
                     .until(shooterCommandFactory.getBeamBreak().negate().debounce(.25))),
-        prepareToScoreSpeakerShortRange_AUTON_ONLY());
+        prepareToScoreSpeakerShortRangeAutonOnly());
   }
 
   private Command shootAutonLong() {
@@ -396,7 +394,7 @@ public class RobotContainer {
                 triggerCommandFactory
                     .getShootCommand()
                     .until(shooterCommandFactory.getBeamBreak().negate().debounce(.25))),
-        prepareToScoreSpeakerLongRange_AUTON_ONLY());
+        prepareToScoreSpeakerLongRangeAutonOnly());
   }
 
   // Register commands for auton
@@ -446,9 +444,5 @@ public class RobotContainer {
           .withName("Get Auto Command");
     }
     return null;
-  }
-
-  public RobotStateManager getRobotStateManager() {
-    return robotStateManager;
   }
 }

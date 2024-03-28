@@ -77,6 +77,8 @@ public final class Constants {
     public static final double INTAKE_DELAY_SEC = 0;
     public static final int BEAM_BREAK_ID = 1;
     public static final double BEAM_BREAK_THRESHOLD = 150;
+    public static final double SHOOTER_LEFT_TARGET_RPM = 3431;
+    public static final double SHOOTER_RIGHT_TARGET_RPM = 2306;
   }
 
   public static class TurretConstants {
@@ -198,6 +200,7 @@ public final class Constants {
        */
     };
     public static final double PITCH_TOLERANCE = 1;
+    public static final double SIMULATION_CG_MAGIC_NUMBER = 2;
 
     public class TurretZeroConfig {
       public static final double lowGearTurretZero = Double.NaN;

@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.SwerveDriveConstants;
@@ -221,7 +220,6 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
               .rotateBy(
                   DriverConstants.ABSOLUTE_POINTING_OFFSET.plus(
                       subsystem.getOperatorPerspective()));
-      SmartDashboard.putNumber("last angle", lastVal);
       if (input.getNorm() < DriverConstants.ROTATION_DEADBAND) {
         return lastVal;
       }

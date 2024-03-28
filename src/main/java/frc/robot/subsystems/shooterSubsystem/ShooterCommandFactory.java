@@ -1,6 +1,5 @@
 package frc.robot.subsystems.shooterSubsystem;
 
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -10,15 +9,20 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
+import frc.robot.utilities.TunableNumber;
 
 public class ShooterCommandFactory {
   private final ShooterSubsystem subsystem;
   private ShuffleboardTab shooterTab = Shuffleboard.getTab("ShooterSubsystem");
-  private GenericEntry targetRPM = shooterTab.add("Target RPM", 3050 * 1.125).getEntry();
-  private GenericEntry rightTargetRPM = shooterTab.add("right RPM", 2250 * 1.125).getEntry();
+  private TunableNumber leftTargetRPM;
+  private TunableNumber rightTargetRPM;
 
   public ShooterCommandFactory(ShooterSubsystem subsystem) {
     this.subsystem = subsystem;
+    leftTargetRPM =
+        new TunableNumber("Left RPM", ShooterConstants.SHOOTER_LEFT_TARGET_RPM, subsystem);
+    rightTargetRPM =
+        new TunableNumber("Right RPM", ShooterConstants.SHOOTER_RIGHT_TARGET_RPM, subsystem);
   }
 
   public Command intakeSource() {
@@ -58,7 +62,7 @@ public class ShooterCommandFactory {
     return new FunctionalCommand(
             () -> {
               subsystem.setShooterSpeeds(
-                  new SpeakerConfig(-1, targetRPM.getDouble(4000), rightTargetRPM.getDouble(4000)));
+                  new SpeakerConfig(-1, leftTargetRPM.get(), rightTargetRPM.get()));
             },
             () -> {},
             (a) -> {},
