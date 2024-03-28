@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.FieldConstants;
@@ -29,6 +30,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   private int measurementsUsed = 0;
   private double lastRecordedTime = 0;
+  private PhotonTrackedTarget lastTarget = null;
   private DebugEntry<Double> measurementEntry = new DebugEntry<Double>(0.0, "measurements", this);
 
   private final BiConsumer<Pose2d, Double> measurementConsumer;
@@ -129,11 +131,20 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       for (PhotonTrackedTarget target : targets) {
         if (target.getFiducialId() == id) {
           lastRecordedTime = turretResult.getTimestampSeconds();
-          return target;
+          lastTarget = target;
+          return lastTarget;
         }
       }
     }
-    return null;
+    if (lastRecordedTime != 0
+        && lastRecordedTime + Constants.LimelightConstants.APRILTAG_STALE_TIME
+            < Timer.getFPGATimestamp()) {
+      return lastTarget;
+    } else {
+      lastRecordedTime = 0;
+      lastTarget = null;
+      return null;
+    }
   }
 
   public double getTurretYaw(int id) {
