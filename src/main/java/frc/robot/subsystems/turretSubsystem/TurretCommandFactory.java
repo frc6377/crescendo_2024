@@ -221,7 +221,7 @@ public class TurretCommandFactory {
   public Command pinTurret() {
     return subsystem.run(
         () -> {
-          if (subsystem.turretAtSetPoint(TurretConstants.PIN_EPSILION)) {
+          if (subsystem.turretAtSetPoint(TurretConstants.ALLOWED_PIN_ERROR)) {
             moveToBottomOfTravel();
             // Effectivly disables the rotation motor
             subsystem.setPositionErrorSupplier(() -> 0);
@@ -247,12 +247,6 @@ public class TurretCommandFactory {
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
     subsystem.setDefaultCommand(defaultCommand);
-  }
-
-  public Command logCurrentAngle() {
-    return subsystem
-        .runOnce(() -> System.out.println(subsystem.getTurretPos()))
-        .ignoringDisable(true);
   }
 
   private void moveToBottomOfTravel() {
