@@ -169,10 +169,11 @@ public final class Constants {
         ((PITCH_MIN_ANGLE_DEGREES * PITCH_CONVERSION_FACTOR) / 360);
     public static final double PITCH_MAX_ANGLE_ROTATIONS =
         ((PITCH_MAX_ANGLE_DEGREES * PITCH_CONVERSION_FACTOR) / 360);
-    public static final Rotation2d PIN_EPSILION = Rotation2d.fromDegrees(2);
+    public static final Rotation2d ALLOWED_PIN_ERROR = Rotation2d.fromDegrees(2);
 
     public static final TurretDataPoint[] TURRET_DATA = {
-
+      // Verified 5/5
+      new TurretDataPoint(Units.inchesToMeters(13.22), 1.523, Units.degreesToRadians(32)),
       // Verified at 6 of 6
       // 5 deg left 0.393m
       new TurretDataPoint(Units.inchesToMeters(15.5), 1.69, Units.degreesToRadians(30)),
@@ -183,15 +184,13 @@ public final class Constants {
       // Verified at 7 of 8
       // 5 deg left
       new TurretDataPoint(Units.inchesToMeters(62), 2.65, Units.degreesToRadians(18)),
+      // Verified 8/12
+      new TurretDataPoint(Units.inchesToMeters(66.81), 2.7, Units.degreesToRadians(19)),
       // Verified at 6 of 6
       // 5 deg left
       new TurretDataPoint(Units.inchesToMeters(83), 3.11, Units.degreesToRadians(16)),
-      // Verified 5/5
-      new TurretDataPoint(0.336, 1.523, Units.degreesToRadians(32)),
-      // Verified 8/12
-      new TurretDataPoint(1.697, 2.7, Units.degreesToRadians(19)),
       // Verified 4/6
-      new TurretDataPoint(2.53, 3.327, Units.degreesToRadians(15))
+      new TurretDataPoint(Units.inchesToMeters(99.60), 3.327, Units.degreesToRadians(15)),
 
       /*
        * Real, LL, Pitch

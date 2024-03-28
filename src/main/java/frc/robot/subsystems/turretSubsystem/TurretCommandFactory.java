@@ -221,7 +221,7 @@ public class TurretCommandFactory {
   public Command pinTurret() {
     return subsystem.run(
         () -> {
-          if (subsystem.turretAtSetPoint(TurretConstants.PIN_EPSILION)) {
+          if (subsystem.turretAtSetPoint(TurretConstants.ALLOWED_PIN_ERROR)) {
             moveToBottomOfTravel();
             // Effectivly disables the rotation motor
             subsystem.setPositionErrorSupplier(() -> 0);
