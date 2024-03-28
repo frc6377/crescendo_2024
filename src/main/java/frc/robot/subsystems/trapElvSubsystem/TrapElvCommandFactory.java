@@ -118,6 +118,7 @@ public class TrapElvCommandFactory {
     return subsystem
         .startEnd(
             () -> {
+              subsystem.setWristState(TrapElvState.STOWED);
               subsystem.setRoller(TrapElvConstants.ROLLER_SPEED);
             },
             () -> {
@@ -191,6 +192,18 @@ public class TrapElvCommandFactory {
   public BooleanSupplier getSourceBreak() {
     // return () -> false;
     return subsystem.getSourceBreak();
+  }
+
+  public Command shooterMoving() {
+    if (subsystem == null) return Commands.none();
+    return subsystem
+        .startEnd(
+            () -> {
+              subsystem.setWristState(TrapElvState.AMP_REV);
+            },
+            () -> {})
+        .withName("Shooter Moving")
+        .asProxy();
   }
 
   public void setDefaultCommand(Command defaultCommand) {

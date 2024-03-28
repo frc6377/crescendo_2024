@@ -34,7 +34,6 @@ public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -145,8 +144,11 @@ public class Robot extends LoggedRobot {
       m_autonomousCommand.cancel();
     }
     // BLUE is the default, so we only need to handle RED here.
-    if (DriverStation.getAlliance().get() == Alliance.Red) {
+    if (DriverStation.getAlliance().isPresent()
+        && DriverStation.getAlliance().get() == Alliance.Red) {
       m_robotContainer.getDriveTrain().setOperatorPerspectiveForward(Rotation2d.fromRotations(0.5));
+    } else {
+      m_robotContainer.getDriveTrain().setOperatorPerspectiveForward(Rotation2d.fromRotations(0));
     }
   }
 

@@ -308,6 +308,14 @@ public class CANSparkMaxSim extends CANSparkMax {
   }
 
   @Override
+  public double getAppliedOutput() {
+    if (Robot.isReal()) {
+      return super.getAppliedOutput();
+    }
+    return output * RobotController.getBatteryVoltage();
+  }
+
+  @Override
   public void set(double speed) {
     super.set(speed);
     output = MathUtil.clamp(speed, -1, 1);

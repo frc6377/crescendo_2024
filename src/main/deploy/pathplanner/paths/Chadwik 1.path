@@ -3,34 +3,34 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.6,
-        "y": 6.6
+        "x": 0.67,
+        "y": 4.4
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.2143640332167438,
-        "y": 7.030182327263284
+        "x": 1.0880535745686892,
+        "y": 4.024382094918037
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "A3"
     },
     {
       "anchor": {
-        "x": 2.8,
-        "y": 7.0
+        "x": 2.6,
+        "y": 4.1
       },
       "prevControl": {
-        "x": 1.5499999999999998,
-        "y": 7.0
+        "x": 1.6,
+        "y": 4.1
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "B3"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.7,
+      "waypointRelativePos": 0.5,
       "rotationDegrees": 0,
       "rotateFast": false
     }
@@ -38,7 +38,7 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 2.5,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
@@ -49,10 +49,10 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Amp Starting Location",
+  "folder": "Chadwik",
   "previewStartingState": {
-    "rotation": 60.0,
+    "rotation": -60.0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
