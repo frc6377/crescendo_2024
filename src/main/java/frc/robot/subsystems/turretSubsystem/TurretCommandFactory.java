@@ -249,12 +249,6 @@ public class TurretCommandFactory {
     subsystem.setDefaultCommand(defaultCommand);
   }
 
-  public Command logCurrentAngle() {
-    return subsystem
-        .runOnce(() -> System.out.println(subsystem.getTurretPos()))
-        .ignoringDisable(true);
-  }
-
   private void moveToBottomOfTravel() {
     subsystem.setTurretPos(0);
     if (subsystem.getPitch() > 0.05) {
