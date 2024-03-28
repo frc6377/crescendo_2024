@@ -192,7 +192,8 @@ public class TurretSubsystem extends SubsystemBase {
                   * Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY
                   * Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY
                   / 3,
-              Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY / 2.0,
+              Constants.TurretConstants.SHOOTER_CENTER_OF_GRAVITY
+                  / TurretConstants.SIMULATION_CG_MAGIC_NUMBER,
               Math.toRadians(Constants.TurretConstants.PITCH_MIN_ANGLE_DEGREES),
               Math.toRadians(Constants.TurretConstants.PITCH_MAX_ANGLE_DEGREES),
               true,
@@ -230,10 +231,6 @@ public class TurretSubsystem extends SubsystemBase {
   /** Will calculate the current turret position and update encoders and motors off of it. */
   public void zeroTurret() {
     if (!Constants.enabledSubsystems.turretRotationEnabled) return;
-    // double lowGearPosition = lowGearCANcoder.getAbsolutePosition().getValue().doubleValue();
-    // double highGearPosition = highGearCANcoder.getAbsolutePosition().getValue().doubleValue();
-    // Rotation2d turretRotation = encoderPositionsToTurretRotation(lowGearPosition,
-    // highGearPosition);
     Rotation2d turretRotation = new Rotation2d();
 
     lowGearCANcoder.setPosition(
