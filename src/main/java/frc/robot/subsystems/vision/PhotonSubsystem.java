@@ -134,7 +134,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       }
     }
     if (lastRecordedYawTime != 0
-        && lastRecordedYawTime + Constants.LimelightConstants.APRILTAG_STALE_TIME
+        && lastRecordedYawTime + Constants.LimelightConstants.APRILTAG_STALE_TIME_SECONDS
             < Timer.getFPGATimestamp()) {
       return lastRecordedYaw;
     } else {
@@ -162,7 +162,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       }
     }
     if (lastRecordedTime != 0
-        && lastRecordedTime + Constants.LimelightConstants.APRILTAG_STALE_TIME
+        && lastRecordedTime + Constants.LimelightConstants.APRILTAG_STALE_TIME_SECONDS
             < Timer.getFPGATimestamp()) {
       return lastRecordedDistance;
     } else {
