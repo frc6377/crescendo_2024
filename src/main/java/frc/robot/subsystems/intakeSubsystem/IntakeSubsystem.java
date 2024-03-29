@@ -5,11 +5,8 @@
 package frc.robot.subsystems.intakeSubsystem;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
@@ -39,14 +36,20 @@ public class IntakeSubsystem extends SubsystemBase {
     chooserMotorCurrentLimits = new CurrentLimitsConfigs();
 
     intakeMotorCurrentLimits.withSupplyCurrentLimitEnable(true);
-    intakeMotorCurrentLimits.withSupplyCurrentLimit(Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_LIMIT);
-    intakeMotorCurrentLimits.withSupplyCurrentThreshold(Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_THRESHOLD);
-    intakeMotorCurrentLimits.withSupplyTimeThreshold(Constants.IntakeConstants.INTAKE_MOTORS_THRESHOLD_TIME);
+    intakeMotorCurrentLimits.withSupplyCurrentLimit(
+        Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_LIMIT);
+    intakeMotorCurrentLimits.withSupplyCurrentThreshold(
+        Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_THRESHOLD);
+    intakeMotorCurrentLimits.withSupplyTimeThreshold(
+        Constants.IntakeConstants.INTAKE_MOTORS_THRESHOLD_TIME);
 
     chooserMotorCurrentLimits.withSupplyCurrentLimitEnable(true);
-    chooserMotorCurrentLimits.withSupplyCurrentLimit(Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_LIMIT);
-    chooserMotorCurrentLimits.withSupplyCurrentThreshold(Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_THRESHOLD);
-    chooserMotorCurrentLimits.withSupplyTimeThreshold(Constants.IntakeConstants.INTAKE_MOTORS_THRESHOLD_TIME);
+    chooserMotorCurrentLimits.withSupplyCurrentLimit(
+        Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_LIMIT);
+    chooserMotorCurrentLimits.withSupplyCurrentThreshold(
+        Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_THRESHOLD);
+    chooserMotorCurrentLimits.withSupplyTimeThreshold(
+        Constants.IntakeConstants.INTAKE_MOTORS_THRESHOLD_TIME);
 
     intakeMotorConfigurator.apply(intakeMotorCurrentLimits);
     chooserMotorConfigurator.apply(chooserMotorCurrentLimits);
