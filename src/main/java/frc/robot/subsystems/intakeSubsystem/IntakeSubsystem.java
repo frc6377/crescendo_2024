@@ -35,21 +35,17 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeMotorCurrentLimits = new CurrentLimitsConfigs();
     chooserMotorCurrentLimits = new CurrentLimitsConfigs();
 
-    intakeMotorCurrentLimits.withSupplyCurrentLimitEnable(true);
-    intakeMotorCurrentLimits.withSupplyCurrentLimit(
-        Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_LIMIT);
-    intakeMotorCurrentLimits.withSupplyCurrentThreshold(
-        Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_THRESHOLD);
-    intakeMotorCurrentLimits.withSupplyTimeThreshold(
-        Constants.IntakeConstants.INTAKE_MOTORS_THRESHOLD_TIME);
+    intakeMotorCurrentLimits
+        .withSupplyCurrentLimitEnable(true)
+        .withSupplyCurrentLimit(Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_LIMIT)
+        .withSupplyCurrentThreshold(Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_THRESHOLD)
+        .withSupplyTimeThreshold(Constants.IntakeConstants.INTAKE_MOTORS_THRESHOLD_TIME);
 
-    chooserMotorCurrentLimits.withSupplyCurrentLimitEnable(true);
-    chooserMotorCurrentLimits.withSupplyCurrentLimit(
-        Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_LIMIT);
-    chooserMotorCurrentLimits.withSupplyCurrentThreshold(
-        Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_THRESHOLD);
-    chooserMotorCurrentLimits.withSupplyTimeThreshold(
-        Constants.IntakeConstants.INTAKE_MOTORS_THRESHOLD_TIME);
+    chooserMotorCurrentLimits
+        .withSupplyCurrentLimitEnable(true)
+        .withSupplyCurrentLimit(Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_LIMIT)
+        .withSupplyCurrentThreshold(Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_THRESHOLD)
+        .withSupplyTimeThreshold(Constants.IntakeConstants.INTAKE_MOTORS_THRESHOLD_TIME);
 
     intakeMotorConfigurator.apply(intakeMotorCurrentLimits);
     chooserMotorConfigurator.apply(chooserMotorCurrentLimits);
