@@ -401,13 +401,21 @@ public class RobotContainer {
         prepareToScoreSpeakerLongRangeAutonOnly());
   }
 
+  private Command ampAuton() {
+    return Commands.parallel(
+        trapElvCommandFactory.positionAMP(),
+        Commands.waitUntil(trapElvCommandFactory.getSourceBreak())
+            .andThen(trapElvCommandFactory.scoreAMP())
+            .onlyWhile(trapElvCommandFactory.getSourceBreak()));
+  }
+
   // Register commands for auton
   public void registerCommands() {
     HashMap<String, Command> autonCommands = new HashMap<String, Command>();
 
-    autonCommands.put("Shoot", shootAutonShort());
+    autonCommands.put("ShootShort", shootAutonShort());
     autonCommands.put("ShootLong", shootAutonLong());
-    // autonCommands.put("Amp", ampAuton());
+    autonCommands.put("Amp", ampAuton());
     if (Constants.enabledSubsystems.intakeEnabled) {
       autonCommands.put("Speaker Intake", intakeSpeaker().asProxy());
       autonCommands.put("Amp Intake", intakeAmp());

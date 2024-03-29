@@ -305,7 +305,7 @@ public class ShooterSubsystem extends SubsystemBase {
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT);
 
   public Trigger getBeamBreak() {
-    return new Trigger(beamBreak::get);
+    return new Trigger(beamBreak::isBeamBroke);
   }
 
   public void stop() {
