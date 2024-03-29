@@ -19,13 +19,18 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.OI;
 import frc.robot.Robot;
 import frc.robot.Telemetry;
+import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.LimelightHelpers;
 import java.util.function.BiConsumer;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements subsystem so it can be used
@@ -34,23 +39,25 @@ import java.util.function.BiConsumer;
 public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   private static final double kSimLoopPeriod = 0.005; // 5 ms
   public static final double maxSpeed = Units.feetToMeters(18.2); // Desired top speed
-  public static final double maxAngularRate =
-      Math.PI * 4; // Max angular velocity in radians per second
+  public static final double maxAngularRate = Math.PI * 10; // Max angular velocity in rads/sec
   private final double drivetrainRadius;
   private final Telemetry telemetry = new Telemetry(maxSpeed);
 
   private static boolean isFieldOriented = true;
-  private static Rotation2d alignmentRotation = null;
 
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
   private SwerveDriveKinematics kinematics;
+
+  private DebugEntry<String> currentCommand;
+  private boolean acceptVisionMeasures = false;
 
   public SwerveSubsystem(
       SwerveDrivetrainConstants driveTrainConstants,
       double OdometryUpdateFrequency,
       SwerveModuleConstants... modules) {
     super(driveTrainConstants, OdometryUpdateFrequency, modules);
+
     if (Utils.isSimulation()) {
       startSimThread();
     }
@@ -91,6 +98,8 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     } else {
       this.registerTelemetry(telemetry::realTelemetry);
     }
+
+    currentCommand = new DebugEntry<String>("none", "Current Command", this);
   }
 
   public SwerveSubsystem(
@@ -115,12 +124,18 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     m_simNotifier.startPeriodic(kSimLoopPeriod);
   }
 
+  public Rotation2d getRotation() {
+    return getState().Pose.getRotation();
+  }
+
   private ChassisSpeeds getChassisSpeeds() {
     return kinematics.toChassisSpeeds(super.getState().ModuleStates);
   }
 
   public BiConsumer<Pose2d, Double> getVisionMeasurementConsumer() {
-    return (t, u) -> addVisionMeasurement(t, u);
+    return (t, u) -> {
+      if (acceptVisionMeasures) addVisionMeasurement(t, u);
+    };
   }
 
   public SwerveRequest getBrakeRequest() {
@@ -177,5 +192,62 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     }
   }
 
+  @Override
+  public void periodic() {
+    if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
+  }
+
+  private Rotation2d getOperatorPerspective() {
+    return m_operatorForwardDirection;
+  }
+
+  public static class RotationSource implements DoubleSupplier {
+    private double lastVal;
+    private final Supplier<Translation2d> supplier;
+    private final SwerveSubsystem subsystem;
+
+    public RotationSource(XboxController controller, SwerveSubsystem subsystem) {
+      this.subsystem = subsystem;
+      supplier = () -> new Translation2d(controller.getRightX(), controller.getRightY());
+      lastVal = subsystem.getState().Pose.getRotation().getDegrees();
+    }
+
+    @Override
+    public double getAsDouble() {
+      Translation2d input =
+          supplier
+              .get()
+              .rotateBy(
+                  DriverConstants.ABSOLUTE_POINTING_OFFSET.plus(
+                      subsystem.getOperatorPerspective()));
+      if (input.getNorm() < DriverConstants.ROTATION_DEADBAND) {
+        return lastVal;
+      }
+      // Plus one-eighty to match the expected range of PointDrive (-180 - 180 => 0 - 360)
+      final double rotation = 360 - input.getAngle().getDegrees() + 180;
+      lastVal = rotation;
+      return rotation;
+    }
+
+    public void zero() {
+      this.lastVal = 0;
+    }
+  }
+
+  public static Supplier<DriveRequest> scrubRotation(Supplier<DriveRequest> input) {
+    return () -> {
+      DriveRequest in = input.get();
+      return new DriveRequest(in.xSpeed, in.ySpeed, 0);
+    };
+  }
+
   public record DriveInput(double x, double y, double alpha) {}
+
+  public void stopVisionMeasures() {
+    acceptVisionMeasures = false;
+  }
+
+  public void startVisionMeasures() {
+    acceptVisionMeasures = true;
+  }
 }
