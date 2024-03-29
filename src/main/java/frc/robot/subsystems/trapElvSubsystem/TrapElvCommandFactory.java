@@ -231,6 +231,7 @@ public class TrapElvCommandFactory {
     cmds.add(this.intakeFromSourceForTime());
     cmds.add(this.intakeFromGroundForTime(0.1));
     cmds.add(this.intakeFromSourceForTime(0.1));
+    cmds.add(this.shooterMoving());
     return cmds.toArray(new Command[cmds.size()]);
   }
 }

@@ -326,6 +326,8 @@ public class SwerveCommandFactory {
     cmds.add(pointAtLocation(new Translation2d(), () -> new DriveRequest(0, 0, 0)));
     cmds.add(pointInDirection(new Rotation2d(), () -> new DriveRequest(0, 0, 0)));
     cmds.add(pointDrive(() -> 0.0, () -> new DriveRequest(0, 0, 0)));
+    cmds.add(this.rotationDrive(() -> new Rotation2d(), () -> new DriveRequest(0, 0, 0)));
+    cmds.add(this.autoTargetSource(() -> new DriveRequest(0, 0, 0), new RobotStateManager()));
     return cmds.toArray(new Command[cmds.size()]);
   }
 }

@@ -21,10 +21,12 @@ public class ShooterCommandFactory {
 
   public ShooterCommandFactory(ShooterSubsystem subsystem) {
     this.subsystem = subsystem;
-    leftTargetRPM =
-        new TunableNumber("Left RPM", ShooterConstants.SHOOTER_LEFT_TARGET_RPM, subsystem);
-    rightTargetRPM =
-        new TunableNumber("Right RPM", ShooterConstants.SHOOTER_RIGHT_TARGET_RPM, subsystem);
+    if (subsystem != null) {
+      leftTargetRPM =
+          new TunableNumber("Left RPM", ShooterConstants.SHOOTER_LEFT_TARGET_RPM, subsystem);
+      rightTargetRPM =
+          new TunableNumber("Right RPM", ShooterConstants.SHOOTER_RIGHT_TARGET_RPM, subsystem);
+    }
   }
 
   public Command intakeSource() {
