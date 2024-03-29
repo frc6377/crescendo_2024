@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems.intakeSubsystem;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
@@ -14,21 +17,29 @@ import frc.robot.utilities.DebugEntry;
 
 public class IntakeSubsystem extends SubsystemBase {
   private final TalonFX intakeMotor;
-  private final CANSparkMax chooserMotor;
+  private final TalonFX chooserMotor;
+
+  private final TalonFXConfigurator intakeMotorConfigurator;
+  private final CurrentLimitsConfigs intakeMotorCurrentLimits;
+
   private DebugEntry<Double> intakeOutput;
   private DebugEntry<Double> chooserOutput;
   private DebugEntry<String> currentCommand;
 
   public IntakeSubsystem() {
-    intakeMotor = new TalonFX(Constants.IntakeConstants.INTAKE_MOTOR_ID, "rio");
-    chooserMotor =
-        new CANSparkMax(
-            Constants.IntakeConstants.INTAKE_CHOOSER_ID, MotorType.kBrushless); // NEO Motor
+    intakeMotor = new TalonFX(Constants.IntakeConstants.INTAKE_MOTOR_ID, "rio"); // Kraken
+    chooserMotor = new TalonFX(Constants.IntakeConstants.INTAKE_CHOOSER_ID, "rio"); // Falcon
 
-    chooserMotor.restoreFactoryDefaults();
-    // intakeMotor.config
-    chooserMotor.setSmartCurrentLimit(40);
-    chooserMotor.setInverted(true);
+    intakeMotorConfigurator = intakeMotor.getConfigurator();
+
+    intakeMotorCurrentLimits = new CurrentLimitsConfigs();
+    intakeMotorCurrentLimits.withSupplyCurrentLimitEnable(true);
+    intakeMotorCurrentLimits.withSupplyCurrentLimit(24);
+    intakeMotorCurrentLimits.withSupplyCurrentThreshold(30);
+    intakeMotorCurrentLimits.withSupplyTimeThreshold(0.5);
+
+    intakeMotorConfigurator.apply(intakeMotorCurrentLimits);
+    
     intakeOutput = new DebugEntry<Double>(0.0, "Intake Motor Ouput", this);
     chooserOutput = new DebugEntry<Double>(0.0, "Chooser Motor Output", this);
     currentCommand = new DebugEntry<String>("none", "Intake Command", this);
@@ -74,7 +85,7 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     intakeOutput.log(intakeMotor.get());
-    chooserOutput.log(chooserMotor.getAppliedOutput());
+    chooserOutput.log(chooserMotor.get());
     if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
     else currentCommand.log("none");
   }
