@@ -57,8 +57,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   private double scoringMotorOffset;
 
   // Beam Breaks
-  private final TOFSensorSimple sourceBreak;
-  private final DigitalInput groundBreak;
+  private final TOFSensorSimple wristBeamBreak;
 
   // Limit Switches
   private DigitalInput baseLimit;
@@ -68,7 +67,6 @@ public class TrapElvSubsystem extends SubsystemBase {
   private final SparkAbsoluteEncoder wristEncoder;
 
   private DebugEntry<Boolean> sourceLog;
-  private DebugEntry<Boolean> groundLog;
   private DebugEntry<Boolean> baseLog;
   private DebugEntry<Boolean> scoringLog;
 
@@ -91,7 +89,6 @@ public class TrapElvSubsystem extends SubsystemBase {
   private DebugEntry<Double> wristGoal;
   private DebugEntry<String> wristStateEntry;
   private DebugEntry<String> wristCurrentCommand;
-  private DebugEntry<String> currentWristStateEntry;
 
   private double FF;
 
@@ -158,9 +155,8 @@ public class TrapElvSubsystem extends SubsystemBase {
     rollerMotor = new CANSparkMax(TrapElvConstants.ROLLER_MOTOR_ID, MotorType.kBrushed);
     rollerMotor.restoreFactoryDefaults();
 
-    sourceBreak =
+    wristBeamBreak =
         new TOFSensorSimple(TrapElvConstants.SOURCE_BREAK_ID, TrapElvConstants.BREAK_THRESHOLD_MM);
-    groundBreak = new DigitalInput(TrapElvConstants.GROUND_BREAK_ID);
 
     currentWristState = TrapElvState.STOWED;
 
@@ -262,31 +258,22 @@ public class TrapElvSubsystem extends SubsystemBase {
         new DebugEntry<Double>(0.0, "Wrist Motor Output", this).withPosition(2, 1).withSize(2, 1);
     FFOutput = new DebugEntry<Double>(0.0, "FF Output", this).withPosition(5, 1).withSize(2, 1);
     sourceLog =
-        new DebugEntry<Boolean>(sourceBreak.isBeamBroke(), "Source BB", this).withPosition(0, 2);
-    groundLog = new DebugEntry<Boolean>(groundBreak.get(), "Ground BB", this).withPosition(1, 2);
+        new DebugEntry<Boolean>(wristBeamBreak.isBeamBroke(), "Source BB", this).withPosition(0, 2);
     isWristRollerRunning = new DebugEntry<Boolean>(false, "Wrist Rollers", this).withPosition(2, 2);
 
     wristCurrentCommand = new DebugEntry<String>("none", "Wrist Command", this).withPosition(4, 4);
   }
 
   // Boolean Suppliers
-  public BooleanSupplier getSourceBreak() {
-
-    return () -> sourceBreak.isBeamBroke();
-  }
-
-  public BooleanSupplier getGroundBreak() {
-
-    return () -> groundBreak.get();
+  public BooleanSupplier getWristBeamBreak() {
+    return () -> wristBeamBreak.isBeamBroke();
   }
 
   public BooleanSupplier getBaseLimit() {
-
     return () -> baseLimit.get();
   }
 
   public BooleanSupplier getScoringLimit() {
-
     return () -> scoringLimit.get();
   }
 
@@ -349,8 +336,7 @@ public class TrapElvSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     wristPositionEntry.log(getWristEncoderPos());
-    sourceLog.log(sourceBreak.isBeamBroke());
-    groundLog.log(groundBreak.get());
+    sourceLog.log(wristBeamBreak.isBeamBroke());
 
     FF = wristFeedforward.calculate(Units.rotationsToRadians(getWristEncoderPos()), 0);
 
@@ -367,7 +353,7 @@ public class TrapElvSubsystem extends SubsystemBase {
 
     if (isElv) {
       baseLog.log(baseLimit.get());
-      scoringLog.log(sourceBreak.isBeamBroke());
+      scoringLog.log(wristBeamBreak.isBeamBroke());
     }
 
     if (this.getCurrentCommand() != null)

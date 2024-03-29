@@ -157,7 +157,7 @@ public class TrapElvCommandFactory {
   public Command wristintakeSource() {
     if (subsystem == null) return Commands.none();
     return intakeSource()
-        .until(subsystem.getSourceBreak())
+        .until(subsystem.getWristBeamBreak())
         .andThen(Commands.print("0.25s left").andThen(intakeFromSourceForTime()))
         .withName("wristIntakeSource")
         .asProxy();
@@ -193,7 +193,7 @@ public class TrapElvCommandFactory {
 
   public BooleanSupplier getSourceBreak() {
     if (subsystem == null) return () -> true;
-    return subsystem.getSourceBreak();
+    return subsystem.getWristBeamBreak();
   }
 
   public Command shooterMoving() {
