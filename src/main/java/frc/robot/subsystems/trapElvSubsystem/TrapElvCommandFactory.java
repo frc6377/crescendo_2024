@@ -8,7 +8,6 @@ import frc.robot.Constants;
 import frc.robot.Constants.TrapElvConstants;
 import frc.robot.subsystems.trapElvSubsystem.TrapElvSubsystem.TrapElvState;
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.function.BooleanSupplier;
 
 public class TrapElvCommandFactory {
@@ -210,7 +209,7 @@ public class TrapElvCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
-    subsystem.setDefaultCommand(Commands.defer(() -> defaultCommand, Set.of(subsystem)));
+    subsystem.setDefaultCommand(Commands.sequence(subsystem.runOnce(() -> {}), defaultCommand));
   }
 
   public Command[] getCommands() {

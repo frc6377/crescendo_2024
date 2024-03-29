@@ -11,7 +11,6 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
 import frc.robot.utilities.TunableNumber;
 import java.util.ArrayList;
-import java.util.Set;
 
 public class ShooterCommandFactory {
   private final ShooterSubsystem subsystem;
@@ -100,7 +99,7 @@ public class ShooterCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
-    subsystem.setDefaultCommand(Commands.defer(() -> defaultCommand, Set.of(subsystem)));
+    subsystem.setDefaultCommand(Commands.sequence(subsystem.runOnce(() -> {}), defaultCommand));
   }
 
   public boolean isShooterReady() {
