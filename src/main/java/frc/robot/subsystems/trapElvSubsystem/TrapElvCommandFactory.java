@@ -189,7 +189,7 @@ public class TrapElvCommandFactory {
   }
 
   public BooleanSupplier getSourceBreak() {
-    // return () -> false;
+    if (subsystem == null) return () -> false;
     return subsystem.getSourceBreak();
   }
 

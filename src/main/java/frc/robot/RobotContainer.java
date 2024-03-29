@@ -227,11 +227,14 @@ public class RobotContainer {
 
     OI.getButton(OI.Driver.speakerSource).whileTrue(speakerSource());
 
-    OI.getButton(OI.Operator.prepClimb).onTrue(climberCommandFactory.raise());
+    OI.getButton(OI.Operator.climbSafety)
+        .and(OI.getButton(OI.Operator.advanceClimbStage))
+        .onTrue(climberCommandFactory.initalRaise());
 
-    OI.getButton(OI.Operator.latchClimber).onTrue(climberCommandFactory.clip());
-
-    OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
+    OI.getButton(OI.Operator.climbSafety)
+        .negate()
+        .and(OI.getButton(OI.Operator.advanceClimbStage))
+        .onTrue(climberCommandFactory.advanceClimbStage());
 
     new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
     new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());
