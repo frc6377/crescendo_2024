@@ -3,6 +3,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -133,11 +135,17 @@ public class CommandFactoryChecks {
 
   @Test
   public void checkTurretCmds() {
-    TurretSubsystem sub = new TurretSubsystem(new RobotStateManager(), new VisionSubsystem() {});
-    TurretCommandFactory factory = new TurretCommandFactory(sub);
+    RobotStateManager rsm = new RobotStateManager();
+    VisionSubsystem visionSub = new VisionSubsystem() {};
+    TurretSubsystem sub = new TurretSubsystem(rsm, visionSub);
+    TurretCommandFactory factory =
+        new TurretCommandFactory(
+            sub, rsm, visionSub, () -> new Rotation2d(), () -> new Translation2d());
     checkAllCmdFactoriesAreProxy(factory, factory.getCommands(), sub);
 
-    factory = new TurretCommandFactory(null);
+    factory =
+        new TurretCommandFactory(
+            null, rsm, visionSub, () -> new Rotation2d(), () -> new Translation2d());
     checkCmdNullSafety(factory::getCommands);
   }
 
