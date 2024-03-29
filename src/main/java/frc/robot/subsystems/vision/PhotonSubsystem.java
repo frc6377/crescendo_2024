@@ -8,10 +8,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Robot;
-import frc.robot.config.DynamicRobotConfig;
 import frc.robot.config.LimelightConfig;
 import frc.robot.utilities.DebugEntry;
 import java.util.List;
@@ -26,11 +28,11 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   private int measurementsUsed = 0;
+  private double lastRecordedTime = 0;
+  private PhotonTrackedTarget lastTarget = null;
   private DebugEntry<Double> measurementEntry = new DebugEntry<Double>(0.0, "measurements", this);
 
   private final BiConsumer<Pose2d, Double> measurementConsumer;
-  private DynamicRobotConfig dynamicRobotConfig;
-  private LimelightConfig limelightConfig;
   private Transform3d robotToCam;
 
   private PhotonCamera mainCamera;
@@ -48,19 +50,17 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
 
   public PhotonSubsystem(BiConsumer<Pose2d, Double> measurementConsumer) {
     this.measurementConsumer = measurementConsumer;
-    this.dynamicRobotConfig = new DynamicRobotConfig();
-    limelightConfig = dynamicRobotConfig.getLimelightConfig();
     lastPose = new EstimatedRobotPose(new Pose3d(), 0, null, null);
     robotToCam =
         new Transform3d(
             new Translation3d(
-                limelightConfig.limelightXMeters,
-                limelightConfig.limelightYMeters,
-                limelightConfig.limelightZMeters),
+                LimelightConfig.limelightXMeters,
+                LimelightConfig.limelightYMeters,
+                LimelightConfig.limelightZMeters),
             new Rotation3d(
-                limelightConfig.limelightRollRadians,
-                limelightConfig.limelightPitchRadians,
-                limelightConfig.limelightYawRadians));
+                LimelightConfig.limelightRollRadians,
+                LimelightConfig.limelightPitchRadians,
+                LimelightConfig.limelightYawRadians));
     mainCamera = new PhotonCamera(Constants.VisionConstants.MAIN_CAMERA_NAME);
     turretCamera = new PhotonCamera(Constants.VisionConstants.TURRET_CAMERA_NAME);
     mainResult = mainCamera.getLatestResult();
@@ -119,30 +119,49 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
     }
   }
 
-  public double getTurretYaw(int id) {
+  public PhotonTrackedTarget getTurretLastResult(int id) {
     turretResult = turretCamera.getLatestResult();
     if (turretResult.hasTargets()) {
       List<PhotonTrackedTarget> targets = turretResult.getTargets();
       for (PhotonTrackedTarget target : targets) {
         if (target.getFiducialId() == id) {
-          return target.getYaw();
+          lastRecordedTime = turretResult.getTimestampSeconds();
+          lastTarget = target;
+          return lastTarget;
         }
       }
     }
-    return 0;
+    if (lastRecordedTime != 0
+        && lastRecordedTime + Constants.LimelightConstants.APRILTAG_STALE_TIME_SECONDS
+            < Timer.getFPGATimestamp()) {
+      return lastTarget;
+    } else {
+      lastRecordedTime = 0;
+      lastTarget = null;
+      return null;
+    }
   }
 
-  public double getTurretPitch(int id) {
-    turretResult = turretCamera.getLatestResult();
-    if (turretResult.hasTargets()) {
-      List<PhotonTrackedTarget> targets = turretResult.getTargets();
-      for (PhotonTrackedTarget target : targets) {
-        if (target.getFiducialId() == id) {
-          return target.getPitch();
-        }
-      }
+  public double getTurretYaw(int id) {
+    PhotonTrackedTarget target = getTurretLastResult(id);
+    if (target != null) {
+      return target.getYaw();
+    } else {
+      return Double.NaN;
     }
-    return 0;
+  }
+
+  // FIXME: DISTANCE RETURN IS INCONSISTENT
+  // AND NOT ACCURATE
+  public double getDistance(int id) {
+    PhotonTrackedTarget target = getTurretLastResult(id);
+    if (target != null) {
+      final double ang =
+          target.getPitch() + Units.radiansToDegrees(LimelightConfig.limelightPitchRadians);
+      return FieldConstants.SPEAKER_TAG_HEIGHT_METERS / Math.tan(Math.toRadians(ang));
+    } else {
+      return Double.NaN;
+    }
   }
 
   public void periodic() {

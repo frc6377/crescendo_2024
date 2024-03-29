@@ -27,7 +27,6 @@ public class DebugEntry<T> {
   public DebugEntry(T defaultValue, String name, Subsystem subsystem) {
     this.name = name;
     this.lastValue = defaultValue;
-
     // if Double
     if (defaultValue instanceof Double) {
       localEntry = datalog.start("/" + subsystem.getName() + "/" + name, "double");

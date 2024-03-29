@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.6,
-      "y": 6.6
+      "x": 0.67,
+      "y": 4.4
     },
-    "rotation": 60.0
+    "rotation": -60.0
   },
   "command": {
     "type": "sequential",
@@ -24,23 +24,23 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "A1Sub-A2Intake"
+                  "pathName": "Chadwik 1"
                 }
               },
               {
-                "type": "deadline",
+                "type": "race",
                 "data": {
                   "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Speaker Intake"
+                      }
+                    },
                     {
                       "type": "wait",
                       "data": {
                         "waitTime": 2.0
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Amp Intake"
                       }
                     }
                   ]
@@ -50,15 +50,9 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "A2-Amp"
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "Amp"
+            "name": "Shoot"
           }
         },
         {
@@ -68,23 +62,23 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Amp-A4Intake"
+                  "pathName": "Chadwik 2"
                 }
               },
               {
-                "type": "deadline",
+                "type": "race",
                 "data": {
                   "commands": [
                     {
-                      "type": "wait",
+                      "type": "named",
                       "data": {
-                        "waitTime": 3.0
+                        "name": "Speaker Intake"
                       }
                     },
                     {
-                      "type": "named",
+                      "type": "wait",
                       "data": {
-                        "name": "Amp Intake"
+                        "waitTime": 2.0
                       }
                     }
                   ]
@@ -94,15 +88,9 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "A4-Amp"
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "Amp"
+            "name": "Shoot"
           }
         },
         {
@@ -112,23 +100,23 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Amp-B4Intake"
+                  "pathName": "Chadwik 3"
                 }
               },
               {
-                "type": "deadline",
+                "type": "race",
                 "data": {
                   "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Speaker Intake"
+                      }
+                    },
                     {
                       "type": "wait",
                       "data": {
                         "waitTime": 2.0
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Amp Intake"
                       }
                     }
                   ]
@@ -138,15 +126,9 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "B4-B3Drop"
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "Amp"
+            "name": "Shoot"
           }
         }
       ]

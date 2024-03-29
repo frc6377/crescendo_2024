@@ -1,5 +1,7 @@
 package frc.robot.stateManagement;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -7,9 +9,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.LimelightConstants;
 import frc.robot.utilities.DebugEntry;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
 public class RobotStateManager extends SubsystemBase {
   // Alliance Color
@@ -24,6 +29,7 @@ public class RobotStateManager extends SubsystemBase {
 
   // Placement Mode
   private PlacementMode placementMode = PlacementMode.SPEAKER;
+  private RangeMode range = RangeMode.SHORT;
 
   // Debug Logging
   private DebugEntry<PlacementMode> placementModeLog =
@@ -40,14 +46,17 @@ public class RobotStateManager extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (allianceColor == AllianceColor.UNKNOWN) {
-      Optional<Alliance> alliance = DriverStation.getAlliance();
-      if (alliance.isPresent()) {
-        String test = alliance.get().toString();
-        allianceColor =
-            alliance.get().equals(Alliance.Red) ? AllianceColor.RED : AllianceColor.BLUE;
-      }
+
+    Optional<Alliance> alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      allianceColor = alliance.get().equals(Alliance.Red) ? AllianceColor.RED : AllianceColor.BLUE;
     }
+  }
+
+  public Translation2d speakerPosition() {
+    return this.getAllianceColor() == AllianceColor.RED
+        ? FieldConstants.RED_SPEAKER
+        : FieldConstants.BLUE_SPEAKER;
   }
 
   // Note State
@@ -89,5 +98,45 @@ public class RobotStateManager extends SubsystemBase {
 
   public Command setSpeakerMode() {
     return runOnce(() -> setPlacementMode(PlacementMode.SPEAKER));
+  }
+
+  public int getSpeakerCenterTag() {
+    if (getAllianceColor() == AllianceColor.RED) {
+      return LimelightConstants.SPEAKER_TAG_ID_RED;
+    } else if (getAllianceColor() == AllianceColor.BLUE) {
+      return LimelightConstants.SPEAKER_TAG_ID_BLUE;
+    }
+    return -1;
+  }
+
+  // Ranging Control
+
+  public void setLongRange() {
+    this.range = RangeMode.LONG;
+  }
+
+  public void setShortRange() {
+    this.range = RangeMode.SHORT;
+  }
+
+  public RangeMode getRange() {
+    return range;
+  }
+
+  private Translation2d allianceCorrect(Translation2d input) {
+    if (allianceColor == AllianceColor.RED) {
+      return new Translation2d(input.getX(), -input.getY());
+    }
+    return input;
+  }
+
+  public DoubleSupplier getSourceAngle() {
+    return () ->
+        allianceCorrect(new Translation2d(1, Rotation2d.fromDegrees(-35))).getAngle().getDegrees();
+  }
+
+  public DoubleSupplier getSpeakerAngle() {
+    return () ->
+        allianceCorrect(new Translation2d(1, Rotation2d.fromDegrees(0))).getAngle().getDegrees();
   }
 }
