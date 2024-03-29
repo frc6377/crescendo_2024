@@ -16,11 +16,13 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.utilities.DebugEntry;
 
 public class IntakeSubsystem extends SubsystemBase {
-  private final TalonFX intakeMotor;
-  private final TalonFX chooserMotor;
+  private final TalonFX intakeMotor; // Kraken
+  private final TalonFX chooserMotor; // Falcon
 
   private final TalonFXConfigurator intakeMotorConfigurator;
+  private final TalonFXConfigurator chooserMotorConfigurator;
   private final CurrentLimitsConfigs intakeMotorCurrentLimits;
+  private final CurrentLimitsConfigs chooserMotorCurrentLimits;
 
   private DebugEntry<Double> intakeOutput;
   private DebugEntry<Double> chooserOutput;
@@ -31,15 +33,24 @@ public class IntakeSubsystem extends SubsystemBase {
     chooserMotor = new TalonFX(Constants.IntakeConstants.INTAKE_CHOOSER_ID, "rio"); // Falcon
 
     intakeMotorConfigurator = intakeMotor.getConfigurator();
+    chooserMotorConfigurator = chooserMotor.getConfigurator();
 
     intakeMotorCurrentLimits = new CurrentLimitsConfigs();
+    chooserMotorCurrentLimits = new CurrentLimitsConfigs();
+
     intakeMotorCurrentLimits.withSupplyCurrentLimitEnable(true);
-    intakeMotorCurrentLimits.withSupplyCurrentLimit(24);
-    intakeMotorCurrentLimits.withSupplyCurrentThreshold(30);
-    intakeMotorCurrentLimits.withSupplyTimeThreshold(0.5);
+    intakeMotorCurrentLimits.withSupplyCurrentLimit(Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_LIMIT);
+    intakeMotorCurrentLimits.withSupplyCurrentThreshold(Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_THRESHOLD);
+    intakeMotorCurrentLimits.withSupplyTimeThreshold(Constants.IntakeConstants.INTAKE_MOTORS_THRESHOLD_TIME);
+
+    chooserMotorCurrentLimits.withSupplyCurrentLimitEnable(true);
+    chooserMotorCurrentLimits.withSupplyCurrentLimit(Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_LIMIT);
+    chooserMotorCurrentLimits.withSupplyCurrentThreshold(Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_THRESHOLD);
+    chooserMotorCurrentLimits.withSupplyTimeThreshold(Constants.IntakeConstants.INTAKE_MOTORS_THRESHOLD_TIME);
 
     intakeMotorConfigurator.apply(intakeMotorCurrentLimits);
-    
+    chooserMotorConfigurator.apply(chooserMotorCurrentLimits);
+
     intakeOutput = new DebugEntry<Double>(0.0, "Intake Motor Ouput", this);
     chooserOutput = new DebugEntry<Double>(0.0, "Chooser Motor Output", this);
     currentCommand = new DebugEntry<String>("none", "Intake Command", this);
