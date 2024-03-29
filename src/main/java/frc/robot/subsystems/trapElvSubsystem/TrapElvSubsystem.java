@@ -258,7 +258,7 @@ public class TrapElvSubsystem extends SubsystemBase {
         new DebugEntry<Double>(0.0, "Wrist Motor Output", this).withPosition(2, 1).withSize(2, 1);
     FFOutput = new DebugEntry<Double>(0.0, "FF Output", this).withPosition(5, 1).withSize(2, 1);
     sourceLog =
-        new DebugEntry<Boolean>(wristBeamBreak.isBeamBroke(), "Source BB", this).withPosition(0, 2);
+        new DebugEntry<Boolean>(wristBeamBreak.isBeamBroke(), "Wrist BB", this).withPosition(0, 2);
     isWristRollerRunning = new DebugEntry<Boolean>(false, "Wrist Rollers", this).withPosition(2, 2);
 
     wristCurrentCommand = new DebugEntry<String>("none", "Wrist Command", this).withPosition(4, 4);
