@@ -78,8 +78,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
     shooterLeftMotor.setInverted(true);
 
-    ShooterConstants.SHOOTER_PID.setSparkPidController(shooterLeftMotor);
-    ShooterConstants.SHOOTER_PID.setSparkPidController(shooterRightMotor);
+    ShooterConstants.LEFT_SHOOTER_PID.setSparkPidController(shooterLeftMotor);
+    ShooterConstants.RIGHT_SHOOTER_PID.setSparkPidController(shooterRightMotor);
+
+    ShooterConstants.LEFT_SHOOTER_PID.createTunableNumbers("Left motor", shooterLeftMotor, this);
 
     if (!Robot.isCompetition) {
       shooterTab.add("Shooter Right PID", shooterRightMotor.getPIDController());
@@ -303,7 +305,7 @@ public class ShooterSubsystem extends SubsystemBase {
           Constants.ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT);
 
   public Trigger getBeamBreak() {
-    return new Trigger(beamBreak::get);
+    return new Trigger(beamBreak::isBeamBroke);
   }
 
   public void stop() {

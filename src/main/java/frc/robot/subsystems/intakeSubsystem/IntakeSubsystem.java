@@ -76,6 +76,7 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeOutput.log(intakeMotor.get());
     chooserOutput.log(chooserMotor.getAppliedOutput());
     if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
+    else currentCommand.log("none");
   }
 
   @Override

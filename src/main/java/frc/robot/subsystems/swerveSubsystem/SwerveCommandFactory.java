@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -21,15 +22,19 @@ import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem.DriveRequest;
 import java.util.ArrayList;
 import java.util.Set;
+import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem.RotationSource;
+import frc.robot.utilities.HowdyMath;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class SwerveCommandFactory {
   private final SwerveSubsystem subsystem;
+  private final ArrayList<RotationSource> rotationSources;
 
   public SwerveCommandFactory(SwerveSubsystem subsystem) {
     this.subsystem = subsystem;
+    rotationSources = new ArrayList<>(1);
   }
 
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
@@ -39,6 +44,15 @@ public class SwerveCommandFactory {
         .withName("applyRequest")
         .asProxy();
   }
+
+  // ---------- Getters ----------
+
+  public Translation2d currentRobotPosition() {
+    if (subsystem == null) return new Translation2d();
+    return subsystem.getState().Pose.getTranslation();
+  }
+
+  // ---------- Commands ----------
 
   /**
    * Request the robot to point in a specified direction. Any non zero rotation demand will result
@@ -64,10 +78,7 @@ public class SwerveCommandFactory {
   public Command pointAtLocation(final Translation2d target, final Supplier<DriveRequest> input) {
     if (subsystem == null) return Commands.none();
     final DoubleSupplier getAngleToTarget =
-        () -> {
-          Translation2d delta = subsystem.getState().Pose.getTranslation().minus(target);
-          return new Rotation2d(delta.getX(), delta.getY()).getDegrees();
-        };
+        () -> HowdyMath.getAngleToTarget(currentRobotPosition(), target).getDegrees();
     return pointDrive(getAngleToTarget, input).withName("Pointing at location").asProxy();
   }
 
@@ -103,6 +114,7 @@ public class SwerveCommandFactory {
           double alpha =
               Math.toRadians(pid.calculate(subsystem.getState().Pose.getRotation().getDegrees()));
           SmartDashboard.putNumber("error", pid.getPositionError());
+          SmartDashboard.putNumber("alpha", alpha);
           subsystem.setControl(
               new SwerveRequest.FieldCentric()
                   .withRotationalRate(alpha)
@@ -200,10 +212,14 @@ public class SwerveCommandFactory {
 
     return subsystem
         .runOnce(
-            () ->
-                subsystem.seedFieldRelative(
-                    new Pose2d(
-                        subsystem.getState().Pose.getTranslation(), Rotation2d.fromDegrees(180))))
+            () -> {
+              for (RotationSource rs : rotationSources) {
+                rs.zero();
+              }
+              subsystem.seedFieldRelative(
+                  new Pose2d(
+                      subsystem.getState().Pose.getTranslation(), Rotation2d.fromDegrees(180)));
+            })
         .withName("zeroDriveTrain")
         .asProxy();
   }
@@ -264,7 +280,7 @@ public class SwerveCommandFactory {
     };
   }
 
-  private Command autoTargetSource(Supplier<DriveRequest> request, RobotStateManager RSM) {
+  public Command autoTargetSource(Supplier<DriveRequest> request, RobotStateManager RSM) {
     return Commands.either(
             pointInDirection(DriverConstants.RED_SOURCE_ROTATION, request),
             pointInDirection(DriverConstants.BLUE_SOURCE_ROTATION, request),
@@ -273,7 +289,7 @@ public class SwerveCommandFactory {
         .asProxy();
   }
 
-  private Command autoTargetSpeaker(Supplier<DriveRequest> request, RobotStateManager RSM) {
+  public Command autoTargetSpeaker(Supplier<DriveRequest> request, RobotStateManager RSM) {
     return Commands.either(
             pointAtLocation(FieldConstants.RED_SPEAKER, request),
             pointAtLocation(FieldConstants.BLUE_SPEAKER, request),
@@ -289,6 +305,13 @@ public class SwerveCommandFactory {
             () -> RSM.getAllianceColor() == AllianceColor.RED)
         .withName("Target Amp")
         .asProxy();
+  }
+
+  public RotationSource createRotationSource(
+      XboxController controller, SwerveSubsystem drivetrain) {
+    final RotationSource RS = new RotationSource(controller, drivetrain);
+    rotationSources.add(RS);
+    return RS;
   }
 
   public Command[] getCommands() {

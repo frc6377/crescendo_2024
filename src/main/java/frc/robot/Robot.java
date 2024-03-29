@@ -34,7 +34,6 @@ public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -148,6 +147,8 @@ public class Robot extends LoggedRobot {
     if (DriverStation.getAlliance().isPresent()
         && DriverStation.getAlliance().get() == Alliance.Red) {
       m_robotContainer.getDriveTrain().setOperatorPerspectiveForward(Rotation2d.fromRotations(0.5));
+    } else {
+      m_robotContainer.getDriveTrain().setOperatorPerspectiveForward(Rotation2d.fromRotations(0));
     }
   }
 
