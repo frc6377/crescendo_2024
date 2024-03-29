@@ -200,6 +200,7 @@ public final class Constants {
     };
     public static final double PITCH_TOLERANCE = 1;
     public static final double SIMULATION_CG_MAGIC_NUMBER = 2;
+    public static final double LOB_PITCH = 0;
 
     public class TurretZeroConfig {
       public static final double lowGearTurretZero = Double.NaN;

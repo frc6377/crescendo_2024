@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -137,7 +138,34 @@ public class TurretCommandFactory {
 
   public Command getAimTurretCommand() {
     if (subsystem == null) return new StartEndCommand(() -> {}, () -> {});
-    return Commands.either(shortRangeShot(), longRangeShot(), () -> false);
+
+    Supplier<Command> aimCommandSupplier =
+        () -> {
+          switch (RSM.getShooterMode()) {
+            case LOB:
+              return lobShot();
+            case LONG_RANGE:
+              return longRangeShot();
+            case SHORT_RANGE:
+              return shortRangeShot();
+            default:
+              Runnable errMsg = () -> DriverStation.reportError("Unknown Shooter Mode!", true);
+              return new InstantCommand(errMsg);
+          }
+        };
+
+    return Commands.deferredProxy(aimCommandSupplier);
+  }
+
+  private Command lobShot() {
+    return subsystem.startEnd(
+        () -> {
+          subsystem.setPositionErrorSupplier(
+              () ->
+                  odometryPointing(RSM.getLobPosition()).getRotations() + subsystem.getTurretPos());
+          subsystem.setPitchPos(TurretConstants.LOB_PITCH);
+        },
+        () -> {});
   }
 
   public Command shortRangeShot() {
@@ -164,7 +192,7 @@ public class TurretCommandFactory {
   }
 
   private void visionTracking() {
-    visionTracking(() -> odometryPointing());
+    visionTracking(() -> speakerPointing());
   }
 
   private void visionTracking(Supplier<Rotation2d> searchingBehavior) {
@@ -262,8 +290,11 @@ public class TurretCommandFactory {
     return translationSupplier.get().minus(RSM.speakerPosition());
   }
 
-  private Rotation2d odometryPointing() {
-    final Translation2d targetPosition = RSM.speakerPosition();
+  private Rotation2d speakerPointing() {
+    return odometryPointing(RSM.speakerPosition());
+  }
+
+  private Rotation2d odometryPointing(Translation2d targetPosition) {
     final Rotation2d targetTurretAngleRelToField =
         HowdyMath.getAngleToTarget(translationSupplier.get(), targetPosition);
     final Rotation2d targetTurretAngleRelToRobot =

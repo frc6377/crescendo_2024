@@ -31,6 +31,8 @@ public class RobotStateManager extends SubsystemBase {
   private PlacementMode placementMode = PlacementMode.SPEAKER;
   private RangeMode range = RangeMode.SHORT;
 
+  private ShooterMode shooterMode = ShooterMode.LONG_RANGE;
+
   // Debug Logging
   private DebugEntry<PlacementMode> placementModeLog =
       new DebugEntry<PlacementMode>(placementMode, "Current Placement Mode", this);
@@ -46,7 +48,6 @@ public class RobotStateManager extends SubsystemBase {
 
   @Override
   public void periodic() {
-
     Optional<Alliance> alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
       allianceColor = alliance.get().equals(Alliance.Red) ? AllianceColor.RED : AllianceColor.BLUE;
@@ -138,5 +139,18 @@ public class RobotStateManager extends SubsystemBase {
   public DoubleSupplier getSpeakerAngle() {
     return () ->
         allianceCorrect(new Translation2d(1, Rotation2d.fromDegrees(0))).getAngle().getDegrees();
+  }
+
+  public ShooterMode getShooterMode() {
+    return shooterMode;
+  }
+
+  public void setShooterMode(ShooterMode shooterMode) {
+    this.shooterMode = shooterMode;
+  }
+
+  public Translation2d getLobPosition() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getLobPosition'");
   }
 }
