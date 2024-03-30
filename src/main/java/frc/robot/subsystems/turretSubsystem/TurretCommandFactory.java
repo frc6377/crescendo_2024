@@ -19,6 +19,7 @@ import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.TurretDataPoint;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
+import frc.robot.stateManagement.ShooterMode;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.HowdyMath;
@@ -139,9 +140,10 @@ public class TurretCommandFactory {
   public Command getAimTurretCommand() {
     if (subsystem == null) return new StartEndCommand(() -> {}, () -> {});
 
+    final ShooterMode shooterMode = RSM.getShooterMode();
     Supplier<Command> aimCommandSupplier =
         () -> {
-          switch (RSM.getShooterMode()) {
+          switch (shooterMode) {
             case LOB:
               return lobShot();
             case LONG_RANGE:
@@ -149,8 +151,9 @@ public class TurretCommandFactory {
             case SHORT_RANGE:
               return shortRangeShot();
             default:
-              Runnable errMsg = () -> DriverStation.reportError("Unknown Shooter Mode!", true);
-              return new InstantCommand(errMsg);
+              DriverStation.reportError(
+                  String.format("Unknown shooter mode provided (%s)", shooterMode), true);
+              return shortRangeShot();
           }
         };
 
