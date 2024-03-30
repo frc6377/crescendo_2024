@@ -347,4 +347,9 @@ public class TurretCommandFactory {
         () ->
             subsystem.pitchAtSetpoint() && subsystem.turretAtSetPoint(Rotation2d.fromDegrees(2.5)));
   }
+
+  public enum SearchingBehavior {
+    ODOMETRY,
+    STAY_STILL;
+  }
 }
