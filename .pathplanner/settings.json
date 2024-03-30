@@ -1,15 +1,12 @@
 {
-  "robotWidth": 0.61,
-  "robotLength": 0.61,
+  "robotWidth": 0.7874,
+  "robotLength": 0.8636,
   "holonomicMode": true,
   "pathFolders": [
-    "Amp Side 5 Note with amp scoring",
-    "Amp Side 5 Note",
-    "Source Side 4 Note",
-    "Source Side Middle Notes"
+    "Chadwik"
   ],
   "autoFolders": [],
-  "defaultMaxVel": 3.0,
+  "defaultMaxVel": 2.5,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,

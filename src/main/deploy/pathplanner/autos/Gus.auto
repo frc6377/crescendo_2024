@@ -2,22 +2,16 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.37,
-      "y": 6.850839379282182
+      "x": 0.6,
+      "y": 6.6
     },
-    "rotation": 0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "A1-A1A2 Shoot"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "Shoot"
@@ -30,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "A1A2-A2 Intake"
+                  "pathName": "Gus 1"
                 }
               },
               {
@@ -40,13 +34,13 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 4.0
+                        "waitTime": 2.0
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Speaker Intake"
+                        "name": "Amp Intake"
                       }
                     }
                   ]
@@ -58,13 +52,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "A2 Turn Shoot"
+            "pathName": "Gus 2"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Amp"
           }
         },
         {
@@ -74,7 +68,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "A2-B2 Intake"
+                  "pathName": "Gus 3"
                 }
               },
               {
@@ -84,13 +78,13 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 4.0
+                        "waitTime": 3.0
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Speaker Intake"
+                        "name": "Amp Intake"
                       }
                     }
                   ]
@@ -100,9 +94,59 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "Gus 4"
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Amp"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Gus 5"
+                }
+              },
+              {
+                "type": "deadline",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 2.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Amp Intake"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Gus 6"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Amp"
           }
         }
       ]

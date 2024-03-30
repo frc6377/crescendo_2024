@@ -118,6 +118,7 @@ public class TrapElvCommandFactory {
     return subsystem
         .startEnd(
             () -> {
+              subsystem.setWristState(TrapElvState.STOWED);
               subsystem.setRoller(TrapElvConstants.ROLLER_SPEED);
             },
             () -> {
@@ -146,7 +147,9 @@ public class TrapElvCommandFactory {
             () -> {
               subsystem.setRoller(TrapElvConstants.ROLLER_SPEED);
             },
-            () -> {})
+            () -> {
+              subsystem.setRoller(0);
+            })
         .withName("Score Amp")
         .asProxy();
   }
@@ -154,7 +157,7 @@ public class TrapElvCommandFactory {
   public Command wristintakeSource() {
     if (subsystem == null) return Commands.none();
     return intakeSource()
-        .until(subsystem.getSourceBreak())
+        .until(subsystem.getWristBeamBreak())
         .andThen(Commands.print("0.25s left").andThen(intakeFromSourceForTime()))
         .withName("wristIntakeSource")
         .asProxy();
@@ -189,8 +192,20 @@ public class TrapElvCommandFactory {
   }
 
   public BooleanSupplier getSourceBreak() {
-    if (subsystem == null) return () -> false;
-    return subsystem.getSourceBreak();
+    if (subsystem == null) return () -> true;
+    return subsystem.getWristBeamBreak();
+  }
+
+  public Command shooterMoving() {
+    if (subsystem == null) return Commands.none();
+    return subsystem
+        .startEnd(
+            () -> {
+              subsystem.setWristState(TrapElvState.AMP_REV);
+            },
+            () -> {})
+        .withName("Shooter Moving")
+        .asProxy();
   }
 
   public void setDefaultCommand(Command defaultCommand) {

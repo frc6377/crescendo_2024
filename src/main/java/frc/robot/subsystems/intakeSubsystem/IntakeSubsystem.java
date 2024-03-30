@@ -4,31 +4,52 @@
 
 package frc.robot.subsystems.intakeSubsystem;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.utilities.DebugEntry;
 
 public class IntakeSubsystem extends SubsystemBase {
-  private final TalonFX intakeMotor;
-  private final CANSparkMax chooserMotor;
+  private final TalonFX intakeMotor; // Kraken
+  private final TalonFX chooserMotor; // Falcon
+
+  private final TalonFXConfigurator intakeMotorConfigurator;
+  private final TalonFXConfigurator chooserMotorConfigurator;
+  private final CurrentLimitsConfigs intakeMotorCurrentLimits;
+  private final CurrentLimitsConfigs chooserMotorCurrentLimits;
+
   private DebugEntry<Double> intakeOutput;
   private DebugEntry<Double> chooserOutput;
   private DebugEntry<String> currentCommand;
 
   public IntakeSubsystem() {
-    intakeMotor = new TalonFX(Constants.IntakeConstants.INTAKE_MOTOR_ID, "rio");
-    chooserMotor =
-        new CANSparkMax(
-            Constants.IntakeConstants.INTAKE_CHOOSER_ID, MotorType.kBrushless); // NEO Motor
+    intakeMotor = new TalonFX(Constants.IntakeConstants.INTAKE_MOTOR_ID, "rio"); // Kraken
+    chooserMotor = new TalonFX(Constants.IntakeConstants.INTAKE_CHOOSER_ID, "rio"); // Falcon
 
-    chooserMotor.restoreFactoryDefaults();
-    // intakeMotor.config
-    chooserMotor.setSmartCurrentLimit(40);
-    chooserMotor.setInverted(true);
+    intakeMotorConfigurator = intakeMotor.getConfigurator();
+    chooserMotorConfigurator = chooserMotor.getConfigurator();
+
+    intakeMotorCurrentLimits = new CurrentLimitsConfigs();
+    chooserMotorCurrentLimits = new CurrentLimitsConfigs();
+
+    intakeMotorCurrentLimits
+        .withSupplyCurrentLimitEnable(true)
+        .withSupplyCurrentLimit(Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_LIMIT)
+        .withSupplyCurrentThreshold(Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_THRESHOLD)
+        .withSupplyTimeThreshold(Constants.IntakeConstants.INTAKE_MOTORS_THRESHOLD_TIME);
+
+    chooserMotorCurrentLimits
+        .withSupplyCurrentLimitEnable(true)
+        .withSupplyCurrentLimit(Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_LIMIT)
+        .withSupplyCurrentThreshold(Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_THRESHOLD)
+        .withSupplyTimeThreshold(Constants.IntakeConstants.INTAKE_MOTORS_THRESHOLD_TIME);
+
+    intakeMotorConfigurator.apply(intakeMotorCurrentLimits);
+    chooserMotorConfigurator.apply(chooserMotorCurrentLimits);
+
     intakeOutput = new DebugEntry<Double>(0.0, "Intake Motor Ouput", this);
     chooserOutput = new DebugEntry<Double>(0.0, "Chooser Motor Output", this);
     currentCommand = new DebugEntry<String>("none", "Intake Command", this);
@@ -74,8 +95,9 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     intakeOutput.log(intakeMotor.get());
-    chooserOutput.log(chooserMotor.getAppliedOutput());
+    chooserOutput.log(chooserMotor.get());
     if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
+    else currentCommand.log("none");
   }
 
   @Override

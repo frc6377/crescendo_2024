@@ -2,21 +2,15 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.37,
-      "y": 6.850839379282182
+      "x": 0.67,
+      "y": 6.69
     },
-    "rotation": 0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
-        {
-          "type": "path",
-          "data": {
-            "pathName": "A1-A1A2 Shoot"
-          }
-        },
         {
           "type": "named",
           "data": {
@@ -30,23 +24,23 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "A1A2-A2 Intake"
+                  "pathName": "Chad 1"
                 }
               },
               {
-                "type": "deadline",
+                "type": "race",
                 "data": {
                   "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 4.0
-                      }
-                    },
                     {
                       "type": "named",
                       "data": {
                         "name": "Speaker Intake"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 6.0
                       }
                     }
                   ]
@@ -56,15 +50,34 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "A2 Turn Shoot"
+            "name": "ShootLong"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Chad 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Speaker Intake"
+                }
+              }
+            ]
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "ShootLong"
           }
         }
       ]
