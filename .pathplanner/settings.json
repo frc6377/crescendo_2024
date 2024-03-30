@@ -3,7 +3,12 @@
   "robotLength": 0.8636,
   "holonomicMode": true,
   "pathFolders": [
-    "Chadwik"
+    "Chad",
+    "Chadwik",
+    "Gus",
+    "Lucy",
+    "Walters",
+    "Sandra"
   ],
   "autoFolders": [],
   "defaultMaxVel": 2.5,
