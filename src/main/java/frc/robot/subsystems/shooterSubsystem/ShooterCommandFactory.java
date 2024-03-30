@@ -82,7 +82,7 @@ public class ShooterCommandFactory {
         subsystem
             .run(
                 () -> {
-                  subsystem.stop();
+                  subsystem.stopAndLogMotors();
                 })
             .withName("Idle Shooter command")
             .asProxy();
@@ -92,7 +92,7 @@ public class ShooterCommandFactory {
   public Command outtake() {
     if (subsystem == null) return Commands.none();
     return subsystem
-        .startEnd(() -> subsystem.requestPercent(-1), subsystem::stop)
+        .startEnd(() -> subsystem.requestPercent(-1), subsystem::stopAndLogMotors)
         .withName("outtake")
         .asProxy();
   }

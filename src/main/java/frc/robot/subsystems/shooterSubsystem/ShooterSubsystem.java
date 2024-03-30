@@ -288,6 +288,30 @@ public class ShooterSubsystem extends SubsystemBase {
     public double getSpeedRightInRPM() {
       return speedRightInRPM;
     }
+
+    @Override
+    public boolean equals(Object object) {
+      if (object == null) {
+        return false;
+      }
+      if (object.getClass() != this.getClass()) {
+        return false;
+      }
+
+      final SpeakerConfig otherConfig = (SpeakerConfig) object;
+
+      if (this.distanceInInches != otherConfig.distanceInInches) {
+        return false;
+      }
+      if (this.speedLeftInRPM != otherConfig.speedLeftInRPM) {
+        return false;
+      }
+      if (this.speedRightInRPM != otherConfig.speedRightInRPM) {
+        return false;
+      }
+
+      return true;
+    }
   }
 
   // Motor RPM, NOT roller RPM
@@ -308,8 +332,10 @@ public class ShooterSubsystem extends SubsystemBase {
     return new Trigger(beamBreak::isBeamBroke);
   }
 
-  public void stop() {
-    shooterRightMotor.set(0);
+  protected void stopAndLogMotors() {
     shooterLeftMotor.set(0);
+    shooterRightMotor.set(0);
+    leftMotorTargetSpeedEntry.log(0d);
+    rightMotorTargetSpeedEntry.log(0d);
   }
 }
