@@ -140,9 +140,9 @@ public class TurretCommandFactory {
   public Command getAimTurretCommand() {
     if (subsystem == null) return new StartEndCommand(() -> {}, () -> {});
 
-    final ShooterMode shooterMode = RSM.getShooterMode();
     Supplier<Command> aimCommandSupplier =
         () -> {
+          final ShooterMode shooterMode = RSM.getShooterMode();
           switch (shooterMode) {
             case LOB:
               return lobShot();
