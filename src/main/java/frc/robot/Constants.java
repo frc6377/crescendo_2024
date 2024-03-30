@@ -37,8 +37,8 @@ public final class Constants {
     public static final int INTAKE_MOTOR_ID = 10;
     public static final int INTAKE_CHOOSER_ID = 14;
 
-    public static final double INTAKE_PERCENTAGE = 0.25;
-    public static final double CHOOSER_PERCENTAGE = 1;
+    public static final double INTAKE_PERCENTAGE = 1;
+    public static final double CHOOSER_PERCENTAGE = 0.125;
     public static final double AMP_INTAKE_PERCENTAGE = 0.5;
 
     public static final double INTAKE_MOTORS_CURRENT_LIMIT = 40.0; // A
