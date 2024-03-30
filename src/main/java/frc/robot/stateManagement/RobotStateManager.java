@@ -29,8 +29,6 @@ public class RobotStateManager extends SubsystemBase {
 
   // Placement Mode
   private PlacementMode placementMode = PlacementMode.SPEAKER;
-  private RangeMode range = RangeMode.SHORT;
-
   private ShooterMode shooterMode = ShooterMode.LONG_RANGE;
 
   // Debug Logging
@@ -110,20 +108,6 @@ public class RobotStateManager extends SubsystemBase {
     return -1;
   }
 
-  // Ranging Control
-
-  public void setLongRange() {
-    this.range = RangeMode.LONG;
-  }
-
-  public void setShortRange() {
-    this.range = RangeMode.SHORT;
-  }
-
-  public RangeMode getRange() {
-    return range;
-  }
-
   private Translation2d allianceCorrect(Translation2d input) {
     if (allianceColor == AllianceColor.RED) {
       return new Translation2d(input.getX(), -input.getY());
@@ -153,4 +137,8 @@ public class RobotStateManager extends SubsystemBase {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'getLobPosition'");
   }
+
+public Command setShooterMode(ShooterMode targetMode, ShooterMode endMode) {
+  return this.startEnd(()->this.setShooterMode(targetMode), ()->this.setShooterMode(endMode));
+}
 }
