@@ -138,7 +138,7 @@ public class RobotStateManager extends SubsystemBase {
     throw new UnsupportedOperationException("Unimplemented method 'getLobPosition'");
   }
 
-public Command setShooterMode(ShooterMode targetMode, ShooterMode endMode) {
-  return this.startEnd(()->this.setShooterMode(targetMode), ()->this.setShooterMode(endMode));
-}
+  public Command setShooterMode(ShooterMode targetMode, ShooterMode endMode) {
+    return this.startEnd(() -> this.setShooterMode(targetMode), () -> this.setShooterMode(endMode));
+  }
 }
