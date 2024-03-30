@@ -220,7 +220,7 @@ public final class Constants {
 
   public static class TrapElvConstants {
     // Control
-    public static final double INTAKE_BEAM_BREAK_DELAY_SEC = 0.025;
+    public static final double INTAKE_BEAM_BREAK_DELAY_SEC = 0.05;
     public static final double SOURCE_BEAM_BREAK_DELAY_SEC = 0.15;
 
     // Wrist

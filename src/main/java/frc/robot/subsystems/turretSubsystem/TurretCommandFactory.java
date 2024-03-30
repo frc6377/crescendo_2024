@@ -268,21 +268,19 @@ public class TurretCommandFactory {
 
   public Command pinTurret() {
     if (subsystem == null) return Commands.none();
-    throw new UnsupportedOperationException("Turret pining has to be redone");
-
-    // return subsystem
-    //     .run(
-    //         () -> {
-    //           if (subsystem.turretAtSetPoint(TurretConstants.ALLOWED_PIN_ERROR)) {
-    //             moveToBottomOfTravel();
-    //             // Effectivly disables the rotation motor
-    //             subsystem.setPositionErrorSupplier(() -> 0);
-    //           } else {
-    //             subsystem.setTurretPos(0);
-    //           }
-    //         })
-    //     .withName("pinTurret")
-    //     .asProxy();
+    return subsystem
+        .run(
+            () -> {
+              if (subsystem.turretAtSetPoint(TurretConstants.ALLOWED_PIN_ERROR)) {
+                moveToBottomOfTravel();
+                // Effectivly disables the rotation motor
+                subsystem.setPositionErrorSupplier(() -> 0);
+              } else {
+                subsystem.setTurretPos(0);
+              }
+            })
+        .withName("pinTurret")
+        .asProxy();
   }
 
   public Command testTurretCommand(DoubleSupplier degrees) {

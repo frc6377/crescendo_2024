@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Robot;
+import frc.robot.stateManagement.ShooterMode;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
@@ -42,6 +43,8 @@ public class DebugEntry<T> {
       localEntry = datalog.start("/" + subsystem.getName() + "/" + name, "boolean");
       localConsumer = (a) -> datalog.appendBoolean(localEntry, (Boolean) a, 0);
 
+    } else if (defaultValue instanceof ShooterMode) {
+      localEntry = datalog.start("/" + subsystem.getName() + "/" + name, "string");
       // if Other
     } else {
       DriverStation.reportWarning("Unsupported data type.", false);

@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -34,6 +35,8 @@ public class RobotStateManager extends SubsystemBase {
   // Debug Logging
   private DebugEntry<PlacementMode> placementModeLog =
       new DebugEntry<PlacementMode>(placementMode, "Current Placement Mode", this);
+  private DebugEntry<String> shooterModeLog =
+      new DebugEntry<String>(shooterMode.toString(), "Current Shooter Mode", this);
 
   public RobotStateManager() {
     endGameStart =
@@ -47,6 +50,7 @@ public class RobotStateManager extends SubsystemBase {
   @Override
   public void periodic() {
     Optional<Alliance> alliance = DriverStation.getAlliance();
+
     if (alliance.isPresent()) {
       allianceColor = alliance.get().equals(Alliance.Red) ? AllianceColor.RED : AllianceColor.BLUE;
     }
@@ -130,6 +134,7 @@ public class RobotStateManager extends SubsystemBase {
   }
 
   public void setShooterMode(ShooterMode shooterMode) {
+    shooterModeLog.log(shooterMode.toString());
     this.shooterMode = shooterMode;
   }
 
@@ -142,6 +147,7 @@ public class RobotStateManager extends SubsystemBase {
   }
 
   public Command setShooterMode(ShooterMode targetMode, ShooterMode endMode) {
-    return this.startEnd(() -> this.setShooterMode(targetMode), () -> this.setShooterMode(endMode));
+    return Commands.startEnd(
+        () -> this.setShooterMode(targetMode), () -> this.setShooterMode(endMode));
   }
 }

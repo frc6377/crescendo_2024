@@ -254,11 +254,12 @@ public class RobotContainer {
 
     OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
 
-    new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
-    new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());
-    new Trigger(() -> OI.Operator.controller.getPOV() == 90)
+    OI.getButton(OI.Operator.simple)
         .whileTrue(
             robotStateManager.setShooterMode(ShooterMode.SHORT_RANGE, ShooterMode.LONG_RANGE));
+
+    new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
+    new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());
     new Trigger(() -> OI.Operator.controller.getPOV() == 270)
         .whileTrue(robotStateManager.setShooterMode(ShooterMode.LOB, ShooterMode.LONG_RANGE));
 
@@ -337,13 +338,10 @@ public class RobotContainer {
 
   private Command shootSpeaker() {
     return Commands.parallel(
-        Commands.either(
-            triggerCommandFactory.getShootCommand(),
-            triggerCommandFactory
-                .getShootCommand()
-                .onlyIf(() -> shooterCommandFactory.isShooterReady())
-                .asProxy(),
-            OI.getButton(OI.Operator.simple)),
+        triggerCommandFactory
+            .getShootCommand()
+            .onlyIf(() -> shooterCommandFactory.isShooterReady())
+            .asProxy(),
         shooterCommandFactory.revShooter());
   }
 
