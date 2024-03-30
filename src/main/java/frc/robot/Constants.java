@@ -308,7 +308,6 @@ public final class Constants {
     public static final Translation2d BLUE_SPEAKER = new Translation2d(-0.0381, 5.547868);
     public static final double CENTERLINE_X_APPROX = 8;
     public static final double SPEAKER_TAG_HEIGHT_METERS = 1.45;
-    public static final Rotation2d AMP_DIRECTION = Rotation2d.fromDegrees(90);
   }
 
   public static class enabledSubsystems {
