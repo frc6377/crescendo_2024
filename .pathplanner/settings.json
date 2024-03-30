@@ -15,7 +15,9 @@
     "Sandra",
     "Walters"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "Testing"
+  ],
   "defaultMaxVel": 2.5,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
