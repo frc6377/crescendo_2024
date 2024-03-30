@@ -156,7 +156,7 @@ public class TurretCommandFactory {
           }
         };
 
-    return Commands.deferredProxy(aimCommandSupplier);
+    return Commands.deferredProxy(aimCommandSupplier).withName("getAimTurretCommand");
   }
 
   private Command lobShot() {
