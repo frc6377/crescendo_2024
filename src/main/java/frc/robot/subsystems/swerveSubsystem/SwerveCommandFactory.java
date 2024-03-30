@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -212,8 +211,8 @@ public class SwerveCommandFactory {
     return subsystem
         .runOnce(
             () -> {
-              for (RotationSource rs : rotationSources) {
-                rs.zero();
+              for (RotationSource rotationSource : rotationSources) {
+                rotationSource.zero();
               }
               subsystem.seedFieldRelative(
                   new Pose2d(
@@ -306,11 +305,10 @@ public class SwerveCommandFactory {
         .asProxy();
   }
 
-  public RotationSource createRotationSource(
-      XboxController controller, SwerveSubsystem drivetrain) {
-    final RotationSource RS = new RotationSource(controller, drivetrain);
-    rotationSources.add(RS);
-    return RS;
+  public RotationSource createRotationSource(final SwerveSubsystem driveTrain) {
+    final RotationSource rotationSource = new RotationSource(driveTrain);
+    rotationSources.add(rotationSource);
+    return rotationSource;
   }
 
   public Command[] getCommands() {

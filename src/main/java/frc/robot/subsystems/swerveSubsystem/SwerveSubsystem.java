@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.SwerveDriveConstants;
@@ -208,9 +207,13 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     private final Supplier<Translation2d> supplier;
     private final SwerveSubsystem subsystem;
 
-    public RotationSource(XboxController controller, SwerveSubsystem subsystem) {
+    public RotationSource(final SwerveSubsystem subsystem) {
       this.subsystem = subsystem;
-      supplier = () -> new Translation2d(controller.getRightX(), controller.getRightY());
+      supplier =
+          () ->
+              new Translation2d(
+                  OI.getAxisSupplier(OI.Driver.rotationAxis).get(),
+                  OI.getAxisSupplier(OI.Driver.RightY).get());
       lastVal = subsystem.getState().Pose.getRotation().getDegrees();
     }
 

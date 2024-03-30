@@ -189,8 +189,7 @@ public class RobotContainer {
                     OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
                     OI.getAxisSupplier(OI.Driver.rotationAxis).get()),
                 OI.getButton(OI.Driver.highGear).getAsBoolean());
-    final DoubleSupplier direction =
-        drivetrainCommandFactory.createRotationSource(OI.Driver.controller, drivetrain);
+    final DoubleSupplier direction = drivetrainCommandFactory.createRotationSource(drivetrain);
 
     switch (DriverConstants.DRIVE_TYPE) {
       case FIELD_ORIENTED:
@@ -254,12 +253,10 @@ public class RobotContainer {
 
     OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
 
-    new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
-    new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());
-    new Trigger(() -> OI.Operator.controller.getPOV() == 90)
+    OI.getPOVButton(OI.Operator.POV0).whileTrue(intakeCommand());
+    OI.getPOVButton(OI.Operator.POV180).whileTrue(outtakeCommand());
+    OI.getPOVButton(OI.Operator.POV90)
         .onTrue(new InstantCommand(() -> robotStateManager.setShortRange()));
-
-    new Trigger(() -> OI.Driver.controller.getPOV() == 0).whileTrue(intakeCommand());
   }
 
   private Command outtakeCommand() {
@@ -281,7 +278,7 @@ public class RobotContainer {
 
   private void configDriverFeedBack() {
     new Trigger(trapElvCommandFactory.getSourceBreak())
-        .and(() -> OI.Operator.controller.getPOV() == 0)
+        .and(OI.getPOVButton(OI.Operator.POV0))
         .whileTrue(
             Commands.startEnd(
                 () -> {
@@ -300,7 +297,7 @@ public class RobotContainer {
                 () -> OI.Operator.setRumble(0)));
     shooterCommandFactory
         .getBeamBreak()
-        .and(new Trigger(() -> OI.Operator.controller.getPOV() == 00))
+        .and(OI.getPOVButton(OI.Operator.POV0))
         .whileTrue(
             Commands.startEnd(
                 () -> {
