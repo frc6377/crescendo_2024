@@ -209,7 +209,11 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
 
     public RotationSource(final SwerveSubsystem subsystem) {
       this.subsystem = subsystem;
-      supplier = () -> new Translation2d(OI.Driver.getRightX(), OI.Driver.getRightY());
+      supplier =
+          () ->
+              new Translation2d(
+                  OI.getAxisSupplier(OI.Driver.rotationAxis).get(),
+                  OI.getAxisSupplier(OI.Driver.RightY).get());
       lastVal = subsystem.getState().Pose.getRotation().getDegrees();
     }
 
