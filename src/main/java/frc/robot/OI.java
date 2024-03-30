@@ -19,7 +19,15 @@ public class OI {
   private static final int operatorJoystickPort = 1;
 
   public static final class Driver {
-    public static final XboxController controller = new XboxController(driverJoystickPort);
+    private static final XboxController controller = new XboxController(driverJoystickPort);
+
+    public static double getRightX() {
+      return controller.getRightX();
+    }
+
+    public static double getRightY() {
+      return controller.getRightY();
+    }
 
     // A B Y X Buttons
     public static final Control A = new Control(XboxController.Button.kA, null, controller);

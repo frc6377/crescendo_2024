@@ -189,8 +189,7 @@ public class RobotContainer {
                     OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
                     OI.getAxisSupplier(OI.Driver.rotationAxis).get()),
                 OI.getButton(OI.Driver.highGear).getAsBoolean());
-    final DoubleSupplier direction =
-        drivetrainCommandFactory.createRotationSource(OI.Driver.controller, drivetrain);
+    final DoubleSupplier direction = drivetrainCommandFactory.createRotationSource(drivetrain);
 
     switch (DriverConstants.DRIVE_TYPE) {
       case FIELD_ORIENTED:
