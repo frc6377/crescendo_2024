@@ -31,6 +31,8 @@ public class RobotStateManager extends SubsystemBase {
   private PlacementMode placementMode = PlacementMode.SPEAKER;
   private RangeMode range = RangeMode.SHORT;
 
+  private final Trigger isAmpModeTrigger = new Trigger(() -> placementMode == PlacementMode.AMP);
+
   // Debug Logging
   private DebugEntry<PlacementMode> placementModeLog =
       new DebugEntry<PlacementMode>(placementMode, "Current Placement Mode", this);
@@ -90,6 +92,10 @@ public class RobotStateManager extends SubsystemBase {
 
   public BooleanSupplier isAmpSupplier() {
     return () -> this.placementMode == PlacementMode.AMP;
+  }
+
+  public Trigger isAmpTrigger() {
+    return isAmpModeTrigger;
   }
 
   public Command setAmpMode() {

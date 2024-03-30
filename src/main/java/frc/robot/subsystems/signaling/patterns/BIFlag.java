@@ -4,7 +4,6 @@ import frc.robot.Constants;
 import frc.robot.subsystems.signaling.RGB;
 
 public class BIFlag {
-  public static int numberOfLEDS = Constants.LED_COUNT;
   private static final PatternNode[] pattern = {
     new PatternNode(RGB.BLACK, 2),
     new PatternNode(RGB.PINK, 3),
@@ -25,8 +24,8 @@ public class BIFlag {
 
   public static PatternNode[] getColors(int step) {
     int initalStep = step % pattern.length;
-    PatternNode[] fullPattern = new PatternNode[numberOfLEDS];
-    for (int i = 0; i < numberOfLEDS; i++) {
+    PatternNode[] fullPattern = new PatternNode[Constants.NUMBER_OF_LEDS];
+    for (int i = 0; i < Constants.NUMBER_OF_LEDS; i++) {
       fullPattern[i] = pattern[(i + initalStep) % pattern.length];
     }
     return fullPattern;

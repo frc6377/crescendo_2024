@@ -317,7 +317,7 @@ public final class Constants {
     public static final boolean visionEnabled = true;
     public static final boolean usingPhoton = true;
     public static final boolean elvEnabled = true;
-    public static final boolean signalEnabled = false;
+    public static final boolean signalEnabled = true;
     public static final boolean shooterEnabled = true;
     public static final boolean triggerEnabled = true;
     public static final boolean turretRotationEnabled = true;
@@ -332,7 +332,12 @@ public final class Constants {
   public static final double AMPLIFICATION_RUMBLE_INTENSITY = 0.5;
 
   // Lights
-  public static final int LED_COUNT = 20;
+  public static final int LED_PWM_PORT = 0;
+  public static final double LED_BRIGHTNESS =
+      0.25; // The brightness of the LEDS, with 0 being off and 1 being max
+  public static final double PATTERN_SPEED =
+      1; // The time in seconds between each LED pattern update
+  public static final int NUMBER_OF_LEDS = 5;
 
   public static class DriverConstants {
     public static final Rotation2d RED_AMP_ROTATION = Rotation2d.fromRotations(0.25);
