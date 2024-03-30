@@ -160,7 +160,7 @@ public class TurretCommandFactory {
                 visionTracking();
               }
               if (Constants.enabledSubsystems.turretPitchEnabled) {
-                double distance = distanceEstimateMeters();
+                double distance = distanceEstimateMeters() - 0.3;
                 limelightDistance.log(distance);
                 subsystem.setPitchPos(pitchMap.get(distance));
               }
@@ -208,7 +208,7 @@ public class TurretCommandFactory {
           if (Double.isNaN(errDegrees)) {
             return searchingBehavior.get().getRotations() + subsystem.getTurretPos();
           }
-          double err = Units.degreesToRotations(errDegrees);
+          double err = Units.degreesToRotations(errDegrees - 4);
           return err;
         });
   }
@@ -227,19 +227,21 @@ public class TurretCommandFactory {
 
   public Command pinTurret() {
     if (subsystem == null) return Commands.none();
-    return subsystem
-        .run(
-            () -> {
-              if (subsystem.turretAtSetPoint(TurretConstants.ALLOWED_PIN_ERROR)) {
-                moveToBottomOfTravel();
-                // Effectivly disables the rotation motor
-                subsystem.setPositionErrorSupplier(() -> 0);
-              } else {
-                subsystem.setTurretPos(0);
-              }
-            })
-        .withName("pinTurret")
-        .asProxy();
+    throw new UnsupportedOperationException("Turret pining has to be redone");
+
+    // return subsystem
+    //     .run(
+    //         () -> {
+    //           if (subsystem.turretAtSetPoint(TurretConstants.ALLOWED_PIN_ERROR)) {
+    //             moveToBottomOfTravel();
+    //             // Effectivly disables the rotation motor
+    //             subsystem.setPositionErrorSupplier(() -> 0);
+    //           } else {
+    //             subsystem.setTurretPos(0);
+    //           }
+    //         })
+    //     .withName("pinTurret")
+    //     .asProxy();
   }
 
   public Command testTurretCommand(DoubleSupplier degrees) {

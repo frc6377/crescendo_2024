@@ -83,7 +83,7 @@ public final class Constants {
     public static final int BEAM_BREAK_ID = 1;
     public static final double BEAM_BREAK_THRESHOLD = 150;
     public static final double SHOOTER_LEFT_TARGET_RPM = 3431;
-    public static final double SHOOTER_RIGHT_TARGET_RPM = 2306;
+    public static final double SHOOTER_RIGHT_TARGET_RPM = 2531;
   }
 
   public static class TurretConstants {
@@ -355,5 +355,9 @@ public final class Constants {
   public static class CommandConstants {
     public static final double WAIT_FOR_TRAPELV = 0.2;
     public static final boolean USE_VISION_TARGETING = true;
+  }
+
+  private static class DevTools {
+    public static final boolean ShooterLinerizing = true;
   }
 }
