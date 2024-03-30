@@ -134,8 +134,11 @@ public class RobotStateManager extends SubsystemBase {
   }
 
   public Translation2d getLobPosition() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getLobPosition'");
+    if(getAllianceColor() == AllianceColor.BLUE){
+      return FieldConstants.BLUE_LOB_TARGET;
+    }else{
+      return FieldConstants.RED_LOB_TARGET;
+    }
   }
 
   public Command setShooterMode(ShooterMode targetMode, ShooterMode endMode) {

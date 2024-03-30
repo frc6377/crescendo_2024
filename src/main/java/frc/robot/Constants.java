@@ -354,5 +354,10 @@ public final class Constants {
   public static class CommandConstants {
     public static final double WAIT_FOR_TRAPELV = 0.2;
     public static final boolean USE_VISION_TARGETING = true;
+    public static final LobShotMode LOB_SHOT_MODE = LobShotMode.ODOMETRY_BASED;
+    public static enum LobShotMode{
+      ODOMETRY_BASED,
+      FIXED
+    }
   }
 }

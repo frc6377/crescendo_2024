@@ -14,9 +14,11 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.Constants.CommandConstants;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.TurretDataPoint;
+import frc.robot.Constants.CommandConstants.LobShotMode;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.stateManagement.ShooterMode;
@@ -161,14 +163,22 @@ public class TurretCommandFactory {
   }
 
   private Command lobShot() {
-    return subsystem.startEnd(
-        () -> {
-          subsystem.setPositionErrorSupplier(
-              () ->
-                  odometryPointing(RSM.getLobPosition()).getRotations() + subsystem.getTurretPos());
-          subsystem.setPitchPos(TurretConstants.LOB_PITCH);
-        },
-        () -> {});
+    if(CommandConstants.LOB_SHOT_MODE == LobShotMode.ODOMETRY_BASED){
+      return subsystem.startEnd(
+          () -> {
+            subsystem.setPositionErrorSupplier(
+                () ->
+                    odometryPointing(RSM.getLobPosition()).getRotations() + subsystem.getTurretPos());
+            subsystem.setPitchPos(TurretConstants.LOB_PITCH);
+          },
+          () -> {});
+    }
+
+    // This handles both fixed and the error case of unknown lob shot mode
+    if(CommandConstants.LOB_SHOT_MODE != LobShotMode.FIXED){
+      DriverStation.reportError("Unknown Lob shot mode set, defaulting to fixed", true);
+    }
+    return subsystem.startEnd(() -> subsystem.setTurretPos(0),()->{});
   }
 
   public Command shortRangeShot() {
