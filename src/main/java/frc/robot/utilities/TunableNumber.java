@@ -4,6 +4,9 @@ import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.PubSub;
+import edu.wpi.first.networktables.PubSubOption;
+import edu.wpi.first.networktables.Topic;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -35,8 +38,10 @@ public class TunableNumber extends SubsystemBase implements DoubleSupplier {
     if (!Robot.isCompetition) {
       inst = NetworkTableInstance.getDefault();
       numberEntry = tuningTab.add(name, defaultValue).getEntry();
+      numberEntry.close();
+      
       doubleTopic = inst.getDoubleTopic(name);
-      doubleSub = doubleTopic.subscribe(defaultValue);
+      doubleSub = doubleTopic.subscribe(defaultValue, PubSubOption.pollStorage(0), PubSubOption.periodic(1));
     }
   }
 
