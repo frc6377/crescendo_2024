@@ -134,9 +134,9 @@ public class RobotStateManager extends SubsystemBase {
   }
 
   public Translation2d getLobPosition() {
-    if(getAllianceColor() == AllianceColor.BLUE){
+    if (getAllianceColor() == AllianceColor.BLUE) {
       return FieldConstants.BLUE_LOB_TARGET;
-    }else{
+    } else {
       return FieldConstants.RED_LOB_TARGET;
     }
   }
