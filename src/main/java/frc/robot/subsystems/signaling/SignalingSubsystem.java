@@ -56,8 +56,8 @@ public class SignalingSubsystem extends SubsystemBase {
     // Update Light Pattern
     if (DriverStation.isDisabled()) updatePattern();
     else {
-      isAmpModeTrigger.whileFalse(runOnce(() -> resetLEDs()));
-      isAmpModeTrigger.whileTrue(runOnce(() -> resetLEDs()));
+      isAmpModeTrigger.onFalse(runOnce(() -> resetLEDs()));
+      isAmpModeTrigger.onTrue(runOnce(() -> resetLEDs()));
     }
 
     // End Signaling
