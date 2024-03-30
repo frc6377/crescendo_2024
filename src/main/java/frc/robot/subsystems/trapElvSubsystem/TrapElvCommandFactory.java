@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.TrapElvConstants;
 import frc.robot.subsystems.trapElvSubsystem.TrapElvSubsystem.TrapElvState;
+import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 
 public class TrapElvCommandFactory {
@@ -19,7 +20,10 @@ public class TrapElvCommandFactory {
   public Command stowTrapElvCommand() {
     if (subsystem == null) return Commands.none();
     final Command command =
-        subsystem.startEnd(() -> subsystem.stowTrapElv(), () -> {}).withName("stowTrapElvCommand");
+        subsystem
+            .startEnd(() -> subsystem.stowTrapElv(), () -> {})
+            .withName("stowTrapElvCommand")
+            .asProxy();
     return command;
   }
 
@@ -84,11 +88,6 @@ public class TrapElvCommandFactory {
         .asProxy();
   }
 
-  public Command zeroArm() {
-    if (subsystem == null) return Commands.none();
-    throw new UnsupportedOperationException("Unimplemented");
-  }
-
   public Command stopRoller() {
     if (subsystem == null) return Commands.none();
     return subsystem
@@ -147,7 +146,9 @@ public class TrapElvCommandFactory {
             () -> {
               subsystem.setRoller(TrapElvConstants.ROLLER_SPEED);
             },
-            () -> {})
+            () -> {
+              subsystem.setRoller(0);
+            })
         .withName("Score Amp")
         .asProxy();
   }
@@ -155,7 +156,7 @@ public class TrapElvCommandFactory {
   public Command wristintakeSource() {
     if (subsystem == null) return Commands.none();
     return intakeSource()
-        .until(subsystem.getSourceBreak())
+        .until(subsystem.getWristBeamBreak())
         .andThen(Commands.print("0.25s left").andThen(intakeFromSourceForTime()))
         .withName("wristIntakeSource")
         .asProxy();
@@ -171,14 +172,14 @@ public class TrapElvCommandFactory {
   public Command intakeFromGroundForTime(double seconds) {
     if (subsystem == null) return Commands.none();
     return Commands.deadline(new WaitCommand(seconds), intakeGround())
-        .withName("intakeFromGroundForTime")
+        .withName("intakeFromGroundForTimeDefault")
         .asProxy();
   }
 
   public Command intakeFromSourceForTime() {
     if (subsystem == null) return Commands.none();
     return intakeFromSourceForTime(Constants.TrapElvConstants.SOURCE_BEAM_BREAK_DELAY_SEC)
-        .withName("intakeFromSourceForTime")
+        .withName("intakeFromSourceForTimeDefault")
         .asProxy();
   }
 
@@ -190,8 +191,8 @@ public class TrapElvCommandFactory {
   }
 
   public BooleanSupplier getSourceBreak() {
-    // return () -> false;
-    return subsystem.getSourceBreak();
+    if (subsystem == null) return () -> true;
+    return subsystem.getWristBeamBreak();
   }
 
   public Command shooterMoving() {
@@ -208,6 +209,28 @@ public class TrapElvCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
-    subsystem.setDefaultCommand(defaultCommand);
+    subsystem.setDefaultCommand(Commands.sequence(subsystem.runOnce(() -> {}), defaultCommand));
+  }
+
+  public Command[] getCommands() {
+    ArrayList<Command> cmds = new ArrayList<Command>();
+    cmds.add(this.intakeSource());
+    cmds.add(this.intakeGround());
+    cmds.add(this.positionAMP());
+    cmds.add(this.rollerIntakeCommand());
+    cmds.add(this.rollerOutakeCommand());
+    cmds.add(this.stopRoller());
+    cmds.add(this.scoreAMP());
+    cmds.add(this.setWristAMP());
+    cmds.add(this.setWristSource());
+    cmds.add(this.setWristStowed());
+    cmds.add(this.stowTrapElvCommand());
+    cmds.add(this.wristintakeSource());
+    cmds.add(this.intakeFromGroundForTime());
+    cmds.add(this.intakeFromSourceForTime());
+    cmds.add(this.intakeFromGroundForTime(0.1));
+    cmds.add(this.intakeFromSourceForTime(0.1));
+    cmds.add(this.shooterMoving());
+    return cmds.toArray(new Command[cmds.size()]);
   }
 }

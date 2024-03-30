@@ -36,9 +36,14 @@ public final class Constants {
   public static class IntakeConstants {
     public static final int INTAKE_MOTOR_ID = 10;
     public static final int INTAKE_CHOOSER_ID = 14;
+
     public static final double INTAKE_PERCENTAGE = 0.25;
     public static final double CHOOSER_PERCENTAGE = 1;
     public static final double AMP_INTAKE_PERCENTAGE = 0.5;
+
+    public static final double INTAKE_MOTORS_CURRENT_LIMIT = 40.0; // A
+    public static final double INTAKE_MOTORS_CURRENT_THRESHOLD = 50.0; // A
+    public static final double INTAKE_MOTORS_THRESHOLD_TIME = 0.25; // s
   }
 
   public static class TriggerConstants {
