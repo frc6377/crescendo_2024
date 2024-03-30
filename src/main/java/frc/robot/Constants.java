@@ -205,6 +205,7 @@ public final class Constants {
     };
     public static final double PITCH_TOLERANCE = 1;
     public static final double SIMULATION_CG_MAGIC_NUMBER = 2;
+    public static final double LOB_PITCH = 0;
 
     public class TurretZeroConfig {
       public static final double lowGearTurretZero = Double.NaN;
@@ -309,6 +310,9 @@ public final class Constants {
     public static final double CENTERLINE_X_APPROX = 8;
     public static final double SPEAKER_TAG_HEIGHT_METERS = 1.45;
     public static final Rotation2d AMP_DIRECTION = Rotation2d.fromDegrees(90);
+    public static final Translation2d RED_LOB_TARGET = new Translation2d(14, 5);
+    public static final Translation2d BLUE_LOB_TARGET = new Translation2d(2, 5);
+    ;
   }
 
   public static class enabledSubsystems {
@@ -360,5 +364,11 @@ public final class Constants {
   public static class CommandConstants {
     public static final double WAIT_FOR_TRAPELV = 0.2;
     public static final boolean USE_VISION_TARGETING = true;
+    public static final LobShotMode LOB_SHOT_MODE = LobShotMode.ODOMETRY_BASED;
+
+    public static enum LobShotMode {
+      ODOMETRY_BASED,
+      FIXED
+    }
   }
 }
