@@ -3,9 +3,9 @@
   "startingPose": {
     "position": {
       "x": 0.67,
-      "y": 4.4
+      "y": 6.7
     },
-    "rotation": -60.0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
@@ -24,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Chadwik 1"
+                  "pathName": "Charlotte 1"
                 }
               },
               {
@@ -62,7 +62,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Chadwik 2"
+                  "pathName": "Charlotte 2"
                 }
               },
               {
@@ -100,7 +100,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Chadwik 3"
+                  "pathName": "Charlotte 3"
                 }
               },
               {
