@@ -7,20 +7,16 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
-import frc.robot.Constants.CommandConstants;
-import frc.robot.Constants.CommandConstants.LobShotMode;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.TurretDataPoint;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
-import frc.robot.stateManagement.ShooterMode;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.HowdyMath;
@@ -138,45 +134,8 @@ public class TurretCommandFactory {
 
   public Command getAimTurretCommand() {
     if (subsystem == null) return new StartEndCommand(() -> {}, () -> {});
-
-    Supplier<Command> aimCommandSupplier =
-        () -> {
-          final ShooterMode shooterMode = RSM.getShooterMode();
-          switch (shooterMode) {
-            case LOB:
-              return lobShot();
-            case LONG_RANGE:
-              return longRangeShot();
-            case SHORT_RANGE:
-              return shortRangeShot();
-            default:
-              DriverStation.reportError(
-                  String.format("Unknown shooter mode provided (%s)", shooterMode), true);
-              return shortRangeShot();
-          }
-        };
-
-    return Commands.deferredProxy(aimCommandSupplier).withName("getAimTurretCommand");
-  }
-
-  private Command lobShot() {
-    if (CommandConstants.LOB_SHOT_MODE == LobShotMode.ODOMETRY_BASED) {
-      return subsystem.startEnd(
-          () -> {
-            subsystem.setPositionErrorSupplier(
-                () ->
-                    odometryPointing(RSM.getLobPosition()).getRotations()
-                        + subsystem.getTurretPos());
-            subsystem.setPitchPos(TurretConstants.LOB_PITCH);
-          },
-          () -> {});
-    }
-
-    // This handles both fixed and the error case of unknown lob shot mode
-    if (CommandConstants.LOB_SHOT_MODE != LobShotMode.FIXED) {
-      DriverStation.reportError("Unknown Lob shot mode set, defaulting to fixed", true);
-    }
-    return subsystem.startEnd(() -> subsystem.setTurretPos(0), () -> {});
+    return Commands.either(shortRangeShot(), longRangeShot(), () -> false)
+        .withName("getAimTurretCommand");
   }
 
   public Command shortRangeShot() {
@@ -211,7 +170,7 @@ public class TurretCommandFactory {
   }
 
   private void visionTracking() {
-    visionTracking(() -> speakerPointing());
+    visionTracking(() -> odometryPointing());
   }
 
   private void visionTracking(Supplier<Rotation2d> searchingBehavior) {
@@ -329,11 +288,8 @@ public class TurretCommandFactory {
     return translationSupplier.get().minus(RSM.speakerPosition());
   }
 
-  private Rotation2d speakerPointing() {
-    return odometryPointing(RSM.speakerPosition());
-  }
-
-  private Rotation2d odometryPointing(Translation2d targetPosition) {
+  private Rotation2d odometryPointing() {
+    final Translation2d targetPosition = RSM.speakerPosition();
     final Rotation2d targetTurretAngleRelToField =
         HowdyMath.getAngleToTarget(translationSupplier.get(), targetPosition);
     final Rotation2d targetTurretAngleRelToRobot =

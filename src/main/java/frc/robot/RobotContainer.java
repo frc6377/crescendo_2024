@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -24,7 +25,6 @@ import frc.robot.Constants.enabledSubsystems;
 import frc.robot.config.TunerConstants;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
-import frc.robot.stateManagement.ShooterMode;
 import frc.robot.subsystems.climberSubsystem.ClimberCommandFactory;
 import frc.robot.subsystems.climberSubsystem.ClimberSubsystem;
 import frc.robot.subsystems.intakeSubsystem.IntakeCommandFactory;
@@ -257,10 +257,7 @@ public class RobotContainer {
     new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
     new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());
     new Trigger(() -> OI.Operator.controller.getPOV() == 90)
-        .whileTrue(
-            robotStateManager.setShooterMode(ShooterMode.SHORT_RANGE, ShooterMode.LONG_RANGE));
-    new Trigger(() -> OI.Operator.controller.getPOV() == 270)
-        .whileTrue(robotStateManager.setShooterMode(ShooterMode.LOB, ShooterMode.LONG_RANGE));
+        .onTrue(new InstantCommand(() -> robotStateManager.setShortRange()));
 
     new Trigger(() -> OI.Driver.controller.getPOV() == 0).whileTrue(intakeCommand());
   }
