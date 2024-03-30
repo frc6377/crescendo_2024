@@ -23,7 +23,6 @@ import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem.DriveRequest;
 import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem.RotationSource;
 import frc.robot.utilities.HowdyMath;
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -204,7 +203,7 @@ public class SwerveCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
-    subsystem.setDefaultCommand(Commands.defer(() -> defaultCommand, Set.of(subsystem)));
+    subsystem.setDefaultCommand(Commands.sequence(subsystem.runOnce(() -> {}), defaultCommand));
   }
 
   public Command zeroDriveTrain() {
