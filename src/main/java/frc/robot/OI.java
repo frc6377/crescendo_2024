@@ -46,9 +46,15 @@ public class OI {
     public static final Control RSB =
         new Control(XboxController.Button.kRightStick, null, controller);
 
+    // POV
+    public static final Control POV0 = new Control(0, "Test", controller);
+    public static final Control POV90 = new Control(90, "Test", controller);
+    public static final Control POV180 = new Control(180, "Test", controller);
+    public static final Control POV270 = new Control(270, "Test", controller);
+
     // Control Curves
-    private static final ControlCurve xTranslationCurve = new ControlCurve(1, 0, 0, 0.0, true);
-    private static final ControlCurve yTranslationCurve = new ControlCurve(1, 0, 0, 0.0);
+    public static final ControlCurve xTranslationCurve = new ControlCurve(1, 0, 0, 0.0, true);
+    public static final ControlCurve yTranslationCurve = new ControlCurve(1, 0, 0, 0.0);
     public static final ControlCurve translationMagnitudeCurve = new ControlCurve(1, 0, 1, 0.1);
     public static final ControlCurve rotationCurve = new ControlCurve(0.8, 0, 1, 0, true);
 
@@ -97,6 +103,12 @@ public class OI {
     public static final Control rightStick =
         new Control(XboxController.Button.kRightStick, null, controller);
     public static final Control back = new Control(XboxController.Button.kBack, null, controller);
+
+    // POV
+    public static final Control POV0 = new Control(0, "Test", controller);
+    public static final Control POV90 = new Control(90, "Test", controller);
+    public static final Control POV180 = new Control(180, "Test", controller);
+    public static final Control POV270 = new Control(270, "Test", controller);
 
     // Control Curves
     private static final ControlCurve xTranslationCurve = new ControlCurve(1, 0, 0, 0.0);
