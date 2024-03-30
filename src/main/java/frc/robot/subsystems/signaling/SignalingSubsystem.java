@@ -62,10 +62,7 @@ public class SignalingSubsystem extends SubsystemBase {
 
     // End Signaling
     if (rumbleTimer.get() > rumbleEndTime) {
-      rumbleTimer.reset();
-      rumbleTimer.stop();
-      driverRumbleConsumer.accept(0.0);
-      resetLEDs();
+      endSignal();
     }
   }
 
