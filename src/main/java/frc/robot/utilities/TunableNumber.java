@@ -2,7 +2,6 @@ package frc.robot.utilities;
 
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoubleTopic;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -14,13 +13,12 @@ import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 
 public class TunableNumber extends SubsystemBase implements DoubleSupplier {
-  private NetworkTableInstance inst;
+  private static NetworkTableInstance inst;
   private static ShuffleboardTab tuningTab;
-  private GenericEntry numberEntry;
+
   private double value;
   private double defaultValue;
   private Consumer<Double> consumer;
-
   private DoubleTopic doubleTopic;
   private DoubleSubscriber doubleSub;
 
@@ -32,23 +30,24 @@ public class TunableNumber extends SubsystemBase implements DoubleSupplier {
       String name, double defaultValue, Consumer<Double> consumer, Subsystem subsystem) {
     tuningTab = Shuffleboard.getTab(subsystem.getName());
     this.value = defaultValue;
+    this.defaultValue = defaultValue;
     this.consumer = consumer;
+
     if (!Robot.isCompetition) {
       inst = NetworkTableInstance.getDefault();
-      numberEntry = tuningTab.add(name, defaultValue).getEntry();
-      numberEntry.close();
+      tuningTab.add(name, this.defaultValue);
 
       doubleTopic = inst.getDoubleTopic(name);
       doubleSub =
           doubleTopic.subscribe(
-              defaultValue, PubSubOption.pollStorage(0), PubSubOption.periodic(1));
+              this.defaultValue, PubSubOption.pollStorage(0), PubSubOption.periodic(1));
     }
   }
 
   public void periodic() {
     if (!Robot.isCompetition) {
-      consumer.accept(doubleSub.get(defaultValue));
-      value = doubleSub.get(defaultValue);
+      value = doubleSub.get(this.defaultValue);
+      consumer.accept(value);
     }
   }
 
