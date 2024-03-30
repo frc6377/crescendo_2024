@@ -255,7 +255,7 @@ public class RobotContainer {
     OI.getButton(OI.Operator.climbSafety)
         .negate()
         .and(OI.getButton(OI.Operator.advanceClimbStage))
-        .onTrue(climberCommandFactory.advanceClimbStage());
+        .onTrue(climberCommandFactory.advanceState());
 
     new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
     new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());

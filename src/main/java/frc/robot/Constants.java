@@ -309,6 +309,7 @@ public final class Constants {
     public static final double BREAK_STATIC_PERCENT = -0.3;
     public static final double BREAK_STATIC_TIME = 0.1;
     public static final double STOWED = 0.0;
+    public static final double INITIAL_RAISE = 1;
     public static final double MAXIMUM = 180.0;
     public static final double PREPARE_CLIMB = 90;
     public static final double CLIMB = 45;
@@ -323,7 +324,7 @@ public final class Constants {
   }
 
   public static class enabledSubsystems {
-    public static final boolean intakeEnabled = false;
+    public static final boolean intakeEnabled = true;
     public static final boolean drivetrainEnabled = true;
     public static final boolean visionEnabled = false;
     public static final boolean usingPhoton = false;

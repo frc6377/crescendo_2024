@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -20,9 +21,11 @@ public class ClimberSubsystem extends SubsystemBase {
   private final CANSparkMax rightArmMotor;
 
   private PIDState pidState;
+  private final Timer timer = new Timer();
+  private double nextActionTime = 1;
   private ShuffleboardTab climberTab = Shuffleboard.getTab(this.getName());
 
-  private ClimberPosition goalPosition = ClimberPosition.DEFAULT;
+  private ClimberState state = ClimberState.DEFAULT;
 
   private final Servo leftServo;
   private final Servo rightServo;
@@ -88,16 +91,6 @@ public class ClimberSubsystem extends SubsystemBase {
   /**
    * Positive is up, negative is down. Is even between arms.
    *
-   * @param speed the speed to set (-1 to 1)
-   */
-  public void applyDiffertialPercent(DifferentialDemand demand) {
-    leftArmMotor.set(demand.left);
-    rightArmMotor.set(demand.right);
-  }
-
-  /**
-   * Positive is up, negative is down. Is even between arms.
-   *
    * @param current the current to set
    */
   public void applyCurrentDemand(double current) {
@@ -105,21 +98,6 @@ public class ClimberSubsystem extends SubsystemBase {
     rightArmMotor.getPIDController().setIAccum(0);
     leftArmMotor.getPIDController().setReference(current, ControlType.kCurrent);
     rightArmMotor.getPIDController().setReference(current, ControlType.kCurrent);
-  }
-
-  /**
-   * Apply a currentlimit
-   *
-   * @param currentLimit the limit in amps to set
-   */
-  public void setCurrentLimit(int currentLimit) {
-    leftArmMotor.setSmartCurrentLimit(currentLimit);
-    rightArmMotor.setSmartCurrentLimit(currentLimit);
-  }
-
-  public void zeroAtCurrentPosition() {
-    leftArmMotor.getEncoder().setPosition(0);
-    leftArmMotor.getEncoder().setPosition(0);
   }
 
   /**
@@ -143,23 +121,59 @@ public class ClimberSubsystem extends SubsystemBase {
         leftArmMotor.getEncoder().getVelocity(), rightArmMotor.getEncoder().getVelocity());
   }
 
-  protected ClimberPosition getCurrentGoalPosition() {
-    return goalPosition;
+  protected ClimberState getCurrentState() {
+    return state;
   }
 
-  protected void setGoalPosition(ClimberPosition pos) {
-    this.goalPosition = pos;
+  protected void setState(ClimberState pos) {
+    this.state = pos;
+    updateMotors();
   }
 
-  protected void setServoPosition(double pos){
+  protected void advanceState() {
+    switch (state) {
+      case MAXIMUM:
+        setState(ClimberState.CLIP);
+      case CLIP:
+        setState(ClimberState.CLIMB);
+    }
+  }
+
+  private void updateMotors() {
+    switch (state) {
+      case INITIAL_RAISE:
+        applyPercent(ClimberConstants.INITAL_RAISE_PERCENT);
+        setServoPosition(Constants.ClimberConstants.SERVO_OFF_POSITION);
+        timer.reset();
+        timer.start();
+      case MAXIMUM:
+        setServoPosition(Constants.ClimberConstants.SERVO_OFF_POSITION);
+        setOutputLimits(1, 0);
+        applyCurrentDemand(ClimberConstants.RAISE_CURRENT);
+      case CLIP:
+        setServoPosition(Constants.ClimberConstants.SERVO_OFF_POSITION);
+        applyCurrentDemand(ClimberConstants.CLIP_CURRENT);
+      case CLIMB:
+        setServoPosition(Constants.ClimberConstants.SERVO_ON_POSITION);
+        requestPosition(ClimberConstants.CLIMB_POSITION);
+    }
+  }
+
+  /**
+   * Sets the position of the Servo motors
+   *
+   * @param pos The position of the motors in rotations
+   */
+  protected void setServoPosition(double pos) {
     leftServo.set(pos);
     rightServo.set(pos);
   }
 
-  public AppliedCurrent getCurrent() {
-    return new AppliedCurrent(leftArmMotor.getOutputCurrent(), rightArmMotor.getOutputCurrent());
-  }
-
+  /**
+   * Sets the position of the climber motors
+   *
+   * @param climbPosition The position of the motors in degrees
+   */
   public void requestPosition(double climbPosition) {
     setPIDState(PIDState.POSITION);
     leftArmMotor.getPIDController().setIAccum(0);
@@ -189,6 +203,22 @@ public class ClimberSubsystem extends SubsystemBase {
     rightArmOutputEntry.log(rightArmMotor.get());
     leftArmOutputEntry.log(leftArmMotor.get());
     if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
+
+    if (timer.hasElapsed(nextActionTime)) {
+      switch (state) {
+        case INITIAL_RAISE:
+          setState(ClimberState.MAXIMUM);
+          timer.stop();
+          timer.reset();
+        case MAXIMUM:
+          if (getVelocity().isZero(0.5)) {
+            setOutputLimits(0, -1);
+            applyPercent(0);
+            timer.stop();
+            timer.reset();
+          }
+      }
+    }
   }
 
   public record DifferentialDemand(double left, double right) {}
@@ -211,6 +241,14 @@ public class ClimberSubsystem extends SubsystemBase {
     public boolean isZero(double epsilion) {
       return Math.abs(left) < epsilion && Math.abs(right) < epsilion;
     }
+  }
+
+  protected enum ClimberState {
+    DEFAULT,
+    INITIAL_RAISE,
+    MAXIMUM,
+    CLIP,
+    CLIMB;
   }
 
   private enum PIDState {
