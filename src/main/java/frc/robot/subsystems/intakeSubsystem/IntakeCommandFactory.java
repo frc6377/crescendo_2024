@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.stateManagement.PlacementMode;
+import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 
 public class IntakeCommandFactory {
@@ -38,12 +39,16 @@ public class IntakeCommandFactory {
   public Command intakeSourceForTime() {
     if (subsystem == null) return Commands.none();
     return Commands.deadline(
-        new WaitCommand(ShooterConstants.INTAKE_DELAY_SEC), getSpeakerIntakeCommand());
+            new WaitCommand(ShooterConstants.INTAKE_DELAY_SEC), getSpeakerIntakeCommand())
+        .withName("intakeSourceForTime");
   }
 
   public Command intakeSpeakerCommandSmart(BooleanSupplier tof) {
     if (subsystem == null) return Commands.none();
-    return getSpeakerIntakeCommand().until(tof).andThen(intakeSourceForTime());
+    return getSpeakerIntakeCommand()
+        .until(tof)
+        .andThen(intakeSourceForTime())
+        .withName("intakeSpeakerCommandSmart");
   }
 
   public Command getAmpIntakeCommand() {
@@ -62,6 +67,17 @@ public class IntakeCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
-    subsystem.setDefaultCommand(defaultCommand);
+    subsystem.setDefaultCommand(Commands.sequence(subsystem.runOnce(() -> {}), defaultCommand));
+  }
+
+  public Command[] getCommands() {
+    ArrayList<Command> cmds = new ArrayList<Command>();
+    cmds.add(reverseIntakeCommand());
+    cmds.add(getIntakeCommand(PlacementMode.AMP));
+    cmds.add(getSpeakerIntakeCommand());
+    cmds.add(intakeSourceForTime());
+    cmds.add(intakeSpeakerCommandSmart(() -> false));
+    cmds.add(getAmpIntakeCommand());
+    return cmds.toArray(new Command[cmds.size()]);
   }
 }

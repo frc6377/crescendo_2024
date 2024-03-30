@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
 import frc.robot.utilities.TunableNumber;
+import java.util.ArrayList;
 
 public class ShooterCommandFactory {
   private final ShooterSubsystem subsystem;
@@ -19,10 +20,12 @@ public class ShooterCommandFactory {
 
   public ShooterCommandFactory(ShooterSubsystem subsystem) {
     this.subsystem = subsystem;
-    leftTargetRPM =
-        new TunableNumber("Left RPM", ShooterConstants.SHOOTER_LEFT_TARGET_RPM, subsystem);
-    rightTargetRPM =
-        new TunableNumber("Right RPM", ShooterConstants.SHOOTER_RIGHT_TARGET_RPM, subsystem);
+    if (subsystem != null) {
+      leftTargetRPM =
+          new TunableNumber("Left RPM", ShooterConstants.SHOOTER_LEFT_TARGET_RPM, subsystem);
+      rightTargetRPM =
+          new TunableNumber("Right RPM", ShooterConstants.SHOOTER_RIGHT_TARGET_RPM, subsystem);
+    }
   }
 
   public Command intakeSource() {
@@ -62,7 +65,7 @@ public class ShooterCommandFactory {
     return new FunctionalCommand(
             () -> {
               subsystem.setShooterSpeeds(
-                  new SpeakerConfig(-1, leftTargetRPM.get(), rightTargetRPM.get()));
+                  new SpeakerConfig(-1, leftTargetRPM.getAsDouble(), rightTargetRPM.getAsDouble()));
             },
             () -> {},
             (a) -> {},
@@ -81,7 +84,8 @@ public class ShooterCommandFactory {
                 () -> {
                   subsystem.stop();
                 })
-            .withName("Idle Shooter command");
+            .withName("Idle Shooter command")
+            .asProxy();
     return command;
   }
 
@@ -95,7 +99,7 @@ public class ShooterCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
-    subsystem.setDefaultCommand(defaultCommand);
+    subsystem.setDefaultCommand(Commands.sequence(subsystem.runOnce(() -> {}), defaultCommand));
   }
 
   public boolean isShooterReady() {
@@ -106,5 +110,16 @@ public class ShooterCommandFactory {
   public Trigger getBeamBreak() {
     if (subsystem == null) return new Trigger(() -> false);
     return subsystem.getBeamBreak();
+  }
+
+  public Command[] getCommands() {
+    ArrayList<Command> cmds = new ArrayList<Command>();
+    cmds.add(this.intakeSource());
+    cmds.add(this.intakeSourceForTime());
+    cmds.add(this.intakeSpeakerSource());
+    cmds.add(this.outtake());
+    cmds.add(this.revShooter());
+    cmds.add(this.shooterIdle());
+    return cmds.toArray(new Command[cmds.size()]);
   }
 }
