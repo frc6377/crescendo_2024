@@ -288,6 +288,13 @@ public final class Constants {
   }
 
   public static class ClimberConstants {
+    public static final int LEFT_SERVO_PORT = 1;
+    public static final int RIGHT_SERVO_PORT = 2;
+
+    // TODO: Find actual values
+    public static final double SERVO_OFF_POSITION = 0; // Measured in rotations
+    public static final double SERVO_ON_POSITION = 1;
+
     public static final int LEFT_ARM_ID = 20;
     public static final int RIGHT_ARM_ID = 11;
     public static final double GEAR_RATIO = 175;

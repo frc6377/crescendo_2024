@@ -250,7 +250,7 @@ public class RobotContainer {
 
     OI.getButton(OI.Operator.climbSafety)
         .and(OI.getButton(OI.Operator.advanceClimbStage))
-        .onTrue(climberCommandFactory.initalRaise());
+        .onTrue(climberCommandFactory.raise());
 
     OI.getButton(OI.Operator.climbSafety)
         .negate()
