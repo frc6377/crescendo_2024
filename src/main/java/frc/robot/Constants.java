@@ -4,8 +4,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
 import frc.robot.utilities.HowdyFF;
@@ -285,6 +288,13 @@ public final class Constants {
 
     public static final String MAIN_CAMERA_NAME = "Camera_Module_Main";
     public static final String TURRET_CAMERA_NAME = "Camera_Module_Turret";
+    // X is forward on the robot (Towards the intake), the Y is to the left, and z is up
+    public static final Pose3d TURRET_CAMERA_POSITION_RELATIVE_TO_ROBOT_CENTER =
+        new Pose3d(
+            new Translation3d(
+                -0.2891, 0,
+                0), // Z should be 0.2519, but for some reason the math doesn't work with it
+            new Rotation3d(0, Units.degreesToRadians(22.3), 0));
   }
 
   public static class ClimberConstants {

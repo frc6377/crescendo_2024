@@ -1,9 +1,15 @@
 package frc.robot.utilities;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class HowdyMath {
+
+  public static Transform2d pose2dToTransform2d(Pose2d pose) {
+    return new Transform2d(pose.getTranslation(), pose.getRotation());
+  }
 
   public static Rotation2d getAngleToTarget(Translation2d currentPosition, Translation2d target) {
     final Translation2d delta = currentPosition.minus(target);

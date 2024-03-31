@@ -85,7 +85,7 @@ public class CommandFactoryChecks {
 
   @Test
   public void checkSwerveCmds() {
-    SwerveSubsystem sub = TunerConstants.drivetrain;
+    SwerveSubsystem sub = TunerConstants.createDrivetrain(new RobotStateManager());
     SwerveCommandFactory factory = new SwerveCommandFactory(sub);
     checkAllCmdFactoriesAreProxy(factory, factory.getCommands(), sub);
 

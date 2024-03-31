@@ -10,11 +10,13 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Robot;
 import frc.robot.config.LimelightConfig;
+import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.utilities.DebugEntry;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +29,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
+  private final RobotStateManager RSM;
   private int measurementsUsed = 0;
   private double lastRecordedTime = 0;
   private PhotonTrackedTarget lastTarget = null;
@@ -48,7 +51,9 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   private DebugEntry<Double> distanceEntryTag4 =
       new DebugEntry<Double>(0.0, "Distance To Tag 4 (m)", this);
 
-  public PhotonSubsystem(BiConsumer<Pose2d, Double> measurementConsumer) {
+  public PhotonSubsystem(BiConsumer<Pose2d, Double> measurementConsumer, RobotStateManager RSM) {
+    this.RSM = RSM;
+
     this.measurementConsumer = measurementConsumer;
     lastPose = new EstimatedRobotPose(new Pose3d(), 0, null, null);
     robotToCam =
@@ -205,15 +210,23 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
           }
         }
       }
+
+      PhotonPipelineResult turretResult = turretCamera.getLatestResult();
+      List<CameraTrackedTarget> turretCameraTargets =
+          turretResult.getTargets().stream()
+              .map((a) -> new CameraTrackedTarget(CameraName.TURRET, a))
+              .toList();
+      Optional<Pose2d> possible =
+          VisionMath.calculateRobotPoseSingleCamera(RSM, turretCameraTargets, aprilTagFieldLayout);
+      if (possible.isPresent()) {
+        Pose2d location = possible.get();
+        SmartDashboard.putNumberArray(
+            "Vision location",
+            new Double[] {location.getX(), location.getY(), location.getRotation().getDegrees()});
+        measurementConsumer.accept(possible.get(), getTime());
+      }
     }
   }
 
-  public record CameraTrackedTarget(CameraName camera, PhotonTrackedTarget target) {
-
-  }
-
-  public enum CameraName{
-    TURRET,
-    AMP,
-  }
+  public record CameraTrackedTarget(CameraName camera, PhotonTrackedTarget target) {}
 }

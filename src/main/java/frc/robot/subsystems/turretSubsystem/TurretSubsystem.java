@@ -216,6 +216,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   /**
    * Calculates the turret rotation in radians
+   *
    * @return
    */
   public double calculateTurretPosition() {

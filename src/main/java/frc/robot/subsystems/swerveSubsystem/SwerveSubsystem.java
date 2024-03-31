@@ -26,6 +26,7 @@ import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.OI;
 import frc.robot.Robot;
 import frc.robot.Telemetry;
+import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.LimelightHelpers;
 import java.util.function.BiConsumer;
@@ -45,6 +46,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
 
   private static boolean isFieldOriented = true;
 
+  private final RobotStateManager RSM;
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
   private SwerveDriveKinematics kinematics;
@@ -55,9 +57,10 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   public SwerveSubsystem(
       SwerveDrivetrainConstants driveTrainConstants,
       double OdometryUpdateFrequency,
+      RobotStateManager RSM,
       SwerveModuleConstants... modules) {
     super(driveTrainConstants, OdometryUpdateFrequency, modules);
-
+    this.RSM = RSM;
     if (Utils.isSimulation()) {
       startSimThread();
     }
@@ -105,8 +108,10 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   }
 
   public SwerveSubsystem(
-      SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
-    this(driveTrainConstants, 0, modules);
+      SwerveDrivetrainConstants driveTrainConstants,
+      RobotStateManager RSM,
+      SwerveModuleConstants... modules) {
+    this(driveTrainConstants, 0, RSM, modules);
   }
 
   private void startSimThread() {
@@ -196,7 +201,9 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
 
   @Override
   public void periodic() {
-    if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
+    if (this.getCurrentCommand() != null) {
+      currentCommand.log(this.getCurrentCommand().getName());
+    }
   }
 
   private Rotation2d getOperatorPerspective() {

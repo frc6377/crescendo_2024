@@ -7,6 +7,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstantsFactory;
 import edu.wpi.first.math.util.Units;
+import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem;
 
 public class TunerConstants {
@@ -154,7 +155,9 @@ public class TunerConstants {
           Units.inchesToMeters(kBackRightXPosInches),
           Units.inchesToMeters(kBackRightYPosInches),
           kInvertRightSide);
-  public static final SwerveSubsystem drivetrain =
-      new SwerveSubsystem(DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
-  ;
+
+  public static SwerveSubsystem createDrivetrain(RobotStateManager RSM) {
+    return new SwerveSubsystem(
+        DrivetrainConstants, RSM, FrontLeft, FrontRight, BackLeft, BackRight);
+  }
 }

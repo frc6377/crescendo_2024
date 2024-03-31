@@ -1,43 +1,246 @@
 package frc.robot.subsystems.vision;
 
-import java.util.List;
-import java.util.Optional;
+import static edu.wpi.first.units.Units.Meters;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.Distance;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.stateManagement.RobotStateManager;
-import frc.robot.subsystems.vision.PhotonSubsystem.CameraName;
 import frc.robot.subsystems.vision.PhotonSubsystem.CameraTrackedTarget;
+import frc.robot.utilities.HowdyMath;
+import java.util.List;
+import java.util.Optional;
 
-public class VisionMath{
-    public Optional<Pose2d> calculateRobotPoseSingleCamera(RobotStateManager RSM, List<CameraTrackedTarget> targets){
-        if(targets.size() == 0) return Optional.empty();
-        CameraName camera = targets.get(0).camera();
-        if(targets.stream().anyMatch((target) -> target.camera() != camera)){
-            DriverStation.reportWarning("Invalid Parameters given, Targets only from one camera!", true);
-            return Optional.empty();
-        }
+import javax.swing.text.html.Option;
 
-        if(targets.size() == 1){
-            return singleTagPosition(targets.get(0));
-        }
+import org.photonvision.PhotonUtils;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
-        
+public class VisionMath {
+  public static class VisionMathConfig {
+    public SingleTagMethod singleTagMethod = SingleTagMethod.NONE;
+    public TwoTagMethod twoTagMethod = TwoTagMethod.INTERCEPTING_CIRCLE;
+    public NTagMethod nTagMethod = NTagMethod.NONE;
+  }
 
-        return null;
+  public static Optional<Pose2d> calculateRobotPoseSingleCamera(
+      RobotStateManager RSM, List<CameraTrackedTarget> targets, AprilTagFieldLayout layout) {
+    return calculateRobotPoseSingleCamera(RSM, targets, layout, new VisionMathConfig());
+  }
+
+  public static Optional<Pose2d> calculateRobotPoseSingleCamera(
+      RobotStateManager RSM,
+      List<CameraTrackedTarget> targets,
+      AprilTagFieldLayout layout,
+      VisionMathConfig vCfg) {
+    if (targets.size() == 0) return Optional.empty();
+    // This is a safe access due to the above check
+    CameraName camera = targets.get(0).camera();
+    if (targets.stream().anyMatch((target) -> target.camera() != camera)) {
+      DriverStation.reportWarning("Invalid Parameters given, Targets only from one camera!", true);
+      return Optional.empty();
     }
 
-    public Optional<Pose2d> singleTagPosition(CameraTrackedTarget target){
-        throw new UnsupportedOperationException("Working on it, gimme a minute");
+    // Handle Single Tag Check
+    if (targets.size() == 1) {
+      switch (vCfg.singleTagMethod) {
+        case DISTANCE_LINE:
+          return lineDistanceMethodSingleTarget(targets.get(0));
+        default:
+          DriverStation.reportWarning("Unknown One Tag Method Selected!", true);
+        case NONE:
+          break;
+      }
     }
 
-    private List<Measure<Distance>> tagsToDistance(List<CameraTrackedTarget> targets){
-        return targets.stream().map(this::tagToDistance).toList();
+    if (targets.size() == 2) {
+      switch (vCfg.twoTagMethod) {
+        case INTERCEPTING_CIRCLE:
+          return cirlceBasedTwoTagPosition(targets, layout, RSM);
+        default:
+          DriverStation.reportWarning("Unknown Two Tag Method Selected!", true);
+        case NONE: // Fall through is intentional
+          break;
+      }
     }
 
-    private Measure<Distance> tagToDistance(CameraTrackedTarget target){
-        throw new UnsupportedOperationException("Working on it");
+    switch (vCfg.nTagMethod) {
+      case NONE:
+        return Optional.empty();
+      default:
+        DriverStation.reportWarning("Unknown NTag Method Selected!", true);
+        return Optional.empty();
     }
+  }
+
+  /**
+   * Esitmates the robot location by estimating ythe distance to two tags.
+   *
+   * <p>Then solving for where the two distances intercept, and discarding the one that is behind
+   * the tags.
+   *
+   * <p>Based off of solution presented
+   * here:https://www.johndcook.com/blog/2023/08/27/intersect-circles/
+   *
+   * @param targets the targets to calculate robot position off of. Must comprise only 2 tags from
+   *     the same camera
+   * @param layout the layout representing where all the tags are
+   * @param RSM the current robot state
+   * @return the estiamted robot position with no filtering for possiblity
+   */
+  public static Optional<Pose2d> cirlceBasedTwoTagPosition(
+      List<CameraTrackedTarget> targets, AprilTagFieldLayout layout, RobotStateManager RSM) {
+    if (targets.size() != 2) {
+      DriverStation.reportWarning(
+          String.format(
+              "Warning - Invalid calling two tag position with incorrect number of targets (%d targets)",
+              targets.size()),
+          true);
+      return Optional.empty();
+    }
+
+    CameraName cameraInUse = targets.get(0).camera();
+    if (targets.stream().anyMatch((a) -> a.camera() != cameraInUse)) {
+      DriverStation.reportWarning("Invalid Parameters given, Targets only from one camera!", true);
+      return Optional.empty();
+    }
+
+    Pose3d cameraPositionRelToRobot = robotToCamera(cameraInUse, RSM);
+
+    PhotonTrackedTarget trackedA = targets.get(0).target();
+    PhotonTrackedTarget trackedB = targets.get(1).target();
+
+    Measure<Distance> distanceToTagAUnitRep = tagToCameraDistance(targets.get(0), layout, RSM);
+    Measure<Distance> distanceToTagBUnitRep = tagToCameraDistance(targets.get(1), layout, RSM);
+
+    double distanceToTagA = distanceToTagAUnitRep.baseUnitMagnitude();
+    double distanceToTagB = distanceToTagBUnitRep.baseUnitMagnitude();
+
+    SmartDashboard.putNumber("distance A ", distanceToTagA);
+    SmartDashboard.putNumber("distance B ", distanceToTagB);
+
+    Translation2d tagLocationA =
+        layout
+            .getTagPose(trackedA.getFiducialId())
+            .orElseThrow()
+            .getTranslation()
+            .toTranslation2d();
+    Translation2d tagLocationB =
+        layout
+            .getTagPose(trackedB.getFiducialId())
+            .orElseThrow()
+            .getTranslation()
+            .toTranslation2d();
+
+    double distanceTagAToB = tagLocationA.getDistance(tagLocationB);
+
+    // Circles don't intercept
+    if (distanceTagAToB > distanceToTagA + distanceToTagB) {
+      return Optional.empty();
+    }
+
+    // The distance from circle A towards circle B to travel.
+    double aTowardsBDistance =
+        (distanceTagAToB * distanceTagAToB
+                - distanceToTagB * distanceToTagB
+                + distanceToTagA * distanceToTagA)
+            / 2
+            * distanceTagAToB;
+
+    // y squared.
+    // the distance normal to A towards B
+    double numberatorPartA =
+        4 * distanceTagAToB * distanceTagAToB * distanceToTagA * distanceToTagA;
+    double numeratorPartB =
+        (distanceTagAToB * distanceTagAToB
+            - distanceToTagB * distanceToTagB
+            + distanceToTagA * distanceToTagA);
+    double y2 =
+        (numberatorPartA - numeratorPartB * numeratorPartB)
+            / (4 * distanceTagAToB * distanceTagAToB);
+    double ya = Math.sqrt(y2);
+    double yb = -ya;
+
+    Translation2d pointRelativeTagAToBOptA = new Translation2d(aTowardsBDistance, ya);
+    Translation2d pointRelativeTagAToBOptB = new Translation2d(aTowardsBDistance, yb);
+
+    Rotation2d circleSpaceToRealRotation = tagLocationB.minus(tagLocationA).getAngle();
+    Translation2d circleSpaceToRealTranslation = tagLocationA;
+
+    // Currently arbitraily using point A
+    Translation2d robotTranslation =
+        pointRelativeTagAToBOptA
+            .rotateBy(circleSpaceToRealRotation)
+            .plus(circleSpaceToRealTranslation);
+
+    Pose2d cameraPosition =
+        new Pose2d(robotTranslation, cameraPositionRelToRobot.getRotation().toRotation2d());
+    Transform2d cameraToRobot =
+        HowdyMath.pose2dToTransform2d(cameraPositionRelToRobot.toPose2d()).inverse();
+    Pose2d robotPosition = cameraPosition.transformBy(cameraToRobot);
+
+    // This technique doesn't generate a robot rotation, So just repeating the already known one.
+    return Optional.of(new Pose2d(robotPosition.getTranslation(), RSM.getRobotRotation()));
+  }
+
+  public static Optional<Pose2d> lineDistanceMethodSingleTarget(CameraTrackedTarget target) {
+    // To use PhotonUtils.estimateFieldToRobot
+    return Optional.empty();
+  }
+
+  public static List<Measure<Distance>> tagsToCameraDistance(
+      List<CameraTrackedTarget> targets, AprilTagFieldLayout layout, RobotStateManager RSM) {
+    return targets.stream().map((a) -> VisionMath.tagToCameraDistance(a, layout, RSM)).toList();
+  }
+
+  private static Measure<Distance> tagToCameraDistance(
+      CameraTrackedTarget cameraTarget, AprilTagFieldLayout layout, RobotStateManager RSM) {
+    PhotonTrackedTarget target = cameraTarget.target();
+    Pose3d tagLocation = layout.getTagPose(target.getFiducialId()).orElseThrow();
+    Pose3d cameraLocation = robotToCamera(cameraTarget.camera(), RSM);
+
+    SmartDashboard.putNumber(
+        "ID " + target.getFiducialId() + "at deg",
+        Units.radiansToDegrees(
+            cameraLocation.getRotation().getAngle() + Units.degreesToRadians(target.getPitch())));
+    return Meters.of(
+        PhotonUtils.calculateDistanceToTargetMeters(
+            cameraLocation.getZ(),
+            tagLocation.getZ(),
+            cameraLocation.getRotation().getAngle(),
+            Units.degreesToRadians(target.getPitch())));
+  }
+
+  /**
+   * Gets the camera relative to the robot center in meters.
+   *
+   * @param name the camera to get
+   * @param RSM the current state of the robot
+   * @return the camera position relative to the robot forward
+   */
+  public static Pose3d robotToCamera(CameraName name, RobotStateManager RSM) {
+    return name.robotToCamera(RSM);
+  }
+
+  public enum SingleTagMethod {
+    NONE,
+    DISTANCE_LINE,
+  }
+
+  public enum TwoTagMethod {
+    NONE,
+    INTERCEPTING_CIRCLE,
+  }
+
+  public enum NTagMethod {
+    NONE,
+  }
 }

@@ -105,7 +105,7 @@ public class RobotContainer {
       signalingSubsystem = null;
     }
     if (enabledSubsystems.drivetrainEnabled) {
-      drivetrain = TunerConstants.drivetrain;
+      drivetrain = TunerConstants.createDrivetrain(robotStateManager);
     } else {
       drivetrain = null;
     }
@@ -125,7 +125,7 @@ public class RobotContainer {
     if (enabledSubsystems.visionEnabled) {
       visionSubsystem =
           Constants.enabledSubsystems.usingPhoton
-              ? new PhotonSubsystem(drivetrain.getVisionMeasurementConsumer())
+              ? new PhotonSubsystem(drivetrain.getVisionMeasurementConsumer(), robotStateManager)
               : new LimelightSubsystem(
                   drivetrain.getVisionMeasurementConsumer(), robotStateManager);
     } else {
