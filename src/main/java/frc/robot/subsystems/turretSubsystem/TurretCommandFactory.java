@@ -7,8 +7,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -155,6 +153,7 @@ public class TurretCommandFactory {
 
   public Command longRangeShot() {
     if (subsystem == null) return Commands.none();
+
     return subsystem
         .runEnd(
             () -> {
@@ -215,46 +214,10 @@ public class TurretCommandFactory {
           // Check if there is vision
           if (Double.isNaN(errDegrees)) {
             // If not vision, use Odometry
-            if (!subsystem.getLastChance()) {
-              // Get error of the angle from Odometry
-              double odometryTurretAim =
-                  searchingBehavior.get().getRotations() + subsystem.getTurretPos();
-
-              // If the error is in range of the allowed error, move on the Pigeon,
-              // bc there is still no vision at this point
-              if (Math.abs(odometryTurretAim)
-                  <= Units.degreesToRotations(TurretConstants.TURRET_ALLOWED_ERROR))
-                subsystem.setLastChance();
-
-              // return the error
-              return odometryTurretAim;
-
-              // If Odometry Fails, use Pigeon Scan Method
-            } else {
-              // Get the error of turret to point at speaker side of feild,
-              // or what ever scan point it's at
-              double pigeonTurretAim =
-                  /*(-TunerConstants.drivetrain.getPigeon2().getRotation2d().getRotations()
-                      + subsystem.getTurretPos())
-                  + */ TurretConstants.TURRET_SCAN_POINTS.getFirst();
-              // account for what allience color we are on TODO: check if this color is right
-              if (DriverStation.getAlliance().equals(DriverStation.Alliance.Blue))
-                pigeonTurretAim += Units.degreesToRotations(180);
-
-              // If the set angle from the pigeon is in the allowed error range,
-              // move on to the next scan point
-              if (Math.abs(pigeonTurretAim)
-                  <= Units.degreesToRotations(TurretConstants.TURRET_ALLOWED_ERROR)) {
-                TurretConstants.TURRET_SCAN_POINTS.addLast(
-                    TurretConstants.TURRET_SCAN_POINTS.getFirst());
-                TurretConstants.TURRET_SCAN_POINTS.removeFirst();
-              }
-              SmartDashboard.putNumber(
-                  "current goal", TurretConstants.TURRET_SCAN_POINTS.getFirst());
-
-              // Return the error
-              return pigeonTurretAim;
-            }
+            // Get error of the angle from Odometry
+            double odometryTurretAim =
+                searchingBehavior.get().getRotations() + subsystem.getTurretPos();
+            return odometryTurretAim;
           }
           return Units.degreesToRotations(errDegrees);
         });
