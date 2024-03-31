@@ -71,14 +71,12 @@ public class OI {
     public static final XboxController controller = new XboxController(operatorJoystickPort);
 
     // A B Y X Buttons
-    public static final Control retractClimber =
-        new Control(XboxController.Button.kA, "Retract Climber", controller);
-    public static final Control latchClimber =
-        new Control(XboxController.Button.kB, "Latch Climber", controller);
+    public static final Control A = new Control(XboxController.Button.kA, null, controller);
+    public static final Control advanceClimbStage =
+        new Control(XboxController.Button.kB, "Advance Climb Stage", controller);
     public static final Control simple =
-        new Control(XboxController.Button.kX, "Test Behavior", controller);
-    public static final Control prepClimb =
-        new Control(XboxController.Button.kY, "Prepare Climb", controller);
+        new Control(XboxController.Button.kX, "Dumb Behavior", controller);
+    public static final Control Y = new Control(XboxController.Button.kY, null, controller);
 
     // Bumpers & Triggers
     public static final Control fire =
@@ -96,7 +94,8 @@ public class OI {
         new Control(XboxController.Button.kLeftStick, null, controller);
     public static final Control rightStick =
         new Control(XboxController.Button.kRightStick, null, controller);
-    public static final Control back = new Control(XboxController.Button.kBack, null, controller);
+    public static final Control climbSafety =
+        new Control(XboxController.Button.kBack, "Climb Safety", controller);
 
     // Control Curves
     private static final ControlCurve xTranslationCurve = new ControlCurve(1, 0, 0, 0.0);
