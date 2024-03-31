@@ -206,6 +206,8 @@ public final class Constants {
     public static final double PITCH_TOLERANCE = 1;
     public static final double SIMULATION_CG_MAGIC_NUMBER = 2;
     public static final double LOB_PITCH = 0;
+    // This is a magic number which was used to correct for persistent error
+    public static final double VISION_DISTANCE_OFFSET = 0.3;
 
     public class TurretZeroConfig {
       public static final double lowGearTurretZero = Double.NaN;

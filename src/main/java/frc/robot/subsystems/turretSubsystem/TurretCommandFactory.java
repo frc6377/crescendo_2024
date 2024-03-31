@@ -201,7 +201,7 @@ public class TurretCommandFactory {
                 visionTracking();
               }
               if (Constants.enabledSubsystems.turretPitchEnabled) {
-                double distance = distanceEstimateMeters() - 0.3;
+                double distance = distanceEstimateMeters() - TurretConstants.VISION_DISTANCE_OFFSET;
                 limelightDistance.log(distance);
                 subsystem.setPitchPos(pitchMap.get(distance));
               }
