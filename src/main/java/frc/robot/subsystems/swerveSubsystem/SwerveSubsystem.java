@@ -5,7 +5,6 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
-import com.fasterxml.jackson.databind.node.POJONode;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -19,14 +18,14 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.SwerveDriveConstants;
-import frc.robot.config.TunerConstants;
 import frc.robot.OI;
 import frc.robot.Robot;
 import frc.robot.Telemetry;
@@ -198,19 +197,23 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
       return Math.sqrt(xSpeed * xSpeed + ySpeed * ySpeed);
     }
   }
-    private double retX[] = new double[2];
-    private double retY[] = new double[2];
-    private Pose2d pidgeonPose = new Pose2d();
+
+  private double retX[] = new double[2];
+  private double retY[] = new double[2];
+  private Pose2d pidgeonPose = new Pose2d();
+  private Field2d pdigeonField = new Field2d();
 
   @Override
   public void periodic() {
-
-    retX = HowdyMath.getPidgeonTranslation(retX[1], getPigeon2().getAccelerationX().getValueAsDouble(), Robot.defaultPeriodSecs);
-    retY = HowdyMath.getPidgeonTranslation(retY[1], getPigeon2().getAccelerationY().getValueAsDouble(), Robot.defaultPeriodSecs);
+    retX =
+        HowdyMath.getPidgeonTranslation(
+            retX[1], getPigeon2().getAccelerationX().getValueAsDouble(), Robot.defaultPeriodSecs);
+    retY =
+        HowdyMath.getPidgeonTranslation(
+            retY[1], getPigeon2().getAccelerationY().getValueAsDouble(), Robot.defaultPeriodSecs);
     pidgeonPose.transformBy(new Transform2d(retX[0], retY[0], new Rotation2d()));
-
-
-
+    pdigeonField.setRobotPose(pidgeonPose);
+    SmartDashboard.putData(pdigeonField);
 
     if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
   }
