@@ -1,0 +1,43 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.67,
+      "y": 6.7
+    },
+    "rotation": 60.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootShort"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mike 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mike 2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootLong"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
