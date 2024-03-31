@@ -174,17 +174,15 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       mainResult = mainCamera.getLatestResult();
       if (mainResult.hasTargets()) {
         List<PhotonTrackedTarget> targets = mainResult.getTargets();
-        if (targets.size() > 1) {
-          EstimatedRobotPose newPose = getPVEstimatedPose();
-          if ((newPose.estimatedPose.getX() > 12) || (newPose.estimatedPose.getX() < 4.54)) {
-            if (checkPoseValidity(newPose)) {
-              lastPose = newPose;
-            }
-            measurementsUsed++;
-            measurementConsumer.accept(getPose2d(), getTime());
-            if (measurementsUsed % 100 == 0) {
-              measurementEntry.log((double) measurementsUsed);
-            }
+        EstimatedRobotPose newPose = getPVEstimatedPose();
+        if ((newPose.estimatedPose.getX() > 12) || (newPose.estimatedPose.getX() < 4.54)) {
+          if (checkPoseValidity(newPose)) {
+            lastPose = newPose;
+          }
+          measurementsUsed++;
+          measurementConsumer.accept(getPose2d(), getTime());
+          if (measurementsUsed % 100 == 0) {
+            measurementEntry.log((double) measurementsUsed);
           }
         }
         // logging stuff
