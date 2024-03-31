@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -15,6 +16,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.TurretDataPoint;
+import frc.robot.config.TunerConstants;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
@@ -154,7 +156,7 @@ public class TurretCommandFactory {
   public Command longRangeShot() {
     if (subsystem == null) return Commands.none();
     return subsystem
-        .run(
+        .runEnd(
             () -> {
               if (Constants.enabledSubsystems.turretRotationEnabled) {
                 visionTracking();
@@ -164,6 +166,9 @@ public class TurretCommandFactory {
                 limelightDistance.log(distance);
                 subsystem.setPitchPos(pitchMap.get(distance));
               }
+            },
+            () -> {
+              subsystem.resetLastChance();
             })
         .withName("longRangeShot")
         .asProxy();
@@ -204,12 +209,52 @@ public class TurretCommandFactory {
   private void visionTracking(int targetTag, Supplier<Rotation2d> searchingBehavior) {
     subsystem.setPositionErrorSupplier(
         () -> {
+          // Get Vision
           double errDegrees = vision.getTurretYaw(targetTag);
+
+          // Check if there is vision
           if (Double.isNaN(errDegrees)) {
-            return searchingBehavior.get().getRotations() + subsystem.getTurretPos();
+            // If not vison, use Odometry
+            if (!subsystem.getLastChance()) {
+              // Get error of the angle from Odometry
+              double odometryTurretAim =
+                  searchingBehavior.get().getRotations() + subsystem.getTurretPos();
+
+              // If the error is in range of the allowed error, move on the Pigeon,
+              // bc there is still no vision at this point
+              if (odometryTurretAim
+                  <= Units.degreesToRotations(TurretConstants.TURRET_ALLOWED_ERROR))
+                subsystem.setLastChance();
+
+              // return the error
+              return odometryTurretAim;
+
+              // If Odometry Fails, use Pigeon Scan Method
+            } else {
+              // Get the error of turret to point at speaker side of feild,
+              // or what ever scan point it's at
+              double pigeonTurretAim =
+                  (-TunerConstants.drivetrain.getPigeon2().getRotation2d().getRotations()
+                          + subsystem.getTurretPos())
+                      + TurretConstants.TURRET_SCAN_POINTS.getFirst();
+              // account for what allience color we are on TODO: check if this color is right
+              if (DriverStation.getAlliance().equals(DriverStation.Alliance.Blue))
+                pigeonTurretAim += Units.degreesToRotations(180);
+
+              // If the set angle from the pigeon is in the allowed error range,
+              // move on to the next scan point
+              if (pigeonTurretAim
+                  <= Units.degreesToRotations(TurretConstants.TURRET_ALLOWED_ERROR)) {
+                TurretConstants.TURRET_SCAN_POINTS.addLast(
+                    TurretConstants.TURRET_SCAN_POINTS.getFirst());
+                TurretConstants.TURRET_SCAN_POINTS.removeFirst();
+              }
+
+              // Return the error
+              return pigeonTurretAim;
+            }
           }
-          double err = Units.degreesToRotations(errDegrees);
-          return err;
+          return Units.degreesToRotations(errDegrees);
         });
   }
 
@@ -301,6 +346,8 @@ public class TurretCommandFactory {
     if (subsystem == null) return null;
     return new Trigger(
         () ->
-            subsystem.pitchAtSetpoint() && subsystem.turretAtSetPoint(Rotation2d.fromDegrees(2.5)));
+            subsystem.pitchAtSetpoint()
+                && subsystem.turretAtSetPoint(
+                    Rotation2d.fromDegrees(TurretConstants.TURRET_ALLOWED_ERROR)));
   }
 }

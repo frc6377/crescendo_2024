@@ -10,6 +10,8 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
 import frc.robot.utilities.HowdyFF;
 import frc.robot.utilities.HowdyPID;
+import java.util.ArrayDeque;
+import java.util.Arrays;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -108,6 +110,7 @@ public final class Constants {
 
     public static final int TURRET_MIN_ANGLE_DEGREES = -90;
     public static final int TURRET_MAX_ANGLE_DEGREES = 90;
+    public static final double TURRET_ALLOWED_ERROR = 2.5;
 
     public static final double TURRET_CONVERSION_FACTOR = 15 / 82d;
     public static final int TURRET_SMART_CURRENT_LIMIT = 60;
@@ -175,6 +178,9 @@ public final class Constants {
     public static final double PITCH_MAX_ANGLE_ROTATIONS =
         ((PITCH_MAX_ANGLE_DEGREES * PITCH_CONVERSION_FACTOR) / 360);
     public static final Rotation2d ALLOWED_PIN_ERROR = Rotation2d.fromDegrees(2);
+
+    public static final ArrayDeque<Double> TURRET_SCAN_POINTS =
+        new ArrayDeque<Double>(Arrays.asList(0.0, 45.0, -45.0));
 
     public static final TurretDataPoint[] TURRET_DATA = {
       // Verified 5/5

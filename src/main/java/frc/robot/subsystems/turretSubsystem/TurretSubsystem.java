@@ -41,6 +41,7 @@ import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.HowdyMath;
+import java.util.Iterator;
 import java.util.function.DoubleSupplier;
 
 public class TurretSubsystem extends SubsystemBase {
@@ -103,6 +104,8 @@ public class TurretSubsystem extends SubsystemBase {
 
   private boolean usingPitchPid = true;
   private final PIDController turretVelocityPIDController;
+  private Iterator<Double> currentScanPoint;
+  private boolean isLastChance;
 
   public TurretSubsystem(RobotStateManager robotStateManager, VisionSubsystem visionSubsystem) {
     this.positionErrorSupplier = () -> 0;
@@ -159,6 +162,9 @@ public class TurretSubsystem extends SubsystemBase {
 
     highGearCANcoder.getConfigurator().apply(highGearSensorConfigs);
     lowGearCANcoder.getConfigurator().apply(lowGearSensorConfigs);
+
+    currentScanPoint = TurretConstants.TURRET_SCAN_POINTS.iterator();
+    isLastChance = false;
 
     // Simulation
     if (Robot.isSimulation()) {
@@ -461,5 +467,17 @@ public class TurretSubsystem extends SubsystemBase {
     boolean result = pitchPIDController.atSetpoint();
     atPitchLog.log(result);
     return result;
+  }
+
+  public void setLastChance() {
+    isLastChance = true;
+  }
+
+  public void resetLastChance() {
+    isLastChance = false;
+  }
+
+  public boolean getLastChance() {
+    return isLastChance;
   }
 }
