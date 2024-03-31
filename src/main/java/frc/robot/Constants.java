@@ -283,6 +283,7 @@ public final class Constants {
 
   public static class VisionConstants {
     public static final int MIN_TARGETS_FOR_POSE = 1;
+    public static final int MEASUREMENT_LOGGING_THRESHOLD = 20;
     public static final double TURRET_LIMELIGHT_HEIGHT_INCHES = 17.85;
     public static final double MAX_ACCEPTABLE_ERROR_METERS = 2;
     public static final double MAX_TIME_BETWEEN_POSES_SECONDS = 0.2; // 10 periodic cycles

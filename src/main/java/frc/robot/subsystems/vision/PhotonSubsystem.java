@@ -182,7 +182,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
             }
             measurementsUsed++;
             measurementConsumer.accept(getPose2d(), getTime());
-            if (measurementsUsed % 100 == 0) {
+            if (measurementsUsed % VisionConstants.MEASUREMENT_LOGGING_THRESHOLD == 0) {
               measurementEntry.log((double) measurementsUsed);
             }
           }
