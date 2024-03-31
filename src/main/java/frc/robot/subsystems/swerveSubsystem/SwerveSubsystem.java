@@ -200,20 +200,20 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
 
   private double retX[] = new double[2];
   private double retY[] = new double[2];
-  private Pose2d pidgeonPose = new Pose2d();
-  private Field2d pdigeonField = new Field2d();
+  private Pose2d pigeonPose = new Pose2d();
+  private Field2d pigeonField = new Field2d();
 
   @Override
   public void periodic() {
     retX =
-        HowdyMath.getPidgeonTranslation(
+        HowdyMath.getPigeonTranslation(
             retX[1], getPigeon2().getAccelerationX().getValueAsDouble(), Robot.defaultPeriodSecs);
     retY =
-        HowdyMath.getPidgeonTranslation(
+        HowdyMath.getPigeonTranslation(
             retY[1], getPigeon2().getAccelerationY().getValueAsDouble(), Robot.defaultPeriodSecs);
-    pidgeonPose.transformBy(new Transform2d(retX[0], retY[0], new Rotation2d()));
-    pdigeonField.setRobotPose(pidgeonPose);
-    SmartDashboard.putData(pdigeonField);
+    pigeonPose.transformBy(new Transform2d(retX[0], retY[0], new Rotation2d()));
+    pigeonField.setRobotPose(pigeonPose);
+    SmartDashboard.putData(pigeonField);
 
     if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
   }

@@ -10,7 +10,7 @@ public class HowdyMath {
     return new Rotation2d(delta.getX(), delta.getY());
   }
 
-  public static double[] getPidgeonTranslation(double initVel, double measAccel, double deltaT) {
+  public static double[] getPigeonTranslation(double initVel, double measAccel, double deltaT) {
     double d[] = new double[2];
     double vel = (initVel + measAccel * deltaT);
     double pos = .5 * measAccel * Math.pow(deltaT, 2) + vel * deltaT;
