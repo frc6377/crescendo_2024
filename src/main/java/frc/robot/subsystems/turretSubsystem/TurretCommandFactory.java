@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -15,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.CommandConstants;
 import frc.robot.Constants.CommandConstants.LobShotMode;
+import frc.robot.Constants.DevTools;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.TurretDataPoint;
@@ -24,6 +26,7 @@ import frc.robot.stateManagement.ShooterMode;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.HowdyMath;
+import frc.robot.utilities.TunableNumber;
 import java.util.ArrayList;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -37,6 +40,7 @@ public class TurretCommandFactory {
   final InterpolatingDoubleTreeMap pitchMap;
 
   DebugEntry<Double> limelightDistance;
+  TunableNumber shooterPitch;
 
   public TurretCommandFactory(
       TurretSubsystem subsystem,
@@ -44,11 +48,13 @@ public class TurretCommandFactory {
       VisionSubsystem visionSubsystem,
       Supplier<Rotation2d> rotationSupplier,
       Supplier<Translation2d> translationSupplier) {
+    SmartDashboard.putNumber("Shooter Pitch I swear", 0);
     this.subsystem = subsystem;
     if (subsystem != null) {
       limelightDistance = new DebugEntry<Double>(0D, "Limelight distance", subsystem);
       visionRotation = new DebugEntry<Double>(0d, "Vision Angle", subsystem);
     }
+    if (subsystem != null) shooterPitch = new TunableNumber("Shooter Pitch", 0, subsystem);
     this.RSM = RSM;
     this.vision = visionSubsystem;
     this.rotationSupplier = rotationSupplier;
@@ -203,7 +209,12 @@ public class TurretCommandFactory {
               if (Constants.enabledSubsystems.turretPitchEnabled) {
                 double distance = distanceEstimateMeters() - TurretConstants.VISION_DISTANCE_OFFSET;
                 limelightDistance.log(distance);
-                subsystem.setPitchPos(pitchMap.get(distance));
+                if (DevTools.ShooterLinerizing) {
+                  subsystem.setPitchPos(
+                      Units.degreesToRadians(SmartDashboard.getNumber("Shooter Pitch I swear", 0)));
+                } else {
+                  subsystem.setPitchPos(pitchMap.get(distance));
+                }
               }
             })
         .withName("longRangeShot")

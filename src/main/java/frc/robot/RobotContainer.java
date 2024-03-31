@@ -100,7 +100,13 @@ public class RobotContainer {
     }
     shooterCommandFactory = new ShooterCommandFactory(shooterSubsystem, robotStateManager);
     if (enabledSubsystems.signalEnabled) {
-      signalingSubsystem = new SignalingSubsystem(OI.Driver::setRumble, robotStateManager);
+      signalingSubsystem =
+          new SignalingSubsystem(
+              (a) -> {
+                OI.Operator.setRumble(a);
+                OI.Driver.setRumble(a);
+              },
+              robotStateManager);
     } else {
       signalingSubsystem = null;
     }

@@ -96,6 +96,7 @@ public class SignalingSubsystem extends SubsystemBase {
 
   private void startSignal(final double time, final double intensity, final RGB rgb) {
     driverRumbleConsumer.accept(intensity);
+
     rumbleEndTime = time;
     setFullStrip(rgb);
     ledStrip.setData(ledBuffer);

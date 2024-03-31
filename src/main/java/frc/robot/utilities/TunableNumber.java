@@ -30,6 +30,7 @@ public class TunableNumber extends SubsystemBase implements DoubleSupplier {
       String name, double defaultValue, Consumer<Double> consumer, Subsystem subsystem) {
     tuningTab = Shuffleboard.getTab(subsystem.getName());
     this.value = defaultValue;
+
     this.defaultValue = defaultValue;
     this.consumer = consumer;
 
@@ -40,15 +41,13 @@ public class TunableNumber extends SubsystemBase implements DoubleSupplier {
       doubleTopic = inst.getDoubleTopic(name);
       doubleSub =
           doubleTopic.subscribe(
-              this.defaultValue, PubSubOption.pollStorage(0), PubSubOption.periodic(1));
+              this.defaultValue, PubSubOption.pollStorage(2), PubSubOption.periodic(1));
     }
   }
 
   public void periodic() {
-    if (!Robot.isCompetition) {
-      value = doubleSub.get(this.defaultValue);
-      consumer.accept(value);
-    }
+    value = doubleSub.get(this.defaultValue);
+    consumer.accept(value);
   }
 
   public double getAsDouble() {

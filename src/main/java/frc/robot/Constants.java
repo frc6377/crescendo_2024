@@ -199,7 +199,8 @@ public final class Constants {
       new TurretDataPoint(Units.inchesToMeters(83), 3.11, Units.degreesToRadians(16)),
       // Verified 4/6
       new TurretDataPoint(Units.inchesToMeters(99.60), 3.327, Units.degreesToRadians(15)),
-
+      // Verified 4/6
+      new TurretDataPoint(Units.inchesToMeters(122), 4.59, Units.degreesToRadians(12.5)),
       /*
        * Real, LL, Pitch
        * 0.328m, 1.523, 32, 5/5
@@ -208,9 +209,9 @@ public final class Constants {
     };
     public static final double PITCH_TOLERANCE = 1;
     public static final double SIMULATION_CG_MAGIC_NUMBER = 2;
-    public static final double LOB_PITCH = 0;
+    public static final double LOB_PITCH = 30;
     // This is a magic number which was used to correct for persistent error
-    public static final double VISION_DISTANCE_OFFSET = 0.3;
+    public static final double VISION_DISTANCE_OFFSET = 0;
 
     public class TurretZeroConfig {
       public static final double lowGearTurretZero = Double.NaN;
@@ -386,7 +387,7 @@ public final class Constants {
     }
   }
 
-  private static class DevTools {
-    public static final boolean ShooterLinerizing = true;
+  public static class DevTools {
+    public static final boolean ShooterLinerizing = false;
   }
 }

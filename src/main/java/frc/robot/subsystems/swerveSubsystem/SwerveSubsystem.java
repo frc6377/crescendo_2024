@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants.DriverConstants;
@@ -52,6 +53,8 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   private SwerveDriveKinematics kinematics;
 
   private DebugEntry<String> currentCommand;
+  private DebugEntry<Boolean> acceptingVisionMeasuresLog;
+  private DebugEntry<String> accepetedVisionPose;
   private boolean acceptVisionMeasures = false;
 
   public SwerveSubsystem(
@@ -61,6 +64,9 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
       SwerveModuleConstants... modules) {
     super(driveTrainConstants, OdometryUpdateFrequency, modules);
     this.RSM = RSM;
+    acceptingVisionMeasuresLog =
+        new DebugEntry<Boolean>(acceptVisionMeasures, "Accepting Vision Measures", this);
+    accepetedVisionPose = new DebugEntry<String>("start", "Accepted Vision Measure", this);
     if (Utils.isSimulation()) {
       startSimThread();
     }
@@ -141,7 +147,10 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
 
   public BiConsumer<Pose2d, Double> getVisionMeasurementConsumer() {
     return (t, u) -> {
-      if (acceptVisionMeasures) addVisionMeasurement(t, u);
+      if (acceptVisionMeasures) {
+        accepetedVisionPose.log("Logged Vision Measure at " + Timer.getFPGATimestamp());
+        addVisionMeasurement(t, u);
+      }
     };
   }
 
@@ -201,6 +210,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
 
   @Override
   public void periodic() {
+    RSM.setRobotRotation(this.getState().Pose.getRotation());
     if (this.getCurrentCommand() != null) {
       currentCommand.log(this.getCurrentCommand().getName());
     }
@@ -254,9 +264,11 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
 
   public void stopVisionMeasures() {
     acceptVisionMeasures = false;
+    acceptingVisionMeasuresLog.log(acceptVisionMeasures);
   }
 
   public void startVisionMeasures() {
     acceptVisionMeasures = true;
+    acceptingVisionMeasuresLog.log(acceptVisionMeasures);
   }
 }
