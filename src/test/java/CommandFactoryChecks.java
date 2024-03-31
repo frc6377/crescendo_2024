@@ -100,7 +100,7 @@ public class CommandFactoryChecks {
     ShooterCommandFactory factory = new ShooterCommandFactory(sub, RSM);
     checkAllCmdFactoriesAreProxy(factory, factory.getCommands(), sub);
 
-    factory = new ShooterCommandFactory(null,null);
+    factory = new ShooterCommandFactory(null, null);
     checkCmdNullSafety(factory::getCommands);
   }
 
