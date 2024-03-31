@@ -4,34 +4,34 @@
     {
       "anchor": {
         "x": 0.67,
-        "y": 6.69
+        "y": 4.4
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.92,
-        "y": 7.12301270189222
+        "x": 1.0880535745686892,
+        "y": 4.024382094918037
       },
       "isLocked": false,
-      "linkedName": "A1"
+      "linkedName": "A3"
     },
     {
       "anchor": {
-        "x": 3.5,
-        "y": 7.0
+        "x": 2.65,
+        "y": 4.1
       },
       "prevControl": {
-        "x": 2.5,
-        "y": 7.0
+        "x": 1.65,
+        "y": 4.1
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "B3"
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 0.5,
-      "rotationDegrees": 0.0,
+      "rotationDegrees": 0,
       "rotateFast": false
     }
   ],
@@ -45,13 +45,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Chad",
   "previewStartingState": {
-    "rotation": 60.0,
+    "rotation": -60.0,
     "velocity": 0
   },
   "useDefaultConstraints": true
