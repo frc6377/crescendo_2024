@@ -110,7 +110,7 @@ public final class Constants {
 
     public static final int TURRET_MIN_ANGLE_DEGREES = -90;
     public static final int TURRET_MAX_ANGLE_DEGREES = 90;
-    public static final double TURRET_ALLOWED_ERROR = 2.5;
+    public static final double TURRET_ALLOWED_ERROR = 20;
 
     public static final double TURRET_CONVERSION_FACTOR = 15 / 82d;
     public static final int TURRET_SMART_CURRENT_LIMIT = 60;

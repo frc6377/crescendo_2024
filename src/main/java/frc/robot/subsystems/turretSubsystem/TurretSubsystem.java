@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -37,11 +38,11 @@ import frc.robot.Constants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.enabledSubsystems;
 import frc.robot.Robot;
+import frc.robot.config.TunerConstants;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.HowdyMath;
-import java.util.Iterator;
 import java.util.function.DoubleSupplier;
 
 public class TurretSubsystem extends SubsystemBase {
@@ -95,16 +96,16 @@ public class TurretSubsystem extends SubsystemBase {
       new DebugEntry<String>("none", "Turret Command", this);
   private DebugEntry<Double> pitchMotorOutput =
       new DebugEntry<Double>(0.0, "Pitch Motor Output", this);
-
   private DebugEntry<Double> positionErrorLog =
       new DebugEntry<Double>(0.0, "Position Error (deg?)", this);
-
   private DebugEntry<Double> targetVelocityLog =
       new DebugEntry<Double>(0.0, "Target Velocity (RPM)", this);
 
+  private DebugEntry<Boolean> isLastChanceLog =
+      new DebugEntry<Boolean>(false, "isLastChance", this);
+
   private boolean usingPitchPid = true;
   private final PIDController turretVelocityPIDController;
-  private Iterator<Double> currentScanPoint;
   private boolean isLastChance;
 
   public TurretSubsystem(RobotStateManager robotStateManager, VisionSubsystem visionSubsystem) {
@@ -163,7 +164,6 @@ public class TurretSubsystem extends SubsystemBase {
     highGearCANcoder.getConfigurator().apply(highGearSensorConfigs);
     lowGearCANcoder.getConfigurator().apply(lowGearSensorConfigs);
 
-    currentScanPoint = TurretConstants.TURRET_SCAN_POINTS.iterator();
     isLastChance = false;
 
     // Simulation
@@ -381,6 +381,7 @@ public class TurretSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     if (enabledSubsystems.turretRotationEnabled) {
+      SmartDashboard.putNumber("Pigeon Angle", TunerConstants.drivetrain.getPigeon2().getAngle());
       updateTurretPosition();
       double positionError = positionErrorSupplier.getAsDouble();
       positionErrorLog.log(positionError);
@@ -471,10 +472,12 @@ public class TurretSubsystem extends SubsystemBase {
 
   public void setLastChance() {
     isLastChance = true;
+    isLastChanceLog.log(isLastChance);
   }
 
   public void resetLastChance() {
     isLastChance = false;
+    isLastChanceLog.log(isLastChance);
   }
 
   public boolean getLastChance() {
