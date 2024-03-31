@@ -114,8 +114,8 @@ public class TunerConstants {
   private static final double kBackRightXPosInches = -12;
   private static final double kBackRightYPosInches = -12;
 
-  private static final double frontLeftOffset = 0.067;
-  private static final double frontRightOffset = 0.384;
+  private static final double frontLeftOffset = 0.821045 + 0.25;
+  private static final double frontRightOffset = -0.177979;
   private static final double backLeftOffset = 0.538;
   private static final double backRightOffset = 0.919;
 

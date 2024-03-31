@@ -41,7 +41,6 @@ public class DebugEntry<T> {
     } else if (defaultValue instanceof Boolean) {
       localEntry = datalog.start("/" + subsystem.getName() + "/" + name, "boolean");
       localConsumer = (a) -> datalog.appendBoolean(localEntry, (Boolean) a, 0);
-
       // if Other
     } else {
       DriverStation.reportWarning("Unsupported data type.", false);

@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.Robot;
 import frc.robot.config.LimelightConfig;
 import frc.robot.stateManagement.RobotStateManager;
@@ -174,15 +175,21 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       mainResult = mainCamera.getLatestResult();
       if (mainResult.hasTargets()) {
         List<PhotonTrackedTarget> targets = mainResult.getTargets();
-        EstimatedRobotPose newPose = getPVEstimatedPose();
-        if ((newPose.estimatedPose.getX() > 12) || (newPose.estimatedPose.getX() < 4.54)) {
-          if (checkPoseValidity(newPose)) {
-            lastPose = newPose;
-          }
-          measurementsUsed++;
-          measurementConsumer.accept(getPose2d(), getTime());
-          if (measurementsUsed % 100 == 0) {
-            measurementEntry.log((double) measurementsUsed);
+        if (targets.size() >= VisionConstants.MIN_TARGETS_FOR_POSE) {
+          EstimatedRobotPose newPose = getPVEstimatedPose();
+          // If MIN_TARGETS_FOR_POSE is one, then we don't need to ignore being far away from the
+          // speaker
+          if (VisionConstants.MIN_TARGETS_FOR_POSE == 1
+              || (newPose.estimatedPose.getX() > 12)
+              || (newPose.estimatedPose.getX() < 4.54)) {
+            if (checkPoseValidity(newPose)) {
+              lastPose = newPose;
+            }
+            measurementsUsed++;
+            measurementConsumer.accept(getPose2d(), getTime());
+            if (measurementsUsed % VisionConstants.MEASUREMENT_LOGGING_THRESHOLD == 0) {
+              measurementEntry.log((double) measurementsUsed);
+            }
           }
         }
         // logging stuff

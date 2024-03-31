@@ -40,8 +40,8 @@ public final class Constants {
     public static final int INTAKE_MOTOR_ID = 10;
     public static final int INTAKE_CHOOSER_ID = 14;
 
-    public static final double INTAKE_PERCENTAGE = 0.25;
-    public static final double CHOOSER_PERCENTAGE = 1;
+    public static final double INTAKE_PERCENTAGE = 1;
+    public static final double CHOOSER_PERCENTAGE = 0.125;
     public static final double AMP_INTAKE_PERCENTAGE = 0.5;
 
     public static final double INTAKE_MOTORS_CURRENT_LIMIT = 40.0; // A
@@ -74,7 +74,7 @@ public final class Constants {
     public static final double SHOOTER_IDLE_SPEED_RIGHT = 400; // Placeholder; in RPM
 
     public static final double SHOOTER_SPEED_TOLERANCE =
-        0.05; // speed must be within (1-n)v to (1+n)v to fire
+        0.1; // speed must be within (1-n)v to (1+n)v to fire
 
     public static final double SHOOTER_LEFT_GEARING = 0.4; // Unitless
     public static final double SHOOTER_LEFT_MOMENT = 0.000848475500006; // Placeholder; in kg*m^2
@@ -86,7 +86,7 @@ public final class Constants {
     public static final int BEAM_BREAK_ID = 1;
     public static final double BEAM_BREAK_THRESHOLD = 150;
     public static final double SHOOTER_LEFT_TARGET_RPM = 3431;
-    public static final double SHOOTER_RIGHT_TARGET_RPM = 2306;
+    public static final double SHOOTER_RIGHT_TARGET_RPM = 2531;
   }
 
   public static class TurretConstants {
@@ -208,6 +208,9 @@ public final class Constants {
     };
     public static final double PITCH_TOLERANCE = 1;
     public static final double SIMULATION_CG_MAGIC_NUMBER = 2;
+    public static final double LOB_PITCH = 0;
+    // This is a magic number which was used to correct for persistent error
+    public static final double VISION_DISTANCE_OFFSET = 0.3;
 
     public class TurretZeroConfig {
       public static final double lowGearTurretZero = Double.NaN;
@@ -222,7 +225,7 @@ public final class Constants {
 
   public static class TrapElvConstants {
     // Control
-    public static final double INTAKE_BEAM_BREAK_DELAY_SEC = 0.025;
+    public static final double INTAKE_BEAM_BREAK_DELAY_SEC = 0.05;
     public static final double SOURCE_BEAM_BREAK_DELAY_SEC = 0.15;
 
     // Wrist
@@ -282,6 +285,8 @@ public final class Constants {
   }
 
   public static class VisionConstants {
+    public static final int MIN_TARGETS_FOR_POSE = 1;
+    public static final int MEASUREMENT_LOGGING_THRESHOLD = 20;
     public static final double TURRET_LIMELIGHT_HEIGHT_INCHES = 17.85;
     public static final double MAX_ACCEPTABLE_ERROR_METERS = 2;
     public static final double MAX_TIME_BETWEEN_POSES_SECONDS = 0.2; // 10 periodic cycles
@@ -319,6 +324,9 @@ public final class Constants {
     public static final double CENTERLINE_X_APPROX = 8;
     public static final double SPEAKER_TAG_HEIGHT_METERS = 1.45;
     public static final Rotation2d AMP_DIRECTION = Rotation2d.fromDegrees(90);
+    public static final Translation2d RED_LOB_TARGET = new Translation2d(14, 5);
+    public static final Translation2d BLUE_LOB_TARGET = new Translation2d(2, 5);
+    ;
   }
 
   public static class enabledSubsystems {
@@ -370,5 +378,15 @@ public final class Constants {
   public static class CommandConstants {
     public static final double WAIT_FOR_TRAPELV = 0.2;
     public static final boolean USE_VISION_TARGETING = true;
+    public static final LobShotMode LOB_SHOT_MODE = LobShotMode.ODOMETRY_BASED;
+
+    public static enum LobShotMode {
+      ODOMETRY_BASED,
+      FIXED
+    }
+  }
+
+  private static class DevTools {
+    public static final boolean ShooterLinerizing = true;
   }
 }

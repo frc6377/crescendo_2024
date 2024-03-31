@@ -18,9 +18,6 @@ import frc.robot.subsystems.vision.PhotonSubsystem.CameraTrackedTarget;
 import frc.robot.utilities.HowdyMath;
 import java.util.List;
 import java.util.Optional;
-
-import javax.swing.text.html.Option;
-
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonTrackedTarget;
 

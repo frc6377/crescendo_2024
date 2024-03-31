@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -29,7 +30,7 @@ public class RobotStateManager extends SubsystemBase {
 
   // Placement Mode
   private PlacementMode placementMode = PlacementMode.SPEAKER;
-  private RangeMode range = RangeMode.SHORT;
+  private ShooterMode shooterMode = ShooterMode.LONG_RANGE;
 
   private final Trigger isAmpModeTrigger = new Trigger(() -> placementMode == PlacementMode.AMP);
 
@@ -47,6 +48,8 @@ public class RobotStateManager extends SubsystemBase {
   // Debug Logging
   private DebugEntry<PlacementMode> placementModeLog =
       new DebugEntry<PlacementMode>(placementMode, "Current Placement Mode", this);
+  private DebugEntry<String> shooterModeLog =
+      new DebugEntry<String>(shooterMode.toString(), "Current Shooter Mode", this);
 
   public RobotStateManager() {
     endGameStart =
@@ -59,8 +62,8 @@ public class RobotStateManager extends SubsystemBase {
 
   @Override
   public void periodic() {
-
     Optional<Alliance> alliance = DriverStation.getAlliance();
+
     if (alliance.isPresent()) {
       allianceColor = alliance.get().equals(Alliance.Red) ? AllianceColor.RED : AllianceColor.BLUE;
     }
@@ -126,20 +129,6 @@ public class RobotStateManager extends SubsystemBase {
     return -1;
   }
 
-  // Ranging Control
-
-  public void setLongRange() {
-    this.range = RangeMode.LONG;
-  }
-
-  public void setShortRange() {
-    this.range = RangeMode.SHORT;
-  }
-
-  public RangeMode getRange() {
-    return range;
-  }
-
   private Translation2d allianceCorrect(Translation2d input) {
     if (allianceColor == AllianceColor.RED) {
       return new Translation2d(input.getX(), -input.getY());
@@ -163,5 +152,27 @@ public class RobotStateManager extends SubsystemBase {
 
   public void setRobotRotation(Rotation2d robotRotation) {
     this.robotRotation = robotRotation;
+  }
+
+  public ShooterMode getShooterMode() {
+    return shooterMode;
+  }
+
+  public void setShooterMode(ShooterMode shooterMode) {
+    shooterModeLog.log(shooterMode.toString());
+    this.shooterMode = shooterMode;
+  }
+
+  public Translation2d getLobPosition() {
+    if (getAllianceColor() == AllianceColor.BLUE) {
+      return FieldConstants.BLUE_LOB_TARGET;
+    } else {
+      return FieldConstants.RED_LOB_TARGET;
+    }
+  }
+
+  public Command setShooterMode(ShooterMode targetMode, ShooterMode endMode) {
+    return Commands.startEnd(
+        () -> this.setShooterMode(targetMode), () -> this.setShooterMode(endMode));
   }
 }
