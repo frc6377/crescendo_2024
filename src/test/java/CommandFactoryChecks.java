@@ -96,10 +96,11 @@ public class CommandFactoryChecks {
   @Test
   public void checkShootCmds() {
     ShooterSubsystem sub = new ShooterSubsystem();
-    ShooterCommandFactory factory = new ShooterCommandFactory(sub);
+    RobotStateManager RSM = new RobotStateManager();
+    ShooterCommandFactory factory = new ShooterCommandFactory(sub, RSM);
     checkAllCmdFactoriesAreProxy(factory, factory.getCommands(), sub);
 
-    factory = new ShooterCommandFactory(null);
+    factory = new ShooterCommandFactory(null, null);
     checkCmdNullSafety(factory::getCommands);
   }
 
