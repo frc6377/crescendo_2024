@@ -33,6 +33,16 @@ public class RobotStateManager extends SubsystemBase {
 
   private final Trigger isAmpModeTrigger = new Trigger(() -> placementMode == PlacementMode.AMP);
 
+  private Rotation2d turretRotation = new Rotation2d();
+
+  public Rotation2d getTurretRotation() {
+    return turretRotation;
+  }
+
+  public void setTurretRotation(Rotation2d turretRotation) {
+    this.turretRotation = turretRotation;
+  }
+
   // Debug Logging
   private DebugEntry<PlacementMode> placementModeLog =
       new DebugEntry<PlacementMode>(placementMode, "Current Placement Mode", this);

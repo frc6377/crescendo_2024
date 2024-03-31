@@ -207,4 +207,13 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       }
     }
   }
+
+  public record CameraTrackedTarget(CameraName camera, PhotonTrackedTarget target) {
+
+  }
+
+  public enum CameraName{
+    TURRET,
+    AMP,
+  }
 }
