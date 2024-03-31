@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.Robot;
 import frc.robot.config.LimelightConfig;
 import frc.robot.utilities.DebugEntry;
@@ -169,9 +170,13 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       mainResult = mainCamera.getLatestResult();
       if (mainResult.hasTargets()) {
         List<PhotonTrackedTarget> targets = mainResult.getTargets();
-        if (targets.size() > 1) {
+        if (targets.size() >= VisionConstants.MIN_TARGETS_FOR_POSE) {
           EstimatedRobotPose newPose = getPVEstimatedPose();
-          if ((newPose.estimatedPose.getX() > 12) || (newPose.estimatedPose.getX() < 4.54)) {
+          // If MIN_TARGETS_FOR_POSE is one, then we don't need to ignore being far away from the
+          // speaker
+          if (VisionConstants.MIN_TARGETS_FOR_POSE == 1
+              || (newPose.estimatedPose.getX() > 12)
+              || (newPose.estimatedPose.getX() < 4.54)) {
             if (checkPoseValidity(newPose)) {
               lastPose = newPose;
             }
