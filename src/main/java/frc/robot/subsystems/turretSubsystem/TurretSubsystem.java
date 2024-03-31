@@ -385,6 +385,7 @@ public class TurretSubsystem extends SubsystemBase {
       updateTurretPosition();
       double positionError = positionErrorSupplier.getAsDouble();
       positionErrorLog.log(positionError);
+      turretGoalPositionEntry.log(turretPosition + positionError);
 
       final double targetVelocity = turretPositionPIDController.calculate(positionError);
       final double motorOut = turretVelocityPIDController.calculate(getTurretVel(), targetVelocity);
