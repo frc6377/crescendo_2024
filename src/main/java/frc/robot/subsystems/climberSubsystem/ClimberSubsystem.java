@@ -134,8 +134,10 @@ public class ClimberSubsystem extends SubsystemBase {
     switch (state) {
       case MAXIMUM:
         setState(ClimberState.CLIP);
+        break;
       case CLIP:
         setState(ClimberState.CLIMB);
+        break;
     }
   }
 
@@ -146,16 +148,22 @@ public class ClimberSubsystem extends SubsystemBase {
         setServoPosition(Constants.ClimberConstants.SERVO_OFF_POSITION);
         timer.reset();
         timer.start();
+        break;
       case MAXIMUM:
         setServoPosition(Constants.ClimberConstants.SERVO_OFF_POSITION);
         setOutputLimits(1, 0);
         applyCurrentDemand(ClimberConstants.RAISE_CURRENT);
+        break;
       case CLIP:
         setServoPosition(Constants.ClimberConstants.SERVO_OFF_POSITION);
         applyCurrentDemand(ClimberConstants.CLIP_CURRENT);
+        break;
       case CLIMB:
         setServoPosition(Constants.ClimberConstants.SERVO_ON_POSITION);
         requestPosition(ClimberConstants.CLIMB_POSITION);
+        break;
+      default:
+        break;
     }
   }
 
@@ -210,6 +218,7 @@ public class ClimberSubsystem extends SubsystemBase {
           setState(ClimberState.MAXIMUM);
           timer.stop();
           timer.reset();
+          break;
         case MAXIMUM:
           if (getVelocity().isZero(0.5)) {
             setOutputLimits(0, -1);
@@ -217,6 +226,7 @@ public class ClimberSubsystem extends SubsystemBase {
             timer.stop();
             timer.reset();
           }
+          break;
       }
     }
   }
