@@ -8,18 +8,23 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.stateManagement.PlacementMode;
+import frc.robot.stateManagement.RobotStateManager;
+import frc.robot.stateManagement.ShooterMode;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
 import frc.robot.utilities.TunableNumber;
 import java.util.ArrayList;
 
 public class ShooterCommandFactory {
   private final ShooterSubsystem subsystem;
+  private final RobotStateManager RSM;
   private ShuffleboardTab shooterTab = Shuffleboard.getTab("ShooterSubsystem");
   private TunableNumber leftTargetRPM;
   private TunableNumber rightTargetRPM;
 
-  public ShooterCommandFactory(ShooterSubsystem subsystem) {
+  public ShooterCommandFactory(ShooterSubsystem subsystem, RobotStateManager RSM) {
     this.subsystem = subsystem;
+    this.RSM = RSM;
     if (subsystem != null) {
       leftTargetRPM =
           new TunableNumber("Left RPM", ShooterConstants.SHOOTER_LEFT_TARGET_RPM, subsystem);
@@ -82,6 +87,9 @@ public class ShooterCommandFactory {
         subsystem
             .run(
                 () -> {
+                  if(RSM.getPlacementMode() == PlacementMode.SPEAKER){
+                    subsystem.setShooterSpeeds(new SpeakerConfig(-1, ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT, ShooterConstants.SHOOTER_IDLE_SPEED_LEFT));
+                  }
                   subsystem.stop();
                 })
             .withName("Idle Shooter command")
