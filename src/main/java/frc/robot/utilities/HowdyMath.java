@@ -10,6 +10,16 @@ public class HowdyMath {
     return new Rotation2d(delta.getX(), delta.getY());
   }
 
+  public static double[] getPidgeonTranslation(double initVel, double measAccel, double deltaT) {
+    double d[] = new double[2];
+    double vel = (initVel + measAccel* deltaT);
+    double pos = .5 * measAccel * Math.pow(deltaT,2) + vel*deltaT; 
+    d[0] = pos;
+    d[1] = vel;
+    return d;
+
+  }
+
   // Returns modulo inverse of a
   // with respect to m using extended
   // Euclid Algorithm. Refer below post for details:
