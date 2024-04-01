@@ -6,6 +6,16 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class HowdyMath {
+  /**
+   * Checks if the value is in the range. Inclusive on both sides
+   * @param value the value to check
+   * @param min the minimum value
+   * @param max the maximum value
+   * @return if the value is between the max and min values
+   */
+  public static boolean inRange(double value, double min, double max){
+    return value <= max && value >= min;
+  }
 
   public static Transform2d pose2dToTransform2d(Pose2d pose) {
     return new Transform2d(pose.getTranslation(), pose.getRotation());
