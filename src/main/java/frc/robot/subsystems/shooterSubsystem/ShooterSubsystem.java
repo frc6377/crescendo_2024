@@ -166,7 +166,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public Trigger shooterReady() {
-    return new Trigger(this::isShooterReady).debounce(0.05);
+    return new Trigger(this::isShooterReady);
   }
   // Checks if shooter is ready.
   public boolean isShooterReady() {

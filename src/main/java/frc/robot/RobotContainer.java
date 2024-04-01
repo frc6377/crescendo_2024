@@ -363,16 +363,13 @@ public class RobotContainer {
   private Command shootAutonShort() {
     return Commands.deadline(
         Commands.waitUntil(
-                turretCommandFactory
-                    .isReady()
-                    .and(() -> shooterCommandFactory.isShooterReady())
-                    .debounce(0.25))
+                turretCommandFactory.isReady().and(() -> shooterCommandFactory.isShooterReady()))
             .andThen(
                 triggerCommandFactory
                     .getShootCommand()
                     .withTimeout(1)
-                    .until(shooterCommandFactory.getBeamBreak().negate().debounce(.25))),
-        prepareToScoreSpeakerShortRangeAutonOnly());
+                    .until(shooterCommandFactory.getBeamBreak().negate())),
+        );
   }
 
   private Command shootAutonLong() {
