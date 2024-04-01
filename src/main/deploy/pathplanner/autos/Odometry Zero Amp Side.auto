@@ -2,8 +2,13 @@
   "version": 1.0,
   "startingPose": {
     "position": {
+<<<<<<< HEAD:src/main/deploy/pathplanner/autos/Odometry Zero Amp Side.auto
       "x": 0.67,
       "y": 4.4
+=======
+      "x": 0.5,
+      "y": 6.95
+>>>>>>> 81c5f1b7db71e3460698ded89b9b1a70a6597609:src/main/deploy/pathplanner/autos/Odometry Zero.auto
     },
     "rotation": -60.0
   },

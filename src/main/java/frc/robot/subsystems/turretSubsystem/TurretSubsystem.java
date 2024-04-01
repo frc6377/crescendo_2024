@@ -44,6 +44,8 @@ import frc.robot.utilities.HowdyMath;
 import java.util.function.DoubleSupplier;
 
 public class TurretSubsystem extends SubsystemBase {
+  private final RobotStateManager RSM;
+
   private final CANSparkMax turretMotor;
   private final PIDController turretPositionPIDController;
   private DoubleSupplier positionErrorSupplier;
@@ -106,6 +108,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   public TurretSubsystem(RobotStateManager robotStateManager, VisionSubsystem visionSubsystem) {
     this.positionErrorSupplier = () -> 0;
+    RSM = robotStateManager;
 
     // Initialize Motors
     turretMotor = new CANSparkMax(Constants.TurretConstants.TURRET_MOTOR_ID, MotorType.kBrushless);
@@ -211,6 +214,11 @@ public class TurretSubsystem extends SubsystemBase {
     pitchMotor.stopMotor();
   }
 
+  /**
+   * Calculates the turret rotation in radians
+   *
+   * @return
+   */
   public double calculateTurretPosition() {
     if (!Constants.enabledSubsystems.turretRotationEnabled) return 0;
     double encoderPosition =
@@ -383,6 +391,8 @@ public class TurretSubsystem extends SubsystemBase {
       final double motorOut = turretVelocityPIDController.calculate(getTurretVel(), targetVelocity);
       targetVelocityLog.log(targetVelocity);
       turretMotor.set(motorOut);
+
+      RSM.setTurretRotation(Rotation2d.fromRotations(calculateTurretPosition()));
 
       turretPositionEntry.log(Units.rotationsToDegrees(turretPosition));
       turretVelocityEntry.log(turretVelocity);

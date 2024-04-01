@@ -8,21 +8,28 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.stateManagement.PlacementMode;
+import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
 import frc.robot.utilities.TunableNumber;
+import java.util.ArrayList;
 
 public class ShooterCommandFactory {
   private final ShooterSubsystem subsystem;
+  private final RobotStateManager RSM;
   private ShuffleboardTab shooterTab = Shuffleboard.getTab("ShooterSubsystem");
   private TunableNumber leftTargetRPM;
   private TunableNumber rightTargetRPM;
 
-  public ShooterCommandFactory(ShooterSubsystem subsystem) {
+  public ShooterCommandFactory(ShooterSubsystem subsystem, RobotStateManager RSM) {
     this.subsystem = subsystem;
-    leftTargetRPM =
-        new TunableNumber("Left RPM", ShooterConstants.SHOOTER_LEFT_TARGET_RPM, subsystem);
-    rightTargetRPM =
-        new TunableNumber("Right RPM", ShooterConstants.SHOOTER_RIGHT_TARGET_RPM, subsystem);
+    this.RSM = RSM;
+    if (subsystem != null) {
+      leftTargetRPM =
+          new TunableNumber("Left RPM", ShooterConstants.SHOOTER_LEFT_TARGET_RPM, subsystem);
+      rightTargetRPM =
+          new TunableNumber("Right RPM", ShooterConstants.SHOOTER_RIGHT_TARGET_RPM, subsystem);
+    }
   }
 
   public Command intakeSource() {
@@ -62,7 +69,7 @@ public class ShooterCommandFactory {
     return new FunctionalCommand(
             () -> {
               subsystem.setShooterSpeeds(
-                  new SpeakerConfig(-1, leftTargetRPM.get(), rightTargetRPM.get()));
+                  new SpeakerConfig(-1, leftTargetRPM.getAsDouble(), rightTargetRPM.getAsDouble()));
             },
             () -> {},
             (a) -> {},
@@ -79,9 +86,17 @@ public class ShooterCommandFactory {
         subsystem
             .run(
                 () -> {
+                  if (RSM.getPlacementMode() == PlacementMode.SPEAKER) {
+                    subsystem.setShooterSpeeds(
+                        new SpeakerConfig(
+                            -1,
+                            ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT,
+                            ShooterConstants.SHOOTER_IDLE_SPEED_LEFT));
+                  }
                   subsystem.stop();
                 })
-            .withName("Idle Shooter command");
+            .withName("Idle Shooter command")
+            .asProxy();
     return command;
   }
 
@@ -95,7 +110,7 @@ public class ShooterCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
-    subsystem.setDefaultCommand(defaultCommand);
+    subsystem.setDefaultCommand(Commands.sequence(subsystem.runOnce(() -> {}), defaultCommand));
   }
 
   public boolean isShooterReady() {
@@ -106,5 +121,16 @@ public class ShooterCommandFactory {
   public Trigger getBeamBreak() {
     if (subsystem == null) return new Trigger(() -> false);
     return subsystem.getBeamBreak();
+  }
+
+  public Command[] getCommands() {
+    ArrayList<Command> cmds = new ArrayList<Command>();
+    cmds.add(this.intakeSource());
+    cmds.add(this.intakeSourceForTime());
+    cmds.add(this.intakeSpeakerSource());
+    cmds.add(this.outtake());
+    cmds.add(this.revShooter());
+    cmds.add(this.shooterIdle());
+    return cmds.toArray(new Command[cmds.size()]);
   }
 }

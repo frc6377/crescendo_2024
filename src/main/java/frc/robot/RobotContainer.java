@@ -6,8 +6,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -17,7 +15,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -27,6 +24,7 @@ import frc.robot.Constants.enabledSubsystems;
 import frc.robot.config.TunerConstants;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
+import frc.robot.stateManagement.ShooterMode;
 import frc.robot.subsystems.climberSubsystem.ClimberCommandFactory;
 import frc.robot.subsystems.climberSubsystem.ClimberSubsystem;
 import frc.robot.subsystems.intakeSubsystem.IntakeCommandFactory;
@@ -100,14 +98,20 @@ public class RobotContainer {
     } else {
       shooterSubsystem = null;
     }
-    shooterCommandFactory = new ShooterCommandFactory(shooterSubsystem);
+    shooterCommandFactory = new ShooterCommandFactory(shooterSubsystem, robotStateManager);
     if (enabledSubsystems.signalEnabled) {
-      signalingSubsystem = new SignalingSubsystem(1, OI.Driver::setRumble, robotStateManager);
+      signalingSubsystem =
+          new SignalingSubsystem(
+              (a) -> {
+                OI.Operator.setRumble(a);
+                OI.Driver.setRumble(a);
+              },
+              robotStateManager);
     } else {
       signalingSubsystem = null;
     }
     if (enabledSubsystems.drivetrainEnabled) {
-      drivetrain = TunerConstants.drivetrain;
+      drivetrain = TunerConstants.createDrivetrain(robotStateManager);
     } else {
       drivetrain = null;
     }
@@ -127,7 +131,7 @@ public class RobotContainer {
     if (enabledSubsystems.visionEnabled) {
       visionSubsystem =
           Constants.enabledSubsystems.usingPhoton
-              ? new PhotonSubsystem(drivetrain.getVisionMeasurementConsumer())
+              ? new PhotonSubsystem(drivetrain.getVisionMeasurementConsumer(), robotStateManager)
               : new LimelightSubsystem(
                   drivetrain.getVisionMeasurementConsumer(), robotStateManager);
     } else {
@@ -162,10 +166,6 @@ public class RobotContainer {
       registerCommands();
       autoChooser = AutoBuilder.buildAutoChooser("Lucy");
       configTab.add("Auton Selection", autoChooser).withSize(3, 1);
-    }
-
-    if (Robot.isSimulation() && Constants.enabledSubsystems.drivetrainEnabled) {
-      drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     }
 
     configureBindings();
@@ -260,10 +260,14 @@ public class RobotContainer {
 
     OI.getButton(OI.Operator.retractClimber).toggleOnTrue(climberCommandFactory.climb());
 
+    OI.getButton(OI.Operator.simple)
+        .whileTrue(
+            robotStateManager.setShooterMode(ShooterMode.SHORT_RANGE, ShooterMode.LONG_RANGE));
+
     new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
     new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());
-    new Trigger(() -> OI.Operator.controller.getPOV() == 90)
-        .onTrue(new InstantCommand(() -> robotStateManager.setShortRange()));
+    new Trigger(() -> OI.Operator.controller.getPOV() == 270)
+        .whileTrue(robotStateManager.setShooterMode(ShooterMode.LOB, ShooterMode.LONG_RANGE));
 
     new Trigger(() -> OI.Driver.controller.getPOV() == 0).whileTrue(intakeCommand());
   }
@@ -287,36 +291,23 @@ public class RobotContainer {
 
   private void configDriverFeedBack() {
     new Trigger(trapElvCommandFactory.getSourceBreak())
-        .and(() -> OI.Operator.controller.getPOV() == 0)
+        .and(() -> OI.Driver.controller.getPOV() == 0 || OI.Operator.controller.getPOV() == 0)
         .whileTrue(
             Commands.startEnd(
-                () -> {
-                  OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);
-                  OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);
-                },
-                () -> {
-                  OI.Driver.setRumble(0);
-                  OI.Operator.setRumble(0);
-                }));
+                () -> signalingSubsystem.startAmpSignal(), () -> signalingSubsystem.endSignal()));
     new Trigger(shooterCommandFactory::isShooterReady)
         .and(turretCommandFactory.isReady())
         .whileTrue(
             Commands.startEnd(
-                () -> OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH),
-                () -> OI.Operator.setRumble(0)));
+                () -> signalingSubsystem.startShooterSignal(),
+                () -> signalingSubsystem.endSignal()));
     shooterCommandFactory
         .getBeamBreak()
         .and(new Trigger(() -> OI.Operator.controller.getPOV() == 00))
         .whileTrue(
             Commands.startEnd(
-                () -> {
-                  OI.Driver.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);
-                  OI.Operator.setRumble(Constants.OperatorConstants.RUMBLE_STRENGTH);
-                },
-                () -> {
-                  OI.Driver.setRumble(0);
-                  OI.Operator.setRumble(0);
-                }));
+                () -> signalingSubsystem.startIntakeSignal(),
+                () -> signalingSubsystem.endSignal()));
   }
 
   private Command speakerSource() {
@@ -340,13 +331,10 @@ public class RobotContainer {
 
   private Command shootSpeaker() {
     return Commands.parallel(
-        Commands.either(
-            triggerCommandFactory.getShootCommand(),
-            triggerCommandFactory
-                .getShootCommand()
-                .onlyIf(() -> shooterCommandFactory.isShooterReady())
-                .asProxy(),
-            OI.getButton(OI.Operator.simple)),
+        triggerCommandFactory
+            .getShootCommand()
+            .onlyIf(() -> shooterCommandFactory.isShooterReady())
+            .asProxy(),
         shooterCommandFactory.revShooter());
   }
 

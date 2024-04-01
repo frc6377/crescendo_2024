@@ -2,6 +2,7 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -9,13 +10,19 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.LimelightConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.Robot;
 import frc.robot.config.LimelightConfig;
+import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.utilities.DebugEntry;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -27,6 +34,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
+  private final RobotStateManager RSM;
   private int measurementsUsed = 0;
   private double lastRecordedTime = 0;
   private PhotonTrackedTarget lastTarget = null;
@@ -43,13 +51,25 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   private PhotonPoseEstimator poseEstimator;
   private EstimatedRobotPose lastPose;
 
+  private HashMap<Integer, CachedTag> turretCache;
+
+  private record CachedTag(PhotonTrackedTarget target, double timeOutFPGA) {}
+
   private DebugEntry<Double> distanceEntryTag3 =
       new DebugEntry<Double>(0.0, "Distance To Tag 3 (m)", this);
   private DebugEntry<Double> distanceEntryTag4 =
       new DebugEntry<Double>(0.0, "Distance To Tag 4 (m)", this);
 
-  public PhotonSubsystem(BiConsumer<Pose2d, Double> measurementConsumer) {
-    this.measurementConsumer = measurementConsumer;
+  public PhotonSubsystem(BiConsumer<Pose2d, Double> measurementConsumer, RobotStateManager RSM) {
+    this.RSM = RSM;
+
+    turretCache = new HashMap<>();
+
+    this.measurementConsumer =
+        (a, b) -> {
+          if (checkPoseValidity(a)) measurementConsumer.accept(a, b);
+          else DriverStation.reportWarning("Rejected Position!", false);
+        };
     lastPose = new EstimatedRobotPose(new Pose3d(), 0, null, null);
     robotToCam =
         new Transform3d(
@@ -101,6 +121,16 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
     return lastPose.timestampSeconds;
   }
 
+  private boolean checkPoseValidity(Pose2d pose) {
+
+    if (MathUtil.clamp(pose.getX(), 0, LimelightConstants.FIELD_LENGTH) == pose.getX()
+        && MathUtil.clamp(pose.getY(), 0, LimelightConstants.FIELD_HALF_WIDTH * 2) == pose.getY()) {
+      return true; // pose is invalid
+    } else {
+      return false; // pose is valid
+    }
+  }
+
   private boolean checkPoseValidity(EstimatedRobotPose pose) {
     double distanceBetweenPoses =
         Math.sqrt(
@@ -120,26 +150,16 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   }
 
   public PhotonTrackedTarget getTurretLastResult(int id) {
-    turretResult = turretCamera.getLatestResult();
-    if (turretResult.hasTargets()) {
-      List<PhotonTrackedTarget> targets = turretResult.getTargets();
-      for (PhotonTrackedTarget target : targets) {
-        if (target.getFiducialId() == id) {
-          lastRecordedTime = turretResult.getTimestampSeconds();
-          lastTarget = target;
-          return lastTarget;
-        }
-      }
-    }
-    if (lastRecordedTime != 0
-        && lastRecordedTime + Constants.LimelightConstants.APRILTAG_STALE_TIME_SECONDS
-            < Timer.getFPGATimestamp()) {
-      return lastTarget;
-    } else {
-      lastRecordedTime = 0;
-      lastTarget = null;
+    CachedTag tag = turretCache.get(id);
+    if (tag == null) {
       return null;
     }
+    if (tag.timeOutFPGA() > Timer.getFPGATimestamp()) {
+      turretCache.remove(id);
+      return null;
+    }
+
+    return tag.target();
   }
 
   public double getTurretYaw(int id) {
@@ -169,17 +189,19 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       mainResult = mainCamera.getLatestResult();
       if (mainResult.hasTargets()) {
         List<PhotonTrackedTarget> targets = mainResult.getTargets();
-        if (targets.size() > 1) {
+        if (targets.size() >= VisionConstants.MIN_TARGETS_FOR_POSE) {
           EstimatedRobotPose newPose = getPVEstimatedPose();
-          if ((newPose.estimatedPose.getX() > 12) || (newPose.estimatedPose.getX() < 4.54)) {
+          // If MIN_TARGETS_FOR_POSE is one, then we don't need to ignore being far away from the
+          // speaker
+          if (VisionConstants.MIN_TARGETS_FOR_POSE == 1
+              || (newPose.estimatedPose.getX() > 12)
+              || (newPose.estimatedPose.getX() < 4.54)) {
             if (checkPoseValidity(newPose)) {
               lastPose = newPose;
             }
             measurementsUsed++;
             measurementConsumer.accept(getPose2d(), getTime());
-            if (measurementsUsed % 100 == 0) {
-              measurementEntry.log((double) measurementsUsed);
-            }
+            measurementEntry.log((double) measurementsUsed);
           }
         }
         // logging stuff
@@ -205,6 +227,29 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
           }
         }
       }
+
+      PhotonPipelineResult turretResult = turretCamera.getLatestResult();
+      double cacheTimeout = Timer.getFPGATimestamp() + 1;
+
+      var turretStream = turretResult.getTargets().stream();
+      turretStream.forEach(
+          (a) -> turretCache.put(a.getFiducialId(), new CachedTag(a, cacheTimeout)));
+
+      turretStream = turretResult.getTargets().stream();
+      List<CameraTrackedTarget> turretCameraTargets =
+          turretStream.map((a) -> new CameraTrackedTarget(CameraName.TURRET, a)).toList();
+      Optional<Pose2d> possible =
+          VisionMath.calculateRobotPoseSingleCamera(RSM, turretCameraTargets, aprilTagFieldLayout);
+
+      if (possible.isPresent()) {
+        Pose2d location = possible.get();
+        SmartDashboard.putNumberArray(
+            "Vision location",
+            new Double[] {location.getX(), location.getY(), location.getRotation().getDegrees()});
+        measurementConsumer.accept(possible.get(), Timer.getFPGATimestamp() - turretResult.getLatencyMillis()/1000);
+      }
     }
   }
+
+  public record CameraTrackedTarget(CameraName camera, PhotonTrackedTarget target) {}
 }

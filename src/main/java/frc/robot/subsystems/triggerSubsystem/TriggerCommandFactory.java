@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.TriggerConstants;
+import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 
 public class TriggerCommandFactory {
@@ -16,13 +17,14 @@ public class TriggerCommandFactory {
   }
 
   public Command getGroundLoadCommand(BooleanSupplier tof) {
-    return getLoadCommand().until(tof).andThen(getLoadForTime());
+    return getLoadCommand().until(tof).andThen(getLoadForTime()).withName("getGroundLoadCommand");
   }
 
   public Command getLoadForTime() {
     if (subsystem == null) return Commands.none();
 
-    return Commands.deadline(new WaitCommand(ShooterConstants.INTAKE_DELAY_SEC), getLoadCommand());
+    return Commands.deadline(new WaitCommand(ShooterConstants.INTAKE_DELAY_SEC), getLoadCommand())
+        .withName("getLoadForTime");
   }
 
   public Command getLoadCommand() {
@@ -31,7 +33,7 @@ public class TriggerCommandFactory {
 
   public Command getHoldCommand() {
     final Command command =
-        buildCommand(TriggerConstants.HOLD_PERCENTAGE).withName("getHoldCommand");
+        buildCommand(TriggerConstants.HOLD_PERCENTAGE).withName("getHoldCommand").asProxy();
     return command;
   }
 
@@ -41,7 +43,7 @@ public class TriggerCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
-    subsystem.setDefaultCommand(defaultCommand);
+    subsystem.setDefaultCommand(Commands.sequence(subsystem.runOnce(() -> {}), defaultCommand));
   }
 
   private Command buildCommand(double speed) {
@@ -52,6 +54,17 @@ public class TriggerCommandFactory {
   }
 
   public Command getEjectCommand() {
-    return buildCommand(TriggerConstants.EJECT_PERCENT);
+    return buildCommand(TriggerConstants.EJECT_PERCENT).asProxy();
+  }
+
+  public Command[] getCommands() {
+    ArrayList<Command> cmds = new ArrayList<Command>();
+    cmds.add(getGroundLoadCommand(() -> true));
+    cmds.add(getLoadForTime());
+    cmds.add(getLoadCommand());
+    cmds.add(getHoldCommand());
+    cmds.add(getShootCommand());
+    cmds.add(getEjectCommand());
+    return cmds.toArray(new Command[cmds.size()]);
   }
 }

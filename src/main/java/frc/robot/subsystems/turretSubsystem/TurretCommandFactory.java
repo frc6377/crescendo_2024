@@ -7,20 +7,27 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.Constants.CommandConstants;
+import frc.robot.Constants.CommandConstants.LobShotMode;
+import frc.robot.Constants.DevTools;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.TurretDataPoint;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
+import frc.robot.stateManagement.ShooterMode;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.HowdyMath;
+import frc.robot.utilities.TunableNumber;
+import java.util.ArrayList;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -33,6 +40,7 @@ public class TurretCommandFactory {
   final InterpolatingDoubleTreeMap pitchMap;
 
   DebugEntry<Double> limelightDistance;
+  TunableNumber shooterPitch;
 
   public TurretCommandFactory(
       TurretSubsystem subsystem,
@@ -40,9 +48,13 @@ public class TurretCommandFactory {
       VisionSubsystem visionSubsystem,
       Supplier<Rotation2d> rotationSupplier,
       Supplier<Translation2d> translationSupplier) {
-    limelightDistance = new DebugEntry<Double>(0D, "Limelight distance", subsystem);
+    SmartDashboard.putNumber("Shooter Pitch I swear", 0);
     this.subsystem = subsystem;
-    visionRotation = new DebugEntry<Double>(0d, "Vision Angle", subsystem);
+    if (subsystem != null) {
+      limelightDistance = new DebugEntry<Double>(0D, "Limelight distance", subsystem);
+      visionRotation = new DebugEntry<Double>(0d, "Vision Angle", subsystem);
+    }
+    if (subsystem != null) shooterPitch = new TunableNumber("Shooter Pitch", 0, subsystem);
     this.RSM = RSM;
     this.vision = visionSubsystem;
     this.rotationSupplier = rotationSupplier;
@@ -55,30 +67,24 @@ public class TurretCommandFactory {
 
   public Command stowTurret() {
     if (subsystem == null) return Commands.none();
-    return new InstantCommand(
-            () ->
-                subsystem.setTurretPos(
-                    Math.toRadians(Constants.TurretConstants.TURRET_STOWED_ANGLE)))
-        .alongWith(
-            new InstantCommand(
-                () ->
-                    subsystem.setPitchPos(
-                        Math.toRadians(Constants.TurretConstants.PITCH_STOWED_ANGLE))))
+    return subsystem
+        .runOnce(
+            () -> {
+              subsystem.setTurretPos(Math.toRadians(Constants.TurretConstants.TURRET_STOWED_ANGLE));
+              subsystem.setPitchPos(Math.toRadians(Constants.TurretConstants.PITCH_STOWED_ANGLE));
+            })
         .withName("StowTurretCommand")
         .asProxy();
   }
 
   public Command pickup() {
     if (subsystem == null) return Commands.none();
-    return new InstantCommand(
-            () ->
-                subsystem.setTurretPos(
-                    Math.toRadians(Constants.TurretConstants.TURRET_PICKUP_ANGLE)))
-        .alongWith(
-            new InstantCommand(
-                () ->
-                    subsystem.setPitchPos(
-                        Math.toRadians(Constants.TurretConstants.PITCH_PICKUP_ANGLE))))
+    return subsystem
+        .runOnce(
+            () -> {
+              subsystem.setTurretPos(Math.toRadians(Constants.TurretConstants.TURRET_PICKUP_ANGLE));
+              subsystem.setPitchPos(Math.toRadians(Constants.TurretConstants.PITCH_PICKUP_ANGLE));
+            })
         .withName("pickup")
         .asProxy();
   }
@@ -125,7 +131,8 @@ public class TurretCommandFactory {
               highGearCANcoderConfigurator.apply(newCfgHighGear);
             },
             subsystem)
-        .withName("zeroZeroing");
+        .withName("zeroZeroing")
+        .asProxy();
   }
 
   public Command zeroTurretCommand() {
@@ -137,34 +144,85 @@ public class TurretCommandFactory {
 
   public Command getAimTurretCommand() {
     if (subsystem == null) return new StartEndCommand(() -> {}, () -> {});
-    return Commands.either(shortRangeShot(), longRangeShot(), () -> false);
+
+    Supplier<Command> aimCommandSupplier =
+        () -> {
+          final ShooterMode shooterMode = RSM.getShooterMode();
+          switch (shooterMode) {
+            case LOB:
+              return lobShot();
+            case LONG_RANGE:
+              return longRangeShot();
+            case SHORT_RANGE:
+              return shortRangeShot();
+            default:
+              DriverStation.reportError(
+                  String.format("Unknown shooter mode provided (%s)", shooterMode), true);
+              return shortRangeShot();
+          }
+        };
+
+    return Commands.deferredProxy(aimCommandSupplier).withName("getAimTurretCommand");
+  }
+
+  private Command lobShot() {
+    if (CommandConstants.LOB_SHOT_MODE == LobShotMode.ODOMETRY_BASED) {
+      return subsystem.startEnd(
+          () -> {
+            subsystem.setPositionErrorSupplier(
+                () ->
+                    odometryPointing(RSM.getLobPosition()).getRotations()
+                        + subsystem.getTurretPos());
+            subsystem.setPitchPos(TurretConstants.LOB_PITCH);
+          },
+          () -> {});
+    }
+
+    // This handles both fixed and the error case of unknown lob shot mode
+    if (CommandConstants.LOB_SHOT_MODE != LobShotMode.FIXED) {
+      DriverStation.reportError("Unknown Lob shot mode set, defaulting to fixed", true);
+    }
+    return subsystem.startEnd(() -> subsystem.setTurretPos(0), () -> {});
   }
 
   public Command shortRangeShot() {
-    return subsystem.startEnd(
-        () -> {
-          subsystem.setTurretPos(Math.toRadians(00));
-          subsystem.setPitchPos(Math.toRadians(37));
-        },
-        () -> {});
+    if (subsystem == null) return Commands.none();
+    return subsystem
+        .startEnd(
+            () -> {
+              subsystem.setTurretPos(Math.toRadians(00));
+              subsystem.setPitchPos(Math.toRadians(37));
+            },
+            () -> {})
+        .withName("shortRangeShot")
+        .asProxy();
   }
 
   public Command longRangeShot() {
-    return subsystem.run(
-        () -> {
-          if (Constants.enabledSubsystems.turretRotationEnabled) {
-            visionTracking();
-          }
-          if (Constants.enabledSubsystems.turretPitchEnabled) {
-            double distance = distanceEstimateMeters();
-            limelightDistance.log(distance);
-            subsystem.setPitchPos(pitchMap.get(distance));
-          }
-        });
+    if (subsystem == null) return Commands.none();
+    return subsystem
+        .run(
+            () -> {
+              if (Constants.enabledSubsystems.turretRotationEnabled) {
+                visionTracking();
+              }
+              if (Constants.enabledSubsystems.turretPitchEnabled) {
+                double distance = distanceEstimateMeters() - TurretConstants.VISION_DISTANCE_OFFSET;
+                limelightDistance.log(distance);
+                if (DevTools.ShooterLinerizing) {
+                  subsystem.setPitchPos(
+                      Units.degreesToRadians(SmartDashboard.getNumber("Shooter Pitch I swear", 0)));
+                } else {
+                  subsystem.setPitchPos(pitchMap.get(distance));
+                }
+              }
+            })
+        .withName("longRangeShot")
+        .asProxy();
   }
 
   private void visionTracking() {
-    visionTracking(() -> odometryPointing());
+    visionTracking(() -> speakerPointing());
   }
 
   private void visionTracking(Supplier<Rotation2d> searchingBehavior) {
@@ -202,7 +260,7 @@ public class TurretCommandFactory {
           if (Double.isNaN(errDegrees)) {
             return searchingBehavior.get().getRotations() + subsystem.getTurretPos();
           }
-          double err = Units.degreesToRotations(errDegrees);
+          double err = Units.degreesToRotations(errDegrees - 4);
           return err;
         });
   }
@@ -215,20 +273,25 @@ public class TurretCommandFactory {
               subsystem.setTurretPos(0);
               moveToBottomOfTravel();
             })
-        .withName("idleTurret");
+        .withName("idleTurret")
+        .asProxy();
   }
 
   public Command pinTurret() {
-    return subsystem.run(
-        () -> {
-          if (subsystem.turretAtSetPoint(TurretConstants.ALLOWED_PIN_ERROR)) {
-            moveToBottomOfTravel();
-            // Effectivly disables the rotation motor
-            subsystem.setPositionErrorSupplier(() -> 0);
-          } else {
-            subsystem.setTurretPos(0);
-          }
-        });
+    if (subsystem == null) return Commands.none();
+    return subsystem
+        .run(
+            () -> {
+              if (subsystem.turretAtSetPoint(TurretConstants.ALLOWED_PIN_ERROR)) {
+                moveToBottomOfTravel();
+                // Effectivly disables the rotation motor
+                subsystem.setPositionErrorSupplier(() -> 0);
+              } else {
+                subsystem.setTurretPos(0);
+              }
+            })
+        .withName("pinTurret")
+        .asProxy();
   }
 
   public Command testTurretCommand(DoubleSupplier degrees) {
@@ -246,7 +309,22 @@ public class TurretCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
-    subsystem.setDefaultCommand(defaultCommand);
+    subsystem.setDefaultCommand(Commands.sequence(subsystem.runOnce(() -> {}), defaultCommand));
+  }
+
+  public Command[] getCommands() {
+    ArrayList<Command> cmds = new ArrayList<Command>();
+    cmds.add(stowTurret());
+    cmds.add(pickup());
+    cmds.add(zeroZeroing());
+    cmds.add(zeroTurretCommand());
+    cmds.add(getAimTurretCommand());
+    cmds.add(idleTurret());
+    cmds.add(testTurretCommand(() -> 0.0));
+    cmds.add(this.longRangeShot());
+    cmds.add(this.shortRangeShot());
+    cmds.add(this.pinTurret());
+    return cmds.toArray(new Command[cmds.size()]);
   }
 
   private void moveToBottomOfTravel() {
@@ -262,8 +340,11 @@ public class TurretCommandFactory {
     return translationSupplier.get().minus(RSM.speakerPosition());
   }
 
-  private Rotation2d odometryPointing() {
-    final Translation2d targetPosition = RSM.speakerPosition();
+  private Rotation2d speakerPointing() {
+    return odometryPointing(RSM.speakerPosition());
+  }
+
+  private Rotation2d odometryPointing(Translation2d targetPosition) {
     final Rotation2d targetTurretAngleRelToField =
         HowdyMath.getAngleToTarget(translationSupplier.get(), targetPosition);
     final Rotation2d targetTurretAngleRelToRobot =
@@ -276,5 +357,10 @@ public class TurretCommandFactory {
     return new Trigger(
         () ->
             subsystem.pitchAtSetpoint() && subsystem.turretAtSetPoint(Rotation2d.fromDegrees(2.5)));
+  }
+
+  public enum SearchingBehavior {
+    ODOMETRY,
+    STAY_STILL;
   }
 }
