@@ -3,24 +3,24 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.75,
+        "x": 3.75,
         "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.65,
+        "x": 3.65,
         "y": 5.55
       },
-      "isLocked": true,
+      "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.383130458568611,
+        "x": 2.75,
         "y": 5.55
       },
       "prevControl": {
-        "x": 1.483130458568611,
+        "x": 2.85,
         "y": 5.55
       },
       "nextControl": null,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Sandra",
+  "folder": "Scott",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

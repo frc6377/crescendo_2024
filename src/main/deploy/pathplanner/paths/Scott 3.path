@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.3,
-        "y": 2.75
+        "x": 2.75,
+        "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.98755397510795,
-        "y": 3.053010101404818
+        "x": 2.65,
+        "y": 5.55
       },
-      "isLocked": false,
-      "linkedName": "D4"
+      "isLocked": true,
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.75,
+        "x": 1.383130458568611,
         "y": 5.55
       },
       "prevControl": {
-        "x": 4.203879369297201,
-        "y": 4.533704890486705
+        "x": 1.483130458568611,
+        "y": 5.55
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Mid Ring Feild Shot"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -39,13 +39,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Lucy",
+  "folder": "Scott",
   "previewStartingState": {
-    "rotation": 0.0,
+    "rotation": 0,
     "velocity": 0
   },
   "useDefaultConstraints": true

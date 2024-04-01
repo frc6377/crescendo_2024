@@ -24,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Sandra 1"
+                  "pathName": "Scott 1"
                 }
               },
               {
@@ -52,7 +52,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Sandra 2"
+            "pathName": "Scott 2"
           }
         },
         {
@@ -64,7 +64,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Sandra 3"
+            "pathName": "Scott 3"
           }
         }
       ]

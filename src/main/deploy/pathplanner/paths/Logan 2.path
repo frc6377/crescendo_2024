@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.75,
-        "y": 5.55
+        "x": 8.3,
+        "y": 4.1046482092964185
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.65,
-        "y": 5.55
+        "x": 6.200000000000001,
+        "y": 4.1046482092964185
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "D3"
     },
     {
       "anchor": {
-        "x": 2.75,
+        "x": 3.75,
         "y": 5.55
       },
       "prevControl": {
-        "x": 2.85,
-        "y": 5.55
+        "x": 6.781088913245536,
+        "y": 3.8000000000000007
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Mid Ring Feild Shot"
     }
   ],
   "rotationTargets": [],
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Sandra",
+  "folder": "Logan",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0
