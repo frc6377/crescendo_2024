@@ -130,7 +130,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
    * @return if the pose is valid
    */
   private boolean checkPoseValidity(Pose2d pose) {
-    // ensure
+    // ensure the pose is on the field
     if (HowdyMath.inRange(pose.getX(), 0, LimelightConstants.FIELD_LENGTH) &&
         HowdyMath.inRange(pose.getY(), 0, LimelightConstants.FIELD_HALF_WIDTH * 2)) {
       return true;
