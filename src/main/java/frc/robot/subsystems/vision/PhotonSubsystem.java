@@ -246,7 +246,8 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
         SmartDashboard.putNumberArray(
             "Vision location",
             new Double[] {location.getX(), location.getY(), location.getRotation().getDegrees()});
-        measurementConsumer.accept(possible.get(), Timer.getFPGATimestamp() - turretResult.getLatencyMillis()/1000);
+        measurementConsumer.accept(
+            possible.get(), Timer.getFPGATimestamp() - turretResult.getLatencyMillis() / 1000);
       }
     }
   }
