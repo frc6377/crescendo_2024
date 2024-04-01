@@ -154,7 +154,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
     if (tag == null) {
       return null;
     }
-    if (tag.timeOutFPGA() > Timer.getFPGATimestamp()) {
+    if (tag.timeOutFPGA() < Timer.getFPGATimestamp()) {
       turretCache.remove(id);
       return null;
     }
