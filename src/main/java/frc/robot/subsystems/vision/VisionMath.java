@@ -28,16 +28,37 @@ public class VisionMath {
     public NTagMethod nTagMethod = NTagMethod.NONE;
   }
 
+  /**
+   * Calculates the robot position with default vision math configuration.
+   * To be distributed to the correct position calcuation method based on the default vision config.
+   * Will return an empty optional if no method is applicable.
+   * 
+   * @param RSM the robot state
+   * @param targets the targets in view
+   * @param layout the lay out of april tags
+   * @return the approximate location of the robot.
+   */
   public static Optional<Pose2d> calculateRobotPoseSingleCamera(
       RobotStateManager RSM, List<CameraTrackedTarget> targets, AprilTagFieldLayout layout) {
     return calculateRobotPoseSingleCamera(RSM, targets, layout, new VisionMathConfig());
   }
 
+  /**
+   * Calculates the robot position with the given vision math configuration.
+   * To be distributed to the correct position calcuation method based on the default vision config.
+   * Will return an empty optional if no method is applicable.
+   * 
+   * @param RSM the robot state
+   * @param targets the targets in view
+   * @param layout the lay out of april tags
+   * @param visionConfig the vision configuration to use
+   * @return the approximate location of the robot. if a target is in view
+   */
   public static Optional<Pose2d> calculateRobotPoseSingleCamera(
       RobotStateManager RSM,
       List<CameraTrackedTarget> targets,
       AprilTagFieldLayout layout,
-      VisionMathConfig vCfg) {
+      VisionMathConfig visionConfig) {
     if (targets.size() == 0) return Optional.empty();
     // This is a safe access due to the above check
     CameraName camera = targets.get(0).camera();
@@ -48,7 +69,7 @@ public class VisionMath {
 
     // Handle Single Tag Check
     if (targets.size() == 1) {
-      switch (vCfg.singleTagMethod) {
+      switch (visionConfig.singleTagMethod) {
         case DISTANCE_LINE:
           return lineDistanceMethodSingleTarget(targets.get(0));
         default:
@@ -59,7 +80,7 @@ public class VisionMath {
     }
 
     if (targets.size() == 2) {
-      switch (vCfg.twoTagMethod) {
+      switch (visionConfig.twoTagMethod) {
         case INTERCEPTING_CIRCLE:
           return cirlceBasedTwoTagPosition(targets, layout, RSM);
         default:
@@ -69,7 +90,7 @@ public class VisionMath {
       }
     }
 
-    switch (vCfg.nTagMethod) {
+    switch (visionConfig.nTagMethod) {
       case NONE:
         return Optional.empty();
       default:
@@ -84,8 +105,7 @@ public class VisionMath {
    * <p>Then solving for where the two distances intercept, and discarding the one that is behind
    * the tags.
    *
-   * <p>Based off of solution presented
-   * here:https://www.johndcook.com/blog/2023/08/27/intersect-circles/
+   * <p>Based off of solution presented here {@link https://www.johndcook.com/blog/2023/08/27/intersect-circles/}
    *
    * @param targets the targets to calculate robot position off of. Must comprise only 2 tags from
    *     the same camera
@@ -166,6 +186,7 @@ public class VisionMath {
     double ya = Math.sqrt(y2);
     double yb = -ya;
 
+    // TODO: Check both possible locations for feasiblity besides deafault
     Translation2d pointRelativeTagAToBOptA = new Translation2d(aTowardsBDistance, ya);
     Translation2d pointRelativeTagAToBOptB = new Translation2d(aTowardsBDistance, yb);
 
@@ -188,16 +209,38 @@ public class VisionMath {
     return Optional.of(new Pose2d(robotPosition.getTranslation(), RSM.getRobotRotation()));
   }
 
+  /**
+   * Approximates the robtot location using a single tag. 
+   * @deprecated - To be implemented
+   * 
+   * @param target
+   * @return
+   */
   public static Optional<Pose2d> lineDistanceMethodSingleTarget(CameraTrackedTarget target) {
     // To use PhotonUtils.estimateFieldToRobot
     return Optional.empty();
   }
 
+  /**
+   * Uses a list of targets and calculates the cameras distance to each.
+   * the distance is the distance to the camera that sees it.
+   * @param targets the targets to calculate the distance to
+   * @param layout the layout of apriltags
+   * @param RSM the current robot state
+   * @return the distance to each tag, in the same order given
+   */
   public static List<Measure<Distance>> tagsToCameraDistance(
       List<CameraTrackedTarget> targets, AprilTagFieldLayout layout, RobotStateManager RSM) {
     return targets.stream().map((a) -> VisionMath.tagToCameraDistance(a, layout, RSM)).toList();
   }
 
+  /**
+   * Calculates the distance from a CameraTrackedObject to the camera
+   * @param cameraTarget the target
+   * @param layout the layout of april tags
+   * @param RSM the current robot state
+   * @return the distance from the april tag
+   */
   private static Measure<Distance> tagToCameraDistance(
       CameraTrackedTarget cameraTarget, AprilTagFieldLayout layout, RobotStateManager RSM) {
     PhotonTrackedTarget target = cameraTarget.target();
