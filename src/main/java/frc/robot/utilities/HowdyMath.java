@@ -26,11 +26,16 @@ public class HowdyMath {
     return new Rotation2d(delta.getX(), delta.getY());
   }
 
-  // Returns modulo inverse of a
-  // with respect to m using extended
-  // Euclid Algorithm. Refer below post for details:
-  //
-  // ax mod m = 1
+  /** 
+   * Returns modulo inverse of a
+   * with respect to m using extended
+   * Euclid Algorithm. Refer below post for details:
+   *
+   * <p>ax mod m = 1
+   * @param a the scalar to use
+   * @param m the value to modulo by
+   * @retrun the modulo inverse
+   */
   public static int inverse_modulus(int a, int m) {
     int m0 = m, t, q;
     int x0 = 0, x1 = 1;
