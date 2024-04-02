@@ -197,7 +197,7 @@ public class VisionMath {
     // Currently arbitraily using point A
     Translation2d robotTranslation =
         pointRelativeTagAToBOptA
-            .rotateBy(circleSpaceToRealRotatioo
+            .rotateBy(circleSpaceToRealRotation)
             .plus(circleSpaceToRealTranslation);
 
     Pose2d cameraPosition =
