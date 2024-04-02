@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9,
-        "y": 6.825
+        "x": 1.4,
+        "y": 7.0
       },
       "isLocked": false,
       "linkedName": "B1"
     },
     {
       "anchor": {
-        "x": 0.75,
-        "y": 6.65
+        "x": 1.33,
+        "y": 5.55
       },
       "prevControl": {
-        "x": 1.825,
-        "y": 6.65
+        "x": 2.33,
+        "y": 5.55
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "A1"
+      "linkedName": "A2"
     }
   ],
   "rotationTargets": [],
@@ -39,13 +39,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 60,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Olivia",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 0.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

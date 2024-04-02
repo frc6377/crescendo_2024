@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.33,
-        "y": 4.825
+        "x": 2.33,
+        "y": 5.55
       },
       "isLocked": false,
       "linkedName": "A2"
     },
     {
       "anchor": {
-        "x": 2.65,
-        "y": 4.1
+        "x": 2.9,
+        "y": 7.0
       },
       "prevControl": {
-        "x": 1.99,
-        "y": 4.1
+        "x": 1.4,
+        "y": 7.0
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "B3"
+      "linkedName": "B1"
     }
   ],
   "rotationTargets": [],
@@ -43,9 +43,9 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Olivia",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 0.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

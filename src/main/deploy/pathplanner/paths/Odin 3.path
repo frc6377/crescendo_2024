@@ -49,7 +49,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Odin",
   "previewStartingState": {
     "rotation": -90.0,
     "velocity": 0

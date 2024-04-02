@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.33,
-        "y": 5.55
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 1.33,
-        "y": 4.825
-      },
-      "isLocked": false,
-      "linkedName": "A2"
-    },
-    {
-      "anchor": {
         "x": 2.65,
         "y": 4.1
       },
-      "prevControl": {
-        "x": 1.99,
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.65,
         "y": 4.1
+      },
+      "isLocked": false,
+      "linkedName": "B3"
+    },
+    {
+      "anchor": {
+        "x": 1.33,
+        "y": 5.55
+      },
+      "prevControl": {
+        "x": 2.33,
+        "y": 5.55
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "B3"
+      "linkedName": "A2"
     }
   ],
   "rotationTargets": [],
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Olivia",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0
