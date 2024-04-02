@@ -8,12 +8,13 @@ import edu.wpi.first.math.geometry.Translation2d;
 public class HowdyMath {
   /**
    * Checks if the value is in the range. Inclusive on both sides
+   *
    * @param value the value to check
    * @param min the minimum value
    * @param max the maximum value
    * @return if the value is between the max and min values
    */
-  public static boolean inRange(double value, double min, double max){
+  public static boolean inRange(double value, double min, double max) {
     return value <= max && value >= min;
   }
 
@@ -26,12 +27,12 @@ public class HowdyMath {
     return new Rotation2d(delta.getX(), delta.getY());
   }
 
-  /** 
-   * Returns modulo inverse of a
-   * with respect to m using extended
-   * Euclid Algorithm. Refer below post for details:
+  /**
+   * Returns modulo inverse of a with respect to m using extended Euclid Algorithm. Refer below post
+   * for details:
    *
    * <p>ax mod m = 1
+   *
    * @param a the scalar to use
    * @param m the value to modulo by
    * @retrun the modulo inverse

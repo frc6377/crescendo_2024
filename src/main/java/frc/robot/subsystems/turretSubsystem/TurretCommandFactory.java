@@ -48,7 +48,7 @@ public class TurretCommandFactory {
       VisionSubsystem visionSubsystem,
       Supplier<Rotation2d> rotationSupplier,
       Supplier<Translation2d> translationSupplier) {
-    SmartDashboard.putNumber("Shooter Pitch I swear", 0);
+    SmartDashboard.putNumber("Set Shooter Pitch", 0);
     this.subsystem = subsystem;
     if (subsystem != null) {
       limelightDistance = new DebugEntry<Double>(0D, "Limelight distance", subsystem);
@@ -203,15 +203,16 @@ public class TurretCommandFactory {
     return subsystem
         .run(
             () -> {
-              if (Constants.enabledSubsystems.turretRotationEnabled) {
+              if (Constants.enabledSubsystems.turretRotationEnabled
+                  && !DevTools.ShooterLinerizing) {
                 visionTracking();
               }
               if (Constants.enabledSubsystems.turretPitchEnabled) {
-                double distance = distanceEstimateMeters() - TurretConstants.VISION_DISTANCE_OFFSET;
+                double distance = distanceEstimateMeters();
                 limelightDistance.log(distance);
                 if (DevTools.ShooterLinerizing) {
                   subsystem.setPitchPos(
-                      Units.degreesToRadians(SmartDashboard.getNumber("Shooter Pitch I swear", 0)));
+                      Units.degreesToRadians(SmartDashboard.getNumber("Set Shooter Pitch", 0)));
                 } else {
                   subsystem.setPitchPos(pitchMap.get(distance));
                 }

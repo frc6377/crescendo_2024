@@ -29,10 +29,10 @@ public class VisionMath {
   }
 
   /**
-   * Calculates the robot position with default vision math configuration.
-   * To be distributed to the correct position calcuation method based on the default vision config.
-   * Will return an empty optional if no method is applicable.
-   * 
+   * Calculates the robot position with default vision math configuration. To be distributed to the
+   * correct position calcuation method based on the default vision config. Will return an empty
+   * optional if no method is applicable.
+   *
    * @param RSM the robot state
    * @param targets the targets in view
    * @param layout the lay out of april tags
@@ -44,10 +44,10 @@ public class VisionMath {
   }
 
   /**
-   * Calculates the robot position with the given vision math configuration.
-   * To be distributed to the correct position calcuation method based on the default vision config.
-   * Will return an empty optional if no method is applicable.
-   * 
+   * Calculates the robot position with the given vision math configuration. To be distributed to
+   * the correct position calcuation method based on the default vision config. Will return an empty
+   * optional if no method is applicable.
+   *
    * @param RSM the robot state
    * @param targets the targets in view
    * @param layout the lay out of april tags
@@ -105,7 +105,8 @@ public class VisionMath {
    * <p>Then solving for where the two distances intercept, and discarding the one that is behind
    * the tags.
    *
-   * <p>Based off of solution presented here {@link https://www.johndcook.com/blog/2023/08/27/intersect-circles/}
+   * <p>Based off of solution presented here {@link
+   * https://www.johndcook.com/blog/2023/08/27/intersect-circles/}
    *
    * @param targets the targets to calculate robot position off of. Must comprise only 2 tags from
    *     the same camera
@@ -210,9 +211,9 @@ public class VisionMath {
   }
 
   /**
-   * Approximates the robtot location using a single tag. 
+   * Approximates the robtot location using a single tag.
+   *
    * @deprecated - To be implemented
-   * 
    * @param target
    * @return
    */
@@ -222,8 +223,9 @@ public class VisionMath {
   }
 
   /**
-   * Uses a list of targets and calculates the cameras distance to each.
-   * the distance is the distance to the camera that sees it.
+   * Uses a list of targets and calculates the cameras distance to each. the distance is the
+   * distance to the camera that sees it.
+   *
    * @param targets the targets to calculate the distance to
    * @param layout the layout of apriltags
    * @param RSM the current robot state
@@ -236,6 +238,7 @@ public class VisionMath {
 
   /**
    * Calculates the distance from a CameraTrackedObject to the camera
+   *
    * @param cameraTarget the target
    * @param layout the layout of april tags
    * @param RSM the current robot state
