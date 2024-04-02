@@ -369,7 +369,7 @@ public class RobotContainer {
                     .getShootCommand()
                     .withTimeout(1)
                     .until(shooterCommandFactory.getBeamBreak().negate())),
-        );
+        prepareToScoreSpeakerShortRangeAutonOnly());
   }
 
   private Command shootAutonLong() {
