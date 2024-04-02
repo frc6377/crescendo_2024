@@ -180,32 +180,15 @@ public final class Constants {
     public static final Rotation2d ALLOWED_PIN_ERROR = Rotation2d.fromDegrees(2);
 
     public static final TurretDataPoint[] TURRET_DATA = {
-      // Verified 5/5
+      
       new TurretDataPoint(Units.inchesToMeters(13.22), 1.523, Units.degreesToRadians(32)),
-      // Verified at 6 of 6
-      // 5 deg left 0.393m
+      new TurretDataPoint(Units.inchesToMeters(-1), 1.66, Units.degreesToRadians(32)),
       new TurretDataPoint(Units.inchesToMeters(15.5), 1.69, Units.degreesToRadians(30)),
-      // Verified at 5
-      new TurretDataPoint(Units.inchesToMeters(21.75), 1.8, Units.degreesToRadians(28)),
-      // Verified at 5 of 6
-      new TurretDataPoint(Units.inchesToMeters(59.5), 2.6, Units.degreesToRadians(20)),
-      // Verified at 7 of 8
-      // 5 deg left
-      new TurretDataPoint(Units.inchesToMeters(62), 2.65, Units.degreesToRadians(18)),
-      // Verified 8/12
-      new TurretDataPoint(Units.inchesToMeters(66.81), 2.7, Units.degreesToRadians(19)),
-      // Verified at 6 of 6
-      // 5 deg left
-      new TurretDataPoint(Units.inchesToMeters(83), 3.11, Units.degreesToRadians(16)),
-      // Verified 4/6
-      new TurretDataPoint(Units.inchesToMeters(99.60), 3.327, Units.degreesToRadians(15)),
-      // Verified 4/6
+      new TurretDataPoint(Units.inchesToMeters(-1), 1.94, Units.degreesToRadians(29)),
+      new TurretDataPoint(Units.inchesToMeters(-1), 2.37, Units.degreesToRadians(25)),
+      new TurretDataPoint(Units.inchesToMeters(-1), 2.76, Units.degreesToRadians(23)),
+      new TurretDataPoint(Units.inchesToMeters(-1), 3.25, Units.degreesToRadians(18.5)),
       new TurretDataPoint(Units.inchesToMeters(122), 4.59, Units.degreesToRadians(12.5)),
-      /*
-       * Real, LL, Pitch
-       * 0.328m, 1.523, 32, 5/5
-       * 1.697m, 1.693,
-       */
     };
     public static final double PITCH_TOLERANCE = 1;
     public static final double SIMULATION_CG_MAGIC_NUMBER = 2;
@@ -387,7 +370,9 @@ public final class Constants {
     }
   }
 
+  // Enable and disable devolpment behavior
   public static class DevTools {
-    public static final boolean ShooterLinerizing = false;
+    // Make it so the shooter goes to the set shooter pitch when firing
+    public static final boolean ShooterLinerizing = true;
   }
 }

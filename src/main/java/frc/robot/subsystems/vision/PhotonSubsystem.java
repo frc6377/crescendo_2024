@@ -2,7 +2,6 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -22,6 +21,7 @@ import frc.robot.Robot;
 import frc.robot.config.LimelightConfig;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.utilities.DebugEntry;
+import frc.robot.utilities.HowdyMath;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -121,13 +121,19 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
     return lastPose.timestampSeconds;
   }
 
+  /**
+   * Checks if the given pose is valid to give to odometry
+   *
+   * @param pose the pose to check
+   * @return if the pose is valid
+   */
   private boolean checkPoseValidity(Pose2d pose) {
-
-    if (MathUtil.clamp(pose.getX(), 0, LimelightConstants.FIELD_LENGTH) == pose.getX()
-        && MathUtil.clamp(pose.getY(), 0, LimelightConstants.FIELD_HALF_WIDTH * 2) == pose.getY()) {
-      return true; // pose is invalid
+    // ensure the pose is on the field
+    if (HowdyMath.inRange(pose.getX(), 0, LimelightConstants.FIELD_LENGTH)
+        && HowdyMath.inRange(pose.getY(), 0, LimelightConstants.FIELD_HALF_WIDTH * 2)) {
+      return true;
     } else {
-      return false; // pose is valid
+      return false;
     }
   }
 
@@ -154,7 +160,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
     if (tag == null) {
       return null;
     }
-    if (tag.timeOutFPGA() > Timer.getFPGATimestamp()) {
+    if (tag.timeOutFPGA() < Timer.getFPGATimestamp()) {
       turretCache.remove(id);
       return null;
     }
@@ -235,6 +241,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       turretStream.forEach(
           (a) -> turretCache.put(a.getFiducialId(), new CachedTag(a, cacheTimeout)));
 
+      // Recreating Stream because streams can only be operated on once.
       turretStream = turretResult.getTargets().stream();
       List<CameraTrackedTarget> turretCameraTargets =
           turretStream.map((a) -> new CameraTrackedTarget(CameraName.TURRET, a)).toList();
@@ -246,8 +253,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
         SmartDashboard.putNumberArray(
             "Vision location",
             new Double[] {location.getX(), location.getY(), location.getRotation().getDegrees()});
-        measurementConsumer.accept(
-            possible.get(), Timer.getFPGATimestamp() - turretResult.getLatencyMillis() / 1000);
+        measurementConsumer.accept(location, turretResult.getTimestampSeconds());
       }
     }
   }

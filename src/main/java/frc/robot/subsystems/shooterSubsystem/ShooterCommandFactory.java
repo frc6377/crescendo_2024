@@ -92,8 +92,9 @@ public class ShooterCommandFactory {
                             -1,
                             ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT,
                             ShooterConstants.SHOOTER_IDLE_SPEED_LEFT));
+                  } else {
+                    subsystem.stop();
                   }
-                  subsystem.stop();
                 })
             .withName("Idle Shooter command")
             .asProxy();
