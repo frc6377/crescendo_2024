@@ -182,23 +182,13 @@ public final class Constants {
     public static final TurretDataPoint[] TURRET_DATA = {
       
       new TurretDataPoint(Units.inchesToMeters(13.22), 1.523, Units.degreesToRadians(32)),
-      new TurretDataPoint(Units.inchesToMeters(-1), 166, Units.degreesToRadians(32)),
+      new TurretDataPoint(Units.inchesToMeters(-1), 1.66, Units.degreesToRadians(32)),
       new TurretDataPoint(Units.inchesToMeters(15.5), 1.69, Units.degreesToRadians(30)),
-      new TurretDataPoint(Units.inchesToMeters(21.75), 1.8, Units.degreesToRadians(28)),
       new TurretDataPoint(Units.inchesToMeters(-1), 1.94, Units.degreesToRadians(29)),
       new TurretDataPoint(Units.inchesToMeters(-1), 2.37, Units.degreesToRadians(25)),
-      new TurretDataPoint(Units.inchesToMeters(13.22), 2.76, Units.degreesToRadians(23)),
-      new TurretDataPoint(Units.inchesToMeters(62), 2.65, Units.degreesToRadians(18)),
-      new TurretDataPoint(Units.inchesToMeters(66.81), 2.7, Units.degreesToRadians(19)),
+      new TurretDataPoint(Units.inchesToMeters(-1), 2.76, Units.degreesToRadians(23)),
       new TurretDataPoint(Units.inchesToMeters(-1), 3.25, Units.degreesToRadians(18.5)),
-      new TurretDataPoint(Units.inchesToMeters(99.60), 3.327, Units.degreesToRadians(15)),
-
       new TurretDataPoint(Units.inchesToMeters(122), 4.59, Units.degreesToRadians(12.5)),
-      /*
-       * Real, LL, Pitch
-       * 0.328m, 1.523, 32, 5/5
-       * 1.697m, 1.693,
-       */
     };
     public static final double PITCH_TOLERANCE = 1;
     public static final double SIMULATION_CG_MAGIC_NUMBER = 2;
