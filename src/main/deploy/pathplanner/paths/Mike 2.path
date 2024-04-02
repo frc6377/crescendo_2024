@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 4.185342216838282,
-        "y": 5.436685488755594
+        "x": 2.9,
+        "y": 6.25
       },
       "prevControl": {
-        "x": 5.043766241378638,
-        "y": 6.660186397295872
+        "x": 4.9,
+        "y": 6.25
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Mike",
+  "folder": null,
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.67,
-        "y": 6.7
+        "x": 0.75,
+        "y": 6.65
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.2843640332167439,
-        "y": 7.1301823272632845
+        "x": 1.364364033216744,
+        "y": 7.080182327263285
       },
       "isLocked": false,
       "linkedName": "A1"
@@ -49,7 +49,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Gus",
+  "folder": null,
   "previewStartingState": {
     "rotation": 60.0,
     "velocity": 0

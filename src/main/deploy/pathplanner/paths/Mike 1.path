@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.67,
-        "y": 6.7
+        "x": 0.75,
+        "y": 6.65
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.284461030460524,
-        "y": 7.942888962701003
+        "x": 1.364461030460524,
+        "y": 7.8928889627010035
       },
       "isLocked": false,
       "linkedName": "A1"
@@ -49,7 +49,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Mike",
+  "folder": null,
   "previewStartingState": {
     "rotation": 60.0,
     "velocity": 0

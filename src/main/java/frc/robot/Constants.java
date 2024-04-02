@@ -180,7 +180,6 @@ public final class Constants {
     public static final Rotation2d ALLOWED_PIN_ERROR = Rotation2d.fromDegrees(2);
 
     public static final TurretDataPoint[] TURRET_DATA = {
-      
       new TurretDataPoint(Units.inchesToMeters(13.22), 1.523, Units.degreesToRadians(32)),
       new TurretDataPoint(Units.inchesToMeters(-1), 1.66, Units.degreesToRadians(32)),
       new TurretDataPoint(Units.inchesToMeters(15.5), 1.69, Units.degreesToRadians(30)),
@@ -373,6 +372,6 @@ public final class Constants {
   // Enable and disable devolpment behavior
   public static class DevTools {
     // Make it so the shooter goes to the set shooter pitch when firing
-    public static final boolean ShooterLinerizing = true;
+    public static final boolean ShooterLinerizing = false;
   }
 }

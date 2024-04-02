@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -23,6 +25,7 @@ import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.enabledSubsystems;
 import frc.robot.config.TunerConstants;
 import frc.robot.stateManagement.AllianceColor;
+import frc.robot.stateManagement.PlacementMode;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.stateManagement.ShooterMode;
 import frc.robot.subsystems.climberSubsystem.ClimberCommandFactory;
@@ -297,6 +300,8 @@ public class RobotContainer {
                 () -> signalingSubsystem.startAmpSignal(), () -> signalingSubsystem.endSignal()));
     new Trigger(shooterCommandFactory::isShooterReady)
         .and(turretCommandFactory.isReady())
+        .and(() -> robotStateManager.getPlacementMode() == PlacementMode.SPEAKER)
+        .and(OI.getTrigger(OI.Operator.prepareToFire))
         .whileTrue(
             Commands.startEnd(
                 () -> signalingSubsystem.startShooterSignal(),
@@ -363,13 +368,21 @@ public class RobotContainer {
   private Command shootAutonShort() {
     return Commands.deadline(
         Commands.waitUntil(
-                turretCommandFactory.isReady().and(() -> shooterCommandFactory.isShooterReady()))
+                turretCommandFactory
+                    .isReady()
+                    .and(() -> shooterCommandFactory.isShooterReady())
+                    .debounce(0.25))
             .andThen(
                 triggerCommandFactory
                     .getShootCommand()
                     .withTimeout(1)
                     .until(shooterCommandFactory.getBeamBreak().negate())),
-        prepareToScoreSpeakerShortRangeAutonOnly());
+        new InstantCommand(
+                () -> {
+                  /* I wish i could tell u why this is needed. don't remove */
+                },
+                new Subsystem[0])
+            .andThen(prepareToScoreSpeakerShortRangeAutonOnly()));
   }
 
   private Command shootAutonLong() {
