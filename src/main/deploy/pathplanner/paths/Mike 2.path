@@ -16,11 +16,11 @@
     },
     {
       "anchor": {
-        "x": 3.75,
+        "x": 4.0,
         "y": 5.55
       },
       "prevControl": {
-        "x": 5.0355752193730785,
+        "x": 5.285575219373077,
         "y": 7.082088886237956
       },
       "nextControl": null,
@@ -58,7 +58,7 @@
             {
               "type": "named",
               "data": {
-                "name": "Prepare To Fire Short"
+                "name": "Prepare To Fire Long"
               }
             }
           ]
