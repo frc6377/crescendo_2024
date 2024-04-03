@@ -47,23 +47,6 @@
           ]
         }
       }
-    },
-    {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0.65,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Prepare To Fire Long"
-              }
-            }
-          ]
-        }
-      }
     }
   ],
   "globalConstraints": {
