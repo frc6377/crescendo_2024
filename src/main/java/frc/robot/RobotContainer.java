@@ -9,6 +9,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CommandConstants;
 import frc.robot.Constants.DriverConstants;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.enabledSubsystems;
 import frc.robot.config.TunerConstants;
 import frc.robot.stateManagement.AllianceColor;
@@ -48,6 +50,7 @@ import frc.robot.subsystems.turretSubsystem.TurretSubsystem;
 import frc.robot.subsystems.vision.LimelightSubsystem;
 import frc.robot.subsystems.vision.PhotonSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
+import frc.robot.utilities.TOFSensorSimple;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.DoubleSupplier;
@@ -273,6 +276,8 @@ public class RobotContainer {
         .whileTrue(robotStateManager.setShooterMode(ShooterMode.LOB, ShooterMode.LONG_RANGE));
 
     new Trigger(() -> OI.Driver.controller.getPOV() == 0).whileTrue(intakeCommand());
+    OI.getButton(OI.Operator.disableOdomTracking)
+        .whileTrue(robotStateManager.setShooterMode(ShooterMode.NO_ODOM, ShooterMode.LONG_RANGE));
   }
 
   private Command outtakeCommand() {
@@ -298,10 +303,10 @@ public class RobotContainer {
         .whileTrue(
             Commands.startEnd(
                 () -> signalingSubsystem.startAmpSignal(), () -> signalingSubsystem.endSignal()));
-    new Trigger(shooterCommandFactory::isShooterReady)
+    new Trigger(OI.getTrigger(OI.Operator.prepareToFire))
         .and(turretCommandFactory.isReady())
         .and(() -> robotStateManager.getPlacementMode() == PlacementMode.SPEAKER)
-        .and(OI.getTrigger(OI.Operator.prepareToFire))
+        .and(shooterCommandFactory::isShooterReady)
         .whileTrue(
             Commands.startEnd(
                 () -> signalingSubsystem.startShooterSignal(),
@@ -313,6 +318,18 @@ public class RobotContainer {
             Commands.startEnd(
                 () -> signalingSubsystem.startIntakeSignal(),
                 () -> signalingSubsystem.endSignal()));
+    new TOFSensorSimple(3, 50)
+        .beamBroken()
+        .onTrue(
+            Commands.startEnd(
+                () -> {
+                  OI.Driver.controller.setRumble(
+                      RumbleType.kBothRumble, OperatorConstants.RUMBLE_STRENGTH);
+                },
+                () -> {
+                  OI.Driver.controller.setRumble(RumbleType.kBothRumble, 0);
+                },
+                new Subsystem[0]));
   }
 
   private Command speakerSource() {
