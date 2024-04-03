@@ -368,10 +368,7 @@ public class RobotContainer {
   private Command shootAutonShort() {
     return Commands.deadline(
         Commands.waitUntil(
-                turretCommandFactory
-                    .isReady()
-                    .and(() -> shooterCommandFactory.isShooterReady())
-                    .debounce(0.25))
+                turretCommandFactory.isReady().and(() -> shooterCommandFactory.isShooterReady()))
             .andThen(
                 triggerCommandFactory
                     .getShootCommand()
@@ -379,7 +376,7 @@ public class RobotContainer {
                     .until(shooterCommandFactory.getBeamBreak().negate())),
         new InstantCommand(
                 () -> {
-                  /* I wish i could tell u why this is needed. don't remove */
+                  /* I wish i could tell u why this is needed. don't remove! */
                 },
                 new Subsystem[0])
             .andThen(prepareToScoreSpeakerShortRangeAutonOnly()));
