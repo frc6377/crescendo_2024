@@ -7,7 +7,6 @@ package frc.robot.utilities;
 import com.playingwithfusion.TimeOfFlight;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Robot;
 
@@ -42,7 +41,7 @@ public class TOFSensorSimple {
     return getMilliMeters() < this.threshold;
   }
 
-  public Trigger beamBroken(Command action) {
+  public Trigger beamBroken() {
     return new Trigger(this::isBeamBroke);
   }
 

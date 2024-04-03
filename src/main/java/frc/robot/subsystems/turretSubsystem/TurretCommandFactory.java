@@ -155,6 +155,8 @@ public class TurretCommandFactory {
               return longRangeShot();
             case SHORT_RANGE:
               return shortRangeShot();
+            case NO_ODOM:
+              return longRangeShot(() -> new Rotation2d());
             default:
               DriverStation.reportError(
                   String.format("Unknown shooter mode provided (%s)", shooterMode), true);
@@ -199,13 +201,17 @@ public class TurretCommandFactory {
   }
 
   public Command longRangeShot() {
+    return longRangeShot(() -> speakerPointing()).withName("long shot with default search behavior");
+  }
+
+  public Command longRangeShot(Supplier<Rotation2d> searchBehavior) {
     if (subsystem == null) return Commands.none();
     return subsystem
         .run(
             () -> {
               if (Constants.enabledSubsystems.turretRotationEnabled
                   && !DevTools.ShooterLinerizing) {
-                visionTracking();
+                visionTracking(searchBehavior);
               }
               if (Constants.enabledSubsystems.turretPitchEnabled) {
                 double distance = distanceEstimateMeters();
@@ -323,6 +329,7 @@ public class TurretCommandFactory {
     cmds.add(idleTurret());
     cmds.add(testTurretCommand(() -> 0.0));
     cmds.add(this.longRangeShot());
+    cmds.add(this.longRangeShot(() -> new Rotation2d()));
     cmds.add(this.shortRangeShot());
     cmds.add(this.pinTurret());
     return cmds.toArray(new Command[cmds.size()]);
