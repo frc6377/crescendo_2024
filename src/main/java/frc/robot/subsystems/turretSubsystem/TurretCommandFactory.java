@@ -156,7 +156,9 @@ public class TurretCommandFactory {
             case SHORT_RANGE:
               return shortRangeShot();
             case NO_ODOM:
-              return longRangeShot(() -> new Rotation2d());
+              return subsystem
+                  .run(() -> subsystem.setPitchPos(pitchMap.get(distanceEstimateMeters())))
+                  .withName("No Rotation");
             default:
               DriverStation.reportError(
                   String.format("Unknown shooter mode provided (%s)", shooterMode), true);
@@ -201,7 +203,8 @@ public class TurretCommandFactory {
   }
 
   public Command longRangeShot() {
-    return longRangeShot(() -> speakerPointing()).withName("long shot with default search behavior");
+    return longRangeShot(() -> speakerPointing())
+        .withName("long shot with default search behavior");
   }
 
   public Command longRangeShot(Supplier<Rotation2d> searchBehavior) {
