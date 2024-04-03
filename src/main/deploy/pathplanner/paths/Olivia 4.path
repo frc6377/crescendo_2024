@@ -35,9 +35,15 @@
       "name": "New Event Marker",
       "waypointRelativePos": 0.3,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Speaker Intake"
+              }
+            },
             {
               "type": "named",
               "data": {
