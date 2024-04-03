@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 1.33,
+        "x": 1.5,
         "y": 5.55
       },
       "prevControl": {
-        "x": 2.33,
+        "x": 2.5,
         "y": 5.55
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "A2"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,17 +33,11 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.0,
+      "waypointRelativePos": 0.1,
       "command": {
-        "type": "sequential",
+        "type": "parallel",
         "data": {
           "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Speaker Intake"
-              }
-            },
             {
               "type": "named",
               "data": {
