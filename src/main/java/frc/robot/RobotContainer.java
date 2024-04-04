@@ -292,7 +292,7 @@ public class RobotContainer {
 
   private Command shooterOuttake() {
     return Commands.parallel(
-            triggerCommandFactory.getEjectCommand(), intakeCommandFactory.reverseIntakeCommand());
+        triggerCommandFactory.getEjectCommand(), intakeCommandFactory.reverseIntakeCommand());
   }
 
   private void configDriverFeedBack() {
@@ -457,7 +457,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     if (Constants.enabledSubsystems.drivetrainEnabled) {
       return new WaitCommand(autoDelay.getDouble(0))
-          .andThen(autoChooser.getSelected()))
+          .andThen(autoChooser.getSelected())
           .withName("Get Auto Command");
     }
     return null;
