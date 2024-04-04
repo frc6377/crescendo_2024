@@ -304,8 +304,8 @@ public class RobotContainer {
             Commands.startEnd(
                 () -> signalingSubsystem.startAmpSignal(), () -> signalingSubsystem.endSignal()));
     new Trigger(OI.getTrigger(OI.Operator.prepareToFire))
-        .and(turretCommandFactory.isReady())
         .and(() -> robotStateManager.getPlacementMode() == PlacementMode.SPEAKER)
+        .and(turretCommandFactory.isReadyTrigger())
         .and(shooterCommandFactory::isShooterReady)
         .whileTrue(
             Commands.startEnd(
@@ -318,9 +318,9 @@ public class RobotContainer {
             Commands.startEnd(
                 () -> signalingSubsystem.startIntakeSignal(),
                 () -> signalingSubsystem.endSignal()));
-    new TOFSensorSimple(3, 50)
+    new TOFSensorSimple(3, 100)
         .beamBroken()
-        .onTrue(
+        .whileTrue(
             Commands.startEnd(
                 () -> {
                   OI.Driver.controller.setRumble(
@@ -385,7 +385,9 @@ public class RobotContainer {
   private Command shootAutonShort() {
     return Commands.deadline(
         Commands.waitUntil(
-                turretCommandFactory.isReady().and(() -> shooterCommandFactory.isShooterReady()))
+                turretCommandFactory
+                    .isReadyTrigger()
+                    .and(() -> shooterCommandFactory.isShooterReady()))
             .andThen(
                 triggerCommandFactory
                     .getShootCommand()
@@ -403,7 +405,7 @@ public class RobotContainer {
     return Commands.deadline(
         Commands.waitUntil(
                 turretCommandFactory
-                    .isReady()
+                    .isReadyTrigger()
                     .and(() -> shooterCommandFactory.isShooterReady())
                     .debounce(0.25))
             .andThen(

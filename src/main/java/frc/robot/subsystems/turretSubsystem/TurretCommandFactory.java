@@ -39,6 +39,7 @@ public class TurretCommandFactory {
   final Supplier<Translation2d> translationSupplier;
   final InterpolatingDoubleTreeMap pitchMap;
 
+  DebugEntry<Boolean> isReadyLog;
   DebugEntry<Double> limelightDistance;
   TunableNumber shooterPitch;
 
@@ -55,6 +56,7 @@ public class TurretCommandFactory {
       visionRotation = new DebugEntry<Double>(0d, "Vision Angle", subsystem);
     }
     if (subsystem != null) shooterPitch = new TunableNumber("Shooter Pitch", 0, subsystem);
+    isReadyLog = new DebugEntry<Boolean>(false, "is ready", subsystem);
     this.RSM = RSM;
     this.vision = visionSubsystem;
     this.rotationSupplier = rotationSupplier;
@@ -363,11 +365,16 @@ public class TurretCommandFactory {
     return targetTurretAngleRelToRobot.times(-1);
   }
 
-  public Trigger isReady() {
+  public Trigger isReadyTrigger() {
     if (subsystem == null) return null;
-    return new Trigger(
-        () ->
-            subsystem.pitchAtSetpoint() && subsystem.turretAtSetPoint(Rotation2d.fromDegrees(2.5)));
+    return new Trigger(this::isReadyBoolean);
+  }
+
+  public boolean isReadyBoolean() {
+    boolean ready =
+        subsystem.pitchAtSetpoint() && subsystem.turretAtSetPoint(Rotation2d.fromDegrees(2.5));
+    isReadyLog.log(ready);
+    return ready;
   }
 
   public enum SearchingBehavior {

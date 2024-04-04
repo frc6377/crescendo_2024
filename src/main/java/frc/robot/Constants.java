@@ -294,8 +294,8 @@ public final class Constants {
     public static final double[] POSITION_PID = new double[] {0.15, 0, 0, 0};
     public static final double[] CURRENT_PID = new double[] {0.01, 0, 0, 0};
     public static final double MIN_RAISE_TIME_SEC = 0.2;
-    public static final double CLIP_CURRENT = -10;
-    public static final double RAISE_CURRENT = 30;
+    public static final double CLIP_VOLTAGE = -3;
+    public static final double RAISE_VOLTAGE = 5;
     public static final double INITAL_RAISE_PERCENT = 0.3;
     public static final double BREAK_STATIC_PERCENT = -0.3;
     public static final double BREAK_STATIC_TIME = 0.1;
