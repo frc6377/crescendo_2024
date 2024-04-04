@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooterSubsystem;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -87,11 +88,17 @@ public class ShooterCommandFactory {
             .run(
                 () -> {
                   if (RSM.getPlacementMode() == PlacementMode.SPEAKER) {
-                    subsystem.setShooterSpeeds(
-                        new SpeakerConfig(
-                            -1,
-                            ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT,
-                            ShooterConstants.SHOOTER_IDLE_SPEED_LEFT));
+                    if (!DriverStation.isAutonomous()) {
+                      subsystem.setShooterSpeeds(
+                          new SpeakerConfig(
+                              -1,
+                              ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT,
+                              ShooterConstants.SHOOTER_IDLE_SPEED_LEFT));
+                    } else {
+                      subsystem.setShooterSpeeds(
+                          new SpeakerConfig(
+                              -1, rightTargetRPM.getAsDouble(), leftTargetRPM.getAsDouble()));
+                    }
                   } else {
                     subsystem.stop();
                   }
