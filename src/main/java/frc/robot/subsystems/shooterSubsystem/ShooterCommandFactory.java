@@ -111,7 +111,8 @@ public class ShooterCommandFactory {
                     subsystem.stop();
                   }
                 })
-            .withName("Idle Shooter command");
+            .withName("Idle Shooter command")
+            .asProxy();
     return command;
   }
 
