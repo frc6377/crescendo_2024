@@ -92,6 +92,9 @@ public class TurretSubsystem extends SubsystemBase {
       new DebugEntry<Double>(pitchVelocity, "Pitch Velocity (RPM)", this);
   private final DebugEntry<Double> motorOutputEntry =
       new DebugEntry<Double>(0.0, "Turret Motor Output", this);
+  private final DebugEntry<Double> pitchCurrentLog =
+      new DebugEntry<Double>(0d, "Pitch Current (Amps)", this);
+
   private DebugEntry<String> currentCommand =
       new DebugEntry<String>("none", "Turret Command", this);
   private DebugEntry<Double> pitchMotorOutput =
@@ -411,6 +414,7 @@ public class TurretSubsystem extends SubsystemBase {
               * 60; // changing from rotations per second to rotations per minute or rpm
       pitchPositionEntry.log(Units.radiansToDegrees(pitchPosition));
       pitchVelocityEntry.log(pitchVelocity);
+      pitchCurrentLog.log(pitchMotor.getOutputCurrent());
       pitchMotorOutput.log(pitchMotor.getAppliedOutput());
     }
 
@@ -467,7 +471,7 @@ public class TurretSubsystem extends SubsystemBase {
   DebugEntry<Boolean> atPitchLog = new DebugEntry<Boolean>(false, "Pitch as setpoint", this);
 
   public boolean pitchAtSetpoint() {
-    pitchPIDController.setTolerance(TurretConstants.PITCH_TOLERANCE);
+    pitchPIDController.setTolerance(TurretConstants.PITCH_TOLERANCE_RADIANS);
     boolean result = pitchPIDController.atSetpoint();
     atPitchLog.log(result);
     return result;

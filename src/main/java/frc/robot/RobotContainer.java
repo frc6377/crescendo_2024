@@ -52,6 +52,7 @@ import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.TOFSensorSimple;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -302,8 +303,8 @@ public class RobotContainer {
             Commands.startEnd(
                 () -> signalingSubsystem.startAmpSignal(), () -> signalingSubsystem.endSignal()));
     new Trigger(OI.getTrigger(OI.Operator.prepareToFire))
-        .and(turretCommandFactory.isReady())
         .and(() -> robotStateManager.getPlacementMode() == PlacementMode.SPEAKER)
+        .and(turretCommandFactory.isReadyTrigger())
         .and(shooterCommandFactory::isShooterReady)
         .whileTrue(
             Commands.startEnd(
@@ -316,9 +317,9 @@ public class RobotContainer {
             Commands.startEnd(
                 () -> signalingSubsystem.startIntakeSignal(),
                 () -> signalingSubsystem.endSignal()));
-    new TOFSensorSimple(3, 50)
+    new TOFSensorSimple(3, 100)
         .beamBroken()
-        .onTrue(
+        .whileTrue(
             Commands.startEnd(
                 () -> {
                   OI.Driver.controller.setRumble(
@@ -378,23 +379,32 @@ public class RobotContainer {
         trapElvCommandFactory.shooterMoving());
   }
 
+  private BooleanSupplier shooterAssemblyReady() {
+    return turretCommandFactory
+        .isReadyTrigger()
+        .and(() -> shooterCommandFactory.isShooterReady())
+        .debounce(.25);
+  }
+
+  private Command fire() {
+    return triggerCommandFactory
+        .getShootCommand()
+        .until(shooterCommandFactory.getBeamBreak().negate().debounce(.25));
+  }
+
+  private Command fireWhenReady() {
+    return Commands.waitUntil(shooterAssemblyReady()).andThen(fire());
+  }
+
   private Command shootAutonShort() {
-    return Commands.deadline(
-        Commands.waitUntil(
-                turretCommandFactory.isReady().and(() -> shooterCommandFactory.isShooterReady()))
-            .andThen(
-                triggerCommandFactory
-                    .getShootCommand()
-                    .withTimeout(1)
-                    .until(shooterCommandFactory.getBeamBreak().negate())),
-        prepareToScoreSpeakerShortRangeAutonOnly());
+    return Commands.deadline(fireWhenReady(), prepareToScoreSpeakerShortRangeAutonOnly());
   }
 
   private Command shootAutonLong() {
     return Commands.deadline(
         Commands.waitUntil(
                 turretCommandFactory
-                    .isReady()
+                    .isReadyTrigger()
                     .and(() -> shooterCommandFactory.isShooterReady())
                     .debounce(0.25))
             .andThen(

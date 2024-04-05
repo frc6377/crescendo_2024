@@ -70,8 +70,8 @@ public final class Constants {
     public static final HowdyPID LEFT_SHOOTER_PID = new HowdyPID(0.0003, 0, 0, 0, 0.0002);
 
     // Motor RPM, NOT roller RPM
-    public static final double SHOOTER_IDLE_SPEED_LEFT = 400; // Placeholder; in RPM
-    public static final double SHOOTER_IDLE_SPEED_RIGHT = 400; // Placeholder; in RPM
+    public static final double SHOOTER_IDLE_SPEED_LEFT = 2000; // Placeholder; in RPM
+    public static final double SHOOTER_IDLE_SPEED_RIGHT = 2000; // Placeholder;  in RPM
 
     public static final double SHOOTER_SPEED_TOLERANCE =
         0.1; // speed must be within (1-n)v to (1+n)v to fire
@@ -85,8 +85,10 @@ public final class Constants {
     public static final double INTAKE_DELAY_SEC = 0.5;
     public static final int BEAM_BREAK_ID = 1;
     public static final double BEAM_BREAK_THRESHOLD = 150;
-    public static final double SHOOTER_LEFT_TARGET_RPM = 3431;
-    public static final double SHOOTER_RIGHT_TARGET_RPM = 2531;
+    public static final double SHOOTER_LEFT_TARGET_RPM = 3931;
+    public static final double SHOOTER_RIGHT_TARGET_RPM = 3031;
+    public static final double LOB_SPEED_LEFT = 3531;
+    public static final double LOB_SPEED_RIGHT = 2531;
   }
 
   public static class TurretConstants {
@@ -189,7 +191,7 @@ public final class Constants {
       new TurretDataPoint(Units.inchesToMeters(-1), 3.25, Units.degreesToRadians(18.5)),
       new TurretDataPoint(Units.inchesToMeters(122), 4.59, Units.degreesToRadians(12.5)),
     };
-    public static final double PITCH_TOLERANCE = 1;
+    public static final double PITCH_TOLERANCE_RADIANS = Math.toDegrees(1);
     public static final double SIMULATION_CG_MAGIC_NUMBER = 2;
     public static final double LOB_PITCH = 30;
     // This is a magic number which was used to correct for persistent error
@@ -294,8 +296,8 @@ public final class Constants {
     public static final double[] POSITION_PID = new double[] {0.15, 0, 0, 0};
     public static final double[] CURRENT_PID = new double[] {0.01, 0, 0, 0};
     public static final double MIN_RAISE_TIME_SEC = 0.2;
-    public static final double CLIP_CURRENT = -10;
-    public static final double RAISE_CURRENT = 30;
+    public static final double CLIP_VOLTAGE = -3;
+    public static final double RAISE_VOLTAGE = 5;
     public static final double INITAL_RAISE_PERCENT = 0.3;
     public static final double BREAK_STATIC_PERCENT = -0.3;
     public static final double BREAK_STATIC_TIME = 0.1;

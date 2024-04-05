@@ -6,14 +6,18 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.TriggerConstants;
+import frc.robot.utilities.TunableNumber;
 import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 
 public class TriggerCommandFactory {
   private final TriggerSubsystem subsystem;
+  private final TunableNumber shootPercentage;
 
   public TriggerCommandFactory(TriggerSubsystem subsystem) {
     this.subsystem = subsystem;
+    shootPercentage =
+        new TunableNumber("Shooter percent", TriggerConstants.SHOOT_PERCENTAGE, subsystem);
   }
 
   public Command getGroundLoadCommand(BooleanSupplier tof) {
@@ -38,7 +42,7 @@ public class TriggerCommandFactory {
   }
 
   public Command getShootCommand() {
-    return buildCommand(TriggerConstants.SHOOT_PERCENTAGE).withName("getShootCommand").asProxy();
+    return buildCommand(shootPercentage.getAsDouble()).withName("getShootCommand").asProxy();
   }
 
   public void setDefaultCommand(Command defaultCommand) {

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooterSubsystem;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -10,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.stateManagement.PlacementMode;
 import frc.robot.stateManagement.RobotStateManager;
+import frc.robot.stateManagement.ShooterMode;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
 import frc.robot.utilities.TunableNumber;
 import java.util.ArrayList;
@@ -68,8 +70,15 @@ public class ShooterCommandFactory {
     if (subsystem == null) return Commands.none();
     return new FunctionalCommand(
             () -> {
-              subsystem.setShooterSpeeds(
-                  new SpeakerConfig(-1, leftTargetRPM.getAsDouble(), rightTargetRPM.getAsDouble()));
+              if (RSM.getShooterMode() == ShooterMode.LOB) {
+                subsystem.setShooterSpeeds(
+                    new SpeakerConfig(
+                        -1, ShooterConstants.LOB_SPEED_LEFT, ShooterConstants.LOB_SPEED_RIGHT));
+              } else {
+                subsystem.setShooterSpeeds(
+                    new SpeakerConfig(
+                        -1, leftTargetRPM.getAsDouble(), rightTargetRPM.getAsDouble()));
+              }
             },
             () -> {},
             (a) -> {},
@@ -87,17 +96,22 @@ public class ShooterCommandFactory {
             .run(
                 () -> {
                   if (RSM.getPlacementMode() == PlacementMode.SPEAKER) {
-                    subsystem.setShooterSpeeds(
-                        new SpeakerConfig(
-                            -1,
-                            ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT,
-                            ShooterConstants.SHOOTER_IDLE_SPEED_LEFT));
+                    if (!DriverStation.isAutonomous()) {
+                      subsystem.setShooterSpeeds(
+                          new SpeakerConfig(
+                              -1,
+                              ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT,
+                              ShooterConstants.SHOOTER_IDLE_SPEED_LEFT));
+                    } else {
+                      subsystem.setShooterSpeeds(
+                          new SpeakerConfig(
+                              -1, rightTargetRPM.getAsDouble(), leftTargetRPM.getAsDouble()));
+                    }
                   } else {
                     subsystem.stop();
                   }
                 })
-            .withName("Idle Shooter command")
-            .asProxy();
+            .withName("Idle Shooter command");
     return command;
   }
 
