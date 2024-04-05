@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -53,6 +52,7 @@ import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.TOFSensorSimple;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -382,23 +382,25 @@ public class RobotContainer {
         trapElvCommandFactory.shooterMoving());
   }
 
+  private BooleanSupplier shooterAssemblyReady() {
+    return turretCommandFactory
+        .isReadyTrigger()
+        .and(() -> shooterCommandFactory.isShooterReady())
+        .debounce(.25);
+  }
+
+  private Command fire() {
+    return triggerCommandFactory
+        .getShootCommand()
+        .until(shooterCommandFactory.getBeamBreak().negate().debounce(.25));
+  }
+
+  private Command fireWhenReady() {
+    return Commands.waitUntil(shooterAssemblyReady()).andThen(fire());
+  }
+
   private Command shootAutonShort() {
-    return Commands.deadline(
-        Commands.waitUntil(
-                turretCommandFactory
-                    .isReadyTrigger()
-                    .and(() -> shooterCommandFactory.isShooterReady()))
-            .andThen(
-                triggerCommandFactory
-                    .getShootCommand()
-                    .withTimeout(1)
-                    .until(shooterCommandFactory.getBeamBreak().negate())),
-        new InstantCommand(
-                () -> {
-                  /* I wish i could tell u why this is needed. don't remove! */
-                },
-                new Subsystem[0])
-            .andThen(prepareToScoreSpeakerShortRangeAutonOnly()));
+    return Commands.deadline(fireWhenReady(), prepareToScoreSpeakerShortRangeAutonOnly());
   }
 
   private Command shootAutonLong() {

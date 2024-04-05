@@ -152,7 +152,7 @@ public class TurretCommandFactory {
           final ShooterMode shooterMode = RSM.getShooterMode();
           switch (shooterMode) {
             case LOB:
-              return lobShot();
+              return shortRangeShot();
             case LONG_RANGE:
               return longRangeShot();
             case SHORT_RANGE:

@@ -87,6 +87,8 @@ public final class Constants {
     public static final double BEAM_BREAK_THRESHOLD = 150;
     public static final double SHOOTER_LEFT_TARGET_RPM = 3931;
     public static final double SHOOTER_RIGHT_TARGET_RPM = 3031;
+    public static final double LOB_SPEED_LEFT = 3531;
+    public static final double LOB_SPEED_RIGHT = 2531;
   }
 
   public static class TurretConstants {
@@ -189,7 +191,7 @@ public final class Constants {
       new TurretDataPoint(Units.inchesToMeters(-1), 3.25, Units.degreesToRadians(18.5)),
       new TurretDataPoint(Units.inchesToMeters(122), 4.59, Units.degreesToRadians(12.5)),
     };
-    public static final double PITCH_TOLERANCE = 1;
+    public static final double PITCH_TOLERANCE_RADIANS = Math.toDegrees(1);
     public static final double SIMULATION_CG_MAGIC_NUMBER = 2;
     public static final double LOB_PITCH = 30;
     // This is a magic number which was used to correct for persistent error

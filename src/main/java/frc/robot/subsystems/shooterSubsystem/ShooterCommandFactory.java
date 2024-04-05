@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.stateManagement.PlacementMode;
 import frc.robot.stateManagement.RobotStateManager;
+import frc.robot.stateManagement.ShooterMode;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
 import frc.robot.utilities.TunableNumber;
 import java.util.ArrayList;
@@ -69,8 +70,15 @@ public class ShooterCommandFactory {
     if (subsystem == null) return Commands.none();
     return new FunctionalCommand(
             () -> {
-              subsystem.setShooterSpeeds(
-                  new SpeakerConfig(-1, leftTargetRPM.getAsDouble(), rightTargetRPM.getAsDouble()));
+              if (RSM.getShooterMode() == ShooterMode.LOB) {
+                subsystem.setShooterSpeeds(
+                    new SpeakerConfig(
+                        -1, ShooterConstants.LOB_SPEED_LEFT, ShooterConstants.LOB_SPEED_RIGHT));
+              } else {
+                subsystem.setShooterSpeeds(
+                    new SpeakerConfig(
+                        -1, leftTargetRPM.getAsDouble(), rightTargetRPM.getAsDouble()));
+              }
             },
             () -> {},
             (a) -> {},
@@ -103,8 +111,7 @@ public class ShooterCommandFactory {
                     subsystem.stop();
                   }
                 })
-            .withName("Idle Shooter command")
-            .asProxy();
+            .withName("Idle Shooter command");
     return command;
   }
 
@@ -118,7 +125,7 @@ public class ShooterCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
-    subsystem.setDefaultCommand(Commands.sequence(subsystem.runOnce(() -> {}), defaultCommand));
+    subsystem.setDefaultCommand(defaultCommand);
   }
 
   public boolean isShooterReady() {

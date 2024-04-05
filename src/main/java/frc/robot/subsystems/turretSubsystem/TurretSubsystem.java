@@ -471,7 +471,7 @@ public class TurretSubsystem extends SubsystemBase {
   DebugEntry<Boolean> atPitchLog = new DebugEntry<Boolean>(false, "Pitch as setpoint", this);
 
   public boolean pitchAtSetpoint() {
-    pitchPIDController.setTolerance(TurretConstants.PITCH_TOLERANCE);
+    pitchPIDController.setTolerance(TurretConstants.PITCH_TOLERANCE_RADIANS);
     boolean result = pitchPIDController.atSetpoint();
     atPitchLog.log(result);
     return result;
