@@ -293,8 +293,7 @@ public class RobotContainer {
 
   private Command shooterOuttake() {
     return Commands.parallel(
-            triggerCommandFactory.getEjectCommand(), intakeCommandFactory.reverseIntakeCommand())
-        .asProxy();
+        triggerCommandFactory.getEjectCommand(), intakeCommandFactory.reverseIntakeCommand());
   }
 
   private void configDriverFeedBack() {
@@ -347,16 +346,14 @@ public class RobotContainer {
     return Commands.parallel(
             trapElvCommandFactory.intakeGround(), intakeCommandFactory.getAmpIntakeCommand())
         .until(trapElvCommandFactory.getSourceBreak())
-        .andThen(trapElvCommandFactory.intakeFromGroundForTime())
-        .asProxy();
+        .andThen(trapElvCommandFactory.intakeFromGroundForTime());
   }
 
   private Command shootSpeaker() {
     return Commands.parallel(
         triggerCommandFactory
             .getShootCommand()
-            .onlyIf(() -> shooterCommandFactory.isShooterReady())
-            .asProxy(),
+            .onlyIf(() -> shooterCommandFactory.isShooterReady()),
         shooterCommandFactory.revShooter());
   }
 
@@ -370,14 +367,14 @@ public class RobotContainer {
 
   private Command prepareToScoreSpeakerShortRangeAutonOnly() {
     return Commands.parallel(
-        turretCommandFactory.shortRangeShot().asProxy(),
+        turretCommandFactory.shortRangeShot(),
         shooterCommandFactory.revShooter(),
         trapElvCommandFactory.shooterMoving());
   }
 
   private Command prepareToScoreSpeakerLongRangeAutonOnly() {
     return Commands.parallel(
-        turretCommandFactory.longRangeShot().asProxy(),
+        turretCommandFactory.longRangeShot(),
         shooterCommandFactory.revShooter(),
         trapElvCommandFactory.shooterMoving());
   }
@@ -435,7 +432,7 @@ public class RobotContainer {
     autonCommands.put("Prepare To Fire Long", shooterCommandFactory.revShooter());
     autonCommands.put("Amp", ampAuton());
     if (Constants.enabledSubsystems.intakeEnabled) {
-      autonCommands.put("Speaker Intake", intakeSpeaker().asProxy());
+      autonCommands.put("Speaker Intake", intakeSpeaker());
       autonCommands.put("Amp Intake", intakeAmp());
     }
 
@@ -470,7 +467,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     if (Constants.enabledSubsystems.drivetrainEnabled) {
       return new WaitCommand(autoDelay.getDouble(0))
-          .andThen(autoChooser.getSelected().asProxy())
+          .andThen(autoChooser.getSelected())
           .withName("Get Auto Command");
     }
     return null;

@@ -47,7 +47,9 @@ public class TriggerCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
-    subsystem.setDefaultCommand(Commands.sequence(subsystem.runOnce(() -> {}), defaultCommand));
+    subsystem.setDefaultCommand(
+        Commands.parallel(subsystem.runOnce(() -> {}), defaultCommand)
+            .withName(defaultCommand.getName()));
   }
 
   private Command buildCommand(double speed) {

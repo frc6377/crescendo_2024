@@ -209,7 +209,9 @@ public class TrapElvCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
-    subsystem.setDefaultCommand(Commands.sequence(subsystem.runOnce(() -> {}), defaultCommand));
+    subsystem.setDefaultCommand(
+        Commands.parallel(subsystem.runOnce(() -> {}), defaultCommand)
+            .withName(defaultCommand.getName()));
   }
 
   public Command[] getCommands() {

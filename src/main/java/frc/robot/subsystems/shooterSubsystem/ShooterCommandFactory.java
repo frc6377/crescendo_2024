@@ -111,7 +111,8 @@ public class ShooterCommandFactory {
                     subsystem.stop();
                   }
                 })
-            .withName("Idle Shooter command");
+            .withName("Idle Shooter command")
+            .asProxy();
     return command;
   }
 
@@ -125,7 +126,9 @@ public class ShooterCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
-    subsystem.setDefaultCommand(defaultCommand);
+    subsystem.setDefaultCommand(
+        Commands.parallel(subsystem.runOnce(() -> {}), defaultCommand)
+            .withName(defaultCommand.getName()));
   }
 
   public boolean isShooterReady() {
