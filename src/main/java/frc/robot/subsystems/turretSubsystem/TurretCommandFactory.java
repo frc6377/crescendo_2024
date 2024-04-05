@@ -285,7 +285,8 @@ public class TurretCommandFactory {
               subsystem.setTurretPos(0);
               moveToBottomOfTravel();
             })
-        .withName("idleTurret");
+        .withName("idleTurret")
+        .asProxy();
   }
 
   public Command pinTurret() {

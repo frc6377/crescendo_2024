@@ -231,6 +231,8 @@ public class RobotContainer {
 
     turretCommandFactory.setDefaultCommand(turretCommandFactory.idleTurret());
 
+    intakeCommandFactory.setDefaultCommand(intakeCommandFactory.idleCommand());
+
     OI.getTrigger(OI.Driver.lockAmp)
         .whileTrue(
             drivetrainCommandFactory.autoTargetAmp(
@@ -321,7 +323,7 @@ public class RobotContainer {
             Commands.startEnd(
                 () -> signalingSubsystem.startIntakeSignal(),
                 () -> signalingSubsystem.endSignal()));
-    new TOFSensorSimple(3, 100)
+    new TOFSensorSimple(3, 250)
         .beamBroken()
         .whileTrue(
             Commands.startEnd(
@@ -336,9 +338,10 @@ public class RobotContainer {
   }
 
   private Command intakeSpeaker() {
+    Trigger intoke = shooterCommandFactory.getBeamBreak().debounce(0.1);
     return Commands.parallel(
-        intakeCommandFactory.getSpeakerIntakeCommand().until(shooterCommandFactory.getBeamBreak()),
-        triggerCommandFactory.getGroundLoadCommand(shooterCommandFactory.getBeamBreak()));
+        intakeCommandFactory.getSpeakerIntakeCommand().until(intoke),
+        triggerCommandFactory.getGroundLoadCommand(intoke));
   }
 
   private Command intakeAmp() {

@@ -1,7 +1,9 @@
 package frc.robot.subsystems.intakeSubsystem;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ShooterConstants;
@@ -65,11 +67,14 @@ public class IntakeCommandFactory {
         .withName("Build Intake Command");
   }
 
+  public Command idleCommand() {
+    return Commands.either(
+        buildIntakeCommand(true), new InstantCommand(), () -> DriverStation.isAutonomous());
+  }
+
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
-    subsystem.setDefaultCommand(
-        Commands.parallel(subsystem.runOnce(() -> {}), defaultCommand)
-            .withName(defaultCommand.getName()));
+    subsystem.setDefaultCommand(defaultCommand);
   }
 
   public Command[] getCommands() {

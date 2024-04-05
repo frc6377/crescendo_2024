@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.stateManagement.PlacementMode;
 import frc.robot.stateManagement.RobotStateManager;
@@ -95,24 +96,36 @@ public class ShooterCommandFactory {
         subsystem
             .run(
                 () -> {
-                  if (RSM.getPlacementMode() == PlacementMode.SPEAKER) {
-                    if (!DriverStation.isAutonomous()) {
-                      subsystem.setShooterSpeeds(
-                          new SpeakerConfig(
-                              -1,
-                              ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT,
-                              ShooterConstants.SHOOTER_IDLE_SPEED_LEFT));
-                    } else {
-                      subsystem.setShooterSpeeds(
-                          new SpeakerConfig(
-                              -1, rightTargetRPM.getAsDouble(), leftTargetRPM.getAsDouble()));
-                    }
-                  } else {
-                    subsystem.stop();
-                  }
+                  idleShooter();
                 })
-            .withName("Idle Shooter command");
+            .withName("Idle Shooter command")
+            .asProxy();
+
     return command;
+  }
+
+  private void autoIdleShooter() {
+    if (AutoConstants.SHOOTER_IDLE == ShooterAutoIdle.FULL_REV && !DriverStation.isAutonomous()) {
+      subsystem.setShooterSpeeds(
+          new SpeakerConfig(
+              -1,
+              ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT,
+              ShooterConstants.SHOOTER_IDLE_SPEED_LEFT));
+    } else {
+      idleShooter();
+    }
+  }
+
+  private void idleShooter() {
+    if (RSM.getPlacementMode() == PlacementMode.SPEAKER) {
+      subsystem.setShooterSpeeds(
+          new SpeakerConfig(
+              -1,
+              ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT,
+              ShooterConstants.SHOOTER_IDLE_SPEED_LEFT));
+    } else {
+      subsystem.stop();
+    }
   }
 
   public Command outtake() {
@@ -149,5 +162,10 @@ public class ShooterCommandFactory {
     cmds.add(this.revShooter());
     cmds.add(this.shooterIdle());
     return cmds.toArray(new Command[cmds.size()]);
+  }
+
+  public enum ShooterAutoIdle {
+    FULL_REV,
+    IDLE_REV
   }
 }

@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.shooterSubsystem.ShooterCommandFactory.ShooterAutoIdle;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
 import frc.robot.utilities.HowdyFF;
 import frc.robot.utilities.HowdyPID;
@@ -70,8 +71,8 @@ public final class Constants {
     public static final HowdyPID LEFT_SHOOTER_PID = new HowdyPID(0.0003, 0, 0, 0, 0.0002);
 
     // Motor RPM, NOT roller RPM
-    public static final double SHOOTER_IDLE_SPEED_LEFT = 2000; // Placeholder; in RPM
-    public static final double SHOOTER_IDLE_SPEED_RIGHT = 2000; // Placeholder;  in RPM
+    public static final double SHOOTER_IDLE_SPEED_LEFT = 400; // Placeholder; in RPM
+    public static final double SHOOTER_IDLE_SPEED_RIGHT = 400; // Placeholder;  in RPM
 
     public static final double SHOOTER_SPEED_TOLERANCE =
         0.1; // speed must be within (1-n)v to (1+n)v to fire
@@ -375,5 +376,10 @@ public final class Constants {
   public static class DevTools {
     // Make it so the shooter goes to the set shooter pitch when firing
     public static final boolean ShooterLinerizing = false;
+  }
+
+  public static class AutoConstants {
+
+    public static final ShooterAutoIdle SHOOTER_IDLE = ShooterAutoIdle.IDLE_REV;
   }
 }
