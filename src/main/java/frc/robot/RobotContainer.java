@@ -284,6 +284,9 @@ public class RobotContainer {
     new Trigger(() -> OI.Driver.controller.getPOV() == 0).whileTrue(intakeCommand());
     OI.getButton(OI.Operator.disableOdomTracking)
         .whileTrue(robotStateManager.setShooterMode(ShooterMode.NO_ODOM, ShooterMode.LONG_RANGE));
+
+    new Trigger(DriverStation::isAutonomousEnabled)
+        .onTrue(Commands.waitSeconds(14.6).andThen(fire()));
   }
 
   private Command outtakeCommand() {
