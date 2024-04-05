@@ -71,8 +71,8 @@ public final class Constants {
     public static final HowdyPID LEFT_SHOOTER_PID = new HowdyPID(0.0003, 0, 0, 0, 0.0002);
 
     // Motor RPM, NOT roller RPM
-    public static final double SHOOTER_IDLE_SPEED_LEFT = 400; // Placeholder; in RPM
-    public static final double SHOOTER_IDLE_SPEED_RIGHT = 400; // Placeholder;  in RPM
+    public static final double SHOOTER_IDLE_SPEED_LEFT = 2000; // Placeholder; in RPM
+    public static final double SHOOTER_IDLE_SPEED_RIGHT = 2000; // Placeholder;  in RPM
 
     public static final double SHOOTER_SPEED_TOLERANCE =
         0.1; // speed must be within (1-n)v to (1+n)v to fire

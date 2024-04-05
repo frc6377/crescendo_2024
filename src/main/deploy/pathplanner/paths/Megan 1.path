@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.06066017177982,
-        "y": 6.610660171779822
+        "x": 5.319225803607406,
+        "y": 7.434049701864681
       },
       "isLocked": false,
       "linkedName": "Mid Ring Feild Shot"
     },
     {
       "anchor": {
-        "x": 8.3,
+        "x": 8.6,
         "y": 5.78
       },
       "prevControl": {
-        "x": 6.368148347421864,
-        "y": 6.297638090205042
+        "x": 6.6,
+        "y": 5.78
       },
       "nextControl": null,
       "isLocked": false,

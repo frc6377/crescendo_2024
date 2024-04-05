@@ -4,28 +4,28 @@
     {
       "anchor": {
         "x": 5.45,
-        "y": 1.9
+        "y": 1.7
       },
       "prevControl": null,
       "nextControl": {
         "x": 6.45,
-        "y": 1.9000000000000004
+        "y": 1.7000000000000004
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.3,
-        "y": 2.75
+        "x": 8.6,
+        "y": 2.445
       },
       "prevControl": {
-        "x": 7.299999999999997,
-        "y": 2.75
+        "x": 7.599999999999996,
+        "y": 2.445
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "D4"
     }
   ],
   "rotationTargets": [],
