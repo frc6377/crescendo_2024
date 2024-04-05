@@ -49,6 +49,7 @@ import frc.robot.subsystems.turretSubsystem.TurretSubsystem;
 import frc.robot.subsystems.vision.LimelightSubsystem;
 import frc.robot.subsystems.vision.PhotonSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
+import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.TOFSensorSimple;
 import java.util.HashMap;
 import java.util.Map;
@@ -81,6 +82,7 @@ public class RobotContainer {
   private final ClimberSubsystem climberSubsystem;
 
   private SendableChooser<Command> autoChooser;
+  private DebugEntry<Boolean> isShooterReady;
   private ShuffleboardTab configTab = Shuffleboard.getTab("Config");
   private GenericEntry autoDelay =
       configTab
@@ -173,6 +175,8 @@ public class RobotContainer {
       autoChooser = AutoBuilder.buildAutoChooser("Lucy");
       configTab.add("Auton Selection", autoChooser).withSize(3, 1);
     }
+
+    isShooterReady = new DebugEntry<Boolean>(false, "null", "test");
 
     configureBindings();
     configDriverFeedBack();
@@ -332,11 +336,6 @@ public class RobotContainer {
                 new Subsystem[0]));
   }
 
-  private Command speakerSource() {
-    return Commands.parallel(
-        shooterCommandFactory.intakeSource(), triggerCommandFactory.getLoadCommand());
-  }
-
   private Command intakeSpeaker() {
     return Commands.parallel(
         intakeCommandFactory.getSpeakerIntakeCommand().until(shooterCommandFactory.getBeamBreak()),
@@ -383,10 +382,11 @@ public class RobotContainer {
   }
 
   private BooleanSupplier shooterAssemblyReady() {
-    return turretCommandFactory
-        .isReadyTrigger()
-        .and(() -> shooterCommandFactory.isShooterReady())
-        .debounce(.25);
+    return () -> {
+      boolean isReady =
+          turretCommandFactory.isReadyBoolean() && shooterCommandFactory.isShooterReady();
+      return isReady;
+    };
   }
 
   private Command fire() {
@@ -400,7 +400,8 @@ public class RobotContainer {
   }
 
   private Command shootAutonShort() {
-    return Commands.deadline(fireWhenReady(), prepareToScoreSpeakerShortRangeAutonOnly());
+    return Commands.deadline(fireWhenReady(), prepareToScoreSpeakerShortRangeAutonOnly())
+        .withName("Auto Shoot Short");
   }
 
   private Command shootAutonLong() {
