@@ -352,7 +352,9 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public void holdPosition() {
-    if (Constants.enabledSubsystems.turretRotationEnabled) setTurretPos(0);
+    if (Constants.enabledSubsystems.turretRotationEnabled) {
+      setTurretPos(0);
+    }
     if (Constants.enabledSubsystems.turretPitchEnabled) {
       usingPitchPid = false;
       pitchMotor.setVoltage(-0.1);

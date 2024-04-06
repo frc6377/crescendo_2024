@@ -373,6 +373,7 @@ public class TurretCommandFactory {
   }
 
   public boolean isReadyBoolean() {
+    if (subsystem == null) return true;
     boolean ready =
         subsystem.pitchAtSetpoint() && subsystem.turretAtSetPoint(Rotation2d.fromDegrees(2.5));
     isReadyLog.log(ready);
