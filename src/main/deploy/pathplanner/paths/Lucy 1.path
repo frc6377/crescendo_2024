@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6152069635455069,
-        "y": 3.416690878165088
+        "x": 0.7500000000000001,
+        "y": 2.95
       },
       "isLocked": false,
       "linkedName": "A3"
@@ -20,7 +20,7 @@
         "y": 1.7
       },
       "prevControl": {
-        "x": 4.028837910539866,
+        "x": 3.45,
         "y": 1.7
       },
       "nextControl": null,
