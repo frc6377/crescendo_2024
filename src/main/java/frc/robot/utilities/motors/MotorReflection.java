@@ -68,6 +68,9 @@ public class MotorReflection implements AutoCloseable {
   private static int[] scanForIds(int streamId) {
     try {
       CANStreamMessage[] messageBuffer = new CANStreamMessage[MESSAGE_BUFFER_SIZE];
+      for(int i =0; i < MESSAGE_BUFFER_SIZE; i++){
+        messageBuffer[i] = new CANStreamMessage();
+      }
       int numberOfMessages = CANJNI.readCANStreamSession(streamId, messageBuffer, streamId);
       HashSet<Integer> idsSet = new HashSet<>();
       for (int i = 0; i < numberOfMessages; i++) {
