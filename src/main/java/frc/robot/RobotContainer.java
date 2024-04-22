@@ -219,7 +219,7 @@ public class RobotContainer {
       case SYSID:
         Trigger trig = OI.getButton(OI.Driver.A);
         new Trigger(() -> RobotState.isEnabled() && RobotState.isTeleop())
-            .onTrue(drivetrainCommandFactory.getSysIdCommand(trig));
+            .onTrue(Commands.deferredProxy(() -> drivetrainCommandFactory.getSysIdCommand(trig)));
         break;
       default:
         DriverStation.reportWarning("Unknown Drive Type Selected.", false);
