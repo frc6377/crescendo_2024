@@ -22,7 +22,7 @@ public class OI {
     public static final XboxController controller = new XboxController(driverJoystickPort);
 
     // A B Y X Buttons
-    public static final Control A = new Control(XboxController.Button.kA, null, controller);
+    public static final Control A = new Control(XboxController.Button.kA, "sysID ctrl", controller);
     public static final Control B = new Control(XboxController.Button.kB, null, controller);
     public static final Control Y = new Control(XboxController.Button.kY, null, controller);
     public static final Control X = new Control(XboxController.Button.kX, null, controller);

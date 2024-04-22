@@ -349,11 +349,12 @@ public final class Constants {
     public static final Rotation2d RED_SOURCE_ROTATION = Rotation2d.fromRotations(-0.25);
     public static final Rotation2d ABSOLUTE_POINTING_OFFSET = Rotation2d.fromRotations(0.75);
     public static final double ROTATION_DEADBAND = 0.05;
-    public static final DriveType DRIVE_TYPE = DriveType.FIELD_ORIENTED;
+    public static final DriveType DRIVE_TYPE = DriveType.SYSID;
 
     public static enum DriveType {
       POINT_DRIVE,
-      FIELD_ORIENTED;
+      FIELD_ORIENTED,
+      SYSID;
     }
   }
 

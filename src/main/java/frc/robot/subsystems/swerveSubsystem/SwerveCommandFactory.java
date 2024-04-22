@@ -1,5 +1,6 @@
 package frc.robot.subsystems.swerveSubsystem;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
@@ -9,11 +10,16 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.FieldConstants;
@@ -23,6 +29,8 @@ import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem.DriveRequest;
 import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem.RotationSource;
 import frc.robot.utilities.HowdyMath;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -30,10 +38,81 @@ import java.util.function.Supplier;
 public class SwerveCommandFactory {
   private final SwerveSubsystem subsystem;
   private final ArrayList<RotationSource> rotationSources;
+  private Queue<Command> sysIdCmdList;
+  private SendableChooser<SysIdRoutine> sysIdChooser;
+
+  private SysIdRoutine m_sysIdRoutTran, m_sysIdRoutRot, m_sysIdRoutSteer;
+  private SysIdRoutine.Config sysIdConfig =
+      new SysIdRoutine.Config(
+          Units.Volts.per(Units.Second).of(1), // Use default ramp rate (1 V/s)
+          Units.Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
+          Units.Second.of(10), // Use default timeout (10 s)
+          // Log state with Phoenix SignalLogger class
+          (state) -> SignalLogger.writeString("state", state.toString()));
 
   public SwerveCommandFactory(SwerveSubsystem subsystem) {
     this.subsystem = subsystem;
     rotationSources = new ArrayList<>(1);
+
+    if (subsystem != null) {
+      m_sysIdRoutTran =
+          new SysIdRoutine(
+              sysIdConfig,
+              new SysIdRoutine.Mechanism(
+                  (volts) ->
+                      subsystem.setControl(
+                          new SwerveRequest.SysIdSwerveTranslation().withVolts(volts)),
+                  null, // Rely on HOOT logs instead of SysIdRoutineLog
+                  subsystem));
+
+      m_sysIdRoutRot =
+          new SysIdRoutine(
+              sysIdConfig,
+              new SysIdRoutine.Mechanism(
+                  (volts) ->
+                      subsystem.setControl(
+                          new SwerveRequest.SysIdSwerveRotation().withVolts(volts)),
+                  null, // Rely on HOOT logs instead of SysIdRoutineLog
+                  subsystem));
+
+      m_sysIdRoutSteer =
+          new SysIdRoutine(
+              sysIdConfig,
+              new SysIdRoutine.Mechanism(
+                  (volts) ->
+                      subsystem.setControl(
+                          new SwerveRequest.SysIdSwerveSteerGains().withVolts(volts)),
+                  null, // Rely on HOOT logs instead of SysIdRoutineLog
+                  subsystem));
+      sysIdChooser = new SendableChooser<>();
+      sysIdChooser.setDefaultOption("Translation", m_sysIdRoutTran);
+      sysIdChooser.addOption("Steer", m_sysIdRoutSteer);
+      sysIdChooser.addOption("Rotation", m_sysIdRoutRot);
+      Shuffleboard.getTab(subsystem.getName()).add(sysIdChooser);
+      sysIdCmdList = new LinkedList<>();
+    }
+  }
+
+  public Command getSysIdCommand(Trigger trig) {
+    SysIdRoutine t = sysIdChooser.getSelected();
+    sysIdCmdList.clear();
+    sysIdCmdList.add(
+        t.dynamic(SysIdRoutine.Direction.kReverse).asProxy().finallyDo(SignalLogger::stop));
+    sysIdCmdList.add(t.dynamic(SysIdRoutine.Direction.kForward).asProxy());
+    sysIdCmdList.add(t.quasistatic(SysIdRoutine.Direction.kReverse).asProxy());
+    sysIdCmdList.add(
+        t.quasistatic(SysIdRoutine.Direction.kForward)
+            .asProxy()
+            .beforeStarting(SignalLogger::start));
+
+    Command ret = sysIdCmdList.remove().until(trig.negate());
+    while (!sysIdCmdList.isEmpty()) {
+      Command next = sysIdCmdList.remove();
+      ret = Commands.idle().until(trig).andThen(ret);
+      ret = next.until(trig.negate()).andThen(ret);
+    }
+    ret = Commands.idle().until(trig).andThen(ret);
+    return ret;
   }
 
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {

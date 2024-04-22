@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -214,6 +215,11 @@ public class RobotContainer {
             drivetrainCommandFactory
                 .pointDrive(direction, SwerveSubsystem.scrubRotation(input))
                 .withName("Point Drive"));
+        break;
+      case SYSID:
+        Trigger trig = OI.getButton(OI.Driver.A);
+        new Trigger(() -> RobotState.isEnabled() && RobotState.isTeleop())
+            .onTrue(drivetrainCommandFactory.getSysIdCommand(trig));
         break;
       default:
         DriverStation.reportWarning("Unknown Drive Type Selected.", false);
