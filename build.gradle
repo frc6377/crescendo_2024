@@ -3,6 +3,7 @@ plugins {
     id "edu.wpi.first.GradleRIO" version "2024.2.1"
     id 'com.diffplug.spotless' version '6.12.0'
     id "com.peterabeles.gversion" version "1.10"
+    id "net.ltgt.errorprone" version "3.1.0"
 }
 
 java {
@@ -114,6 +115,13 @@ dependencies {
     annotationProcessor "org.littletonrobotics.akit.junction:junction-autolog:$akitJson.version"
     testImplementation 'org.mockito:mockito-core:5.8.0'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.1'
+
+    errorprone "com.uber.nullaway:nullaway:0.10.25"
+
+    annotationProcessor 'com.google.code.findbugs:jsr305:3.0.2'
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+
+    errorprone "com.google.errorprone:error_prone_core:2.26.1"
 }
 
 test {
@@ -201,3 +209,15 @@ test {
 }
 
 compileJava.dependsOn("spotlessApply")
+
+
+import net.ltgt.gradle.errorprone.CheckSeverity
+
+tasks.withType(JavaCompile) {
+    options.errorprone.disableAllChecks = true
+    // remove the if condition if you want to run NullAway on test code
+    options.errorprone {
+        check("NullAway", CheckSeverity.ERROR)
+        option("NullAway:AnnotatedPackages", "frc.robot.RobotContainer")
+    }
+}

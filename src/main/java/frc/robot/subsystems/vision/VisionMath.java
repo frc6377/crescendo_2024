@@ -213,7 +213,6 @@ public class VisionMath {
   /**
    * Approximates the robtot location using a single tag.
    *
-   * @deprecated - To be implemented
    * @param target
    * @return
    */
