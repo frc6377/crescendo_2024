@@ -9,13 +9,14 @@ import frc.robot.Constants.ClimberConstants;
 import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import javax.annotation.Nullable;
 
 /** Expected climb sequece is: 1. Raise 2. Clip 3. Climb */
 public class ClimberCommandFactory {
-  private final ClimberSubsystem subsystem;
+  @Nullable private final ClimberSubsystem subsystem;
   private final Runnable noop = () -> {};
 
-  public ClimberCommandFactory(ClimberSubsystem subsystem) {
+  public ClimberCommandFactory(@Nullable ClimberSubsystem subsystem) {
     this.subsystem = subsystem;
   }
 

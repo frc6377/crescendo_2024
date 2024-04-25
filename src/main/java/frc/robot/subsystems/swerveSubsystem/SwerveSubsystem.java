@@ -33,6 +33,7 @@ import frc.robot.utilities.LimelightHelpers;
 import java.util.function.BiConsumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements subsystem so it can be used
@@ -48,7 +49,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   private static boolean isFieldOriented = true;
 
   private final RobotStateManager RSM;
-  private Notifier m_simNotifier = null;
+  @Nullable private Notifier m_simNotifier;
   private double m_lastSimTime;
   private SwerveDriveKinematics kinematics;
 
@@ -223,16 +224,19 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   public static class RotationSource implements DoubleSupplier {
     private double lastVal;
     private final Supplier<Translation2d> supplier;
-    private final SwerveSubsystem subsystem;
+    @Nullable private final SwerveSubsystem subsystem;
 
-    public RotationSource(XboxController controller, SwerveSubsystem subsystem) {
+    public RotationSource(XboxController controller, @Nullable SwerveSubsystem subsystem) {
       this.subsystem = subsystem;
       supplier = () -> new Translation2d(controller.getRightX(), controller.getRightY());
-      lastVal = subsystem.getState().Pose.getRotation().getDegrees();
+      if (subsystem != null) {
+        lastVal = subsystem.getState().Pose.getRotation().getDegrees();
+      }
     }
 
     @Override
     public double getAsDouble() {
+      if (subsystem == null) return 0;
       Translation2d input =
           supplier
               .get()

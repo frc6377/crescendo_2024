@@ -9,12 +9,13 @@ import frc.robot.Constants.TriggerConstants;
 import frc.robot.utilities.TunableNumber;
 import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
+import javax.annotation.Nullable;
 
 public class TriggerCommandFactory {
-  private final TriggerSubsystem subsystem;
+  @Nullable private final TriggerSubsystem subsystem;
   private final TunableNumber shootPercentage;
 
-  public TriggerCommandFactory(TriggerSubsystem subsystem) {
+  public TriggerCommandFactory(@Nullable TriggerSubsystem subsystem) {
     this.subsystem = subsystem;
     shootPercentage =
         new TunableNumber("Shooter percent", TriggerConstants.SHOOT_PERCENTAGE, subsystem);

@@ -26,12 +26,13 @@ import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
 
 public class SwerveCommandFactory {
-  private final SwerveSubsystem subsystem;
+  @Nullable private final SwerveSubsystem subsystem;
   private final ArrayList<RotationSource> rotationSources;
 
-  public SwerveCommandFactory(SwerveSubsystem subsystem) {
+  public SwerveCommandFactory(@Nullable SwerveSubsystem subsystem) {
     this.subsystem = subsystem;
     rotationSources = new ArrayList<>(1);
   }
@@ -272,6 +273,7 @@ public class SwerveCommandFactory {
   }
 
   private BooleanSupplier isOnNearSide(BooleanSupplier isRed) {
+    if (subsystem == null) return () -> true;
     return () -> {
       boolean isNear =
           subsystem.getState().Pose.getX() > FieldConstants.CENTERLINE_X_APPROX
@@ -308,9 +310,8 @@ public class SwerveCommandFactory {
         .asProxy();
   }
 
-  public RotationSource createRotationSource(
-      XboxController controller, SwerveSubsystem drivetrain) {
-    final RotationSource RS = new RotationSource(controller, drivetrain);
+  public RotationSource createRotationSource(XboxController controller) {
+    final RotationSource RS = new RotationSource(controller, subsystem);
     rotationSources.add(RS);
     return RS;
   }

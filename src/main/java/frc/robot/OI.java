@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Map;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
 
 public class OI {
   // Operator Interface (OI) class containing all control information
@@ -59,8 +60,7 @@ public class OI {
         new Control(XboxController.Axis.kLeftY, "Y Translation", controller, yTranslationCurve);
     public static final Control rotationAxis =
         new Control(XboxController.Axis.kRightX, "Rotation", controller, rotationCurve);
-    public static final Control RightY =
-        new Control(XboxController.Axis.kRightY, null, controller, null);
+    public static final Control RightY = new Control(XboxController.Axis.kRightY, null, controller);
 
     public static void setRumble(double rumbleIntensity) {
       controller.setRumble(RumbleType.kBothRumble, rumbleIntensity);
@@ -112,8 +112,7 @@ public class OI {
         new Control(XboxController.Axis.kLeftY, "Y Translation", controller, yTranslationCurve);
     public static final Control rotationAxis =
         new Control(XboxController.Axis.kRightX, "Rotation", controller, rotationCurve);
-    public static final Control RightY =
-        new Control(XboxController.Axis.kRightY, null, controller, null);
+    public static final Control RightY = new Control(XboxController.Axis.kRightY, null, controller);
 
     public static void setRumble(double rumbleIntensity) {
       controller.setRumble(RumbleType.kBothRumble, rumbleIntensity);
@@ -163,7 +162,7 @@ public class OI {
     }
 
     private int id;
-    private String action;
+    @Nullable private String action;
     private String name; // Refers to button name
     private XboxController controller;
     private ControlCurve curve;
@@ -171,34 +170,42 @@ public class OI {
     private ControlType type;
 
     private Control(
-        int id, String action, String name, XboxController controller, ControlType type) {
+        int id, @Nullable String action, String name, XboxController controller, ControlType type) {
       this.id = id;
       this.action = action;
       this.name = name;
       this.controller = controller;
       this.type = type;
+      this.curve = new ControlCurve(1, 0, 0, 0);
       putControl();
     }
 
     Control(
-        XboxController.Axis axis, String action, XboxController controller, ControlCurve curve) {
+        XboxController.Axis axis,
+        @Nullable String action,
+        XboxController controller,
+        ControlCurve curve) {
       this(axis.value, action, axis.name(), controller, ControlType.AXIS);
       this.curve = curve;
     }
 
-    Control(XboxController.Axis axis, String action, XboxController controller) {
+    Control(XboxController.Axis axis, @Nullable String action, XboxController controller) {
       this(axis, action, controller, new ControlCurve(1, 0, 0, 0));
     }
 
-    Control(XboxController.Button button, String action, XboxController controller) {
+    Control(XboxController.Button button, @Nullable String action, XboxController controller) {
       this(button.value, action, button.name(), controller, ControlType.BUTTON);
     }
 
-    Control(double povAngle, String action, XboxController controller) {
+    Control(double povAngle, @Nullable String action, XboxController controller) {
       this((int) povAngle, action, "POV " + povAngle, controller, ControlType.POVBUTTON);
     }
 
-    Control(XboxController.Axis axis, String action, XboxController controller, double threshold) {
+    Control(
+        XboxController.Axis axis,
+        @Nullable String action,
+        XboxController controller,
+        double threshold) {
       this(axis.value, action, axis.name(), controller, ControlType.TRIGGER);
       this.threshold = threshold;
     }
@@ -207,7 +214,7 @@ public class OI {
       return id;
     }
 
-    private String getAction() {
+    private @Nullable String getAction() {
       return action;
     }
 

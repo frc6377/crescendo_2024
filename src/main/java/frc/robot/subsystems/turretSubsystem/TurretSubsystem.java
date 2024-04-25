@@ -42,6 +42,7 @@ import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.HowdyMath;
 import java.util.function.DoubleSupplier;
+import javax.annotation.Nullable;
 
 public class TurretSubsystem extends SubsystemBase {
   private final RobotStateManager RSM;
@@ -109,7 +110,8 @@ public class TurretSubsystem extends SubsystemBase {
   private boolean usingPitchPid = true;
   private final PIDController turretVelocityPIDController;
 
-  public TurretSubsystem(RobotStateManager robotStateManager, VisionSubsystem visionSubsystem) {
+  public TurretSubsystem(
+      RobotStateManager robotStateManager, @Nullable VisionSubsystem visionSubsystem) {
     this.positionErrorSupplier = () -> 0;
     RSM = robotStateManager;
 

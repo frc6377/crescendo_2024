@@ -15,23 +15,22 @@ import frc.robot.stateManagement.ShooterMode;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
 import frc.robot.utilities.TunableNumber;
 import java.util.ArrayList;
+import javax.annotation.Nullable;
 
 public class ShooterCommandFactory {
-  private final ShooterSubsystem subsystem;
+  @Nullable private final ShooterSubsystem subsystem;
   private final RobotStateManager RSM;
   private ShuffleboardTab shooterTab = Shuffleboard.getTab("ShooterSubsystem");
   private TunableNumber leftTargetRPM;
   private TunableNumber rightTargetRPM;
 
-  public ShooterCommandFactory(ShooterSubsystem subsystem, RobotStateManager RSM) {
+  public ShooterCommandFactory(@Nullable ShooterSubsystem subsystem, RobotStateManager RSM) {
     this.subsystem = subsystem;
     this.RSM = RSM;
-    if (subsystem != null) {
-      leftTargetRPM =
-          new TunableNumber("Left RPM", ShooterConstants.SHOOTER_LEFT_TARGET_RPM, subsystem);
-      rightTargetRPM =
-          new TunableNumber("Right RPM", ShooterConstants.SHOOTER_RIGHT_TARGET_RPM, subsystem);
-    }
+    leftTargetRPM =
+        new TunableNumber("Left RPM", ShooterConstants.SHOOTER_LEFT_TARGET_RPM, subsystem);
+    rightTargetRPM =
+        new TunableNumber("Right RPM", ShooterConstants.SHOOTER_RIGHT_TARGET_RPM, subsystem);
   }
 
   public Command intakeSource() {
@@ -77,7 +76,9 @@ public class ShooterCommandFactory {
               } else {
                 subsystem.setShooterSpeeds(
                     new SpeakerConfig(
-                        -1, leftTargetRPM.getAsDouble(), rightTargetRPM.getAsDouble()));
+                        -1,
+                        leftTargetRPM != null ? leftTargetRPM.getAsDouble() : 0,
+                        rightTargetRPM != null ? rightTargetRPM.getAsDouble() : 0));
               }
             },
             () -> {},
@@ -105,7 +106,9 @@ public class ShooterCommandFactory {
                     } else {
                       subsystem.setShooterSpeeds(
                           new SpeakerConfig(
-                              -1, rightTargetRPM.getAsDouble(), leftTargetRPM.getAsDouble()));
+                              -1,
+                              leftTargetRPM != null ? leftTargetRPM.getAsDouble() : 0,
+                              rightTargetRPM != null ? rightTargetRPM.getAsDouble() : 0));
                     }
                   } else {
                     subsystem.stop();

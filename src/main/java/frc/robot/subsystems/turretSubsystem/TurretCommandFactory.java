@@ -30,9 +30,10 @@ import frc.robot.utilities.TunableNumber;
 import java.util.ArrayList;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
 
 public class TurretCommandFactory {
-  final TurretSubsystem subsystem;
+  @Nullable final TurretSubsystem subsystem;
   final RobotStateManager RSM;
   final VisionSubsystem vision;
   final Supplier<Rotation2d> rotationSupplier;
@@ -44,18 +45,16 @@ public class TurretCommandFactory {
   TunableNumber shooterPitch;
 
   public TurretCommandFactory(
-      TurretSubsystem subsystem,
+      @Nullable TurretSubsystem subsystem,
       RobotStateManager RSM,
       VisionSubsystem visionSubsystem,
       Supplier<Rotation2d> rotationSupplier,
       Supplier<Translation2d> translationSupplier) {
     SmartDashboard.putNumber("Set Shooter Pitch", 0);
     this.subsystem = subsystem;
-    if (subsystem != null) {
-      limelightDistance = new DebugEntry<Double>(0D, "Limelight distance", subsystem);
-      visionRotation = new DebugEntry<Double>(0d, "Vision Angle", subsystem);
-    }
-    if (subsystem != null) shooterPitch = new TunableNumber("Shooter Pitch", 0, subsystem);
+    limelightDistance = new DebugEntry<Double>(0D, "Limelight distance", subsystem);
+    visionRotation = new DebugEntry<Double>(0d, "Vision Angle", subsystem);
+    shooterPitch = new TunableNumber("Shooter Pitch", 0, subsystem);
     isReadyLog = new DebugEntry<Boolean>(false, "is ready", subsystem);
     this.RSM = RSM;
     this.vision = visionSubsystem;
@@ -172,6 +171,7 @@ public class TurretCommandFactory {
   }
 
   private Command lobShot() {
+    if (subsystem == null) return Commands.none();
     if (CommandConstants.LOB_SHOT_MODE == LobShotMode.ODOMETRY_BASED) {
       return subsystem.startEnd(
           () -> {
@@ -266,15 +266,17 @@ public class TurretCommandFactory {
    * @param searchingBehavior target rotation in degrees
    */
   private void visionTracking(int targetTag, Supplier<Rotation2d> searchingBehavior) {
-    subsystem.setPositionErrorSupplier(
-        () -> {
-          double errDegrees = vision.getTurretYaw(targetTag);
-          if (Double.isNaN(errDegrees)) {
-            return searchingBehavior.get().getRotations() + subsystem.getTurretPos();
-          }
-          double err = Units.degreesToRotations(errDegrees - 4);
-          return err;
-        });
+    if (subsystem != null) {
+      subsystem.setPositionErrorSupplier(
+          () -> {
+            double errDegrees = vision.getTurretYaw(targetTag);
+            if (Double.isNaN(errDegrees)) {
+              return searchingBehavior.get().getRotations() + subsystem.getTurretPos();
+            }
+            double err = Units.degreesToRotations(errDegrees - 4);
+            return err;
+          });
+    }
   }
 
   public Command idleTurret() {
@@ -343,11 +345,14 @@ public class TurretCommandFactory {
   }
 
   private void moveToBottomOfTravel() {
-    subsystem.setTurretPos(0);
-    if (subsystem.getPitch() > 0.05) {
-      subsystem.setPitchPos(0);
-    } else {
-      subsystem.holdPosition();
+    if (subsystem != null) {
+
+      subsystem.setTurretPos(0);
+      if (subsystem.getPitch() > 0.05) {
+        subsystem.setPitchPos(0);
+      } else {
+        subsystem.holdPosition();
+      }
     }
   }
 
@@ -368,11 +373,12 @@ public class TurretCommandFactory {
   }
 
   public Trigger isReadyTrigger() {
-    if (subsystem == null) return null;
+    if (subsystem == null) return new Trigger(() -> true);
     return new Trigger(this::isReadyBoolean);
   }
 
   public boolean isReadyBoolean() {
+    if (subsystem == null) return true;
     boolean ready =
         subsystem.pitchAtSetpoint() && subsystem.turretAtSetPoint(Rotation2d.fromDegrees(2.5));
     isReadyLog.log(ready);

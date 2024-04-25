@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxSim;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import javax.annotation.Nullable;
 
 /** Add your docs here. */
 public class HowdyPID {
@@ -17,11 +18,11 @@ public class HowdyPID {
   private double Iz; // I Zone
   private double FF;
 
-  private TunableNumber tuneP;
-  private TunableNumber tuneI;
-  private TunableNumber tuneD;
-  private TunableNumber tuneIz;
-  private TunableNumber tuneFF;
+  @Nullable private TunableNumber tuneP;
+  @Nullable private TunableNumber tuneI;
+  @Nullable private TunableNumber tuneD;
+  @Nullable private TunableNumber tuneIz;
+  @Nullable private TunableNumber tuneFF;
 
   public HowdyPID(double p, double i, double d) {
     this.P = p;

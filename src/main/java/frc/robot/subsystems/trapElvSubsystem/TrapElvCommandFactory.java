@@ -9,11 +9,12 @@ import frc.robot.Constants.TrapElvConstants;
 import frc.robot.subsystems.trapElvSubsystem.TrapElvSubsystem.TrapElvState;
 import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
+import javax.annotation.Nullable;
 
 public class TrapElvCommandFactory {
-  private final TrapElvSubsystem subsystem;
+  @Nullable private final TrapElvSubsystem subsystem;
 
-  public TrapElvCommandFactory(TrapElvSubsystem subsystem) {
+  public TrapElvCommandFactory(@Nullable TrapElvSubsystem subsystem) {
     this.subsystem = subsystem;
   }
 

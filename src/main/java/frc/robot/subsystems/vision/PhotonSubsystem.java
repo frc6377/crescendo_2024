@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import javax.annotation.Nullable;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -37,7 +38,6 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
   private final RobotStateManager RSM;
   private int measurementsUsed = 0;
   private double lastRecordedTime = 0;
-  private PhotonTrackedTarget lastTarget = null;
   private DebugEntry<Double> measurementEntry = new DebugEntry<Double>(0.0, "measurements", this);
 
   private final BiConsumer<Pose2d, Double> measurementConsumer;
@@ -155,7 +155,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
     }
   }
 
-  public PhotonTrackedTarget getTurretLastResult(int id) {
+  public @Nullable PhotonTrackedTarget getTurretLastResult(int id) {
     CachedTag tag = turretCache.get(id);
     if (tag == null) {
       return null;
@@ -234,7 +234,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
         }
       }
 
-      PhotonPipelineResult turretResult = turretCamera.getLatestResult();
+      turretResult = turretCamera.getLatestResult();
       double cacheTimeout = Timer.getFPGATimestamp() + 1;
 
       var turretStream = turretResult.getTargets().stream();

@@ -13,9 +13,11 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.NoSuchElementException;
+import javax.annotation.Nullable;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -32,9 +34,9 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
   public static final boolean isCompetition = false;
 
-  private Command m_autonomousCommand;
+  @Nullable private Command m_autonomousCommand;
 
-  private RobotContainer m_robotContainer;
+  @Nullable private RobotContainer m_robotContainer;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -107,7 +109,9 @@ public class Robot extends LoggedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    m_robotContainer.onDisabled();
+    if (m_robotContainer != null) {
+      m_robotContainer.onDisabled();
+    }
   }
 
   @Override
@@ -115,14 +119,21 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledExit() {
-    m_robotContainer.onExitDisabled();
+    if (m_robotContainer != null) {
+      m_robotContainer.onExitDisabled();
+    }
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_robotContainer.getDriveTrain().stopVisionMeasures();
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    if (m_robotContainer != null) {
+      @Nullable SwerveSubsystem s = m_robotContainer.getDriveTrain();
+      if (s != null) {
+        s.stopVisionMeasures();
+      }
+      m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    }
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -139,20 +150,26 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-    m_robotContainer.getDriveTrain().startVisionMeasures();
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    // BLUE is the default, so we only need to handle RED here.
-    if (DriverStation.getAlliance().isPresent()
-        && DriverStation.getAlliance().get() == Alliance.Red) {
-      m_robotContainer.getDriveTrain().setOperatorPerspectiveForward(Rotation2d.fromRotations(0.5));
-    } else {
-      m_robotContainer.getDriveTrain().setOperatorPerspectiveForward(Rotation2d.fromRotations(0));
+
+    if (m_robotContainer != null) {
+      @Nullable SwerveSubsystem s = m_robotContainer.getDriveTrain();
+      if (s != null) {
+        s.startVisionMeasures();
+        // This makes sure that the autonomous stops running when
+        // teleop starts running. If you want the autonomous to
+        // continue until interrupted by another command, remove
+        // this line or comment it out.
+        // BLUE is the default, so we only need to handle RED here.
+        if (DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().get() == Alliance.Red) {
+          s.setOperatorPerspectiveForward(Rotation2d.fromRotations(0.5));
+        } else {
+          s.setOperatorPerspectiveForward(Rotation2d.fromRotations(0));
+        }
+      }
     }
   }
 

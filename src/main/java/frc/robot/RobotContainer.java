@@ -6,6 +6,7 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -16,7 +17,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -55,6 +55,7 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -66,21 +67,21 @@ public class RobotContainer {
   private final RobotStateManager robotStateManager = new RobotStateManager();
 
   // The robot's subsystems and commands are defined here...
-  private final IntakeSubsystem intakeSubsystem;
-  private final ShooterSubsystem shooterSubsystem;
-  private final TriggerSubsystem triggerSubsystem;
-  private final TurretSubsystem turretSubsystem;
+  @Nullable private final IntakeSubsystem intakeSubsystem;
+  @Nullable private final ShooterSubsystem shooterSubsystem;
+  @Nullable private final TriggerSubsystem triggerSubsystem;
+  @Nullable private final TurretSubsystem turretSubsystem;
 
-  private final SwerveSubsystem drivetrain;
-  private final VisionSubsystem visionSubsystem;
+  @Nullable private final SwerveSubsystem drivetrain;
+  @Nullable private final VisionSubsystem visionSubsystem;
 
-  private final SignalingSubsystem signalingSubsystem;
+  @Nullable private final SignalingSubsystem signalingSubsystem;
 
-  private final TrapElvSubsystem trapElvSubsystem;
+  @Nullable private final TrapElvSubsystem trapElvSubsystem;
 
-  private final ClimberSubsystem climberSubsystem;
+  @Nullable private final ClimberSubsystem climberSubsystem;
 
-  private SendableChooser<Command> autoChooser;
+  @Nullable private SendableChooser<Command> autoChooser;
   private ShuffleboardTab configTab = Shuffleboard.getTab("Config");
   private GenericEntry autoDelay =
       configTab
@@ -134,7 +135,7 @@ public class RobotContainer {
       triggerSubsystem = null;
     }
     triggerCommandFactory = new TriggerCommandFactory(triggerSubsystem);
-    if (enabledSubsystems.visionEnabled) {
+    if (enabledSubsystems.visionEnabled && drivetrain != null) {
       visionSubsystem =
           Constants.enabledSubsystems.usingPhoton
               ? new PhotonSubsystem(drivetrain.getVisionMeasurementConsumer(), robotStateManager)
@@ -159,7 +160,7 @@ public class RobotContainer {
             turretSubsystem,
             robotStateManager,
             visionSubsystem,
-            drivetrain::getRotation,
+            drivetrain != null ? drivetrain::getRotation : () -> new Rotation2d(),
             drivetrainCommandFactory::currentRobotPosition);
     if (enabledSubsystems.climberEnabled) {
       climberSubsystem = new ClimberSubsystem();
@@ -178,7 +179,7 @@ public class RobotContainer {
     configDriverFeedBack();
   }
 
-  public SwerveSubsystem getDriveTrain() {
+  public @Nullable SwerveSubsystem getDriveTrain() {
     return drivetrain;
   }
 
@@ -202,7 +203,7 @@ public class RobotContainer {
                     OI.getAxisSupplier(OI.Driver.rotationAxis).get()),
                 OI.getButton(OI.Driver.highGear).getAsBoolean());
     final DoubleSupplier direction =
-        drivetrainCommandFactory.createRotationSource(OI.Driver.controller, drivetrain);
+        drivetrainCommandFactory.createRotationSource(OI.Driver.controller);
 
     switch (DriverConstants.DRIVE_TYPE) {
       case FIELD_ORIENTED:
@@ -297,26 +298,29 @@ public class RobotContainer {
   }
 
   private void configDriverFeedBack() {
-    new Trigger(trapElvCommandFactory.getSourceBreak())
-        .and(() -> OI.Driver.controller.getPOV() == 0 || OI.Operator.controller.getPOV() == 0)
-        .whileTrue(
-            Commands.startEnd(
-                () -> signalingSubsystem.startAmpSignal(), () -> signalingSubsystem.endSignal()));
-    new Trigger(OI.getTrigger(OI.Operator.prepareToFire))
-        .and(() -> robotStateManager.getPlacementMode() == PlacementMode.SPEAKER)
-        .and(turretCommandFactory.isReadyTrigger())
-        .and(shooterCommandFactory::isShooterReady)
-        .whileTrue(
-            Commands.startEnd(
-                () -> signalingSubsystem.startShooterSignal(),
-                () -> signalingSubsystem.endSignal()));
-    shooterCommandFactory
-        .getBeamBreak()
-        .and(new Trigger(() -> OI.Operator.controller.getPOV() == 00))
-        .whileTrue(
-            Commands.startEnd(
-                () -> signalingSubsystem.startIntakeSignal(),
-                () -> signalingSubsystem.endSignal()));
+    if (signalingSubsystem != null) {
+      new Trigger(trapElvCommandFactory.getSourceBreak())
+          .and(() -> OI.Driver.controller.getPOV() == 0 || OI.Operator.controller.getPOV() == 0)
+          .whileTrue(
+              Commands.startEnd(
+                  () -> signalingSubsystem.startAmpSignal(), () -> signalingSubsystem.endSignal()));
+      new Trigger(OI.getTrigger(OI.Operator.prepareToFire))
+          .and(() -> robotStateManager.getPlacementMode() == PlacementMode.SPEAKER)
+          .and(turretCommandFactory.isReadyTrigger())
+          .and(shooterCommandFactory::isShooterReady)
+          .whileTrue(
+              Commands.startEnd(
+                  () -> signalingSubsystem.startShooterSignal(),
+                  () -> signalingSubsystem.endSignal()));
+
+      shooterCommandFactory
+          .getBeamBreak()
+          .and(new Trigger(() -> OI.Operator.controller.getPOV() == 00))
+          .whileTrue(
+              Commands.startEnd(
+                  () -> signalingSubsystem.startIntakeSignal(),
+                  () -> signalingSubsystem.endSignal()));
+    }
     new TOFSensorSimple(3, 100)
         .beamBroken()
         .whileTrue(
@@ -327,8 +331,7 @@ public class RobotContainer {
                 },
                 () -> {
                   OI.Driver.controller.setRumble(RumbleType.kBothRumble, 0);
-                },
-                new Subsystem[0]));
+                }));
   }
 
   private Command speakerSource() {
@@ -440,13 +443,13 @@ public class RobotContainer {
   }
 
   public void onDisabled() {
-    if (Constants.enabledSubsystems.signalEnabled) {
+    if (signalingSubsystem != null) {
       signalingSubsystem.randomizePattern();
     }
   }
 
   public void onExitDisabled() {
-    if (Constants.enabledSubsystems.signalEnabled) {
+    if (signalingSubsystem != null) {
       signalingSubsystem.clearLEDs();
     }
   }
@@ -464,8 +467,8 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous(including the delay)
    */
-  public Command getAutonomousCommand() {
-    if (Constants.enabledSubsystems.drivetrainEnabled) {
+  public @Nullable Command getAutonomousCommand() {
+    if (autoChooser != null) {
       return new WaitCommand(autoDelay.getDouble(0))
           .andThen(autoChooser.getSelected())
           .withName("Get Auto Command");

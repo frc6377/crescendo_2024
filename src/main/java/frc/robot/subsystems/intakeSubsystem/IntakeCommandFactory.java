@@ -8,11 +8,12 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.stateManagement.PlacementMode;
 import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
+import javax.annotation.Nullable;
 
 public class IntakeCommandFactory {
-  private final IntakeSubsystem subsystem;
+  @Nullable private final IntakeSubsystem subsystem;
 
-  public IntakeCommandFactory(IntakeSubsystem subsystem) {
+  public IntakeCommandFactory(@Nullable IntakeSubsystem subsystem) {
     this.subsystem = subsystem;
   }
 
