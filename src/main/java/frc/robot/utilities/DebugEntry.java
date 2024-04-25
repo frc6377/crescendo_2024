@@ -78,14 +78,14 @@ public class DebugEntry<T> {
   }
 
   public void log(T newValue) {
-    try {
-      if (!Robot.isCompetition && lastValue != newValue && networkEntry != null) {
+    if (networkEntry == null) {
+      DriverStation.reportError("Invalid type for log " + name, false);
+    } else {
+      if (!Robot.isCompetition && lastValue != newValue) {
         networkEntry.getEntry().setValue(newValue);
         lastValue = newValue;
       }
       localConsumer.accept(newValue);
-    } catch (NullPointerException e) {
-      DriverStation.reportError("Invalid type for log " + name, false);
     }
   }
 }
