@@ -220,6 +220,7 @@ tasks.withType(JavaCompile) {
         options.errorprone {
             check("NullAway", CheckSeverity.ERROR)
             option("NullAway:AnnotatedPackages", "frc.robot")
+            option("NullAway:KnownInitializers", "frc.robot.Robot.robotInit")
             option("NullAway:ExcludedClasses", "frc.robot.subsystems.shooterSubsystem.ShooterSubsystem," +
                     "frc.robot.subsystems.turretSubsystem.TurretSubsystem," +
                     "frc.robot.subsystems.trapElvSubsystem.TrapElvSubsystem," +

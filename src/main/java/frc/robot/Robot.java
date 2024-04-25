@@ -36,7 +36,7 @@ public class Robot extends LoggedRobot {
 
   @Nullable private Command m_autonomousCommand;
 
-  @Nullable private RobotContainer m_robotContainer;
+  private RobotContainer m_robotContainer;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -109,9 +109,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    if (m_robotContainer != null) {
-      m_robotContainer.onDisabled();
-    }
+    m_robotContainer.onDisabled();
   }
 
   @Override
@@ -119,21 +117,17 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledExit() {
-    if (m_robotContainer != null) {
-      m_robotContainer.onExitDisabled();
-    }
+    m_robotContainer.onExitDisabled();
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    if (m_robotContainer != null) {
-      @Nullable SwerveSubsystem s = m_robotContainer.getDriveTrain();
-      if (s != null) {
-        s.stopVisionMeasures();
-      }
-      m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    @Nullable SwerveSubsystem s = m_robotContainer.getDriveTrain();
+    if (s != null) {
+      s.stopVisionMeasures();
     }
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
