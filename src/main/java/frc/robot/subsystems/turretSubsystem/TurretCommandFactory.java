@@ -368,7 +368,7 @@ public class TurretCommandFactory {
   }
 
   public Trigger isReadyTrigger() {
-    if (subsystem == null) return null;
+    if (subsystem == null) return new Trigger(() -> true);
     return new Trigger(this::isReadyBoolean);
   }
 

@@ -22,7 +22,7 @@ public class DebugEntry<T> {
   private Consumer<T> localConsumer;
 
   public DebugEntry(T defaultValue, String name, Subsystem subsystem) {
-    this(defaultValue, name, subsystem.getName());
+    this(defaultValue, name, subsystem != null ? subsystem.getName() : "subsystem");
   }
 
   public DebugEntry(T defaultValue, String name, String location) {
