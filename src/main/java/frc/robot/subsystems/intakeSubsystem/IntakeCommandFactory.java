@@ -78,7 +78,8 @@ public class IntakeCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
-    subsystem.setDefaultCommand(defaultCommand);
+    subsystem.setDefaultCommand(
+        Commands.deadline(defaultCommand, Commands.run(() -> {}, subsystem)));
   }
 
   public Command[] getCommands() {

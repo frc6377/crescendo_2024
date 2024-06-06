@@ -223,6 +223,7 @@ public class RobotContainer {
         DriverStation.reportWarning("Unknown Drive Type Selected.", false);
         break;
     }
+
     trapElvCommandFactory.setDefaultCommand(trapElvCommandFactory.stowTrapElvCommand());
 
     shooterCommandFactory.setDefaultCommand(shooterCommandFactory.shooterIdle());
