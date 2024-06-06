@@ -160,7 +160,8 @@ public class TurretCommandFactory {
             case NO_ODOM:
               return subsystem
                   .run(() -> subsystem.setPitchPos(pitchMap.get(distanceEstimateMeters())))
-                  .withName("No Rotation");
+                  .withName("No Rotation")
+                  .asProxy();
             default:
               DriverStation.reportError(
                   String.format("Unknown shooter mode provided (%s)", shooterMode), true);

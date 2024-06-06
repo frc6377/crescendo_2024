@@ -114,7 +114,7 @@ public class VisionMath {
    * @param RSM the current robot state
    * @return the estiamted robot position with no filtering for possiblity
    */
-  public static Optional<Pose2d> cirlceBasedTwoTagPosition(
+  private static Optional<Pose2d> cirlceBasedTwoTagPosition(
       List<CameraTrackedTarget> targets, AprilTagFieldLayout layout, RobotStateManager RSM) {
     if (targets.size() != 2) {
       DriverStation.reportWarning(
@@ -139,8 +139,8 @@ public class VisionMath {
     Measure<Distance> distanceToTagAUnitRep = tagToCameraDistance(targets.get(0), layout, RSM);
     Measure<Distance> distanceToTagBUnitRep = tagToCameraDistance(targets.get(1), layout, RSM);
 
-    double distanceToTagA = distanceToTagAUnitRep.baseUnitMagnitude();
-    double distanceToTagB = distanceToTagBUnitRep.baseUnitMagnitude();
+    double distanceToTagA = distanceToTagAUnitRep.in(Meters);
+    double distanceToTagB = distanceToTagBUnitRep.in(Meters);
 
     SmartDashboard.putNumber("distance A ", distanceToTagA);
     SmartDashboard.putNumber("distance B ", distanceToTagB);
@@ -170,8 +170,7 @@ public class VisionMath {
         (distanceTagAToB * distanceTagAToB
                 - distanceToTagB * distanceToTagB
                 + distanceToTagA * distanceToTagA)
-            / 2
-            * distanceTagAToB;
+            / (2 * distanceTagAToB);
 
     // y squared.
     // the distance normal to A towards B
