@@ -42,7 +42,8 @@ public class IntakeCommandFactory {
     if (subsystem == null) return Commands.none();
     return Commands.deadline(
             new WaitCommand(ShooterConstants.INTAKE_DELAY_SEC), getSpeakerIntakeCommand())
-        .withName("intakeSourceForTime");
+        .withName("intakeSourceForTime")
+        .asProxy();
   }
 
   public Command intakeSpeakerCommandSmart(BooleanSupplier tof) {
@@ -50,7 +51,8 @@ public class IntakeCommandFactory {
     return getSpeakerIntakeCommand()
         .until(tof)
         .andThen(intakeSourceForTime())
-        .withName("intakeSpeakerCommandSmart");
+        .withName("intakeSpeakerCommandSmart")
+        .asProxy();
   }
 
   public Command getAmpIntakeCommand() {
@@ -69,7 +71,9 @@ public class IntakeCommandFactory {
 
   public Command idleCommand() {
     return Commands.either(
-        buildIntakeCommand(true), new InstantCommand(), () -> DriverStation.isAutonomous());
+            buildIntakeCommand(true), new InstantCommand(), () -> DriverStation.isAutonomous())
+        .withName("idleCommand")
+        .asProxy();
   }
 
   public void setDefaultCommand(Command defaultCommand) {
@@ -85,6 +89,7 @@ public class IntakeCommandFactory {
     cmds.add(intakeSourceForTime());
     cmds.add(intakeSpeakerCommandSmart(() -> false));
     cmds.add(getAmpIntakeCommand());
+    cmds.add(idleCommand());
     return cmds.toArray(new Command[cmds.size()]);
   }
 }

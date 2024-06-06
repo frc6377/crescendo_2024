@@ -178,6 +178,8 @@ public class CommandFactoryChecks {
         numCommands,
         sub.getName() + " getCommands() list size mismatch with number of Command factory methods");
 
+    System.out.println(cmds);
+
     for (Command cmd : cmds) {
       // Verify the compiled Command doesn't require any subsystem
       assertEquals(
