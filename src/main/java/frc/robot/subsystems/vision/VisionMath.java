@@ -131,7 +131,7 @@ public class VisionMath {
       return Optional.empty();
     }
 
-    Pose3d cameraPositionRelToRobot = robotToCamera(cameraInUse, RSM);
+    Pose3d cameraPositionRelToRobot = cameraInUse.robotToCamera(RSM);
 
     PhotonTrackedTarget trackedA = targets.get(0).target();
     PhotonTrackedTarget trackedB = targets.get(1).target();
@@ -247,7 +247,7 @@ public class VisionMath {
       CameraTrackedTarget cameraTarget, AprilTagFieldLayout layout, RobotStateManager RSM) {
     PhotonTrackedTarget target = cameraTarget.target();
     Pose3d tagLocation = layout.getTagPose(target.getFiducialId()).orElseThrow();
-    Pose3d cameraLocation = robotToCamera(cameraTarget.camera(), RSM);
+    Pose3d cameraLocation = cameraTarget.camera().robotToCamera(RSM);
 
     SmartDashboard.putNumber(
         "ID " + target.getFiducialId() + "at deg",
@@ -259,17 +259,6 @@ public class VisionMath {
             tagLocation.getZ(),
             cameraLocation.getRotation().getAngle(),
             Units.degreesToRadians(target.getPitch())));
-  }
-
-  /**
-   * Gets the camera relative to the robot center in meters.
-   *
-   * @param name the camera to get
-   * @param RSM the current state of the robot
-   * @return the camera position relative to the robot forward
-   */
-  public static Pose3d robotToCamera(CameraName name, RobotStateManager RSM) {
-    return name.robotToCamera(RSM);
   }
 
   public enum SingleTagMethod {
