@@ -9,6 +9,7 @@ import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -32,6 +33,23 @@ public class TestDebugEntry {
     HAL.shutdown();
     subsystem = new TestSubsystem();
     subsystem2 = new TestSubsystem();
+  }
+
+  @Disabled
+  @Test()
+  public void raiseDupEntryError() {
+    // Duplicate Entry
+    if (Robot.isCompetition) {
+      return;
+    }
+    try (MockedStatic<DriverStation> mockedFactory = Mockito.mockStatic(DriverStation.class)) {
+      mockedFactory
+          .when(() -> DriverStation.reportError(anyString(), anyBoolean()))
+          .thenCallRealMethod();
+      new DebugEntry<Double>(0.0, "test", subsystem);
+      new DebugEntry<Double>(0.0, "test", subsystem);
+      mockedFactory.verify(() -> DriverStation.reportError(anyString(), anyBoolean()), times(1));
+    }
   }
 
   @Test

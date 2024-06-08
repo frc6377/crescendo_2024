@@ -31,7 +31,7 @@ public class TunableNumber extends SubsystemBase implements DoubleSupplier {
     if (subsystem != null) {
       tuningTab = Shuffleboard.getTab(subsystem.getName());
     } else {
-      tuningTab = Shuffleboard.getTab("None");
+      tuningTab = Shuffleboard.getTab("subsystem");
     }
 
     this.value = defaultValue;

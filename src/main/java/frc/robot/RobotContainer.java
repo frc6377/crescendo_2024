@@ -176,7 +176,7 @@ public class RobotContainer {
       configTab.add("Auton Selection", autoChooser).withSize(3, 1);
     }
 
-    isShooterReady = new DebugEntry<Boolean>(false, "null", "test");
+    isShooterReady = new DebugEntry<Boolean>(false, "isShooterReady", "test");
 
     configureBindings();
     configDriverFeedBack();
@@ -342,9 +342,9 @@ public class RobotContainer {
   }
 
   private Command intakeSpeaker() {
-    Trigger intoke = shooterCommandFactory.getBeamBreak().debounce(0.1);
+    Trigger intook = shooterCommandFactory.getBeamBreak().debounce(0.1);
     return Commands.deadline(
-        intakeCommandFactory.getSpeakerIntakeCommand().until(intoke),
+        intakeCommandFactory.getSpeakerIntakeCommand().until(intook),
         triggerCommandFactory.getLoadCommand());
   }
 

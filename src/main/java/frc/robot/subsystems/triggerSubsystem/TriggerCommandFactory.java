@@ -16,8 +16,7 @@ public class TriggerCommandFactory {
 
   public TriggerCommandFactory(TriggerSubsystem subsystem) {
     this.subsystem = subsystem;
-    shootPercentage =
-        new TunableNumber("Fire  percent", TriggerConstants.SHOOT_PERCENTAGE, subsystem);
+    shootPercentage = new TunableNumber("Fire  percent", TriggerConstants.SHOOT_PERCENTAGE, subsystem);
   }
 
   public Command getGroundLoadCommand(BooleanSupplier tof) {
