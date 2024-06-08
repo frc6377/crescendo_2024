@@ -327,6 +327,9 @@ public class RobotContainer {
             Commands.startEnd(
                 () -> signalingSubsystem.startIntakeSignal(),
                 () -> signalingSubsystem.endSignal()));
+
+    // Intake sensor for driver feedback
+    // Tells driver when note is aquired
     new TOFSensorSimple(3, 250)
         .beamBroken()
         .whileTrue(
