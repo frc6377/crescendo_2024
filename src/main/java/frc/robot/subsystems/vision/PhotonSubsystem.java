@@ -235,7 +235,7 @@ public class PhotonSubsystem extends SubsystemBase implements VisionSubsystem {
       }
 
       PhotonPipelineResult turretResult = turretCamera.getLatestResult();
-      double cacheTimeout = Timer.getFPGATimestamp() + 1;
+      double cacheTimeout = turretResult.getTimestampSeconds() + 1;
 
       var turretStream = turretResult.getTargets().stream();
       turretStream.forEach(
