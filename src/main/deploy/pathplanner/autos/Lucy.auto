@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.6,
-      "y": 4.5
+      "x": 0.75,
+      "y": 4.45
     },
     "rotation": -60.0
   },
@@ -14,7 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "ShootShort"
           }
         },
         {
@@ -24,34 +24,9 @@
           }
         },
         {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Lucy 2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Speaker Intake"
-                }
-              }
-            ]
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "Lucy 3"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
+            "pathName": "Lucy 2"
           }
         },
         {
@@ -80,7 +55,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Lucy 4"
+                  "pathName": "Lucy 3"
                 }
               },
               {
@@ -90,18 +65,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Lucy 5"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
           }
         },
         {

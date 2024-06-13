@@ -1,0 +1,67 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.75,
+      "y": 4.45
+    },
+    "rotation": -60.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootShort"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Lucy 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Lucy 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Lucy 3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootLong"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Logan 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Logan 2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootLong"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

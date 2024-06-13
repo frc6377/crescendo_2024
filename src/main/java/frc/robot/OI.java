@@ -91,7 +91,8 @@ public class OI {
         new Control(XboxController.Button.kRightBumper, "Amp Mode", controller);
 
     // Start, End & Left/Right stick buttons
-    public static final Control start = new Control(XboxController.Button.kStart, null, controller);
+    public static final Control disableOdomTracking =
+        new Control(XboxController.Button.kStart, "Disable odom tracking", controller);
     public static final Control leftStick =
         new Control(XboxController.Button.kLeftStick, null, controller);
     public static final Control rightStick =

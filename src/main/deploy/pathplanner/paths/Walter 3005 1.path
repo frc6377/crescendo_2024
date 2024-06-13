@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.53,
-        "y": 4.0
+        "x": 8.2,
+        "y": 0.775
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.63,
-        "y": 4.0
+        "x": 5.199999999999999,
+        "y": 0.7750000000000005
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "D5"
     },
     {
       "anchor": {
-        "x": 1.53,
-        "y": 4.0
+        "x": 2.5,
+        "y": 3.0
       },
       "prevControl": {
-        "x": 1.43,
-        "y": 4.0
+        "x": 3.560660171779821,
+        "y": 1.9393398282201788
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,7 +32,7 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 2.75,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
@@ -43,7 +43,10 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
-  "previewStartingState": null,
-  "useDefaultConstraints": false
+  "folder": "Walter",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
 }

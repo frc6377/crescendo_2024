@@ -5,10 +5,12 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -40,6 +42,9 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotInit() {
+    DataLogManager.logNetworkTables(true);
+    DataLogManager.start();
+    System.out.println("logging to " + DataLogManager.getLogDir());
     Logger.recordMetadata("ProjectName", "6377_crescendo_2024");
     Logger.recordMetadata("Repository", BuildConstants.MAVEN_NAME);
     Logger.recordMetadata("Commit ID (GIT_SHA)", BuildConstants.GIT_SHA);
@@ -52,10 +57,12 @@ public class Robot extends LoggedRobot {
     } else {
       try {
         /*
-        findReplayLog() prompts the user for a log file path to replay, requiring input from the user on the terminal.
-        This is a undesired interaction, so using setIn() to provide an empty line to the prompt.
+          findReplayLog() prompts the user for a log file path to replay, requiring input from the
+          user on the terminal.
+          This is a undesired interaction, so using setIn() to provide an empty line to the prompt.
 
-        findReplayLog() looks for the log file in AdvantageKit first, so this doesn't interrupt our typical use case.
+          findReplayLog() looks for the log file in AdvantageKit first, so this doesn't interrupt
+          our typical use case.
         */
         System.setIn(new ByteArrayInputStream("\n".getBytes("UTF-8")));
         String logPath = LogFileUtil.findReplayLog();
@@ -72,6 +79,10 @@ public class Robot extends LoggedRobot {
           | UnsupportedEncodingException ex) {
         System.out.println("No log file found, simulating as normal. \n");
       }
+    }
+    // If not compition Log all active commands to NT
+    if (DriverStation.getMatchNumber() == 0) {
+      Shuffleboard.getTab("Commands").add(CommandScheduler.getInstance());
     }
 
     // Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps" in the

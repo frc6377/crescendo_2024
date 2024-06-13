@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.67,
-      "y": 4.4
+      "x": 1.33,
+      "y": 5.55
     },
-    "rotation": -60.0
+    "rotation": 0.0
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "ShootShort"
           }
         },
         {
@@ -24,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Chadwik 1"
+                  "pathName": "Phillip 1"
                 }
               },
               {
@@ -52,7 +52,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "ShootLong"
           }
         },
         {
@@ -62,7 +62,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Chadwik 2"
+                  "pathName": "Phillip 2"
                 }
               },
               {
@@ -90,7 +90,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "ShootLong"
           }
         },
         {
@@ -100,7 +100,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Chadwik 3"
+                  "pathName": "Phillip 3"
                 }
               },
               {
@@ -128,7 +128,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "ShootLong"
           }
         }
       ]

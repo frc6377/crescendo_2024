@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.67,
-        "y": 4.4
+        "x": 0.75,
+        "y": 4.45
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5352069635455068,
-        "y": 3.3666908781650884
+        "x": 0.7500000000000001,
+        "y": 2.95
       },
       "isLocked": false,
       "linkedName": "A3"
@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 5.45,
-        "y": 1.9
+        "y": 1.7
       },
       "prevControl": {
-        "x": 4.028837910539866,
-        "y": 1.9
+        "x": 3.45,
+        "y": 1.7
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,7 +32,7 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.5,
+    "maxVelocity": 4.2,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
@@ -43,10 +43,10 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Lucy",
   "previewStartingState": {
     "rotation": -60.0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

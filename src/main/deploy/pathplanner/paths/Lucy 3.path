@@ -3,56 +3,50 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.3,
-        "y": 2.75
+        "x": 8.6,
+        "y": 2.445
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.200000000000001,
-        "y": 2.75
+        "x": 8.1773817382593,
+        "y": 3.35130778703665
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "D4"
     },
     {
       "anchor": {
-        "x": 8.3,
-        "y": 2.75
+        "x": 4.0,
+        "y": 5.55
       },
       "prevControl": {
-        "x": 8.200000000000001,
-        "y": 2.75
+        "x": 4.260472266500395,
+        "y": 4.072788370481688
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Mid Ring Feild Shot"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": 180.0,
-      "rotateFast": true
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.5,
+    "maxVelocity": 4.2,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": 180.0,
-    "rotateFast": true
+    "velocity": 0,
+    "rotation": 0.0,
+    "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Lucy",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 0.0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

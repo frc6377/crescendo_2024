@@ -34,6 +34,17 @@ public class RobotStateManager extends SubsystemBase {
 
   private final Trigger isAmpModeTrigger = new Trigger(() -> placementMode == PlacementMode.AMP);
 
+  private Rotation2d turretRotation = new Rotation2d();
+  private Rotation2d robotRotation = new Rotation2d();
+
+  public Rotation2d getTurretRotation() {
+    return turretRotation;
+  }
+
+  public void setTurretRotation(Rotation2d turretRotation) {
+    this.turretRotation = turretRotation;
+  }
+
   // Debug Logging
   private DebugEntry<PlacementMode> placementModeLog =
       new DebugEntry<PlacementMode>(placementMode, "Current Placement Mode", this);
@@ -133,6 +144,14 @@ public class RobotStateManager extends SubsystemBase {
   public DoubleSupplier getSpeakerAngle() {
     return () ->
         allianceCorrect(new Translation2d(1, Rotation2d.fromDegrees(0))).getAngle().getDegrees();
+  }
+
+  public Rotation2d getRobotRotation() {
+    return robotRotation;
+  }
+
+  public void setRobotRotation(Rotation2d robotRotation) {
+    this.robotRotation = robotRotation;
   }
 
   public ShooterMode getShooterMode() {

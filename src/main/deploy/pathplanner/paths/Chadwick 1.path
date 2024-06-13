@@ -3,36 +3,42 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.23,
-        "y": 5.55
+        "x": 2.8,
+        "y": 7.1
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2299999999999995,
-        "y": 5.55
+        "x": 3.8,
+        "y": 7.1
       },
       "isLocked": false,
-      "linkedName": "A2"
+      "linkedName": "B1"
     },
     {
       "anchor": {
-        "x": 3.75,
-        "y": 5.55
+        "x": 8.6,
+        "y": 7.445
       },
       "prevControl": {
-        "x": 2.75,
-        "y": 5.55
+        "x": 7.6,
+        "y": 7.445
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "D1"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.5,
+    "maxVelocity": 2.75,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
@@ -43,9 +49,9 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Chadwick",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 90.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

@@ -1,12 +1,28 @@
 {
-  "robotWidth": 0.7874,
+  "robotWidth": 0.79,
   "robotLength": 0.8636,
   "holonomicMode": true,
   "pathFolders": [
-    "Chadwik"
+    "Chad",
+    "Chadwick",
+    "Eugene",
+    "Francis",
+    "Gus",
+    "Logan",
+    "Lucy",
+    "Mike",
+    "Megan",
+    "Odin",
+    "Olivia",
+    "Philip",
+    "Scott",
+    "Testing",
+    "Walter"
   ],
-  "autoFolders": [],
-  "defaultMaxVel": 2.5,
+  "autoFolders": [
+    "Testing"
+  ],
+  "defaultMaxVel": 2.75,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
