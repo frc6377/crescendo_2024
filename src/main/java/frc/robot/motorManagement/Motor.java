@@ -52,4 +52,28 @@ public interface Motor {
      * @return current motor position in rotations per minute (RPM)
      */
     public double getVelocity();
+
+    public Double getAppliedOutput();
+
+    /**
+     * Sets the encoder current position.
+     * Does not make the motor move.
+     * @param i - the rotation to set to encoder to (in rotations)
+     */
+    public void setPosition(double i);
+
+    /**
+     * Get the current motor output in amps.
+     * @return the current motor out put in amps
+     */
+    public double getOutputCurrent();
+
+    /**
+     * Set the min and max motor outputs.
+     * @param min - minimum motor output
+     * @param max - maximum motor output 
+     */
+    public void setOutputRange(double min, double max);
+
+    public void setControlLaw(ControlLaw state);
 }
