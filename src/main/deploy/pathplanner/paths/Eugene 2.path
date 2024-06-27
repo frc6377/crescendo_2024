@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 2.8,
-        "y": 7.1
+        "y": 7.0
       },
       "prevControl": {
-        "x": 1.61823069638535,
-        "y": 7.308377813200316
+        "x": 1.6182306963853499,
+        "y": 7.2083778132003165
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Eugene",
+  "folder": null,
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

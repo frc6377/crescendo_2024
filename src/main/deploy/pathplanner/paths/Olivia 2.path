@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 2.8,
-        "y": 7.1
+        "y": 7.0
       },
       "prevControl": null,
       "nextControl": {
         "x": 1.2999999999999998,
-        "y": 7.1
+        "y": 7.0
       },
       "isLocked": false,
       "linkedName": "B1"
@@ -67,7 +67,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Olivia",
+  "folder": null,
   "previewStartingState": {
     "rotation": 0.0,
     "velocity": 0

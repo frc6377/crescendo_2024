@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 2.8,
-        "y": 7.1
+        "y": 7.0
       },
       "prevControl": {
-        "x": 1.4705095334335188,
-        "y": 7.334425039850355
+        "x": 1.4705095334335185,
+        "y": 7.234425039850356
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Philip",
+  "folder": null,
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

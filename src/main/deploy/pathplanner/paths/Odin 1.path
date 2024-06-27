@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 2.8,
-        "y": 7.1
+        "y": 7.0
       },
       "prevControl": {
         "x": 1.7999999999999998,
-        "y": 7.1
+        "y": 7.0
       },
       "nextControl": null,
       "isLocked": false,
@@ -49,7 +49,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Odin",
+  "folder": null,
   "previewStartingState": {
     "rotation": 60.0,
     "velocity": 0
