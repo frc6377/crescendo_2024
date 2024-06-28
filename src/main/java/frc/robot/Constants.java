@@ -326,7 +326,7 @@ public final class Constants {
     public static final boolean triggerEnabled = true;
     public static final boolean turretRotationEnabled = true;
     public static final boolean turretPitchEnabled = true;
-    public static final boolean climberEnabled = true;
+    public static final boolean climberEnabled = false;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
