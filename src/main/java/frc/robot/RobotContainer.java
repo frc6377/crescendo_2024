@@ -274,7 +274,7 @@ public class RobotContainer {
 
     OI.getButton(OI.Operator.simple)
         .whileTrue(
-            robotStateManager.setShooterMode(ShooterMode.SHORT_RANGE, ShooterMode.LONG_RANGE));
+            robotStateManager.setShooterMode(ShooterMode.LONG_RANGE, ShooterMode.SHORT_RANGE));
 
     new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
     new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());
