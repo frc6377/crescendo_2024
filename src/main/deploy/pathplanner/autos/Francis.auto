@@ -18,79 +18,39 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Francis 1"
-                }
-              },
-              {
-                "type": "race",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Speaker Intake"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 2.0
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
+            "pathName": "Olivia 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Olivia 4"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ShootLong"
+            "name": "ShootShort"
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Francis 2"
-                }
-              },
-              {
-                "type": "race",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Speaker Intake"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 2.0
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
+            "pathName": "Olivia 5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Olivia 6"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ShootLong"
+            "name": "ShootShort"
           }
         }
       ]
