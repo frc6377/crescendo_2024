@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.75,
+        "y": 4.45
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 0.9509836993996369,
+        "y": 4.11050362756931
+      },
+      "isLocked": false,
+      "linkedName": "A3"
+    },
+    {
+      "anchor": {
+        "x": 5.4830774426170805,
+        "y": 0.8900235774793938
+      },
+      "prevControl": {
+        "x": 2.086934844340443,
+        "y": 1.428722058585343
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.75,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Shoot and Roll",
+  "previewStartingState": {
+    "rotation": -60.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}
