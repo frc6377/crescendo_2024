@@ -20,13 +20,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Olivia 1"
+            "pathName": "Olivia 5"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Olivia 2"
+            "pathName": "Olivia 6"
           }
         },
         {
@@ -56,13 +56,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Olivia 5"
+            "pathName": "Olivia 1"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "ShootLong"
+            "pathName": "Olivia 2"
           }
         }
       ]
