@@ -131,7 +131,7 @@ public final class Constants {
     public static final double PITCH_CONVERSION_FACTOR = 128;
     public static final int PITCH_SMART_CURRENT_LIMIT = 40;
 
-    public static final double PITCH_ZERO_OFFSET = Units.degreesToRotations(265.72);
+    public static final double PITCH_ZERO_OFFSET = 0.9073524;
 
     // Physics Values
     public static final double SHOOTER_CENTER_OF_GRAVITY = 1; // TODO: Get real values
