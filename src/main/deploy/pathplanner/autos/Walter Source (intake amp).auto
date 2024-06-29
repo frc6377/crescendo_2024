@@ -20,7 +20,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Shoot and Roll 1"
+            "pathName": "Walter Source 1 (amp intake)"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Walter 3005 1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootLong"
           }
         }
       ]
