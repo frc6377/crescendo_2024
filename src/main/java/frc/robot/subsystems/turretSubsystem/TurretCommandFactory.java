@@ -198,7 +198,7 @@ public class TurretCommandFactory {
         .startEnd(
             () -> {
               subsystem.setTurretPos(Math.toRadians(00));
-              subsystem.setPitchPos(Math.toRadians(37));
+              subsystem.setPitchPos(Math.toRadians(40));
             },
             () -> {})
         .withName("shortRangeShot")
