@@ -27,7 +27,7 @@ public class ClimberCommandFactory {
             new FunctionalCommand(
                 () -> {
                   subsystem.setOutputLimits(1, 0);
-                  subsystem.requestTorque(ClimberConstants.RAISE_TORQUE);
+                  subsystem.applyVoltageDemand(ClimberConstants.RAISE_VOLTAGE);
                   minTime.start();
                 },
                 noop,
@@ -56,7 +56,7 @@ public class ClimberCommandFactory {
   public Command clip() {
     if (subsystem == null) return Commands.none();
     return breakStatic()
-        .andThen(subsystem.run(() -> subsystem.requestTorque(ClimberConstants.CLIP_TORQUE)))
+        .andThen(subsystem.run(() -> subsystem.applyVoltageDemand(ClimberConstants.CLIP_VOLTAGE)))
         .withName("clip")
         .asProxy();
   }

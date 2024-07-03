@@ -1,17 +1,8 @@
 package frc.robot.motorManagement.motorImplementations;
 
-import frc.robot.motorManagement.MotorConfig;
-import frc.robot.motorManagement.MotorType;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 
-public class NeoConfig extends MotorConfig {
+import frc.robot.motorManagement.ThermalLimits;
 
-    public NeoConfig(MotorType type, int iD) {
-        super(type, iD);
-        //TODO Auto-generated constructor stub
-    }
-
-    public String name() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'name'");
-    }
+public record NeoConfig(int CAN_ID, MotorType motorType, ThermalLimits thermalLimits) {
 }

@@ -1,18 +1,24 @@
 package frc.robot.subsystems.climberSubsystem;
 
+import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkPIDController;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.motorManagement.Motor;
-import frc.robot.motorManagement.MotorManager;
-import frc.robot.motorManagement.MotorName;
-import frc.robot.motorManagement.controlLaw.ControlLaw;
-import frc.robot.motorManagement.controlLaw.PIDControlLaw;
+import frc.robot.Constants.ClimberConstants;
 import frc.robot.utilities.DebugEntry;
 
 public class ClimberSubsystem extends SubsystemBase {
-  private final Motor leftArmMotor;
-  private final Motor rightArmMotor;
+  private final CANSparkMax leftArmMotor;
+  private final CANSparkMax rightArmMotor;
 
-  private static final ControlLaw POSITION_CONTROL_LAW = new PIDControlLaw(); 
+  private PIDState pidState;
+  private ShuffleboardTab climberTab = Shuffleboard.getTab(this.getName());
 
   private DebugEntry<Double> rightArmPoseEntry;
   private DebugEntry<Double> leftArmPoseEntry;
@@ -21,19 +27,41 @@ public class ClimberSubsystem extends SubsystemBase {
   private DebugEntry<String> currentCommand;
 
   public ClimberSubsystem() {
-    leftArmMotor = MotorManager.requestMotor(MotorName.LEFT_ARM);
-    rightArmMotor = MotorManager.requestMotor(MotorName.LEFT_ARM);
+    leftArmMotor = new CANSparkMax(ClimberConstants.LEFT_ARM_ID, MotorType.kBrushless);
+    rightArmMotor = new CANSparkMax(ClimberConstants.RIGHT_ARM_ID, MotorType.kBrushless);
+    configMotor(leftArmMotor, true);
+    configMotor(rightArmMotor, false);
 
     rightArmPoseEntry =
         new DebugEntry<Double>(
-            rightArmMotor.getPosition(), "right arm position", this);
+            rightArmMotor.getEncoder().getPosition(), "right arm position", this);
     leftArmPoseEntry =
-        new DebugEntry<Double>(rightArmMotor.getPosition(), "left arm position", this);
+        new DebugEntry<Double>(rightArmMotor.getEncoder().getPosition(), "left arm position", this);
     rightArmOutputEntry =
         new DebugEntry<Double>(rightArmMotor.getAppliedOutput(), "right arm output", this);
     leftArmOutputEntry =
         new DebugEntry<Double>(rightArmMotor.getAppliedOutput(), "left arm output", this);
     currentCommand = new DebugEntry<String>("none", "Climber Command", this);
+  }
+
+  private void configMotor(CANSparkMax motor, boolean invert) {
+    motor.restoreFactoryDefaults();
+    motor.setIdleMode(IdleMode.kBrake);
+    SparkPIDController pidController = motor.getPIDController();
+    pidController.setP(ClimberConstants.CURRENT_PID[0]);
+    pidController.setI(ClimberConstants.CURRENT_PID[1]);
+    pidController.setD(ClimberConstants.CURRENT_PID[2]);
+    double armPosition;
+
+    armPosition = 0;
+    motor.setSoftLimit(
+        SoftLimitDirection.kForward,
+        (float) (Units.degreesToRotations(135) * ClimberConstants.GEAR_RATIO));
+    motor.setSoftLimit(SoftLimitDirection.kReverse, 0);
+    double motorPosition = armPosition * ClimberConstants.GEAR_RATIO;
+    motor.getEncoder().setPosition(motorPosition);
+    motor.setInverted(invert);
+    motor.setSmartCurrentLimit(40);
   }
 
   /**
@@ -42,8 +70,8 @@ public class ClimberSubsystem extends SubsystemBase {
    * @param speed the speed to set (-1 to 1)
    */
   public void applyPercent(double speed) {
-    leftArmMotor.requestPercent(speed);
-    rightArmMotor.requestPercent(speed);
+    leftArmMotor.set(speed);
+    rightArmMotor.set(speed);
   }
 
   /**
@@ -52,18 +80,43 @@ public class ClimberSubsystem extends SubsystemBase {
    * @param speed the speed to set (-1 to 1)
    */
   public void applyDiffertialPercent(DifferentialDemand demand) {
-    leftArmMotor.requestPercent(demand.left);
-    rightArmMotor.requestPercent(demand.right);
+    leftArmMotor.set(demand.left);
+    rightArmMotor.set(demand.right);
+  }
+
+  /**
+   * Positive is up, negative is down. Is even between arms.
+   *
+   * @param current the current to set
+   */
+  public void applyCurrentDemand(double current) {
+    setPIDState(PIDState.CURRENT);
+    leftArmMotor.getPIDController().setIAccum(0);
+    rightArmMotor.getPIDController().setIAccum(0);
+    leftArmMotor.getPIDController().setReference(current, ControlType.kCurrent);
+    rightArmMotor.getPIDController().setReference(current, ControlType.kCurrent);
+  }
+
+  public void applyVoltageDemand(double voltage) {
+    setPIDState(PIDState.VOLTAGE);
+
+    leftArmMotor.setVoltage(voltage);
+    rightArmMotor.setVoltage(voltage);
+  }
+
+  /**
+   * Apply a currentlimit
+   *
+   * @param currentLimit the limit in amps to set
+   */
+  public void setCurrentLimit(int currentLimit) {
+    leftArmMotor.setSmartCurrentLimit(currentLimit);
+    rightArmMotor.setSmartCurrentLimit(currentLimit);
   }
 
   public void zeroAtCurrentPosition() {
-    leftArmMotor.setPosition(0);
-    rightArmMotor.setPosition(0);
-  }
-
-  public void requestTorque(double nm){
-    leftArmMotor.requestTorque(nm);
-    rightArmMotor.requestTorque(nm);
+    leftArmMotor.getEncoder().setPosition(0);
+    leftArmMotor.getEncoder().setPosition(0);
   }
 
   /**
@@ -73,18 +126,18 @@ public class ClimberSubsystem extends SubsystemBase {
    * @param min the minimum output (Physically -1)
    */
   public void setOutputLimits(double max, double min) {
-    leftArmMotor.setOutputRange(min, max);
-    rightArmMotor.setOutputRange(min, max);
+    leftArmMotor.getPIDController().setOutputRange(min, max);
+    rightArmMotor.getPIDController().setOutputRange(min, max);
   }
 
   public Position getPosition() {
     return new Position(
-        leftArmMotor.getPosition(), rightArmMotor.getPosition());
+        leftArmMotor.getEncoder().getPosition(), rightArmMotor.getEncoder().getPosition());
   }
 
   public CurrentVelocity getVelocity() {
     return new CurrentVelocity(
-        leftArmMotor.getVelocity(), rightArmMotor.getVelocity());
+        leftArmMotor.getEncoder().getVelocity(), rightArmMotor.getEncoder().getVelocity());
   }
 
   public AppliedCurrent getCurrent() {
@@ -92,16 +145,33 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public void requestPosition(double climbPosition) {
-    leftArmMotor.requestPosition(climbPosition, POSITION_CONTROL_LAW);
-    rightArmMotor.requestPosition(climbPosition, POSITION_CONTROL_LAW);
+    setPIDState(PIDState.POSITION);
+    leftArmMotor.getPIDController().setIAccum(0);
+    rightArmMotor.getPIDController().setIAccum(0);
+    leftArmMotor.getPIDController().setReference(climbPosition, ControlType.kPosition);
+    rightArmMotor.getPIDController().setReference(climbPosition, ControlType.kPosition);
+  }
+
+  private void setPIDState(PIDState state) {
+    if (state == pidState) return;
+    configPID(rightArmMotor.getPIDController(), state.getPID());
+    configPID(leftArmMotor.getPIDController(), state.getPID());
+  }
+
+  private static void configPID(SparkPIDController pidController, double[] pid) {
+    if (pid.length != 4) throw new RuntimeException("Incorrect number of PID numbers");
+    pidController.setP(pid[0]);
+    pidController.setI(pid[1]);
+    pidController.setD(pid[2]);
+    pidController.setFF(pid[3]);
   }
 
   @Override
   public void periodic() {
-    rightArmPoseEntry.log(rightArmMotor.getPosition());
-    leftArmPoseEntry.log(leftArmMotor.getPosition());
-    rightArmOutputEntry.log(rightArmMotor.getAppliedOutput());
-    leftArmOutputEntry.log(leftArmMotor.getAppliedOutput());
+    rightArmPoseEntry.log(rightArmMotor.getEncoder().getPosition());
+    leftArmPoseEntry.log(leftArmMotor.getEncoder().getPosition());
+    rightArmOutputEntry.log(rightArmMotor.get());
+    leftArmOutputEntry.log(leftArmMotor.get());
     if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
   }
 
@@ -124,6 +194,28 @@ public class ClimberSubsystem extends SubsystemBase {
   public record CurrentVelocity(double left, double right) {
     public boolean isZero(double epsilion) {
       return Math.abs(left) < epsilion && Math.abs(right) < epsilion;
+    }
+  }
+
+  private enum PIDState {
+    CURRENT(0),
+    POSITION(1),
+    VOLTAGE(2);
+    private int id;
+
+    private PIDState(int id) {
+      this.id = id;
+    }
+
+    public double[] getPID() {
+      switch (this.id) {
+        case 0:
+          return ClimberConstants.CURRENT_PID;
+        case 1:
+          return ClimberConstants.POSITION_PID;
+        default:
+          return new double[] {0, 0, 0, 0};
+      }
     }
   }
 }
