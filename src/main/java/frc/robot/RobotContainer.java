@@ -438,6 +438,7 @@ public class RobotContainer {
     autonCommands.put("ShootShort", shootAutonShort());
     autonCommands.put("ShootLong", shootAutonLong());
     autonCommands.put("Prepare To Fire Short", prepareToScoreSpeakerShortRangeAutonOnly());
+    autonCommands.put("Fire Short", fire());
     autonCommands.put("Prepare To Fire Long", shooterCommandFactory.revShooter());
     autonCommands.put("Amp", ampAuton());
     if (Constants.enabledSubsystems.intakeEnabled) {
