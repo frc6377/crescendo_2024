@@ -36,7 +36,7 @@ public class TestSwerveDrive {
                     j / (perDirection + 0.0), Constants.SwerveDriveConstants.TRANSLATION_DEADBAND));
 
         for (int rot = 0; rot < rotations; rot++) {
-          DriveInput input = new DriveInput(translation.get(0, 0), translation.get(1, 0), rot);
+          DriveInput input = new DriveInput(translation.get(0, 0), translation.get(1, 0), rot, 0);
           DriveRequest conditioned = SwerveSubsystem.joystickCondition(input, true);
           assertTrue(Math.abs(conditioned.getMagnitude() - actualMagnitude) < epsilion);
           assertTrue(

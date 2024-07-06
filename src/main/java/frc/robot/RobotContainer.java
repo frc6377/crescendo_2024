@@ -202,7 +202,8 @@ public class RobotContainer {
                 new DriveInput(
                     OI.getAxisSupplier(OI.Driver.xTranslationAxis).get(),
                     OI.getAxisSupplier(OI.Driver.yTranslationAxis).get(),
-                    OI.getAxisSupplier(OI.Driver.rotationAxis).get()),
+                    OI.getAxisSupplier(OI.Driver.rotationAxisX).get(),
+                    OI.getAxisSupplier(OI.Driver.rotationAxisY).get()),
                 OI.getButton(OI.Driver.highGear).getAsBoolean());
     final DoubleSupplier direction =
         drivetrainCommandFactory.createRotationSource(OI.Driver.controller, drivetrain);

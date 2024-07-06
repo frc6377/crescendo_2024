@@ -50,17 +50,17 @@ public class OI {
     private static final ControlCurve xTranslationCurve = new ControlCurve(1, 0, 0, 0.0, true);
     private static final ControlCurve yTranslationCurve = new ControlCurve(1, 0, 0, 0.0);
     public static final ControlCurve translationMagnitudeCurve = new ControlCurve(1, 0, 1, 0.1);
-    public static final ControlCurve rotationCurve = new ControlCurve(0.8, 0, 1, 0, true);
+    public static final ControlCurve rotationCurve = new ControlCurve(1, 0, 0, .2, true);
 
     // Joystick Axes
     public static final Control xTranslationAxis =
         new Control(XboxController.Axis.kLeftX, "X Translation", controller, xTranslationCurve);
     public static final Control yTranslationAxis =
         new Control(XboxController.Axis.kLeftY, "Y Translation", controller, yTranslationCurve);
-    public static final Control rotationAxis =
-        new Control(XboxController.Axis.kRightX, "Rotation", controller, rotationCurve);
-    public static final Control RightY =
-        new Control(XboxController.Axis.kRightY, null, controller, null);
+    public static final Control rotationAxisX =
+        new Control(XboxController.Axis.kRightX, "Rotation X", controller, rotationCurve);
+    public static final Control rotationAxisY =
+        new Control(XboxController.Axis.kRightY, "Rotation Y", controller, rotationCurve);
 
     public static void setRumble(double rumbleIntensity) {
       controller.setRumble(RumbleType.kBothRumble, rumbleIntensity);

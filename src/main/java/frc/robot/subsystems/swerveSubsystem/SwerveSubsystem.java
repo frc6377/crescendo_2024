@@ -182,7 +182,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     final double mag = Math.sqrt(input.x() * input.x() + input.y() * input.y());
     final double finalAlpha =
         -OI.Driver.rotationCurve.calculate(
-                MathUtil.applyDeadband(input.alpha(), SwerveDriveConstants.ROTATION_DEADBAND))
+                MathUtil.applyDeadband(input.rotx(), SwerveDriveConstants.ROTATION_DEADBAND))
             * turnMultiple;
     if (mag < SwerveDriveConstants.TRANSLATION_DEADBAND) {
       return new DriveRequest(0, 0, finalAlpha);
@@ -253,6 +253,8 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     }
   }
 
+  
+
   public static Supplier<DriveRequest> scrubRotation(Supplier<DriveRequest> input) {
     return () -> {
       DriveRequest in = input.get();
@@ -260,7 +262,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     };
   }
 
-  public record DriveInput(double x, double y, double alpha) {}
+  public record DriveInput(double x, double y, double rotx, double roty) {}
 
   public void stopVisionMeasures() {
     acceptVisionMeasures = false;
