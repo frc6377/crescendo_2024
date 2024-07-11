@@ -133,6 +133,8 @@ public final class Constants {
 
     public static final double PITCH_ZERO_OFFSET = 0.9073524;
 
+    public static final double PITCH_SHORT_SHOT_ANGLE = 43;
+
     // Physics Values
     public static final double SHOOTER_CENTER_OF_GRAVITY = 1; // TODO: Get real values
     public static final double SHOOTER_MASS = 1;

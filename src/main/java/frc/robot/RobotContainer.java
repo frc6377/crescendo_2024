@@ -431,6 +431,10 @@ public class RobotContainer {
             .onlyWhile(trapElvCommandFactory.getSourceBreak()));
   }
 
+  private Command stopPitch() {
+    return turretCommandFactory.stowTurret();
+  }
+
   // Register commands for auton
   public void registerCommands() {
     HashMap<String, Command> autonCommands = new HashMap<String, Command>();
@@ -441,6 +445,7 @@ public class RobotContainer {
     autonCommands.put("Fire Short", fire());
     autonCommands.put("Prepare To Fire Long", shooterCommandFactory.revShooter());
     autonCommands.put("Amp", ampAuton());
+    autonCommands.put("stopPitch", stopPitch());
     if (Constants.enabledSubsystems.intakeEnabled) {
       autonCommands.put("Speaker Intake", intakeSpeaker());
       autonCommands.put("Amp Intake", intakeAmp());

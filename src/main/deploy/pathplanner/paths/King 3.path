@@ -16,19 +16,19 @@
     },
     {
       "anchor": {
-        "x": 1.33,
+        "x": 1.6,
         "y": 5.55
       },
       "prevControl": {
-        "x": 1.33,
+        "x": 1.6,
         "y": 5.05
       },
       "nextControl": {
-        "x": 1.33,
+        "x": 1.6,
         "y": 5.6499999999999995
       },
       "isLocked": false,
-      "linkedName": "A2"
+      "linkedName": "King Short Shot"
     },
     {
       "anchor": {
@@ -68,13 +68,25 @@
       "name": "Fire",
       "waypointRelativePos": 1.0,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {
               "type": "named",
               "data": {
                 "name": "Fire Short"
+              }
+            },
+            {
+              "type": "wait",
+              "data": {
+                "waitTime": 0.5
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "stopPitch"
               }
             }
           ]

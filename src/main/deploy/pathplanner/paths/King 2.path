@@ -16,19 +16,19 @@
     },
     {
       "anchor": {
-        "x": 1.33,
+        "x": 1.6,
         "y": 5.55
       },
       "prevControl": {
-        "x": 1.33,
+        "x": 1.6,
         "y": 6.05
       },
       "nextControl": {
-        "x": 1.33,
+        "x": 1.6,
         "y": 5.05
       },
       "isLocked": false,
-      "linkedName": "A2"
+      "linkedName": "King Short Shot"
     },
     {
       "anchor": {
@@ -49,7 +49,7 @@
   "eventMarkers": [
     {
       "name": "Prepare To Fire",
-      "waypointRelativePos": 0.4,
+      "waypointRelativePos": 0.25,
       "command": {
         "type": "parallel",
         "data": {
@@ -66,15 +66,27 @@
     },
     {
       "name": "Fire",
-      "waypointRelativePos": 1.0,
+      "waypointRelativePos": 0.6,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {
               "type": "named",
               "data": {
                 "name": "Fire Short"
+              }
+            },
+            {
+              "type": "wait",
+              "data": {
+                "waitTime": 0.5
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "stopPitch"
               }
             }
           ]
