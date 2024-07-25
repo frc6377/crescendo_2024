@@ -2,7 +2,7 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2,
+      "x": 1.33,
       "y": 5.55
     },
     "rotation": 0
@@ -14,7 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "ShootShort"
           }
         },
         {
@@ -24,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Sandra 1"
+                  "pathName": "Scott 1"
                 }
               },
               {
@@ -52,7 +52,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Sandra 2"
+            "pathName": "Scott 2"
           }
         },
         {
@@ -64,7 +64,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Sandra 3"
+            "pathName": "Scott 3"
           }
         }
       ]

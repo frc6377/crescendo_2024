@@ -14,12 +14,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bob 1"
+            "pathName": "1Meter"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "Testing",
   "choreoAuto": false
 }

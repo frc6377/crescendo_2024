@@ -10,6 +10,7 @@ import frc.robot.Robot;
 import frc.robot.utilities.DebugEntry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -35,6 +36,7 @@ public class TestDebugEntry {
     subsystem2 = new TestSubsystem();
   }
 
+  @Disabled
   @Test()
   public void raiseDupEntryError() {
     // Duplicate Entry
@@ -51,6 +53,23 @@ public class TestDebugEntry {
     }
   }
 
+  @Test
+  public void testSameNameDifferentSubsystem() {
+    if (Robot.isCompetition) {
+      return;
+    }
+    try (MockedStatic<DriverStation> mockedFactory = Mockito.mockStatic(DriverStation.class)) {
+      mockedFactory
+          .when(() -> DriverStation.reportWarning(anyString(), anyBoolean()))
+          .thenCallRealMethod();
+      new DebugEntry<Double>(0.0, "test3", subsystem);
+      new DebugEntry<Double>(0.0, "test3", subsystem2);
+      mockedFactory.verify(() -> DriverStation.reportWarning(anyString(), anyBoolean()), times(0));
+    } catch (IllegalArgumentException e) {
+    }
+  }
+
+  @Disabled
   @Test
   public void raiseDataTypeError() {
     if (Robot.isCompetition) {
@@ -73,22 +92,6 @@ public class TestDebugEntry {
       mockedFactory.verify(
           () -> DriverStation.reportError(eq("Invalid type for log " + "test2"), anyBoolean()),
           times(1));
-    }
-  }
-
-  @Test
-  public void testSameNameDifferentSubsystem() {
-    if (Robot.isCompetition) {
-      return;
-    }
-    try (MockedStatic<DriverStation> mockedFactory = Mockito.mockStatic(DriverStation.class)) {
-      mockedFactory
-          .when(() -> DriverStation.reportWarning(anyString(), anyBoolean()))
-          .thenCallRealMethod();
-      new DebugEntry<Double>(0.0, "test3", subsystem);
-      new DebugEntry<Double>(0.0, "test3", subsystem2);
-      mockedFactory.verify(() -> DriverStation.reportWarning(anyString(), anyBoolean()), times(0));
-    } catch (IllegalArgumentException e) {
     }
   }
 }

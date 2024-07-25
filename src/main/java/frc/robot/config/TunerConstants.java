@@ -7,6 +7,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstantsFactory;
 import edu.wpi.first.math.util.Units;
+import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem;
 
 public class TunerConstants {
@@ -43,7 +44,7 @@ public class TunerConstants {
 
   private static final double kDriveGearRatio = 6.122448979591837;
   private static final double kSteerGearRatio = 21.428571428571427;
-  private static final double kWheelRadiusInches = 1.84;
+  private static final double kWheelRadiusInches = 1.9995; // 1.84 + 0.21712;
 
   private static final boolean kSteerMotorReversed = true;
   private static final boolean kInvertLeftSide = false;
@@ -113,10 +114,10 @@ public class TunerConstants {
   private static final double kBackRightXPosInches = -12;
   private static final double kBackRightYPosInches = -12;
 
-  private static final double frontLeftOffset = 0.821045 + 0.25;
-  private static final double frontRightOffset = -0.177979;
-  private static final double backLeftOffset = 0.538;
-  private static final double backRightOffset = 0.919;
+  private static final double frontLeftOffset = -0.932129;
+  private static final double frontRightOffset = -0.180420;
+  private static final double backLeftOffset = 0.539795;
+  private static final double backRightOffset = -0.071289;
 
   private static final SwerveModuleConstants FrontLeft =
       ConstantCreator.createModuleConstants(
@@ -154,7 +155,9 @@ public class TunerConstants {
           Units.inchesToMeters(kBackRightXPosInches),
           Units.inchesToMeters(kBackRightYPosInches),
           kInvertRightSide);
-  public static final SwerveSubsystem drivetrain =
-      new SwerveSubsystem(DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
-  ;
+
+  public static SwerveSubsystem createDrivetrain(RobotStateManager RSM) {
+    return new SwerveSubsystem(
+        DrivetrainConstants, RSM, FrontLeft, FrontRight, BackLeft, BackRight);
+  }
 }

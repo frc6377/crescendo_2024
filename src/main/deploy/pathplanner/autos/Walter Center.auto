@@ -2,7 +2,7 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.23,
+      "x": 1.33,
       "y": 5.55
     },
     "rotation": 0.0
@@ -14,7 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "ShootShort"
           }
         },
         {

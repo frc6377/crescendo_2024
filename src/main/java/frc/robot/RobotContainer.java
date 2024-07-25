@@ -9,6 +9,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -20,9 +21,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CommandConstants;
 import frc.robot.Constants.DriverConstants;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.enabledSubsystems;
 import frc.robot.config.TunerConstants;
 import frc.robot.stateManagement.AllianceColor;
+import frc.robot.stateManagement.PlacementMode;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.stateManagement.ShooterMode;
 import frc.robot.subsystems.climberSubsystem.ClimberCommandFactory;
@@ -45,8 +48,11 @@ import frc.robot.subsystems.turretSubsystem.TurretSubsystem;
 import frc.robot.subsystems.vision.LimelightSubsystem;
 import frc.robot.subsystems.vision.PhotonSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
+import frc.robot.utilities.DebugEntry;
+import frc.robot.utilities.TOFSensorSimple;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -75,6 +81,7 @@ public class RobotContainer {
   private final ClimberSubsystem climberSubsystem;
 
   private SendableChooser<Command> autoChooser;
+  private DebugEntry<Boolean> isShooterReady;
   private ShuffleboardTab configTab = Shuffleboard.getTab("Config");
   private GenericEntry autoDelay =
       configTab
@@ -100,12 +107,18 @@ public class RobotContainer {
     }
     shooterCommandFactory = new ShooterCommandFactory(shooterSubsystem, robotStateManager);
     if (enabledSubsystems.signalEnabled) {
-      signalingSubsystem = new SignalingSubsystem(OI.Driver::setRumble, robotStateManager);
+      signalingSubsystem =
+          new SignalingSubsystem(
+              (a) -> {
+                OI.Operator.setRumble(a);
+                OI.Driver.setRumble(a);
+              },
+              robotStateManager);
     } else {
       signalingSubsystem = null;
     }
     if (enabledSubsystems.drivetrainEnabled) {
-      drivetrain = TunerConstants.drivetrain;
+      drivetrain = TunerConstants.createDrivetrain(robotStateManager);
     } else {
       drivetrain = null;
     }
@@ -125,7 +138,7 @@ public class RobotContainer {
     if (enabledSubsystems.visionEnabled) {
       visionSubsystem =
           Constants.enabledSubsystems.usingPhoton
-              ? new PhotonSubsystem(drivetrain.getVisionMeasurementConsumer())
+              ? new PhotonSubsystem(drivetrain.getVisionMeasurementConsumer(), robotStateManager)
               : new LimelightSubsystem(
                   drivetrain.getVisionMeasurementConsumer(), robotStateManager);
     } else {
@@ -161,6 +174,8 @@ public class RobotContainer {
       autoChooser = AutoBuilder.buildAutoChooser("Lucy");
       configTab.add("Auton Selection", autoChooser).withSize(3, 1);
     }
+
+    isShooterReady = new DebugEntry<Boolean>(false, "isShooterReady", "test");
 
     configureBindings();
     configDriverFeedBack();
@@ -207,6 +222,7 @@ public class RobotContainer {
         DriverStation.reportWarning("Unknown Drive Type Selected.", false);
         break;
     }
+
     trapElvCommandFactory.setDefaultCommand(trapElvCommandFactory.stowTrapElvCommand());
 
     shooterCommandFactory.setDefaultCommand(shooterCommandFactory.shooterIdle());
@@ -214,6 +230,8 @@ public class RobotContainer {
     triggerCommandFactory.setDefaultCommand(triggerCommandFactory.getHoldCommand());
 
     turretCommandFactory.setDefaultCommand(turretCommandFactory.idleTurret());
+
+    intakeCommandFactory.setDefaultCommand(intakeCommandFactory.idleCommand());
 
     OI.getTrigger(OI.Driver.lockAmp)
         .whileTrue(
@@ -264,6 +282,11 @@ public class RobotContainer {
         .whileTrue(robotStateManager.setShooterMode(ShooterMode.LOB, ShooterMode.LONG_RANGE));
 
     new Trigger(() -> OI.Driver.controller.getPOV() == 0).whileTrue(intakeCommand());
+    OI.getButton(OI.Operator.disableOdomTracking)
+        .whileTrue(robotStateManager.setShooterMode(ShooterMode.NO_ODOM, ShooterMode.LONG_RANGE));
+
+    new Trigger(DriverStation::isAutonomousEnabled)
+        .onTrue(Commands.waitSeconds(14.6).andThen(fire()));
   }
 
   private Command outtakeCommand() {
@@ -279,8 +302,7 @@ public class RobotContainer {
 
   private Command shooterOuttake() {
     return Commands.parallel(
-            triggerCommandFactory.getEjectCommand(), intakeCommandFactory.reverseIntakeCommand())
-        .asProxy();
+        triggerCommandFactory.getEjectCommand(), intakeCommandFactory.reverseIntakeCommand());
   }
 
   private void configDriverFeedBack() {
@@ -289,8 +311,10 @@ public class RobotContainer {
         .whileTrue(
             Commands.startEnd(
                 () -> signalingSubsystem.startAmpSignal(), () -> signalingSubsystem.endSignal()));
-    new Trigger(shooterCommandFactory::isShooterReady)
-        .and(turretCommandFactory.isReady())
+    new Trigger(OI.getTrigger(OI.Operator.prepareToFire))
+        .and(() -> robotStateManager.getPlacementMode() == PlacementMode.SPEAKER)
+        .and(turretCommandFactory.isReadyTrigger())
+        .and(shooterCommandFactory::isShooterReady)
         .whileTrue(
             Commands.startEnd(
                 () -> signalingSubsystem.startShooterSignal(),
@@ -302,33 +326,41 @@ public class RobotContainer {
             Commands.startEnd(
                 () -> signalingSubsystem.startIntakeSignal(),
                 () -> signalingSubsystem.endSignal()));
-  }
 
-  private Command speakerSource() {
-    return Commands.parallel(
-        shooterCommandFactory.intakeSource(), triggerCommandFactory.getLoadCommand());
+    // Intake sensor for driver feedback
+    // Tells driver when note is aquired
+    new TOFSensorSimple(3, 250)
+        .beamBroken()
+        .whileTrue(
+            Commands.startEnd(
+                () -> {
+                  OI.Driver.controller.setRumble(
+                      RumbleType.kBothRumble, OperatorConstants.RUMBLE_STRENGTH);
+                },
+                () -> {
+                  OI.Driver.controller.setRumble(RumbleType.kBothRumble, 0);
+                }));
   }
 
   private Command intakeSpeaker() {
-    return Commands.parallel(
-        intakeCommandFactory.getSpeakerIntakeCommand().until(shooterCommandFactory.getBeamBreak()),
-        triggerCommandFactory.getGroundLoadCommand(shooterCommandFactory.getBeamBreak()));
+    Trigger intook = shooterCommandFactory.getBeamBreak().debounce(0.1);
+    return Commands.deadline(
+        intakeCommandFactory.getSpeakerIntakeCommand().until(intook),
+        triggerCommandFactory.getLoadCommand());
   }
 
   private Command intakeAmp() {
     return Commands.parallel(
             trapElvCommandFactory.intakeGround(), intakeCommandFactory.getAmpIntakeCommand())
         .until(trapElvCommandFactory.getSourceBreak())
-        .andThen(trapElvCommandFactory.intakeFromGroundForTime())
-        .asProxy();
+        .andThen(trapElvCommandFactory.intakeFromGroundForTime());
   }
 
   private Command shootSpeaker() {
     return Commands.parallel(
         triggerCommandFactory
             .getShootCommand()
-            .onlyIf(() -> shooterCommandFactory.isShooterReady())
-            .asProxy(),
+            .onlyIf(() -> shooterCommandFactory.isShooterReady()),
         shooterCommandFactory.revShooter());
   }
 
@@ -342,38 +374,46 @@ public class RobotContainer {
 
   private Command prepareToScoreSpeakerShortRangeAutonOnly() {
     return Commands.parallel(
-        turretCommandFactory.shortRangeShot().asProxy(),
+        turretCommandFactory.shortRangeShot(),
         shooterCommandFactory.revShooter(),
         trapElvCommandFactory.shooterMoving());
   }
 
   private Command prepareToScoreSpeakerLongRangeAutonOnly() {
     return Commands.parallel(
-        turretCommandFactory.longRangeShot().asProxy(),
+        turretCommandFactory.longRangeShot(),
         shooterCommandFactory.revShooter(),
         trapElvCommandFactory.shooterMoving());
   }
 
+  private BooleanSupplier shooterAssemblyReady() {
+    return () -> {
+      boolean isReady =
+          turretCommandFactory.isReadyBoolean() && shooterCommandFactory.isShooterReady();
+      return isReady;
+    };
+  }
+
+  private Command fire() {
+    return triggerCommandFactory
+        .getShootCommand()
+        .until(shooterCommandFactory.getBeamBreak().negate().debounce(.25));
+  }
+
+  private Command fireWhenReady() {
+    return Commands.waitUntil(shooterAssemblyReady()).andThen(fire());
+  }
+
   private Command shootAutonShort() {
-    return Commands.deadline(
-        Commands.waitUntil(
-                turretCommandFactory
-                    .isReady()
-                    .and(() -> shooterCommandFactory.isShooterReady())
-                    .debounce(0.25))
-            .andThen(
-                triggerCommandFactory
-                    .getShootCommand()
-                    .withTimeout(1)
-                    .until(shooterCommandFactory.getBeamBreak().negate().debounce(.25))),
-        prepareToScoreSpeakerShortRangeAutonOnly());
+    return Commands.deadline(fireWhenReady(), prepareToScoreSpeakerShortRangeAutonOnly())
+        .withName("Auto Shoot Short");
   }
 
   private Command shootAutonLong() {
     return Commands.deadline(
         Commands.waitUntil(
                 turretCommandFactory
-                    .isReady()
+                    .isReadyTrigger()
                     .and(() -> shooterCommandFactory.isShooterReady())
                     .debounce(0.25))
             .andThen(
@@ -397,9 +437,11 @@ public class RobotContainer {
 
     autonCommands.put("ShootShort", shootAutonShort());
     autonCommands.put("ShootLong", shootAutonLong());
+    autonCommands.put("Prepare To Fire Short", prepareToScoreSpeakerShortRangeAutonOnly());
+    autonCommands.put("Prepare To Fire Long", shooterCommandFactory.revShooter());
     autonCommands.put("Amp", ampAuton());
     if (Constants.enabledSubsystems.intakeEnabled) {
-      autonCommands.put("Speaker Intake", intakeSpeaker().asProxy());
+      autonCommands.put("Speaker Intake", intakeSpeaker());
       autonCommands.put("Amp Intake", intakeAmp());
     }
 
@@ -434,7 +476,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     if (Constants.enabledSubsystems.drivetrainEnabled) {
       return new WaitCommand(autoDelay.getDouble(0))
-          .andThen(autoChooser.getSelected().asProxy())
+          .andThen(autoChooser.getSelected())
           .withName("Get Auto Command");
     }
     return null;

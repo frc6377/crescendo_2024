@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.9,
+        "y": 5.55
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.4,
+        "y": 5.55
+      },
+      "isLocked": false,
+      "linkedName": "B2"
+    },
+    {
+      "anchor": {
+        "x": 2.8,
+        "y": 7.1
+      },
+      "prevControl": {
+        "x": 1.4705095334335188,
+        "y": 7.334425039850355
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "B1"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.75,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Philip",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

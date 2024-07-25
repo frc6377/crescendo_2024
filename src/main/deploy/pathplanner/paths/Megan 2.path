@@ -1,0 +1,87 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.6,
+        "y": 5.78
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.668148347421863,
+        "y": 6.297638090205042
+      },
+      "isLocked": false,
+      "linkedName": "D2"
+    },
+    {
+      "anchor": {
+        "x": 4.0,
+        "y": 5.55
+      },
+      "prevControl": {
+        "x": 5.147152872702091,
+        "y": 7.1883040885779845
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Mid Ring Feild Shot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Intake Event",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Speaker Intake"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rev Event",
+      "waypointRelativePos": 0.65,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Prepare To Fire Short"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 2.75,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Megan",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

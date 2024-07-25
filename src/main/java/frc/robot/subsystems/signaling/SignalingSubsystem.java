@@ -96,6 +96,7 @@ public class SignalingSubsystem extends SubsystemBase {
 
   private void startSignal(final double time, final double intensity, final RGB rgb) {
     driverRumbleConsumer.accept(intensity);
+
     rumbleEndTime = time;
     setFullStrip(rgb);
     ledStrip.setData(ledBuffer);
@@ -104,15 +105,15 @@ public class SignalingSubsystem extends SubsystemBase {
   }
 
   public void startIntakeSignal() {
-    startSignal(1, Constants.OperatorConstants.RUMBLE_STRENGTH, RGB.WHITE);
+    startSignal(10, Constants.OperatorConstants.RUMBLE_STRENGTH, RGB.WHITE);
   }
 
   public void startAmpSignal() {
-    startSignal(1, Constants.OperatorConstants.RUMBLE_STRENGTH, RGB.RED);
+    startSignal(10, Constants.OperatorConstants.RUMBLE_STRENGTH, RGB.RED);
   }
 
   public void startShooterSignal() {
-    startSignal(1, Constants.OperatorConstants.RUMBLE_STRENGTH, RGB.BLUE);
+    startSignal(10, Constants.OperatorConstants.RUMBLE_STRENGTH, RGB.BLUE);
   }
 
   public void endSignal() {

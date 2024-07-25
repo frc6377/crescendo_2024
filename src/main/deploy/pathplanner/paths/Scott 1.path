@@ -3,24 +3,24 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.75,
+        "x": 1.33,
         "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.65,
+        "x": 2.33,
         "y": 5.55
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "A2"
     },
     {
       "anchor": {
-        "x": 2.75,
+        "x": 3.75,
         "y": 5.55
       },
       "prevControl": {
-        "x": 2.85,
+        "x": 2.75,
         "y": 5.55
       },
       "nextControl": null,
@@ -32,7 +32,7 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.5,
+    "maxVelocity": 2.75,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Scott",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.9,
+        "y": 5.55
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.9,
+        "y": 5.55
+      },
+      "isLocked": false,
+      "linkedName": "B2"
+    },
+    {
+      "anchor": {
+        "x": 2.65,
+        "y": 3.9
+      },
+      "prevControl": {
+        "x": 1.5667114716865709,
+        "y": 3.7089870045663766
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "B3"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.75,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Francis",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

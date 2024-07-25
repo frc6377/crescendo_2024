@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooterSubsystem;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -7,9 +8,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.stateManagement.PlacementMode;
 import frc.robot.stateManagement.RobotStateManager;
+import frc.robot.stateManagement.ShooterMode;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
 import frc.robot.utilities.TunableNumber;
 import java.util.ArrayList;
@@ -68,8 +71,15 @@ public class ShooterCommandFactory {
     if (subsystem == null) return Commands.none();
     return new FunctionalCommand(
             () -> {
-              subsystem.setShooterSpeeds(
-                  new SpeakerConfig(-1, leftTargetRPM.getAsDouble(), rightTargetRPM.getAsDouble()));
+              if (RSM.getShooterMode() == ShooterMode.LOB) {
+                subsystem.setShooterSpeeds(
+                    new SpeakerConfig(
+                        -1, ShooterConstants.LOB_SPEED_LEFT, ShooterConstants.LOB_SPEED_RIGHT));
+              } else {
+                subsystem.setShooterSpeeds(
+                    new SpeakerConfig(
+                        -1, leftTargetRPM.getAsDouble(), rightTargetRPM.getAsDouble()));
+              }
             },
             () -> {},
             (a) -> {},
@@ -86,18 +96,36 @@ public class ShooterCommandFactory {
         subsystem
             .run(
                 () -> {
-                  if (RSM.getPlacementMode() == PlacementMode.SPEAKER) {
-                    subsystem.setShooterSpeeds(
-                        new SpeakerConfig(
-                            -1,
-                            ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT,
-                            ShooterConstants.SHOOTER_IDLE_SPEED_LEFT));
-                  }
-                  subsystem.stop();
+                  idleShooter();
                 })
             .withName("Idle Shooter command")
             .asProxy();
+
     return command;
+  }
+
+  private void autoIdleShooter() {
+    if (AutoConstants.SHOOTER_IDLE == ShooterAutoIdle.FULL_REV && !DriverStation.isAutonomous()) {
+      subsystem.setShooterSpeeds(
+          new SpeakerConfig(
+              -1,
+              ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT,
+              ShooterConstants.SHOOTER_IDLE_SPEED_LEFT));
+    } else {
+      idleShooter();
+    }
+  }
+
+  private void idleShooter() {
+    if (RSM.getPlacementMode() == PlacementMode.SPEAKER) {
+      subsystem.setShooterSpeeds(
+          new SpeakerConfig(
+              -1,
+              ShooterConstants.SHOOTER_IDLE_SPEED_RIGHT,
+              ShooterConstants.SHOOTER_IDLE_SPEED_LEFT));
+    } else {
+      subsystem.stop();
+    }
   }
 
   public Command outtake() {
@@ -110,7 +138,9 @@ public class ShooterCommandFactory {
 
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
-    subsystem.setDefaultCommand(Commands.sequence(subsystem.runOnce(() -> {}), defaultCommand));
+    subsystem.setDefaultCommand(
+        Commands.parallel(subsystem.runOnce(() -> {}), defaultCommand)
+            .withName(defaultCommand.getName()));
   }
 
   public boolean isShooterReady() {
@@ -132,5 +162,10 @@ public class ShooterCommandFactory {
     cmds.add(this.revShooter());
     cmds.add(this.shooterIdle());
     return cmds.toArray(new Command[cmds.size()]);
+  }
+
+  public enum ShooterAutoIdle {
+    FULL_REV,
+    IDLE_REV
   }
 }

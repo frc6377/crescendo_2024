@@ -1,7 +1,9 @@
 package frc.robot.subsystems.intakeSubsystem;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ShooterConstants;
@@ -40,7 +42,8 @@ public class IntakeCommandFactory {
     if (subsystem == null) return Commands.none();
     return Commands.deadline(
             new WaitCommand(ShooterConstants.INTAKE_DELAY_SEC), getSpeakerIntakeCommand())
-        .withName("intakeSourceForTime");
+        .withName("intakeSourceForTime")
+        .asProxy();
   }
 
   public Command intakeSpeakerCommandSmart(BooleanSupplier tof) {
@@ -48,7 +51,8 @@ public class IntakeCommandFactory {
     return getSpeakerIntakeCommand()
         .until(tof)
         .andThen(intakeSourceForTime())
-        .withName("intakeSpeakerCommandSmart");
+        .withName("intakeSpeakerCommandSmart")
+        .asProxy();
   }
 
   public Command getAmpIntakeCommand() {
@@ -65,9 +69,17 @@ public class IntakeCommandFactory {
         .withName("Build Intake Command");
   }
 
+  public Command idleCommand() {
+    return Commands.either(
+            buildIntakeCommand(true), new InstantCommand(), () -> DriverStation.isAutonomous())
+        .withName("idleCommand")
+        .asProxy();
+  }
+
   public void setDefaultCommand(Command defaultCommand) {
     if (subsystem == null) return;
-    subsystem.setDefaultCommand(Commands.sequence(subsystem.runOnce(() -> {}), defaultCommand));
+    subsystem.setDefaultCommand(
+        Commands.deadline(defaultCommand, Commands.run(() -> {}, subsystem)));
   }
 
   public Command[] getCommands() {
@@ -78,6 +90,7 @@ public class IntakeCommandFactory {
     cmds.add(intakeSourceForTime());
     cmds.add(intakeSpeakerCommandSmart(() -> false));
     cmds.add(getAmpIntakeCommand());
+    cmds.add(idleCommand());
     return cmds.toArray(new Command[cmds.size()]);
   }
 }

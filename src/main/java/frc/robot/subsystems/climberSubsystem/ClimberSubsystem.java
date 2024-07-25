@@ -90,10 +90,18 @@ public class ClimberSubsystem extends SubsystemBase {
    * @param current the current to set
    */
   public void applyCurrentDemand(double current) {
+    setPIDState(PIDState.CURRENT);
     leftArmMotor.getPIDController().setIAccum(0);
     rightArmMotor.getPIDController().setIAccum(0);
     leftArmMotor.getPIDController().setReference(current, ControlType.kCurrent);
     rightArmMotor.getPIDController().setReference(current, ControlType.kCurrent);
+  }
+
+  public void applyVoltageDemand(double voltage) {
+    setPIDState(PIDState.VOLTAGE);
+
+    leftArmMotor.setVoltage(voltage);
+    rightArmMotor.setVoltage(voltage);
   }
 
   /**
@@ -191,7 +199,8 @@ public class ClimberSubsystem extends SubsystemBase {
 
   private enum PIDState {
     CURRENT(0),
-    POSITION(1);
+    POSITION(1),
+    VOLTAGE(2);
     private int id;
 
     private PIDState(int id) {

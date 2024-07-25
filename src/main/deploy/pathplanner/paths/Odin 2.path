@@ -3,50 +3,56 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.75,
-        "y": 5.55
+        "x": 2.8,
+        "y": 7.1
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.65,
-        "y": 5.55
+        "x": 2.8,
+        "y": 6.6
       },
-      "isLocked": true,
-      "linkedName": null
+      "isLocked": false,
+      "linkedName": "B1"
     },
     {
       "anchor": {
-        "x": 1.383130458568611,
+        "x": 2.9,
         "y": 5.55
       },
       "prevControl": {
-        "x": 1.483130458568611,
-        "y": 5.55
+        "x": 2.9,
+        "y": 6.05
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "B2"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.2,
+      "rotationDegrees": -90.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.5,
+    "maxVelocity": 0.5,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": -90.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Odin",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 0.0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

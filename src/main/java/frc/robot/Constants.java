@@ -4,9 +4,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.shooterSubsystem.ShooterCommandFactory.ShooterAutoIdle;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
 import frc.robot.utilities.HowdyFF;
 import frc.robot.utilities.HowdyPID;
@@ -67,8 +71,8 @@ public final class Constants {
     public static final HowdyPID LEFT_SHOOTER_PID = new HowdyPID(0.0003, 0, 0, 0, 0.0002);
 
     // Motor RPM, NOT roller RPM
-    public static final double SHOOTER_IDLE_SPEED_LEFT = 400; // Placeholder; in RPM
-    public static final double SHOOTER_IDLE_SPEED_RIGHT = 400; // Placeholder; in RPM
+    public static final double SHOOTER_IDLE_SPEED_LEFT = 2000; // in RPM
+    public static final double SHOOTER_IDLE_SPEED_RIGHT = 2000; // in RPM
 
     public static final double SHOOTER_SPEED_TOLERANCE =
         0.1; // speed must be within (1-n)v to (1+n)v to fire
@@ -79,11 +83,13 @@ public final class Constants {
     public static final double SHOOTER_RIGHT_GEARING = 0.4; // Unitless
     public static final double SHOOTER_RIGHT_MOMENT = 0.000848475500006; // Placeholder; in kg*m^2
     public static final SpeakerConfig SHOOTER_SOURCE_INTAKE = new SpeakerConfig(-1, -1500, -1500);
-    public static final double INTAKE_DELAY_SEC = 0;
+    public static final double INTAKE_DELAY_SEC = 0.5;
     public static final int BEAM_BREAK_ID = 1;
     public static final double BEAM_BREAK_THRESHOLD = 150;
-    public static final double SHOOTER_LEFT_TARGET_RPM = 3431;
-    public static final double SHOOTER_RIGHT_TARGET_RPM = 2531;
+    public static final double SHOOTER_LEFT_TARGET_RPM = 3931;
+    public static final double SHOOTER_RIGHT_TARGET_RPM = 3031;
+    public static final double LOB_SPEED_LEFT = 3531;
+    public static final double LOB_SPEED_RIGHT = 2531;
   }
 
   public static class TurretConstants {
@@ -177,37 +183,20 @@ public final class Constants {
     public static final Rotation2d ALLOWED_PIN_ERROR = Rotation2d.fromDegrees(2);
 
     public static final TurretDataPoint[] TURRET_DATA = {
-      // Verified 5/5
       new TurretDataPoint(Units.inchesToMeters(13.22), 1.523, Units.degreesToRadians(32)),
-      // Verified at 6 of 6
-      // 5 deg left 0.393m
+      new TurretDataPoint(Units.inchesToMeters(-1), 1.66, Units.degreesToRadians(32)),
       new TurretDataPoint(Units.inchesToMeters(15.5), 1.69, Units.degreesToRadians(30)),
-      // Verified at 5
-      new TurretDataPoint(Units.inchesToMeters(21.75), 1.8, Units.degreesToRadians(28)),
-      // Verified at 5 of 6
-      new TurretDataPoint(Units.inchesToMeters(59.5), 2.6, Units.degreesToRadians(20)),
-      // Verified at 7 of 8
-      // 5 deg left
-      new TurretDataPoint(Units.inchesToMeters(62), 2.65, Units.degreesToRadians(18)),
-      // Verified 8/12
-      new TurretDataPoint(Units.inchesToMeters(66.81), 2.7, Units.degreesToRadians(19)),
-      // Verified at 6 of 6
-      // 5 deg left
-      new TurretDataPoint(Units.inchesToMeters(83), 3.11, Units.degreesToRadians(16)),
-      // Verified 4/6
-      new TurretDataPoint(Units.inchesToMeters(99.60), 3.327, Units.degreesToRadians(15)),
-
-      /*
-       * Real, LL, Pitch
-       * 0.328m, 1.523, 32, 5/5
-       * 1.697m, 1.693,
-       */
+      new TurretDataPoint(Units.inchesToMeters(-1), 1.94, Units.degreesToRadians(29)),
+      new TurretDataPoint(Units.inchesToMeters(-1), 2.37, Units.degreesToRadians(25)),
+      new TurretDataPoint(Units.inchesToMeters(-1), 2.76, Units.degreesToRadians(23)),
+      new TurretDataPoint(Units.inchesToMeters(-1), 3.25, Units.degreesToRadians(18.5)),
+      new TurretDataPoint(Units.inchesToMeters(122), 4.59, Units.degreesToRadians(12.5)),
     };
-    public static final double PITCH_TOLERANCE = 1;
+    public static final double PITCH_TOLERANCE_RADIANS = Math.toDegrees(1);
     public static final double SIMULATION_CG_MAGIC_NUMBER = 2;
-    public static final double LOB_PITCH = 0;
+    public static final double LOB_PITCH = 30;
     // This is a magic number which was used to correct for persistent error
-    public static final double VISION_DISTANCE_OFFSET = 0.3;
+    public static final double VISION_DISTANCE_OFFSET = 0;
 
     public class TurretZeroConfig {
       public static final double lowGearTurretZero = Double.NaN;
@@ -290,6 +279,13 @@ public final class Constants {
 
     public static final String MAIN_CAMERA_NAME = "Camera_Module_Main";
     public static final String TURRET_CAMERA_NAME = "Camera_Module_Turret";
+    // X is forward on the robot (Towards the intake), the Y is to the left, and z is up
+    public static final Pose3d TURRET_CAMERA_POSITION_RELATIVE_TO_ROBOT_CENTER =
+        new Pose3d(
+            new Translation3d(
+                -0.2891, 0,
+                0), // Z should be 0.2519, but for some reason the math doesn't work with it
+            new Rotation3d(0, Units.degreesToRadians(22.3), 0));
   }
 
   public static class ClimberConstants {
@@ -301,8 +297,8 @@ public final class Constants {
     public static final double[] POSITION_PID = new double[] {0.15, 0, 0, 0};
     public static final double[] CURRENT_PID = new double[] {0.01, 0, 0, 0};
     public static final double MIN_RAISE_TIME_SEC = 0.2;
-    public static final double CLIP_CURRENT = -10;
-    public static final double RAISE_CURRENT = 30;
+    public static final double CLIP_VOLTAGE = -3;
+    public static final double RAISE_VOLTAGE = 5;
     public static final double INITAL_RAISE_PERCENT = 0.3;
     public static final double BREAK_STATIC_PERCENT = -0.3;
     public static final double BREAK_STATIC_TIME = 0.1;
@@ -376,7 +372,14 @@ public final class Constants {
     }
   }
 
-  private static class DevTools {
-    public static final boolean ShooterLinerizing = true;
+  // Enable and disable devolpment behavior
+  public static class DevTools {
+    // Make it so the shooter goes to the set shooter pitch when firing
+    public static final boolean ShooterLinerizing = false;
+  }
+
+  public static class AutoConstants {
+
+    public static final ShooterAutoIdle SHOOTER_IDLE = ShooterAutoIdle.IDLE_REV;
   }
 }
