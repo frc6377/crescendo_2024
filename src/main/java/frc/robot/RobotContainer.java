@@ -8,6 +8,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -24,6 +26,8 @@ import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.enabledSubsystems;
 import frc.robot.config.TunerConstants;
+import frc.robot.devMode.DevManager;
+import frc.robot.devMode.DevOI;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.PlacementMode;
 import frc.robot.stateManagement.RobotStateManager;
@@ -50,6 +54,7 @@ import frc.robot.subsystems.vision.PhotonSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.DebugEntry;
 import frc.robot.utilities.TOFSensorSimple;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
@@ -177,12 +182,80 @@ public class RobotContainer {
 
     isShooterReady = new DebugEntry<Boolean>(false, "isShooterReady", "test");
 
-    configureBindings();
+    try (DigitalInput dio = new DigitalInput(0)) {
+      if (!dio.get()) {
+        configureDefaultBindings();
+      } else {
+        configureTestBindings();
+      }
+    }
+    assignDefaultCommands();
     configDriverFeedBack();
   }
 
   public SwerveSubsystem getDriveTrain() {
     return drivetrain;
+  }
+
+  private void assignDefaultCommands() {
+    trapElvCommandFactory.setDefaultCommand(trapElvCommandFactory.stowTrapElvCommand());
+
+    shooterCommandFactory.setDefaultCommand(shooterCommandFactory.shooterIdle());
+
+    triggerCommandFactory.setDefaultCommand(triggerCommandFactory.getHoldCommand());
+
+    turretCommandFactory.setDefaultCommand(turretCommandFactory.idleTurret());
+
+    intakeCommandFactory.setDefaultCommand(intakeCommandFactory.idleCommand());
+  }
+
+  private void configureTestBindings() {
+    DevManager devManager = new DevManager();
+
+    final Supplier<DriveRequest> input =
+        () ->
+            SwerveSubsystem.joystickCondition(
+                new DriveInput(
+                    DevOI.Driver.xTranslationAxis.get(),
+                    DevOI.Driver.yTranslationAxis.get(),
+                    DevOI.Driver.rotationAxis.get()),
+                DevOI.Driver.highGear.getAsBoolean());
+    final DoubleSupplier direction =
+        drivetrainCommandFactory.createRotationSource(OI.Driver.controller, drivetrain);
+
+    switch (DriverConstants.DRIVE_TYPE) {
+      case FIELD_ORIENTED:
+        drivetrainCommandFactory.setDefaultCommand(
+            drivetrainCommandFactory.fieldOrientedDrive(input).withName("Field Oriented Drive"));
+        break;
+      case POINT_DRIVE:
+        drivetrainCommandFactory.setDefaultCommand(
+            drivetrainCommandFactory
+                .pointDrive(direction, SwerveSubsystem.scrubRotation(input))
+                .withName("Point Drive"));
+        break;
+      default:
+        DriverStation.reportWarning("Unknown Drive Type Selected.", false);
+        break;
+    }
+
+    DevOI.Operator.prepareToFire.whileTrue(
+        Commands.either(
+            trapElvCommandFactory.positionAMP(),
+            prepareToScoreSpeaker(),
+            robotStateManager.isAmpSupplier()));
+
+    DevOI.Operator.fire.whileTrue(
+        Commands.either(
+            trapElvCommandFactory.scoreAMP(), shootSpeaker(), robotStateManager.isAmpSupplier()));
+
+    DevOI.Operator.switchToSpeaker.onTrue(robotStateManager.setAmpMode());
+
+    DevOI.Operator.switchToAmp.onTrue(robotStateManager.setSpeakerMode());
+
+    DevOI.Operator.incrementTrial.onTrue(Commands.run(DevManager::incrementTrial, new Subsystem[0]));
+
+    DevOI.Operator.decrementTrial.onTrue(Commands.run(DevManager::decrementTrial, new Subsystem[0]));
   }
 
   /**
@@ -194,7 +267,7 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureBindings() {
+  private void configureDefaultBindings() {
     // Swerve config
     final Supplier<DriveRequest> input =
         () ->
@@ -222,16 +295,6 @@ public class RobotContainer {
         DriverStation.reportWarning("Unknown Drive Type Selected.", false);
         break;
     }
-
-    trapElvCommandFactory.setDefaultCommand(trapElvCommandFactory.stowTrapElvCommand());
-
-    shooterCommandFactory.setDefaultCommand(shooterCommandFactory.shooterIdle());
-
-    triggerCommandFactory.setDefaultCommand(triggerCommandFactory.getHoldCommand());
-
-    turretCommandFactory.setDefaultCommand(turretCommandFactory.idleTurret());
-
-    intakeCommandFactory.setDefaultCommand(intakeCommandFactory.idleCommand());
 
     OI.getTrigger(OI.Driver.lockAmp)
         .whileTrue(

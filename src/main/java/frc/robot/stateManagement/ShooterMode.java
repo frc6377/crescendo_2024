@@ -4,5 +4,6 @@ public enum ShooterMode {
   LOB,
   SHORT_RANGE,
   LONG_RANGE,
-  NO_ODOM;
+  NO_ODOM,
+  DEV;
 }

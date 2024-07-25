@@ -151,6 +151,8 @@ public class TurretCommandFactory {
         () -> {
           final ShooterMode shooterMode = RSM.getShooterMode();
           switch (shooterMode) {
+            case DEV:
+              return devShooting();
             case LOB:
               return shortRangeShot();
             case LONG_RANGE:
@@ -170,6 +172,10 @@ public class TurretCommandFactory {
         };
 
     return Commands.deferredProxy(aimCommandSupplier).withName("getAimTurretCommand");
+  }
+
+  private Command devShooting() {
+    return null;
   }
 
   private Command lobShot() {

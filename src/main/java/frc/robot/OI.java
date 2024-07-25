@@ -154,7 +154,7 @@ public class OI {
         () -> trigger.getController().getRawAxis(trigger.getId()) > trigger.getThreshold());
   }
 
-  private static class Control {
+  protected static class Control {
     private enum ControlType {
       AXIS,
       BUTTON,
