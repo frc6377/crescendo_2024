@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.3,
-        "y": 7.45
+        "x": 1.33,
+        "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.300000000000001,
-        "y": 7.45
+        "x": 2.33,
+        "y": 5.55
       },
       "isLocked": false,
-      "linkedName": "D1"
+      "linkedName": "A2"
     },
     {
       "anchor": {
-        "x": 4.0,
-        "y": 6.0
+        "x": 2.9,
+        "y": 5.55
       },
       "prevControl": {
-        "x": 5.826890501141917,
-        "y": 6.398168442556571
+        "x": 1.9,
+        "y": 5.55
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "B2"
     }
   ],
   "rotationTargets": [],
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Eugene",
+  "folder": "King",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

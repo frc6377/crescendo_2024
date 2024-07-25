@@ -3,29 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.6,
-        "y": 4.1
+        "x": 8.3,
+        "y": 7.45
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0400914981573175,
-        "y": 4.684334618312604
+        "x": 4.360768987951168,
+        "y": 6.755407289332278
       },
       "isLocked": false,
-      "linkedName": "B3"
+      "linkedName": "D1"
     },
     {
       "anchor": {
-        "x": 1.2,
+        "x": 2.9,
         "y": 5.55
       },
       "prevControl": {
-        "x": 1.7999999999999998,
-        "y": 5.55
+        "x": 2.9,
+        "y": 6.3
+      },
+      "nextControl": {
+        "x": 2.9,
+        "y": 4.8
+      },
+      "isLocked": false,
+      "linkedName": "B2"
+    },
+    {
+      "anchor": {
+        "x": 8.3,
+        "y": 4.1
+      },
+      "prevControl": {
+        "x": 5.300000000000001,
+        "y": 4.1
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "D3"
     }
   ],
   "rotationTargets": [],
@@ -33,24 +49,17 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.1,
+      "waypointRelativePos": 0.8,
       "command": {
         "type": "parallel",
         "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Prepare To Fire Short"
-              }
-            }
-          ]
+          "commands": []
         }
       }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.5,
+    "maxVelocity": 4.5,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
@@ -61,10 +70,10 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Olivia",
+  "folder": "King",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

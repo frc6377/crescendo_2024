@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.600961894323342,
-        "y": 6.25
+        "x": 1.9,
+        "y": 7.0
       },
       "isLocked": false,
       "linkedName": "B1"
@@ -36,7 +36,7 @@
         "y": 4.1
       },
       "prevControl": {
-        "x": 1.6,
+        "x": 1.85,
         "y": 4.1
       },
       "nextControl": null,
@@ -44,7 +44,13 @@
       "linkedName": "B3"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": -5.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {

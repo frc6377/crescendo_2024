@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4509333353215332,
-        "y": 5.064181414529809
+        "x": 2.1,
+        "y": 4.1
       },
       "isLocked": false,
       "linkedName": "B3"
@@ -20,12 +20,12 @@
         "y": 5.55
       },
       "prevControl": {
-        "x": 1.6,
-        "y": 5.05
+        "x": 1.4585786437626906,
+        "y": 5.408578643762691
       },
       "nextControl": {
-        "x": 1.6,
-        "y": 5.6499999999999995
+        "x": 1.741421356237309,
+        "y": 5.69142135623731
       },
       "isLocked": false,
       "linkedName": "King Short Shot"
