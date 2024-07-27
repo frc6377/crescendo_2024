@@ -12,12 +12,6 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "ShootShort"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "King 1"

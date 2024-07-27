@@ -55,7 +55,7 @@
   "eventMarkers": [
     {
       "name": "Prepare To Fire",
-      "waypointRelativePos": 0.25,
+      "waypointRelativePos": 0.15,
       "command": {
         "type": "parallel",
         "data": {
