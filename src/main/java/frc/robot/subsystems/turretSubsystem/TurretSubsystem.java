@@ -77,7 +77,14 @@ public class TurretSubsystem extends SubsystemBase {
   private SimDeviceSim simTurretEncoder;
   private SimDouble simTurretPos;
 
+  private Double shortShotOffset = 0.0;
+  private Double longShotOffset = 0.0;
+
   private final ShuffleboardTab turretTab = Shuffleboard.getTab(this.getName());
+  private final DebugEntry<Double> shortShotOffsetEntry =
+      new DebugEntry<Double>(shortShotOffset, "Short Shot Offset", this);
+  private final DebugEntry<Double> longShotOffsetEntry =
+      new DebugEntry<Double>(longShotOffset, "Long Shot Offset", this);
   private final DebugEntry<Double> turretPositionEntry =
       new DebugEntry<Double>(turretPosition, "Turret Position (Degrees)", this);
   private final DebugEntry<Double> turretGoalPositionEntry =
@@ -209,6 +216,24 @@ public class TurretSubsystem extends SubsystemBase {
           pitchRoot.append(new MechanismLigament2d("Pitch", 2, 0, 5, new Color8Bit(Color.kBlue)));
       turretTab.add("Pitch", pitchMech);
     }
+  }
+
+  public void updateShortShotOffset(Double value) {
+    shortShotOffset = value;
+    shortShotOffsetEntry.log(shortShotOffset);
+  }
+
+  public void updateLongShotOffset(Double value) {
+    longShotOffset = value;
+    longShotOffsetEntry.log(longShotOffset);
+  }
+
+  public Double getShortShotOffset() {
+    return shortShotOffset;
+  }
+
+  public Double getLongShotOffset() {
+    return longShotOffset;
   }
 
   public void stopTurret() {

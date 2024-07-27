@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -17,6 +18,14 @@ public class OI {
 
   private static final int driverJoystickPort = 0;
   private static final int operatorJoystickPort = 1;
+  private static final int streamDeckJoystickPort = 2;
+
+  private enum ControlType {
+    AXIS,
+    BUTTON,
+    POVBUTTON,
+    TRIGGER
+  }
 
   public static final class Driver {
     public static final XboxController controller = new XboxController(driverJoystickPort);
@@ -120,25 +129,52 @@ public class OI {
     }
   }
 
+  public static final class StreamDeck {
+    public static final Joystick controller = new Joystick(streamDeckJoystickPort);
+
+    public static final ControlCurve defaultControlCurve = new ControlCurve(1, 0, 0, 0);
+
+    // Buttons 1-8
+    public static final Control Button1 = new Control(1, null, controller);
+    public static final Control Button2 = new Control(2, null, controller);
+    public static final Control Button3 = new Control(3, null, controller);
+    public static final Control Button4 = new Control(4, null, controller);
+    public static final Control Button5 = new Control(5, null, controller);
+    public static final Control Button6 = new Control(6, null, controller);
+    public static final Control Button7 = new Control(7, null, controller);
+    public static final Control Button8 = new Control(8, null, controller);
+
+    // Knobs 1-4
+    public static final Control AxisX = new Control(0, null, controller, defaultControlCurve);
+    public static final Control AxisY = new Control(1, null, controller, defaultControlCurve);
+    public static final Control ShortAxis =
+        new Control(2, "Short Shot Offset", controller, defaultControlCurve);
+    public static final Control LongAxis =
+        new Control(4, "Long Shot Offset", controller, defaultControlCurve);
+  }
+
   // --- OI UTILITIES -- //
 
   public static Supplier<Double> getAxisSupplier(Control axis) {
-    if (axis.getType() != Control.ControlType.AXIS) {
+    if (axis.getType() != ControlType.AXIS) {
       DriverStation.reportError(axis.getAction() + " is not an axis", true);
       return () -> 0d;
+    }
+    if (axis.getController() == null) {
+      return () -> axis.getCurve().calculate(axis.getJoystick().getRawAxis(axis.getId()));
     }
     return () -> axis.getCurve().calculate(axis.getController().getRawAxis(axis.getId()));
   }
 
   public static JoystickButton getButton(Control button) {
-    if (button.getType() != Control.ControlType.BUTTON) {
+    if (button.getType() != ControlType.BUTTON) {
       DriverStation.reportError(button.getAction() + " is not a button", true);
     }
     return new JoystickButton(button.getController(), button.getId());
   }
 
   public static POVButton getPOVButton(Control povButton) {
-    if (povButton.getType() != Control.ControlType.POVBUTTON) {
+    if (povButton.getType() != ControlType.POVBUTTON) {
       DriverStation.reportError(povButton.getAction() + " is not a POV button", true);
     }
     return new POVButton(povButton.getController(), povButton.getId());
@@ -146,7 +182,7 @@ public class OI {
 
   public static Trigger getTrigger(Control trigger) {
     // "Trigger" referring to the type of button, not the WPI class
-    if (trigger.getType() != Control.ControlType.TRIGGER) {
+    if (trigger.getType() != ControlType.TRIGGER) {
       DriverStation.reportError(trigger.getAction() + " is not a trigger", true);
       return new Trigger(() -> false);
     }
@@ -155,17 +191,11 @@ public class OI {
   }
 
   private static class Control {
-    private enum ControlType {
-      AXIS,
-      BUTTON,
-      POVBUTTON,
-      TRIGGER
-    }
-
     private int id;
     private String action;
     private String name; // Refers to button name
     private XboxController controller;
+    private Joystick joystick;
     private ControlCurve curve;
     private double threshold; // Percentage where axis is triggered as a button
     private ControlType type;
@@ -178,6 +208,23 @@ public class OI {
       this.controller = controller;
       this.type = type;
       putControl();
+    }
+
+    Control(int id, String action, Joystick joystick) {
+      this.id = id;
+      this.action = action;
+      this.name = "button" + String.valueOf(id);
+      this.joystick = joystick;
+      this.type = ControlType.BUTTON;
+    }
+
+    Control(int id, String action, Joystick joystick, ControlCurve curve) {
+      this.id = id;
+      this.action = action;
+      this.name = "button" + String.valueOf(id);
+      this.joystick = joystick;
+      this.curve = curve;
+      this.type = ControlType.AXIS;
     }
 
     Control(
@@ -219,6 +266,10 @@ public class OI {
       return controller;
     }
 
+    private Joystick getJoystick() {
+      return joystick;
+    }
+
     private ControlCurve getCurve() {
       return curve;
     }
@@ -243,6 +294,12 @@ public class OI {
       if (controller.getPort() == operatorJoystickPort) {
         operatorControlsLayout.add(
             "Operator " + getType().toString() + " " + String.valueOf(getId()),
+            type.toString() + " " + getName() + ": " + getAction());
+      }
+
+      if (controller.getPort() == streamDeckJoystickPort) {
+        operatorControlsLayout.add(
+            "StreamDeck" + getType().toString() + " " + String.valueOf(getId()),
             type.toString() + " " + getName() + ": " + getAction());
       }
     }
@@ -307,6 +364,13 @@ public class OI {
   private static ShuffleboardLayout operatorControlsLayout =
       Shuffleboard.getTab("Controls")
           .getLayout("Operator Controls", BuiltInLayouts.kList)
+          .withSize(3, 5)
+          .withPosition(3, 0)
+          .withProperties(Map.of("Label position", "HIDDEN")); // hide labels for Variables;
+
+  private static ShuffleboardLayout streamDeckControlsLayout =
+      Shuffleboard.getTab("Controls")
+          .getLayout("StreamDeck Controls", BuiltInLayouts.kList)
           .withSize(3, 5)
           .withPosition(3, 0)
           .withProperties(Map.of("Label position", "HIDDEN")); // hide labels for Variables;

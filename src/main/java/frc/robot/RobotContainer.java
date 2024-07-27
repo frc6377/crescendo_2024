@@ -367,21 +367,24 @@ public class RobotContainer {
   private Command prepareToScoreSpeaker() {
     return Commands.parallel(
         Commands.waitSeconds(CommandConstants.WAIT_FOR_TRAPELV)
-            .andThen(turretCommandFactory.getAimTurretCommand()),
+            .andThen(
+                turretCommandFactory.getAimTurretCommand(
+                    OI.getAxisSupplier(OI.StreamDeck.ShortAxis),
+                    OI.getAxisSupplier(OI.StreamDeck.LongAxis))),
         shooterCommandFactory.revShooter(),
         trapElvCommandFactory.shooterMoving());
   }
 
   private Command prepareToScoreSpeakerShortRangeAutonOnly() {
     return Commands.parallel(
-        turretCommandFactory.shortRangeShot(),
+        turretCommandFactory.shortRangeShot(() -> 0.0),
         shooterCommandFactory.revShooter(),
         trapElvCommandFactory.shooterMoving());
   }
 
   private Command prepareToScoreSpeakerLongRangeAutonOnly() {
     return Commands.parallel(
-        turretCommandFactory.longRangeShot(),
+        turretCommandFactory.longRangeShot(() -> 0.0),
         shooterCommandFactory.revShooter(),
         trapElvCommandFactory.shooterMoving());
   }

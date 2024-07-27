@@ -144,7 +144,7 @@ public class TurretCommandFactory {
         .asProxy();
   }
 
-  public Command getAimTurretCommand() {
+  public Command getAimTurretCommand(Supplier<Double> shortShot, Supplier<Double> longShot) {
     if (subsystem == null) return new StartEndCommand(() -> {}, () -> {});
 
     Supplier<Command> aimCommandSupplier =
@@ -152,11 +152,11 @@ public class TurretCommandFactory {
           final ShooterMode shooterMode = RSM.getShooterMode();
           switch (shooterMode) {
             case LOB:
-              return shortRangeShot();
+              return shortRangeShot(shortShot);
             case LONG_RANGE:
-              return longRangeShot();
+              return longRangeShot(longShot);
             case SHORT_RANGE:
-              return shortRangeShot();
+              return shortRangeShot(shortShot);
             case NO_ODOM:
               return subsystem
                   .run(() -> subsystem.setPitchPos(pitchMap.get(distanceEstimateMeters())))
@@ -165,7 +165,7 @@ public class TurretCommandFactory {
             default:
               DriverStation.reportError(
                   String.format("Unknown shooter mode provided (%s)", shooterMode), true);
-              return shortRangeShot();
+              return shortRangeShot(shortShot);
           }
         };
 
@@ -192,30 +192,34 @@ public class TurretCommandFactory {
     return subsystem.startEnd(() -> subsystem.setTurretPos(0), () -> {});
   }
 
-  public Command shortRangeShot() {
+  public Command shortRangeShot(Supplier<Double> axis) {
     if (subsystem == null) return Commands.none();
     return subsystem
         .startEnd(
             () -> {
+              subsystem.updateShortShotOffset(axis.get() * 100);
               subsystem.setTurretPos(Math.toRadians(00));
               subsystem.setPitchPos(
-                  Math.toRadians(Constants.TurretConstants.PITCH_SHORT_SHOT_ANGLE));
+                  Math.toRadians(
+                      Constants.TurretConstants.PITCH_SHORT_SHOT_ANGLE
+                          + subsystem.getShortShotOffset()));
             },
             () -> {})
         .withName("shortRangeShot")
         .asProxy();
   }
 
-  public Command longRangeShot() {
-    return longRangeShot(() -> speakerPointing())
+  public Command longRangeShot(Supplier<Double> axis) {
+    return longRangeShot(() -> speakerPointing(), axis)
         .withName("long shot with default search behavior");
   }
 
-  public Command longRangeShot(Supplier<Rotation2d> searchBehavior) {
+  public Command longRangeShot(Supplier<Rotation2d> searchBehavior, Supplier<Double> axis) {
     if (subsystem == null) return Commands.none();
     return subsystem
         .run(
             () -> {
+              subsystem.updateLongShotOffset(axis.get() * 100);
               if (Constants.enabledSubsystems.turretRotationEnabled
                   && !DevTools.ShooterLinerizing) {
                 visionTracking(searchBehavior);
@@ -227,7 +231,8 @@ public class TurretCommandFactory {
                   subsystem.setPitchPos(
                       Units.degreesToRadians(SmartDashboard.getNumber("Set Shooter Pitch", 0)));
                 } else {
-                  subsystem.setPitchPos(pitchMap.get(distance));
+                  subsystem.setPitchPos(
+                      pitchMap.get(distance) + Math.toRadians(subsystem.getLongShotOffset()));
                 }
               }
             })
@@ -334,12 +339,12 @@ public class TurretCommandFactory {
     cmds.add(pickup());
     cmds.add(zeroZeroing());
     cmds.add(zeroTurretCommand());
-    cmds.add(getAimTurretCommand());
+    cmds.add(getAimTurretCommand(() -> 0.0, () -> 0.0));
     cmds.add(idleTurret());
     cmds.add(testTurretCommand(() -> 0.0));
-    cmds.add(this.longRangeShot());
-    cmds.add(this.longRangeShot(() -> new Rotation2d()));
-    cmds.add(this.shortRangeShot());
+    cmds.add(this.longRangeShot(() -> 0.0));
+    cmds.add(this.longRangeShot(() -> new Rotation2d(), () -> 0.0));
+    cmds.add(this.shortRangeShot(() -> 0.0));
     cmds.add(this.pinTurret());
     return cmds.toArray(new Command[cmds.size()]);
   }
