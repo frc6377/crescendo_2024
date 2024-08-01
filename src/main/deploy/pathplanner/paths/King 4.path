@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Prepare To Fire",
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 0.35,
       "command": {
         "type": "parallel",
         "data": {
@@ -71,6 +71,23 @@
               "type": "named",
               "data": {
                 "name": "stopPitch"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Intake",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Speaker Intake"
               }
             }
           ]

@@ -32,11 +32,11 @@
     },
     {
       "anchor": {
-        "x": 2.6,
+        "x": 2.7,
         "y": 4.1
       },
       "prevControl": {
-        "x": 1.85,
+        "x": 1.9500000000000002,
         "y": 4.1
       },
       "nextControl": null,
@@ -55,7 +55,7 @@
   "eventMarkers": [
     {
       "name": "Prepare To Fire",
-      "waypointRelativePos": 0.15,
+      "waypointRelativePos": 0.3,
       "command": {
         "type": "parallel",
         "data": {
@@ -101,7 +101,24 @@
     },
     {
       "name": "Intake",
-      "waypointRelativePos": 1.4,
+      "waypointRelativePos": 0.0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Speaker Intake"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Intake",
+      "waypointRelativePos": 1.65,
       "command": {
         "type": "parallel",
         "data": {
