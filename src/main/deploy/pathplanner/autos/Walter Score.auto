@@ -1,0 +1,43 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.75,
+      "y": 4.45
+    },
+    "rotation": -60.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootShort"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Walter Source 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Walter Source Score 1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootLong"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
