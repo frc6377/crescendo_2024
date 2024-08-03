@@ -48,23 +48,6 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Prepare To Fire",
-      "waypointRelativePos": 0.35,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Prepare To Fire Short"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
       "name": "Fire",
       "waypointRelativePos": 0.85,
       "command": {
@@ -94,16 +77,22 @@
       }
     },
     {
-      "name": "Intake",
+      "name": "Intake - Prepare To Fire",
       "waypointRelativePos": 0,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {
               "type": "named",
               "data": {
                 "name": "Speaker Intake"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Prepare To Fire Short"
               }
             }
           ]
