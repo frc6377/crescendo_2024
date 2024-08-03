@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 1.33,
-        "y": 5.65
+        "x": 1.35,
+        "y": 5.55
       },
       "prevControl": {
-        "x": 1.83,
-        "y": 5.65
+        "x": 1.85,
+        "y": 5.55
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "A2"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Prepare To Fire",
-      "waypointRelativePos": 0.35,
+      "waypointRelativePos": 0.4,
       "command": {
         "type": "parallel",
         "data": {
@@ -42,35 +42,6 @@
               "type": "named",
               "data": {
                 "name": "Prepare To Fire Short"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Fire",
-      "waypointRelativePos": 1.0,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Fire Short"
-              }
-            },
-            {
-              "type": "wait",
-              "data": {
-                "waitTime": 0.5
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "stopPitch"
               }
             }
           ]
@@ -88,6 +59,23 @@
               "type": "named",
               "data": {
                 "name": "Speaker Intake"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Fire",
+      "waypointRelativePos": 1.0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Fire Short"
               }
             }
           ]
