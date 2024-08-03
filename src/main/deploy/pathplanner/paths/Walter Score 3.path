@@ -3,32 +3,54 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.2,
-        "y": 0.775
+        "x": 8.3,
+        "y": 2.445
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.199999999999999,
-        "y": 0.7750000000000004
+        "x": 7.300000000000001,
+        "y": 2.445
       },
       "isLocked": false,
-      "linkedName": "D5"
+      "linkedName": "D4"
     },
     {
       "anchor": {
-        "x": 0.75,
-        "y": 4.45
+        "x": 4.5,
+        "y": 1.9
       },
       "prevControl": {
-        "x": 1.2499999999999996,
-        "y": 3.583974596215562
+        "x": 6.0,
+        "y": 1.8999999999999995
+      },
+      "nextControl": {
+        "x": 3.5,
+        "y": 1.9000000000000001
+      },
+      "isLocked": false,
+      "linkedName": "C4"
+    },
+    {
+      "anchor": {
+        "x": 0.6332428049471499,
+        "y": 4.37
+      },
+      "prevControl": {
+        "x": 1.1332428049471495,
+        "y": 3.5039745962155617
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "A3"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.25,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
@@ -50,7 +72,7 @@
     },
     {
       "name": "Prepare To Fire",
-      "waypointRelativePos": 0.6,
+      "waypointRelativePos": 1.2,
       "command": {
         "type": "parallel",
         "data": {
@@ -67,7 +89,7 @@
     },
     {
       "name": "Fire",
-      "waypointRelativePos": 1.0,
+      "waypointRelativePos": 2.0,
       "command": {
         "type": "parallel",
         "data": {
