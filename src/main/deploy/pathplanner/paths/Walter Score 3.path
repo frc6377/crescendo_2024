@@ -4,28 +4,28 @@
     {
       "anchor": {
         "x": 8.3,
-        "y": 2.445
+        "y": 2.55
       },
       "prevControl": null,
       "nextControl": {
         "x": 7.300000000000001,
-        "y": 2.445
+        "y": 2.55
       },
       "isLocked": false,
       "linkedName": "D4"
     },
     {
       "anchor": {
-        "x": 4.5,
-        "y": 1.9
+        "x": 5.586448095973117,
+        "y": 2.0523241046482092
       },
       "prevControl": {
-        "x": 6.0,
-        "y": 1.8999999999999995
+        "x": 7.086448095973117,
+        "y": 2.052324104648209
       },
       "nextControl": {
-        "x": 3.5,
-        "y": 1.9000000000000001
+        "x": 4.586448095973117,
+        "y": 2.0523241046482092
       },
       "isLocked": false,
       "linkedName": "C4"
@@ -89,7 +89,7 @@
     },
     {
       "name": "Fire",
-      "waypointRelativePos": 2.0,
+      "waypointRelativePos": 1.9,
       "command": {
         "type": "parallel",
         "data": {
@@ -98,6 +98,18 @@
               "type": "named",
               "data": {
                 "name": "Fire Short"
+              }
+            },
+            {
+              "type": "wait",
+              "data": {
+                "waitTime": 0.5
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "stopPitch"
               }
             }
           ]
