@@ -3,37 +3,43 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.27,
-        "y": 0.78
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 4.8769596139192295,
-        "y": 1.6764488775131405
-      },
-      "isLocked": false,
-      "linkedName": "D5"
-    },
-    {
-      "anchor": {
         "x": 0.6332428049471499,
         "y": 4.37
       },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.3832428049471501,
+        "y": 3.070961894323342
+      },
+      "isLocked": false,
+      "linkedName": "A3"
+    },
+    {
+      "anchor": {
+        "x": 8.28,
+        "y": 0.65
+      },
       "prevControl": {
-        "x": 1.7778081710009588,
-        "y": 3.019284500107463
+        "x": 7.029999999999999,
+        "y": 0.6500000000000001
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "A3"
+      "linkedName": "D5"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Intake",
-      "waypointRelativePos": 0,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.8,
       "command": {
         "type": "parallel",
         "data": {
@@ -42,52 +48,6 @@
               "type": "named",
               "data": {
                 "name": "Speaker Intake"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Prepare To Fire",
-      "waypointRelativePos": 0.6,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Prepare To Fire Short"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Fire",
-      "waypointRelativePos": 1.0,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Fire Short"
-              }
-            },
-            {
-              "type": "wait",
-              "data": {
-                "waitTime": 0.5
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "stopPitch"
               }
             }
           ]
@@ -103,13 +63,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -60.0,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Walter",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": -60.0,
     "velocity": 0
   },
   "useDefaultConstraints": false

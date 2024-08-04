@@ -20,12 +20,6 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Walter Source Start"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
             "pathName": "Walter Score 1"
           }
         },
@@ -39,6 +33,12 @@
           "type": "path",
           "data": {
             "pathName": "Walter Score 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Walter Score 4"
           }
         }
       ]
