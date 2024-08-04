@@ -17,15 +17,15 @@
     {
       "anchor": {
         "x": 0.6332428049471499,
-        "y": 4.37
+        "y": 4.45
       },
       "prevControl": {
         "x": 1.7778081710009588,
-        "y": 3.019284500107463
+        "y": 3.099284500107463
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "A3"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -67,7 +67,7 @@
     },
     {
       "name": "Fire",
-      "waypointRelativePos": 1.0,
+      "waypointRelativePos": 0.9,
       "command": {
         "type": "parallel",
         "data": {
