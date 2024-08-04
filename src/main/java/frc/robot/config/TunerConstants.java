@@ -47,7 +47,7 @@ public class TunerConstants {
 
   // Wheel Set A Wheel Radius = 1.8640081
   // Wheel Set B Wheel Radius = 1.8599349
-  private static final double kWheelRadiusInches = 1.8640081;
+  private static final double kWheelRadiusInches = 1.8599349;
 
   private static final boolean kSteerMotorReversed = true;
   private static final boolean kInvertLeftSide = false;

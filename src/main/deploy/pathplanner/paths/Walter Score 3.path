@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.3,
-        "y": 2.55
+        "x": 8.29,
+        "y": 2.44
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.300000000000001,
-        "y": 2.55
+        "x": 7.289999999999999,
+        "y": 2.44
       },
       "isLocked": false,
       "linkedName": "D4"
@@ -118,7 +118,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.5,
+    "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
@@ -134,5 +134,5 @@
     "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

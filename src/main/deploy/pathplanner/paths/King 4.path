@@ -77,7 +77,7 @@
       }
     },
     {
-      "name": "Intake - Prepare To Fire",
+      "name": "Intake",
       "waypointRelativePos": 0,
       "command": {
         "type": "sequential",
@@ -87,12 +87,6 @@
               "type": "named",
               "data": {
                 "name": "Speaker Intake"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "Prepare To Fire Short"
               }
             }
           ]
@@ -110,6 +104,23 @@
               "type": "named",
               "data": {
                 "name": "Amp Intake"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Prepare To Fire",
+      "waypointRelativePos": 0.35,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Prepare To Fire Short"
               }
             }
           ]
