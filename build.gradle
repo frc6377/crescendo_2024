@@ -202,18 +202,18 @@ test {
 
 
 task updateSubmoduleLinks(type: Exec) {
-    if (file('C:\\Program Files\\Git\\bin\\bash.exe').exists())
-        executable 'C:\\Program Files\\Git\\bin\\bash.exe'
-    else if (file('/bin/bash').exists())
+    if (file('/bin/bash').exists())
         executable '/bin/bash'
+    else if (file('C:/Program Files/Git/bin/bash.exe').exists())
+        executable 'C:/Program Files/Git/bin/bash.exe'
     args "-c", "make -C frcsubmodule all"
 }
 
 task removeSubmoduleLinks(type: Exec) {
-    if (file('C:\\Program Files\\Git\\bin\\bash.exe').exists())
-        executable 'C:\\Program Files\\Git\\bin\\bash.exe'
-    else if (file('/bin/bash').exists())
+    if (file('/bin/bash').exists())
         executable '/bin/bash'
+    else if (file('C:/Program Files/Git/bin/bash.exe').exists())
+        executable 'C:/Program Files/Git/bin/bash.exe'
     args "-c", "make -C frcsubmodule clean"
 }
 
