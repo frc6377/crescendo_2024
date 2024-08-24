@@ -30,8 +30,8 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TrapElvConstants;
 import frc.robot.Robot;
-import frc.robot.utilities.DebugEntry;
-import frc.robot.utilities.TOFSensorSimple;
+import frc.robot.common.DebugEntry;
+import frc.robot.common.TOFSensorSimple;
 import java.util.function.BooleanSupplier;
 
 public class TrapElvSubsystem extends SubsystemBase {

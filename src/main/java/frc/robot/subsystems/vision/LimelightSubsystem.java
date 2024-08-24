@@ -13,10 +13,10 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.common.DebugEntry;
+import frc.robot.common.LimelightHelpers;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
-import frc.robot.utilities.DebugEntry;
-import frc.robot.utilities.LimelightHelpers;
 import java.util.function.BiConsumer;
 
 public class LimelightSubsystem extends SubsystemBase implements VisionSubsystem {

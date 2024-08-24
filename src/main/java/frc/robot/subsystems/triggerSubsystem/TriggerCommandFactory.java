@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.TriggerConstants;
-import frc.robot.utilities.TunableNumber;
+import frc.robot.common.TunableNumber;
 import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 

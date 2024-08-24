@@ -37,10 +37,10 @@ import frc.robot.Constants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.enabledSubsystems;
 import frc.robot.Robot;
+import frc.robot.common.DebugEntry;
+import frc.robot.common.HowdyMath;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.vision.VisionSubsystem;
-import frc.robot.utilities.DebugEntry;
-import frc.robot.utilities.HowdyMath;
 import java.util.function.DoubleSupplier;
 
 public class TurretSubsystem extends SubsystemBase {
