@@ -202,15 +202,21 @@ test {
 
 
 task updateSubmoduleLinks(type: Exec) {
-    executable 'C:\\Program Files\\Git\\bin\\bash.exe'
+    if (file('C:\\Program Files\\Git\\bin\\bash.exe').exists())
+        executable 'C:\\Program Files\\Git\\bin\\bash.exe'
+    else if (file('/bin/bash').exists())
+        executable '/bin/bash'
     args "-c", "make -C frcsubmodule all"
 }
 
 task removeSubmoduleLinks(type: Exec) {
-    executable 'C:\\Program Files\\Git\\bin\\bash.exe'
+    if (file('C:\\Program Files\\Git\\bin\\bash.exe').exists())
+        executable 'C:\\Program Files\\Git\\bin\\bash.exe'
+    else if (file('/bin/bash').exists())
+        executable '/bin/bash'
     args "-c", "make -C frcsubmodule clean"
 }
 
 compileJava.dependsOn("spotlessApply")
-spotlessApply.dependsOn("updateSubmoduleLinks")
+spotlessCheck.dependsOn("updateSubmoduleLinks")
 clean.dependsOn("removeSubmoduleLinks")
