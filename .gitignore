@@ -190,3 +190,8 @@ local.properties
 *.wpilog
 *.txt
 BuildConstants.java
+
+#submodules
+src/test/java/common
+src/main/java/frc/robot/common
+src/main/java/com

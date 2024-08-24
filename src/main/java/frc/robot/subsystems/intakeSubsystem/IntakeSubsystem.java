@@ -10,7 +10,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
-import frc.robot.utilities.DebugEntry;
+import frc.robot.common.DebugEntry;
 
 public class IntakeSubsystem extends SubsystemBase {
   private final TalonFX intakeMotor; // Kraken

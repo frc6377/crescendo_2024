@@ -10,10 +10,10 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.common.HowdyFF;
+import frc.robot.common.HowdyPID;
 import frc.robot.subsystems.shooterSubsystem.ShooterCommandFactory.ShooterAutoIdle;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
-import frc.robot.utilities.HowdyFF;
-import frc.robot.utilities.HowdyPID;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
