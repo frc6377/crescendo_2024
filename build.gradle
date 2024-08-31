@@ -207,7 +207,7 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/frc6377/cresendo_2024")
+            url = uri("https://maven.pkg.github.com/frc6377/crescendo_2024")
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
                 password = System.getenv("GITHUB_TOKEN")
