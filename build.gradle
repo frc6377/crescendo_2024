@@ -115,7 +115,6 @@ dependencies {
     annotationProcessor "org.littletonrobotics.akit.junction:junction-autolog:$akitJson.version"
     testImplementation 'org.mockito:mockito-core:5.8.0'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.1'
-    implementation 'org.frc6377.common:frc6377-java:1.0.0'
 }
 
 test {
@@ -213,7 +212,7 @@ task sourceJar(type: Jar) {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            groupId = 'org.frc6377.common'
+            groupId = 'frc6377.crescendo'
             artifactId = 'frc6377-java'
             version = '1.0.0'
             from components.java
