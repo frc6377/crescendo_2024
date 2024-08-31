@@ -206,6 +206,8 @@ compileJava.dependsOn("spotlessApply")
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            groupId = 'frc6377.crescendo_2024'
+            artifactId = 'library'
             from components.java
         }
     }
