@@ -208,7 +208,7 @@ publishing {
         myLibrary(MavenPublication) {
             from components.java
         }
-    } 
+    }
     repositories {
         maven {
             name = "GitHubPackages"
