@@ -15,11 +15,20 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    container: wpilib/roborio-cross-ubuntu:2024-22.04
     permissions:
       contents: read
       packages: write
     steps:
       - uses: actions/checkout@v4
+      # Declares the repository safe and not under dubious ownership.
+      - name: Add repository to git safe directories
+        run: git config --global --add safe.directory $GITHUB_WORKSPACE
+
+      # Grant execute permission for gradlew
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
       - uses: actions/setup-java@v4
         with:
           java-version: '11'
