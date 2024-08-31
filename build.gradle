@@ -66,9 +66,9 @@ repositories {
         }
     }
 
-    maven {
-        url = uri("https://maven.pkg.github.com/frc6377/crescendo_2024")
-    }
+    //maven {
+    //    url = uri("https://maven.pkg.github.com/frc6377/crescendo_2024")
+    //}
     mavenLocal()
 }
 
@@ -119,7 +119,7 @@ dependencies {
     annotationProcessor "org.littletonrobotics.akit.junction:junction-autolog:$akitJson.version"
     testImplementation 'org.mockito:mockito-core:5.8.0'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.1'
-    implementation 'frc6377:frc6377-java:1.0'
+    //implementation 'frc6377:frc6377-java:1.0'
 }
 
 test {
