@@ -205,7 +205,7 @@ compileJava.dependsOn("spotlessApply")
 
 publishing {
     publications {
-        myLibrary(MavenPublication) {
+        mavenJava(MavenPublication) {
             from components.java
         }
     }
