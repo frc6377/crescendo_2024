@@ -215,3 +215,4 @@ publishing {
         }
     }
 }
+publish.dependsOn("compileJava")
