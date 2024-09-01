@@ -201,3 +201,32 @@ test {
 }
 
 compileJava.dependsOn("spotlessApply")
+
+task printSourceSetInformation(){
+
+    doLast{
+        sourceSets.each { srcSet ->
+            println "["+srcSet.name+"]"
+            print "-->Source directories: "+srcSet.allJava.srcDirs+"\n"
+            print "-->Output directories: "+srcSet.output.classesDirs.files+"\n"
+            print "-->Compile classpath:\n"
+            srcSet.compileClasspath.files.each {
+                print "  "+it.path+"\n"
+            }
+            println ""
+        }
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs("src/common/main")
+        }
+    }
+    test {
+        java {
+            srcDirs("src/common/test")
+        }
+    }
+}
