@@ -1,5 +1,5 @@
 // Temporary path & name for the file.
-package frc.robot.utilities;
+package howdyutilities;
 
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoublePublisher;

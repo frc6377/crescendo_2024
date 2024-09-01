@@ -21,7 +21,7 @@ import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem.DriveRequest;
 import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem.RotationSource;
-import frc.robot.utilities.HowdyMath;
+import howdyutilities.HowdyMath;
 import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;

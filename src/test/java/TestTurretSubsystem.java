@@ -3,7 +3,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import frc.robot.Constants;
 import frc.robot.subsystems.turretSubsystem.TurretSubsystem;
-import frc.robot.utilities.HowdyMath;
+import howdyutilities.HowdyMath;
 import org.junit.jupiter.api.Test;
 
 public class TestTurretSubsystem {

@@ -16,8 +16,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Robot;
-import frc.robot.utilities.DebugEntry;
-import frc.robot.utilities.TOFSensorSimple;
+import howdyutilities.DebugEntry;
+import howdyutilities.TOFSensorSimple;
 
 public class ShooterSubsystem extends SubsystemBase {
 

@@ -14,7 +14,7 @@ import frc.robot.stateManagement.PlacementMode;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.stateManagement.ShooterMode;
 import frc.robot.subsystems.shooterSubsystem.ShooterSubsystem.SpeakerConfig;
-import frc.robot.utilities.TunableNumber;
+import howdyutilities.TunableNumber;
 import java.util.ArrayList;
 
 public class ShooterCommandFactory {

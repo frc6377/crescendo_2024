@@ -15,8 +15,8 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.stateManagement.AllianceColor;
 import frc.robot.stateManagement.RobotStateManager;
-import frc.robot.utilities.DebugEntry;
-import frc.robot.utilities.LimelightHelpers;
+import howdyutilities.DebugEntry;
+import howdyutilities.LimelightHelpers;
 import java.util.function.BiConsumer;
 
 public class LimelightSubsystem extends SubsystemBase implements VisionSubsystem {
