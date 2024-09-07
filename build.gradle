@@ -201,3 +201,16 @@ test {
 }
 
 compileJava.dependsOn("spotlessApply")
+
+sourceSets {
+    main {
+        java {
+            srcDirs("src/saddlebags/main")
+        }
+    }
+    test {
+        java {
+            srcDirs("src/saddlebags/test")
+        }
+    }
+}
