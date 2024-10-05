@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.75,
-      "y": 4.45
+      "x": 0.6332428049471499,
+      "y": 4.37
     },
     "rotation": -60.0
   },
@@ -20,13 +20,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Walter Source 1"
+            "pathName": "Walter Score 1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Walter 3005 1"
+            "pathName": "Walter Score 2"
           }
         },
         {

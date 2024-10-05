@@ -198,7 +198,8 @@ public class TurretCommandFactory {
         .startEnd(
             () -> {
               subsystem.setTurretPos(Math.toRadians(00));
-              subsystem.setPitchPos(Math.toRadians(37));
+              subsystem.setPitchPos(
+                  Math.toRadians(Constants.TurretConstants.PITCH_SHORT_SHOT_ANGLE));
             },
             () -> {})
         .withName("shortRangeShot")
@@ -376,7 +377,7 @@ public class TurretCommandFactory {
   public boolean isReadyBoolean() {
     if (subsystem == null) return true;
     boolean ready =
-        subsystem.pitchAtSetpoint() && subsystem.turretAtSetPoint(Rotation2d.fromDegrees(2.5));
+        subsystem.pitchAtSetpoint(); // && subsystem.turretAtSetPoint(Rotation2d.fromDegrees(2.5));
     isReadyLog.log(ready);
     return ready;
   }

@@ -16,6 +16,18 @@
           "data": {
             "name": "ShootShort"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Walter Source 1 (amp intake)"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootLong"
+          }
         }
       ]
     }

@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.33,
-      "y": 5.65
+      "x": 0.6332428049471499,
+      "y": 4.37
     },
-    "rotation": 0.0
+    "rotation": -60.0
   },
   "command": {
     "type": "sequential",
@@ -20,37 +20,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Olivia 3"
+            "pathName": "Walter Score 1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Olivia 4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShootShort"
+            "pathName": "Walter Score 2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Olivia 5"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Olivia 6"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShootShort"
+            "pathName": "Walter Score 4"
           }
         }
       ]

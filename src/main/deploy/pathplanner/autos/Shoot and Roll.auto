@@ -3,9 +3,9 @@
   "startingPose": {
     "position": {
       "x": 0.75,
-      "y": 4.45
+      "y": 6.65
     },
-    "rotation": -60.0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
@@ -15,6 +15,12 @@
           "type": "named",
           "data": {
             "name": "ShootShort"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot and Roll 1"
           }
         }
       ]

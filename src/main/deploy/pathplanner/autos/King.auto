@@ -5,7 +5,7 @@
       "x": 1.33,
       "y": 5.65
     },
-    "rotation": 0.0
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -20,49 +20,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Olivia 5"
+            "pathName": "King 1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Olivia 6"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShootShort"
+            "pathName": "King 2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Olivia 3"
+            "pathName": "King 3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Olivia 4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShootShort"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Olivia 1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Olivia 2"
+            "pathName": "King 4 (Simple)"
           }
         }
       ]

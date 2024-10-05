@@ -4,38 +4,55 @@
     {
       "anchor": {
         "x": 2.9,
-        "y": 7.0
+        "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.362597392527166,
-        "y": 6.464381773271393
+        "x": 2.4,
+        "y": 5.55
       },
       "isLocked": false,
-      "linkedName": "B1"
+      "linkedName": "B2"
     },
     {
       "anchor": {
-        "x": 1.33,
-        "y": 5.65
+        "x": 1.35,
+        "y": 5.55
       },
       "prevControl": {
-        "x": 1.9300000000000002,
-        "y": 5.65
+        "x": 1.85,
+        "y": 5.55
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "A2"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0.0,
+      "name": "Prepare To Fire",
+      "waypointRelativePos": 0.4,
       "command": {
-        "type": "sequential",
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Prepare To Fire Short"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Intake",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "parallel",
         "data": {
           "commands": [
             {
@@ -43,11 +60,22 @@
               "data": {
                 "name": "Speaker Intake"
               }
-            },
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Fire",
+      "waypointRelativePos": 1.0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
             {
               "type": "named",
               "data": {
-                "name": "Prepare To Fire Short"
+                "name": "Fire Short"
               }
             }
           ]
@@ -63,14 +91,14 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Olivia",
+  "folder": "King",
   "previewStartingState": {
-    "rotation": 0.0,
+    "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

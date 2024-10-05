@@ -3,7 +3,7 @@
   "startingPose": {
     "position": {
       "x": 1.33,
-      "y": 5.55
+      "y": 5.65
     },
     "rotation": 0.0
   },
@@ -18,79 +18,51 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Eugene 1"
-                }
-              },
-              {
-                "type": "race",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Speaker Intake"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 2.0
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
+            "pathName": "Olivia 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Olivia 4"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ShootLong"
+            "name": "ShootShort"
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Eugene 2"
-                }
-              },
-              {
-                "type": "race",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Speaker Intake"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 2.0
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
+            "pathName": "Olivia 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Olivia 2"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ShootLong"
+            "name": "ShootShort"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Eugene 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Eugene 2"
           }
         }
       ]

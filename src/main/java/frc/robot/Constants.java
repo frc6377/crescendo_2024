@@ -131,7 +131,9 @@ public final class Constants {
     public static final double PITCH_CONVERSION_FACTOR = 128;
     public static final int PITCH_SMART_CURRENT_LIMIT = 40;
 
-    public static final double PITCH_ZERO_OFFSET = Units.degreesToRotations(265.72);
+    public static final double PITCH_ZERO_OFFSET = 0.9073524;
+
+    public static final double PITCH_SHORT_SHOT_ANGLE = 45;
 
     // Physics Values
     public static final double SHOOTER_CENTER_OF_GRAVITY = 1; // TODO: Get real values
@@ -326,7 +328,7 @@ public final class Constants {
     public static final boolean triggerEnabled = true;
     public static final boolean turretRotationEnabled = true;
     public static final boolean turretPitchEnabled = true;
-    public static final boolean climberEnabled = true;
+    public static final boolean climberEnabled = false;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;

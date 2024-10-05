@@ -16,6 +16,12 @@
           "data": {
             "name": "ShootShort"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot and Roll 2"
+          }
         }
       ]
     }
