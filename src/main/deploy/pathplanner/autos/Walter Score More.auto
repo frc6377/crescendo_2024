@@ -32,12 +32,6 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Walter Score 3"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
             "pathName": "Walter Score 4"
           }
         }

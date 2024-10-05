@@ -20,15 +20,58 @@
         "y": 4.45
       },
       "prevControl": {
-        "x": 1.7778081710009588,
-        "y": 3.099284500107463
+        "x": -0.025743350518810715,
+        "y": 4.0695341657494915
+      },
+      "nextControl": {
+        "x": 1.2922289604131105,
+        "y": 4.830465834250509
+      },
+      "isLocked": false,
+      "linkedName": "Walter Score A2"
+    },
+    {
+      "anchor": {
+        "x": 5.586448095973117,
+        "y": 2.0523241046482092
+      },
+      "prevControl": {
+        "x": 4.586448095973117,
+        "y": 2.0523241046482092
+      },
+      "nextControl": {
+        "x": 6.586448095973117,
+        "y": 2.0523241046482092
+      },
+      "isLocked": false,
+      "linkedName": "C4"
+    },
+    {
+      "anchor": {
+        "x": 8.28,
+        "y": 2.3
+      },
+      "prevControl": {
+        "x": 7.279999999999999,
+        "y": 2.3
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "D4"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.95,
+      "rotationDegrees": -60.0,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 2.05,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
@@ -50,7 +93,7 @@
     },
     {
       "name": "Prepare To Fire",
-      "waypointRelativePos": 0.6,
+      "waypointRelativePos": 0.5499999999999999,
       "command": {
         "type": "parallel",
         "data": {
@@ -67,7 +110,7 @@
     },
     {
       "name": "Fire",
-      "waypointRelativePos": 0.9,
+      "waypointRelativePos": 1.0,
       "command": {
         "type": "parallel",
         "data": {
@@ -93,6 +136,23 @@
           ]
         }
       }
+    },
+    {
+      "name": "Intake 2",
+      "waypointRelativePos": 2.65,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Speaker Intake"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -103,7 +163,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -60.0,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
