@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.turretSubsystem;
 
+import static edu.wpi.first.units.Units.*;
+
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
@@ -410,7 +412,7 @@ public class TurretSubsystem extends SubsystemBase {
       if (usingPitchPid) {
         pitchMotor.setVoltage(
             pitchPIDController.calculate(pitchPosition)
-                + pitchFeedForward.calculate(pitchPosition, 0));
+                + pitchFeedForward.calculate(Degrees.of(pitchPosition), RPM.zero()).in(Volts));
       }
       pitchVelocity =
           pitchEncoder.getVelocity()

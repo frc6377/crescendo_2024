@@ -1,6 +1,6 @@
 package frc.robot.subsystems.vision;
 
-import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -9,8 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.Distance;
-import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.stateManagement.RobotStateManager;
@@ -136,8 +135,8 @@ public class VisionMath {
     PhotonTrackedTarget trackedA = targets.get(0).target();
     PhotonTrackedTarget trackedB = targets.get(1).target();
 
-    Measure<Distance> distanceToTagAUnitRep = tagToCameraDistance(targets.get(0), layout, RSM);
-    Measure<Distance> distanceToTagBUnitRep = tagToCameraDistance(targets.get(1), layout, RSM);
+    Distance distanceToTagAUnitRep = tagToCameraDistance(targets.get(0), layout, RSM);
+    Distance distanceToTagBUnitRep = tagToCameraDistance(targets.get(1), layout, RSM);
 
     double distanceToTagA = distanceToTagAUnitRep.in(Meters);
     double distanceToTagB = distanceToTagBUnitRep.in(Meters);
@@ -212,7 +211,6 @@ public class VisionMath {
   /**
    * Approximates the robtot location using a single tag.
    *
-   * @deprecated - To be implemented
    * @param target
    * @return
    */
@@ -230,7 +228,7 @@ public class VisionMath {
    * @param RSM the current robot state
    * @return the distance to each tag, in the same order given
    */
-  public static List<Measure<Distance>> tagsToCameraDistance(
+  public static List<Distance> tagsToCameraDistance(
       List<CameraTrackedTarget> targets, AprilTagFieldLayout layout, RobotStateManager RSM) {
     return targets.stream().map((a) -> VisionMath.tagToCameraDistance(a, layout, RSM)).toList();
   }
@@ -243,7 +241,7 @@ public class VisionMath {
    * @param RSM the current robot state
    * @return the distance from the april tag
    */
-  private static Measure<Distance> tagToCameraDistance(
+  private static Distance tagToCameraDistance(
       CameraTrackedTarget cameraTarget, AprilTagFieldLayout layout, RobotStateManager RSM) {
     PhotonTrackedTarget target = cameraTarget.target();
     Pose3d tagLocation = layout.getTagPose(target.getFiducialId()).orElseThrow();

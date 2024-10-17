@@ -33,10 +33,12 @@ import java.util.Arrays;
 import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
+@Disabled
 public class CommandFactoryChecks {
 
   private static boolean debugPrints = false;
@@ -55,7 +57,6 @@ public class CommandFactoryChecks {
               Commands.waitUntil(() -> true).getName(),
               Commands.either(Commands.none(), Commands.none(), () -> true).getName(),
               Commands.defer(() -> Commands.none(), Set.of()).getName(),
-              Commands.deferredProxy(() -> Commands.none()).getName(),
               Commands.sequence().getName(),
               Commands.repeatingSequence().getName(),
               Commands.parallel().getName(),

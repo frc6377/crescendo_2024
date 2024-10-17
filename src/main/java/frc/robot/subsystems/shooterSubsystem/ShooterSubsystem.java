@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxSim;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -91,14 +92,18 @@ public class ShooterSubsystem extends SubsystemBase {
     if (Robot.isSimulation()) {
       shooterLeftSim =
           new FlywheelSim(
-              DCMotor.getNEO(1),
-              Constants.ShooterConstants.SHOOTER_LEFT_GEARING,
-              Constants.ShooterConstants.SHOOTER_LEFT_MOMENT * 2); // 2 rollers
+              LinearSystemId.createFlywheelSystem(
+                  DCMotor.getNEO(1),
+                  Constants.ShooterConstants.SHOOTER_LEFT_MOMENT * 2,
+                  Constants.ShooterConstants.SHOOTER_LEFT_GEARING),
+              DCMotor.getNEO(1)); // 2 rollers
       shooterRightSim =
           new FlywheelSim(
-              DCMotor.getNEO(1),
-              Constants.ShooterConstants.SHOOTER_RIGHT_GEARING,
-              Constants.ShooterConstants.SHOOTER_RIGHT_MOMENT * 2); // 2 rollers
+              LinearSystemId.createFlywheelSystem(
+                  DCMotor.getNEO(1),
+                  Constants.ShooterConstants.SHOOTER_RIGHT_MOMENT * 2,
+                  Constants.ShooterConstants.SHOOTER_RIGHT_GEARING),
+              DCMotor.getNEO(1)); // 2 rollers
     }
 
     shooterLeftMotorEncoder = shooterLeftMotor.getEncoder();

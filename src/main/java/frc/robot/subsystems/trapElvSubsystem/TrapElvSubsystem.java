@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.trapElvSubsystem;
 
+import static edu.wpi.first.units.Units.*;
+
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
@@ -338,7 +340,7 @@ public class TrapElvSubsystem extends SubsystemBase {
     wristPositionEntry.log(getWristEncoderPos());
     sourceLog.log(wristBeamBreak.isBeamBroke());
 
-    FF = wristFeedforward.calculate(Units.rotationsToRadians(getWristEncoderPos()), 0);
+    FF = wristFeedforward.calculate(Rotations.of(getWristEncoderPos()), RPM.zero()).in(Volts);
 
     wristMotor.setVoltage(
         MathUtil.clamp(

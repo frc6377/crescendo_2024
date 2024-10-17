@@ -169,7 +169,7 @@ public class TurretCommandFactory {
           }
         };
 
-    return Commands.deferredProxy(aimCommandSupplier).withName("getAimTurretCommand");
+    return subsystem.defer(aimCommandSupplier).withName("getAimTurretCommand").asProxy();
   }
 
   private Command lobShot() {
