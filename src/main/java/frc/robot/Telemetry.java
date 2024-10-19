@@ -1,7 +1,8 @@
 package frc.robot;
 
 import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain.SwerveDriveState;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySimSwerveDrivetrain.*;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveDrivetrain.LegacySwerveDriveState;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
@@ -89,7 +90,7 @@ public class Telemetry {
       };
 
   /* Accept the swerve drive state and telemeterize it to smartdashboard */
-  public void telemeterize(SwerveDriveState state) {
+  public void telemeterize(LegacySwerveDriveState state) {
     /* Telemeterize the pose */
     Pose2d pose = state.Pose;
     fieldTypePub.set("Field2d");
@@ -119,7 +120,7 @@ public class Telemetry {
     }
   }
 
-  public void realTelemetry(SwerveDriveState state) {
+  public void realTelemetry(LegacySwerveDriveState state) {
     double currentTime = Utils.getCurrentTimeSeconds();
     if (currentTime - lastTime > Constants.TELEMETRY_LOG_NUMBER) {
       lastTime = currentTime;

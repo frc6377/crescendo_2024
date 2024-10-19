@@ -37,15 +37,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
     intakeMotorCurrentLimits
         .withSupplyCurrentLimitEnable(true)
-        .withSupplyCurrentLimit(Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_LIMIT)
-        .withSupplyCurrentThreshold(Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_THRESHOLD)
-        .withSupplyTimeThreshold(Constants.IntakeConstants.INTAKE_MOTORS_THRESHOLD_TIME);
+        .withSupplyCurrentLimit(Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_LIMIT);
 
     chooserMotorCurrentLimits
         .withSupplyCurrentLimitEnable(true)
-        .withSupplyCurrentLimit(Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_LIMIT)
-        .withSupplyCurrentThreshold(Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_THRESHOLD)
-        .withSupplyTimeThreshold(Constants.IntakeConstants.INTAKE_MOTORS_THRESHOLD_TIME);
+        .withSupplyCurrentLimit(Constants.IntakeConstants.INTAKE_MOTORS_CURRENT_LIMIT);
 
     intakeMotorConfigurator.apply(intakeMotorCurrentLimits);
     chooserMotorConfigurator.apply(chooserMotorCurrentLimits);

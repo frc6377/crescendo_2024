@@ -1,11 +1,11 @@
 package frc.robot.config;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstantsFactory;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveDrivetrainConstants;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule.ClosedLoopOutputType;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModuleConstants;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModuleConstants.SteerFeedbackType;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModuleConstantsFactory;
 import edu.wpi.first.math.util.Units;
 import frc.robot.stateManagement.RobotStateManager;
 import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem;
@@ -13,13 +13,13 @@ import frc.robot.subsystems.swerveSubsystem.SwerveSubsystem;
 public class TunerConstants {
   // Both sets of gains need to be tuned to your individual robot.
 
-  // The steer motor uses any SwerveModule.SteerRequestType control request with
+  // The steer motor uses any LegacySwerveModule.SteerRequestType control request with
   // the
-  // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
+  // output type specified by LegacySwerveModuleConstants.SteerMotorClosedLoopOutput
   private static final Slot0Configs steerGains =
       new Slot0Configs().withKP(100).withKI(0).withKD(0.2).withKS(0).withKV(1.5).withKA(0);
   // When using closed-loop control, the drive motor uses the control
-  // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
+  // output type specified by LegacySwerveModuleConstants.DriveMotorClosedLoopOutput
   private static final Slot0Configs driveGains =
       new Slot0Configs().withKP(3).withKI(0).withKD(0).withKS(0).withKV(0).withKA(0);
 
@@ -60,11 +60,11 @@ public class TunerConstants {
   private static final double kSteerFrictionVoltage = 0.25;
   private static final double kDriveFrictionVoltage = 0.25;
 
-  private static final SwerveDrivetrainConstants DrivetrainConstants =
-      new SwerveDrivetrainConstants().withPigeon2Id(kPigeonId).withCANbusName(kCANbusName);
+  private static final LegacySwerveDrivetrainConstants DrivetrainConstants =
+      new LegacySwerveDrivetrainConstants().withPigeon2Id(kPigeonId).withCANbusName(kCANbusName);
 
-  private static final SwerveModuleConstantsFactory ConstantCreator =
-      new SwerveModuleConstantsFactory()
+  private static final LegacySwerveModuleConstantsFactory ConstantCreator =
+      new LegacySwerveModuleConstantsFactory()
           .withDriveMotorGearRatio(kDriveGearRatio)
           .withSteerMotorGearRatio(kSteerGearRatio)
           .withWheelRadius(kWheelRadiusInches)
@@ -119,7 +119,7 @@ public class TunerConstants {
   private static final double backLeftOffset = 0.539795;
   private static final double backRightOffset = -0.071289;
 
-  private static final SwerveModuleConstants FrontLeft =
+  private static final LegacySwerveModuleConstants FrontLeft =
       ConstantCreator.createModuleConstants(
           kFrontLeftSteerMotorId,
           kFrontLeftDriveMotorId,
@@ -128,7 +128,7 @@ public class TunerConstants {
           Units.inchesToMeters(kFrontLeftXPosInches),
           Units.inchesToMeters(kFrontLeftYPosInches),
           kInvertLeftSide);
-  private static final SwerveModuleConstants FrontRight =
+  private static final LegacySwerveModuleConstants FrontRight =
       ConstantCreator.createModuleConstants(
           kFrontRightSteerMotorId,
           kFrontRightDriveMotorId,
@@ -137,7 +137,7 @@ public class TunerConstants {
           Units.inchesToMeters(kFrontRightXPosInches),
           Units.inchesToMeters(kFrontRightYPosInches),
           kInvertRightSide);
-  private static final SwerveModuleConstants BackLeft =
+  private static final LegacySwerveModuleConstants BackLeft =
       ConstantCreator.createModuleConstants(
           kBackLeftSteerMotorId,
           kBackLeftDriveMotorId,
@@ -146,7 +146,7 @@ public class TunerConstants {
           Units.inchesToMeters(kBackLeftXPosInches),
           Units.inchesToMeters(kBackLeftYPosInches),
           kInvertLeftSide);
-  private static final SwerveModuleConstants BackRight =
+  private static final LegacySwerveModuleConstants BackRight =
       ConstantCreator.createModuleConstants(
           kBackRightSteerMotorId,
           kBackRightDriveMotorId,

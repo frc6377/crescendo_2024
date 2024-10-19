@@ -1,10 +1,10 @@
 package frc.robot.subsystems.swerveSubsystem;
 
 import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveDrivetrain;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveDrivetrainConstants;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModuleConstants;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -35,10 +35,10 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 /**
- * Class that extends the Phoenix SwerveDrivetrain class and implements subsystem so it can be used
- * in command-based projects easily.
+ * Class that extends the Phoenix LegacySwerveDrivetrain class and implements subsystem so it can be
+ * used in command-based projects easily.
  */
-public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
+public class SwerveSubsystem extends LegacySwerveDrivetrain implements Subsystem {
   private static final double kSimLoopPeriod = 0.005; // 5 ms
   public static final double maxSpeed = Units.feetToMeters(18.2); // Desired top speed
   public static final double maxAngularRate = Math.PI * 10; // Max angular velocity in rads/sec
@@ -58,10 +58,10 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   private boolean acceptVisionMeasures = false;
 
   public SwerveSubsystem(
-      SwerveDrivetrainConstants driveTrainConstants,
+      LegacySwerveDrivetrainConstants driveTrainConstants,
       double OdometryUpdateFrequency,
       RobotStateManager RSM,
-      SwerveModuleConstants... modules) {
+      LegacySwerveModuleConstants... modules) {
     super(driveTrainConstants, OdometryUpdateFrequency, modules);
     this.RSM = RSM;
     acceptingVisionMeasuresLog =
@@ -87,7 +87,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
         () -> getChassisSpeeds(),
         (a) ->
             this.setControl(
-                new SwerveRequest.RobotCentric()
+                new LegacySwerveRequest.RobotCentric()
                     .withVelocityX(a.vxMetersPerSecond)
                     .withVelocityY(a.vyMetersPerSecond)
                     .withRotationalRate(a.omegaRadiansPerSecond)),
@@ -114,9 +114,9 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   }
 
   public SwerveSubsystem(
-      SwerveDrivetrainConstants driveTrainConstants,
+      LegacySwerveDrivetrainConstants driveTrainConstants,
       RobotStateManager RSM,
-      SwerveModuleConstants... modules) {
+      LegacySwerveModuleConstants... modules) {
     this(driveTrainConstants, 0, RSM, modules);
   }
 
@@ -154,12 +154,12 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     };
   }
 
-  public SwerveRequest getBrakeRequest() {
-    return new SwerveRequest.SwerveDriveBrake();
+  public LegacySwerveRequest getBrakeRequest() {
+    return new LegacySwerveRequest.SwerveDriveBrake();
   }
 
-  public SwerveRequest getAlignRequest(Rotation2d rotation) {
-    return new SwerveRequest.FieldCentricFacingAngle().withTargetDirection(rotation);
+  public LegacySwerveRequest getAlignRequest(Rotation2d rotation) {
+    return new LegacySwerveRequest.FieldCentricFacingAngle().withTargetDirection(rotation);
   }
 
   public void toggleOrientation() {

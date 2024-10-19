@@ -1,8 +1,8 @@
 package frc.robot.subsystems.swerveSubsystem;
 
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule.DriveRequestType;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule.SteerRequestType;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -36,7 +36,7 @@ public class SwerveCommandFactory {
     rotationSources = new ArrayList<>(1);
   }
 
-  public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
+  public Command applyRequest(Supplier<LegacySwerveRequest> requestSupplier) {
     if (subsystem == null) return Commands.none();
     return subsystem
         .run(() -> subsystem.setControl(requestSupplier.get()))
@@ -115,7 +115,7 @@ public class SwerveCommandFactory {
           SmartDashboard.putNumber("error", pid.getPositionError());
           SmartDashboard.putNumber("alpha", alpha);
           subsystem.setControl(
-              new SwerveRequest.FieldCentric()
+              new LegacySwerveRequest.FieldCentric()
                   .withRotationalRate(alpha)
                   .withVelocityX(in.xSpeed() * SwerveSubsystem.maxSpeed)
                   .withVelocityY(in.ySpeed() * SwerveSubsystem.maxSpeed));
@@ -148,7 +148,7 @@ public class SwerveCommandFactory {
           DriveRequest in = input.get();
           double alpha = Math.toRadians(pid.calculate(err.get().getDegrees()));
           subsystem.setControl(
-              new SwerveRequest.FieldCentric()
+              new LegacySwerveRequest.FieldCentric()
                   .withRotationalRate(alpha)
                   .withVelocityX(in.xSpeed() * SwerveSubsystem.maxSpeed)
                   .withVelocityY(in.ySpeed() * SwerveSubsystem.maxSpeed));
@@ -166,8 +166,8 @@ public class SwerveCommandFactory {
     final Runnable command =
         () -> {
           DriveRequest driveRequest = requestSupplier.get();
-          SwerveRequest swerveRequest =
-              new SwerveRequest.RobotCentric()
+          LegacySwerveRequest swerveRequest =
+              new LegacySwerveRequest.RobotCentric()
                   .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
                   .withSteerRequestType(SteerRequestType.MotionMagicExpo)
                   .withVelocityX(driveRequest.xSpeed() * SwerveSubsystem.maxSpeed)
@@ -186,8 +186,8 @@ public class SwerveCommandFactory {
             .run(
                 () -> {
                   DriveRequest driveRequest = requestSupplier.get();
-                  SwerveRequest swerveRequest =
-                      new SwerveRequest.FieldCentric()
+                  LegacySwerveRequest swerveRequest =
+                      new LegacySwerveRequest.FieldCentric()
                           .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
                           .withSteerRequestType(SteerRequestType.MotionMagicExpo)
                           .withVelocityX(driveRequest.xSpeed() * SwerveSubsystem.maxSpeed)
@@ -323,7 +323,7 @@ public class SwerveCommandFactory {
     cmds.add(zeroDriveTrain());
     cmds.add(fieldOrientedDrive(() -> new DriveRequest(0, 0, 0)));
     cmds.add(robotOrientedDrive(() -> new DriveRequest(0, 0, 0)));
-    cmds.add(applyRequest(() -> new SwerveRequest.Idle()));
+    cmds.add(applyRequest(() -> new LegacySwerveRequest.Idle()));
     cmds.add(pointAtLocation(new Translation2d(), () -> new DriveRequest(0, 0, 0)));
     cmds.add(pointInDirection(new Rotation2d(), () -> new DriveRequest(0, 0, 0)));
     cmds.add(pointDrive(() -> 0.0, () -> new DriveRequest(0, 0, 0)));

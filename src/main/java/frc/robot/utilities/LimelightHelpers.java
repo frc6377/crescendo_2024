@@ -2,7 +2,7 @@
 
 package frc.robot.utilities;
 
-import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain.SwerveDriveState;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveDrivetrain.LegacySwerveDriveState;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -455,7 +455,7 @@ public class LimelightHelpers {
     return getLimelightNTDouble(limelightName, "ty");
   }
 
-  public static void simPose(SwerveDriveState state) {
+  public static void simPose(LegacySwerveDriveState state) {
     double newX =
         state.Pose.getX()
             - (DriverStation.getAlliance().isPresent()
