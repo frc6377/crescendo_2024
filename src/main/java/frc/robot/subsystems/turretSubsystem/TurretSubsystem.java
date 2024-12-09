@@ -141,7 +141,6 @@ public class TurretSubsystem extends SubsystemBase {
     pitchMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
     pitchAbsoluteEncoder = pitchMotor.getAbsoluteEncoder();
     pitchAbsoluteEncoder.setPositionConversionFactor(1);
-    pitchAbsoluteEncoder.setZeroOffset(TurretConstants.PITCH_ZERO_OFFSET);
     pitchAbsoluteEncoder.setInverted(true);
     pitchMotor.setIdleMode(IdleMode.kCoast);
 

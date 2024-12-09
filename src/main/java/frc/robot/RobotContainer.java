@@ -274,7 +274,7 @@ public class RobotContainer {
 
     OI.getButton(OI.Operator.simple)
         .whileTrue(
-            robotStateManager.setShooterMode(ShooterMode.SHORT_RANGE, ShooterMode.LONG_RANGE));
+            robotStateManager.setShooterMode(ShooterMode.LONG_RANGE, ShooterMode.SHORT_RANGE));
 
     new Trigger(() -> OI.Operator.controller.getPOV() == 0).whileTrue(intakeCommand());
     new Trigger(() -> OI.Operator.controller.getPOV() == 180).whileTrue(outtakeCommand());
@@ -431,6 +431,10 @@ public class RobotContainer {
             .onlyWhile(trapElvCommandFactory.getSourceBreak()));
   }
 
+  private Command stopPitch() {
+    return turretCommandFactory.stowTurret();
+  }
+
   // Register commands for auton
   public void registerCommands() {
     HashMap<String, Command> autonCommands = new HashMap<String, Command>();
@@ -438,8 +442,10 @@ public class RobotContainer {
     autonCommands.put("ShootShort", shootAutonShort());
     autonCommands.put("ShootLong", shootAutonLong());
     autonCommands.put("Prepare To Fire Short", prepareToScoreSpeakerShortRangeAutonOnly());
+    autonCommands.put("Fire Short", fire());
     autonCommands.put("Prepare To Fire Long", shooterCommandFactory.revShooter());
     autonCommands.put("Amp", ampAuton());
+    autonCommands.put("stopPitch", stopPitch());
     if (Constants.enabledSubsystems.intakeEnabled) {
       autonCommands.put("Speaker Intake", intakeSpeaker());
       autonCommands.put("Amp Intake", intakeAmp());

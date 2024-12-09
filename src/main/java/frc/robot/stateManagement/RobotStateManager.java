@@ -30,7 +30,7 @@ public class RobotStateManager extends SubsystemBase {
 
   // Placement Mode
   private PlacementMode placementMode = PlacementMode.SPEAKER;
-  private ShooterMode shooterMode = ShooterMode.LONG_RANGE;
+  private ShooterMode shooterMode = ShooterMode.SHORT_RANGE;
 
   private final Trigger isAmpModeTrigger = new Trigger(() -> placementMode == PlacementMode.AMP);
 

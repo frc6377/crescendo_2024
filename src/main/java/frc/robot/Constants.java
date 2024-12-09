@@ -131,7 +131,9 @@ public final class Constants {
     public static final double PITCH_CONVERSION_FACTOR = 128;
     public static final int PITCH_SMART_CURRENT_LIMIT = 40;
 
-    public static final double PITCH_ZERO_OFFSET = Units.degreesToRotations(265.72);
+    public static final double PITCH_ZERO_OFFSET = 0.9073524;
+
+    public static final double PITCH_SHORT_SHOT_ANGLE = 45;
 
     // Physics Values
     public static final double SHOOTER_CENTER_OF_GRAVITY = 1; // TODO: Get real values
@@ -326,7 +328,7 @@ public final class Constants {
     public static final boolean triggerEnabled = true;
     public static final boolean turretRotationEnabled = true;
     public static final boolean turretPitchEnabled = true;
-    public static final boolean climberEnabled = true;
+    public static final boolean climberEnabled = false;
   }
 
   public static final int END_GAME_WARNING_TIME = 20;
@@ -349,8 +351,8 @@ public final class Constants {
     public static final Rotation2d BLUE_SOURCE_ROTATION = Rotation2d.fromRotations(-0.25);
     public static final Rotation2d RED_SOURCE_ROTATION = Rotation2d.fromRotations(-0.25);
     public static final Rotation2d ABSOLUTE_POINTING_OFFSET = Rotation2d.fromRotations(0.75);
-    public static final double ROTATION_DEADBAND = 0.05;
-    public static final DriveType DRIVE_TYPE = DriveType.FIELD_ORIENTED;
+    public static final double ROTATION_DEADBAND = 0.8;
+    public static final DriveType DRIVE_TYPE = DriveType.POINT_DRIVE;
 
     public static enum DriveType {
       POINT_DRIVE,

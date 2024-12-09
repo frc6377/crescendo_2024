@@ -4,35 +4,53 @@
     {
       "anchor": {
         "x": 1.33,
-        "y": 5.55
+        "y": 5.65
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.33,
-        "y": 5.55
+        "x": 2.4148382676223257,
+        "y": 6.505827590542485
       },
       "isLocked": false,
       "linkedName": "A2"
     },
     {
       "anchor": {
-        "x": 2.9,
-        "y": 5.55
+        "x": 8.3,
+        "y": 7.45
       },
       "prevControl": {
-        "x": 1.9,
-        "y": 5.55
+        "x": 7.300000000000001,
+        "y": 7.45
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "B2"
+      "linkedName": "D1"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.65,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Speaker Intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
-    "maxVelocity": 2.75,
+    "maxVelocity": 3.5,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0

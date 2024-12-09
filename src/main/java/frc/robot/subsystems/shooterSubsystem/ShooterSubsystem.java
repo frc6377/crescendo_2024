@@ -49,6 +49,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private DebugEntry<String> currentCommand;
 
+  private DebugEntry<Boolean> shooterBeamBreak;
+
   private TOFSensorSimple beamBreak;
 
   private SpeakerConfig targetSpeeds;
@@ -124,6 +126,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     shooterReadyEntry = new DebugEntry<Boolean>(false, "Shooter Ready?", this);
 
+    shooterBeamBreak = new DebugEntry<Boolean>(false, "Shooter Beam Break", this);
+
     shooterTab.addDouble("Left Current", shooterLeftMotor::getOutputCurrent);
     shooterTab.addDouble("Right Current", shooterRightMotor::getOutputCurrent);
     currentCommand = new DebugEntry<String>("none", "Shooter Command", this);
@@ -139,6 +143,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     leftMotorTemperatureEntry.log(shooterLeftMotor.getMotorTemperature());
     rightMotorTemperatureEntry.log(shooterRightMotor.getMotorTemperature());
+
+    shooterBeamBreak.log(beamBreak.isBeamBroke());
 
     if (this.getCurrentCommand() != null) currentCommand.log(this.getCurrentCommand().getName());
   }

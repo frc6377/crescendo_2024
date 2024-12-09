@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.3,
-        "y": 7.45
+        "x": 0.6727105761903848,
+        "y": 4.4
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.300000000000001,
-        "y": 7.45
+        "x": 0.8736942755900217,
+        "y": 4.06050362756931
       },
       "isLocked": false,
-      "linkedName": "D1"
+      "linkedName": "A3"
     },
     {
       "anchor": {
-        "x": 4.0,
-        "y": 6.0
+        "x": 5.4830774426170805,
+        "y": 0.8900235774793938
       },
       "prevControl": {
-        "x": 5.826890501141917,
-        "y": 6.398168442556571
+        "x": 2.086934844340443,
+        "y": 1.428722058585343
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,13 +39,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Eugene",
+  "folder": "Shoot and Roll",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": -60.0,
     "velocity": 0
   },
   "useDefaultConstraints": true
